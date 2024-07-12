@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS cursors
         PRIMARY KEY (id)
         ORDER BY (id);
 
-CREATE TABLE IF NOT EXISTS RAW_DATA_BLOCKS
+CREATE TABLE IF NOT EXISTS blocks
 (
     timestamp               DateTime,
     number                  UInt64,
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS RAW_DATA_BLOCKS
     parent_hash             String,
     date                    Date,
     nonce                   UInt64,
-    sha3_uncles             String,
+    ommers_hash             String,
     logs_bloom              String,
     transactions_root       String,
     state_root              String,

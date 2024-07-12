@@ -1,3 +1,5 @@
+use substreams::Hex;
+
 // Timestamp to date conversion
 // ex: 2015-07-30T16:02:18Z => 2015-07-30
 pub fn timestamp_to_date(timestamp: &str) -> &str {
@@ -8,12 +10,7 @@ pub fn timestamp_to_date(timestamp: &str) -> &str {
 }
 
 pub fn bytes_to_hex(bytes: Vec<u8>) -> String {
-    let mut hex = String::new();
-    hex.push_str("0x");
-    for byte in bytes {
-        hex.push_str(&format!("{:02x}", byte));
-    }
-    hex
+    format!{"0x{}", Hex::encode(bytes)}.to_string()
 }
 
 #[cfg(test)]

@@ -23,7 +23,7 @@ info:
 
 .PHONY: run
 run:
-	substreams run -e eth.substreams.pinax.network:443 graph_out -s 1000 -t 1001
+	substreams run -e eth.substreams.pinax.network:443 graph_out -s 20293026 -t 20293027
 
 .PHONY: gui
 gui:
