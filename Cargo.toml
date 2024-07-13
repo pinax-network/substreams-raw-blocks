@@ -1,19 +1,19 @@
-[package]
-name = "blocks"
-version = "0.2.0"
-authors = ["Denis <denis@pinax.network>", "Zhi"]
-description = "Messari Blocks"
-license = "MIT"
+[workspace]
+members = [
+    "blocks/evm",
+    "common"
+]
+
+resolver = "2"
+
+[workspace.package]
 edition = "2021"
-publish = false
+version = "0.1.0"
 
-[badges]
-maintenance = { status = "actively-developed" }
-
-[lib]
-crate-type = ["cdylib"]
-
-[dependencies]
+[workspace.dependencies]
 substreams = "0.5"
-substreams-ethereum = "0.9"
 substreams-entity-change = "1.3"
+substreams-ethereum = "0.9"
+# substreams-antelope = "0.4"
+# substreams-bitcoin = "1.0"
+# substreams-near = "0.9"

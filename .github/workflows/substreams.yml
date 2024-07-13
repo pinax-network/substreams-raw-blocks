@@ -29,9 +29,9 @@ jobs:
       - name: Install substreams
         uses: supplypike/setup-bin@v3
         with:
-          uri: 'https://github.com/streamingfast/substreams/releases/download/v1.1.14/substreams_linux_x86_64.tar.gz'
+          uri: 'https://github.com/streamingfast/substreams/releases/download/v1.9.0/substreams_linux_x86_64.tar.gz'
           name: 'substreams'
-          version: '1.1.14'
+          version: '1.9.0'
 
       - run: make
       - uses: softprops/action-gh-release@v1

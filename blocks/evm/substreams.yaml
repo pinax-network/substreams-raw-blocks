@@ -1,9 +1,9 @@
 specVersion: v0.1.0
 package:
-  name: blocks
+  name: raw_blocks_evm
   version: v0.1.0
-  url: https://github.com/pinax-network/substreams-messari-blocks
-  doc: Messari Blocks
+  url: https://github.com/pinax-network/substreams-raw-blocks
+  doc: Raw Blocks for EVM
 
 imports:
   entities: https://github.com/streamingfast/substreams-sink-entity-changes/releases/download/v1.3.2/substreams-sink-entity-changes-v1.3.2.spkg
@@ -11,7 +11,7 @@ imports:
 binaries:
   default:
     type: wasm/rust-v1
-    file: ./target/wasm32-unknown-unknown/release/blocks.wasm
+    file: ../../target/wasm32-unknown-unknown/release/raw_blocks_evm.wasm
 
 modules:
   - name: graph_out

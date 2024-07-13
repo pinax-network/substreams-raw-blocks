@@ -1,16 +1,24 @@
-# Substreams Messari Blocks
+# Substreams Raw Blocks
 
-## Supported Block Types
+## Supported Networks
 
-- [x] Ethereum
+- [x] EVM
+  - [x] Ethereum
+  - [x] Arbitrum
+  - [x] BNB
+  - [x] Optimism (OP)
+  - [x] Avalanche-C
+  - [x] Polygon
 - [ ] Bitcoin
 - [ ] Solana
 
-## Data types
+## Raw Data
 
-- [x] Raw On-Chain Data
-- [ ] Decoded Data
-- [ ] Transformed Data
+- [x] Blocks
+- [ ] Creation Traces
+- [ ] Logs
+- [ ] Transactions
+- [ ] Traces
 
 ## Data Visualization
 
@@ -23,3 +31,12 @@
 - Postgres
 - Amazon Redshift
   https://aws.amazon.com/redshift/
+
+## Graph
+
+```mermaid
+graph TD;
+  graph_out[map: graph_out];
+  sf.substreams.v1.Clock[source: sf.substreams.v1.Clock] --> graph_out;
+  sf.ethereum.type.v2.Block[source: sf.ethereum.type.v2.Block] --> graph_out;
+```

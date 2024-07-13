@@ -1,10 +1,9 @@
+use common::{block_time_to_date, bytes_to_hex};
 use substreams::errors::Error;
 use substreams::pb::substreams::Clock;
 use substreams_entity_change::pb::entity::EntityChanges;
 use substreams_entity_change::tables::Tables;
 use substreams_ethereum::pb::eth::v2::Block;
-
-use crate::utils::{bytes_to_hex, block_time_to_date};
 
 #[substreams::handlers::map]
 pub fn graph_out(clock: Clock, block: Block) -> Result<EntityChanges, Error> {
