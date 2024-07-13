@@ -4,21 +4,25 @@ use substreams_entity_change::pb::entity::EntityChanges;
 use substreams_entity_change::tables::Tables;
 use substreams_ethereum::pb::eth::v2::Block;
 
-use crate::utils::{bytes_to_hex, timestamp_to_date};
+use crate::utils::{bytes_to_hex, block_time_to_date};
 
 #[substreams::handlers::map]
 pub fn graph_out(clock: Clock, block: Block) -> Result<EntityChanges, Error> {
     let mut tables = Tables::new();
     let header = block.header.unwrap();
     let timestamp = clock.timestamp.unwrap();
+    let block_time = timestamp.to_string();
+    let block_number = clock.number.to_string();
+    let block_hash = format!("0x{}", clock.id);
+    let block_date = block_time_to_date(block_time.as_str());
 
     tables
-        .create_row("blocks", &clock.id)
-        .set("timestamp", timestamp.to_string())
-        .set_bigint("number", &clock.number.to_string())
-        .set("hash", format!("0x{}", clock.id))
+        .create_row("blocks", &block_hash)
+        .set("time", &block_time)
+        .set_bigint("number", &block_number)
+        .set("date", block_date)
+        .set("hash", block_hash)
         .set("parent_hash", bytes_to_hex(header.parent_hash))
-        .set("date", timestamp_to_date(timestamp.to_string().as_str()))
         .set_bigint("nonce", &header.nonce.to_string())
         .set("ommers_hash", bytes_to_hex(header.uncle_hash))
         .set("logs_bloom", bytes_to_hex(header.logs_bloom))
@@ -37,6 +41,22 @@ pub fn graph_out(clock: Clock, block: Block) -> Result<EntityChanges, Error> {
         .set_bigint("transaction_count", &block.transaction_traces.len().to_string())
         .set_bigint("base_fee_per_gas", &header.base_fee_per_gas.unwrap_or_default().with_decimal(0).to_string())
         .set("parent_beacon_root", bytes_to_hex(header.parent_beacon_root));
+
+        // block_time
+        // block_number
+        // block_hash
+        // contract_address
+        // topic0
+        // topic1
+        // topic2
+        // topic3
+        // data
+        // tx_hash
+        // index
+        // tx_index
+        // block_date
+        // tx_from
+        // tx_to
 
     Ok(tables.to_entity_changes())
 }

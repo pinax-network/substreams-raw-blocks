@@ -14,11 +14,11 @@ CREATE TABLE IF NOT EXISTS cursors
 
 CREATE TABLE IF NOT EXISTS blocks
 (
-    timestamp               DateTime,
+    time                    DateTime,
     number                  UInt64,
+    date                    Date,
     hash                    String,
     parent_hash             String,
-    date                    Date,
     nonce                   UInt64,
     ommers_hash             String,
     logs_bloom              String,
@@ -44,18 +44,22 @@ CREATE TABLE IF NOT EXISTS blocks
 
 CREATE TABLE IF NOT EXISTS logs
 (
-    block_hash  String,
-    block_num   UInt64,
-    timestamp   DateTime,
-    tx_hash     String,
-    tx_index    UInt32,
-    log_index   UInt32,
-    address     String,
-    topic0      String,
-    topic1      String,
-    topic2      String,
-    topic3      String,
-    data        String
+    block_time          DateTime,
+    block_number        UInt64,
+    block_hash          String,
+    contract_address    String,
+    topic0              String,
+    topic1              String,
+    topic2              String,
+    topic3              String,
+    data                String
+    tx_hash             String,
+    index               UInt32,
+    tx_index            UInt32,
+    block_date          Date,
+    tx_from             String,
+    tx_to               String
+
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (tx_hash, log_index)
