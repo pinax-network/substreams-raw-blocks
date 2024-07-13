@@ -15,10 +15,10 @@
 ## Raw Data
 
 - [x] Blocks
-- [ ] Creation Traces
-- [ ] Logs
+- [x] Logs
 - [ ] Transactions
 - [ ] Traces
+  - [ ] Creation Traces
 
 ## Data Visualization
 

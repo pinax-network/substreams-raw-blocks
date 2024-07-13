@@ -2,10 +2,10 @@ use substreams::Hex;
 
 // Timestamp to date conversion
 // ex: 2015-07-30T16:02:18Z => 2015-07-30
-pub fn block_time_to_date(block_time: &str) -> &str {
+pub fn block_time_to_date(block_time: &str) -> String {
     match block_time.split('T').next() {
-        Some(date) => date,
-        None => "",
+        Some(date) => date.to_string(),
+        None => "".to_string(),
     }
 }
 

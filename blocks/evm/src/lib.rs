@@ -8,7 +8,7 @@ use substreams_ethereum::pb::eth::v2::Block;
 #[substreams::handlers::map]
 pub fn graph_out(clock: Clock, block: Block) -> Result<EntityChanges, Error> {
     let mut tables = Tables::new();
-    let header = block.header.unwrap();
+    let header = block.clone().header.unwrap();
     let timestamp = clock.timestamp.unwrap();
     let block_time = timestamp.to_string();
     let block_number = clock.number.to_string();
@@ -19,8 +19,8 @@ pub fn graph_out(clock: Clock, block: Block) -> Result<EntityChanges, Error> {
         .create_row("blocks", &block_hash)
         .set("time", &block_time)
         .set_bigint("number", &block_number)
-        .set("date", block_date)
-        .set("hash", block_hash)
+        .set("date", &block_date)
+        .set("hash", &block_hash)
         .set("parent_hash", bytes_to_hex(header.parent_hash))
         .set_bigint("nonce", &header.nonce.to_string())
         .set("ommers_hash", bytes_to_hex(header.uncle_hash))
@@ -41,21 +41,39 @@ pub fn graph_out(clock: Clock, block: Block) -> Result<EntityChanges, Error> {
         .set_bigint("base_fee_per_gas", &header.base_fee_per_gas.unwrap_or_default().with_decimal(0).to_string())
         .set("parent_beacon_root", bytes_to_hex(header.parent_beacon_root));
 
-        // block_time
-        // block_number
-        // block_hash
-        // contract_address
-        // topic0
-        // topic1
-        // topic2
-        // topic3
-        // data
-        // tx_hash
-        // index
-        // tx_index
-        // block_date
-        // tx_from
-        // tx_to
+    for log in block.logs() {
+        let log_index = log.index();
+        let transaction = log.receipt.transaction;
+        let tx_hash = bytes_to_hex(transaction.hash.to_vec());
+        let tx_index = transaction.index;
+        let tx_from = bytes_to_hex(transaction.from.to_vec());
+        let tx_to = bytes_to_hex(transaction.to.to_vec());
+        let contract_address = bytes_to_hex(log.address().to_vec());
+        let topics = log.topics();
+        let topic0 = bytes_to_hex(topics[0].clone());
+        let topic1 = bytes_to_hex(topics[1].clone());
+        let topic2 = bytes_to_hex(topics[2].clone());
+        let topic3 = bytes_to_hex(topics[3].clone());
+        let data = bytes_to_hex(log.data().to_vec());
+
+        tables
+            .create_row("logs", &log_index.to_string())
+            .set("block_time", &block_time)
+            .set("block_number", &block_number)
+            .set("block_hash", &block_hash)
+            .set("contract_address", &contract_address)
+            .set("topic0", &topic0)
+            .set("topic1", &topic1)
+            .set("topic2", &topic2)
+            .set("topic3", &topic3)
+            .set("data", &data)
+            .set("tx_hash", &tx_hash)
+            .set_bigint("index", &log_index.to_string())
+            .set_bigint("tx_index", &tx_index.to_string())
+            .set("block_date", &block_date)
+            .set("tx_from", &tx_from)
+            .set("tx_to", &tx_to);
+    }
 
     Ok(tables.to_entity_changes())
 }
