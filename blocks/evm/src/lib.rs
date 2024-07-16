@@ -1,4 +1,4 @@
-use common::{block_time_to_date, bytes_to_hex};
+use common::{block_time_to_date, bytes_to_hex, extract_topic};
 use substreams::errors::Error;
 use substreams::pb::substreams::Clock;
 use substreams_entity_change::pb::entity::EntityChanges;
@@ -15,6 +15,7 @@ pub fn graph_out(clock: Clock, block: Block) -> Result<EntityChanges, Error> {
     let block_hash = format!("0x{}", clock.id);
     let block_date = block_time_to_date(block_time.as_str());
 
+    // blocks
     tables
         .create_row("blocks", &block_hash)
         .set("time", &block_time)
@@ -41,6 +42,7 @@ pub fn graph_out(clock: Clock, block: Block) -> Result<EntityChanges, Error> {
         .set_bigint("base_fee_per_gas", &header.base_fee_per_gas.unwrap_or_default().with_decimal(0).to_string())
         .set("parent_beacon_root", bytes_to_hex(header.parent_beacon_root));
 
+    // logs
     for log in block.logs() {
         let log_index = log.index();
         let transaction = log.receipt.transaction;
@@ -50,10 +52,10 @@ pub fn graph_out(clock: Clock, block: Block) -> Result<EntityChanges, Error> {
         let tx_to = bytes_to_hex(transaction.to.to_vec());
         let contract_address = bytes_to_hex(log.address().to_vec());
         let topics = log.topics();
-        let topic0 = bytes_to_hex(topics[0].clone());
-        let topic1 = bytes_to_hex(topics[1].clone());
-        let topic2 = bytes_to_hex(topics[2].clone());
-        let topic3 = bytes_to_hex(topics[3].clone());
+        let topic0 = extract_topic(topics, 0);
+        let topic1 = extract_topic(topics, 1);
+        let topic2 = extract_topic(topics, 2);
+        let topic3 = extract_topic(topics, 3);
         let data = bytes_to_hex(log.data().to_vec());
 
         tables

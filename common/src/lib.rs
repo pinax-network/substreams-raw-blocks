@@ -13,6 +13,14 @@ pub fn bytes_to_hex(bytes: Vec<u8>) -> String {
     format!{"0x{}", Hex::encode(bytes)}.to_string()
 }
 
+pub fn extract_topic(topics: &Vec<Vec<u8>>, index: usize) -> String {
+    if index < topics.len() {
+        bytes_to_hex(topics[index].clone())
+    } else {
+        "".to_string()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -73,5 +81,51 @@ mod tests {
         let bytes = vec![0xde, 0xad, 0xbe, 0xef];
         let expected = "0xdeadbeef";
         assert_eq!(bytes_to_hex(bytes), expected);
+    }
+
+    #[test]
+    fn test_extract_topic_valid_index() {
+        let topics = vec![
+            vec![0x01, 0x02, 0x03],
+            vec![0x0a, 0x0b, 0x0c],
+            vec![0xff, 0xfe, 0xfd],
+        ];
+        assert_eq!(extract_topic(&topics, 0), "0x010203");
+        assert_eq!(extract_topic(&topics, 1), "0x0a0b0c");
+        assert_eq!(extract_topic(&topics, 2), "0xfffefd");
+    }
+
+    #[test]
+    fn test_extract_topic_invalid_index() {
+        let topics = vec![
+            vec![0x01, 0x02, 0x03],
+            vec![0x0a, 0x0b, 0x0c],
+        ];
+        assert_eq!(extract_topic(&topics, 3), "");
+        assert_eq!(extract_topic(&topics, 100), "");
+    }
+
+    #[test]
+    fn test_extract_topic_empty_vector() {
+        let topics: Vec<Vec<u8>> = Vec::new();
+        assert_eq!(extract_topic(&topics, 0), "");
+        assert_eq!(extract_topic(&topics, 1), "");
+    }
+
+    #[test]
+    fn test_extract_topic_single_element() {
+        let topics = vec![vec![0x0d, 0x0e, 0x0f]];
+        assert_eq!(extract_topic(&topics, 0), "0x0d0e0f");
+        assert_eq!(extract_topic(&topics, 1), "");
+    }
+
+    #[test]
+    fn test_extract_topic_large_numbers() {
+        let topics = vec![
+            vec![0xaa, 0xbb, 0xcc],
+            vec![0xde, 0xad, 0xbe, 0xef],
+        ];
+        assert_eq!(extract_topic(&topics, 0), "0xaabbcc");
+        assert_eq!(extract_topic(&topics, 1), "0xdeadbeef");
     }
 }
