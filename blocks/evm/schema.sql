@@ -34,7 +34,9 @@ CREATE TABLE IF NOT EXISTS blocks
     gas_limit               UInt64,
     gas_used                UInt64,
     blob_gas_used           UInt64,
-    transaction_count       String,
+    total_transactions      UInt64,
+    successful_transactions UInt64,
+    failed_transactions     UInt64,
     base_fee_per_gas        String,
     parent_beacon_root      String
 )

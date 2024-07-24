@@ -21,3 +21,19 @@ modules:
       - source: sf.ethereum.type.v2.Block
     output:
       type: proto:sf.substreams.sink.entity.v1.EntityChanges
+
+  - name: map_blocks
+    kind: map
+    inputs:
+      - source: sf.substreams.v1.Clock
+      - source: sf.ethereum.type.v2.Block
+    output:
+      type: proto:sf.substreams.sink.entity.v1.EntityChanges
+
+  - name: map_logs
+    kind: map
+    inputs:
+      - source: sf.substreams.v1.Clock
+      - source: sf.ethereum.type.v2.Block
+    output:
+      type: proto:sf.substreams.sink.entity.v1.EntityChanges
