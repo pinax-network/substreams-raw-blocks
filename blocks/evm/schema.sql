@@ -49,16 +49,16 @@ CREATE TABLE IF NOT EXISTS logs
     block_time          DateTime,
     block_number        UInt64,
     block_hash          String,
+    block_date          Date,
     contract_address    String,
     topic0              String,
     topic1              String,
     topic2              String,
     topic3              String,
     data                String,
-    tx_hash             String,
     log_index           UInt32,
+    tx_hash             String,
     tx_index            UInt32,
-    block_date          Date,
     tx_from             String,
     tx_to               String
 
