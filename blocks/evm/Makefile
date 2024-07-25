@@ -23,11 +23,11 @@ info:
 
 .PHONY: run
 run:
-	substreams run -e eth.substreams.pinax.network:443 graph_out -s 6912 -t 13775 -o jsonl
+	substreams run -e eth.substreams.pinax.network:443 ch_out -s 6912 -t 13775 -o jsonl
 
 .PHONY: gui
 gui:
-	substreams gui -e eth.substreams.pinax.network:443 graph_out -s 20000000 -t 20000010
+	substreams gui -e eth.substreams.pinax.network:443 ch_out -s 20000000 -t 20000010
 
 .PHONY: deploy
 deploy:
