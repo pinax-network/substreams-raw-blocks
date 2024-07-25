@@ -7,6 +7,8 @@ package:
 
 imports:
   entities: https://github.com/streamingfast/substreams-sink-entity-changes/releases/download/v1.3.2/substreams-sink-entity-changes-v1.3.2.spkg
+  database_change: https://github.com/streamingfast/substreams-sink-database-changes/releases/download/v1.3.1/substreams-database-change-v1.3.1.spkg
+  sql: https://github.com/streamingfast/substreams-sink-sql/releases/download/protodefs-v1.0.7/substreams-sink-sql-protodefs-v1.0.7.spkg
 
 binaries:
   default:
@@ -14,26 +16,19 @@ binaries:
     file: ../../target/wasm32-unknown-unknown/release/raw_blocks_evm.wasm
 
 modules:
-  - name: graph_out
+  - name: ch_out
     kind: map
     inputs:
       - source: sf.substreams.v1.Clock
       - source: sf.ethereum.type.v2.Block
     output:
-      type: proto:sf.substreams.sink.entity.v1.EntityChanges
+      type: proto:sf.substreams.sink.database.v1.DatabaseChanges
 
-  - name: map_blocks
-    kind: map
-    inputs:
-      - source: sf.substreams.v1.Clock
-      - source: sf.ethereum.type.v2.Block
-    output:
-      type: proto:sf.substreams.sink.entity.v1.EntityChanges
-
-  - name: map_logs
-    kind: map
-    inputs:
-      - source: sf.substreams.v1.Clock
-      - source: sf.ethereum.type.v2.Block
-    output:
-      type: proto:sf.substreams.sink.entity.v1.EntityChanges
+sink:
+  module: ch_out
+  type: sf.substreams.sink.sql.v1.Service
+  config:
+    schema: "./schema.sql"
+    engine: clickhouse
+    postgraphile_frontend:
+      enabled: false

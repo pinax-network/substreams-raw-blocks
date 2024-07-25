@@ -5,3 +5,4 @@ version.workspace = true
 
 [dependencies]
 substreams.workspace = true
+substreams-database-change.workspace = true

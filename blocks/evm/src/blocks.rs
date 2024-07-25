@@ -1,36 +1,44 @@
-use common::{block_time_to_date, bytes_to_hex};
+use common::keys::block_keys;
+use common::utils::bytes_to_hex;
+use common::sinks::insert_timestamp;
 use substreams::pb::substreams::Clock;
-use substreams_entity_change::tables::Tables;
+use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_ethereum::pb::eth::v2::Block;
 
-pub fn insert_blocks(tables: &mut Tables, clock: &Clock, block: &Block) {
+pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
     let header = block.clone().header.unwrap();
-    let timestamp = clock.clone().timestamp.unwrap();
-    let block_time = timestamp.to_string();
-    let block_number = clock.number.to_string();
-    let block_hash = format!("0x{}", clock.id);
-    let block_date = block_time_to_date(block_time.as_str());
+    let parent_hash = bytes_to_hex(header.parent_hash);
+    let nonce = header.nonce.to_string();
+    let ommers_hash = bytes_to_hex(header.uncle_hash);
+    let logs_bloom = bytes_to_hex(header.logs_bloom);
+    let transactions_root = bytes_to_hex(header.transactions_root);
+    let state_root = bytes_to_hex(header.state_root);
+    let receipts_root = bytes_to_hex(header.receipt_root);
+    let miner = bytes_to_hex(header.coinbase);
+    let size = block.size.to_string();
+    let mix_hash = bytes_to_hex(header.mix_hash);
+    let extra_data = bytes_to_hex(header.extra_data);
+    let gas_limit = header.gas_limit.to_string();
+    let gas_used = header.gas_used.to_string();
 
     // blocks
     let row = tables
-        .create_row("blocks", &block_hash)
-        .set("time", &block_time)
-        .set_bigint("number", &block_number)
-        .set("date", &block_date)
-        .set("hash", &block_hash)
-        .set("parent_hash", bytes_to_hex(header.parent_hash))
-        .set_bigint("nonce", &header.nonce.to_string())
-        .set("ommers_hash", bytes_to_hex(header.uncle_hash))
-        .set("logs_bloom", bytes_to_hex(header.logs_bloom))
-        .set("transactions_root", bytes_to_hex(header.transactions_root))
-        .set("state_root", bytes_to_hex(header.state_root))
-        .set("receipts_root", bytes_to_hex(header.receipt_root))
-        .set("miner", bytes_to_hex(header.coinbase))
-        .set_bigint("size", &block.size.to_string())
-        .set("mix_hash", bytes_to_hex(header.mix_hash))
-        .set("extra_data", bytes_to_hex(header.extra_data))
-        .set_bigint("gas_limit", &header.gas_limit.to_string())
-        .set_bigint("gas_used", &header.gas_used.to_string());
+        .push_change_composite("blocks", block_keys(&clock), 0, table_change::Operation::Create)
+        .change("parent_hash", ("", parent_hash.as_str()))
+        .change("nonce", ("", nonce.as_str()))
+        .change("ommers_hash", ("", ommers_hash.as_str()))
+        .change("logs_bloom", ("", logs_bloom.as_str()))
+        .change("transactions_root", ("", transactions_root.as_str()))
+        .change("state_root", ("", state_root.as_str()))
+        .change("receipts_root", ("", receipts_root.as_str()))
+        .change("miner", ("", miner.as_str()))
+        .change("size", ("", size.as_str()))
+        .change("mix_hash", ("", mix_hash.as_str()))
+        .change("extra_data", ("", extra_data.as_str()))
+        .change("gas_limit", ("", gas_limit.as_str()))
+        .change("gas_used", ("", gas_used.as_str()));
+
+    insert_timestamp(row, clock, true);
 
     let mut total_transactions = 0;
     let mut successful_transactions = 0;
@@ -43,29 +51,29 @@ pub fn insert_blocks(tables: &mut Tables, clock: &Clock, block: &Block) {
         }
         total_transactions += 1;
     }
-    row.set_bigint("total_transactions", &total_transactions.to_string())
-        .set_bigint("successful_transactions", &successful_transactions.to_string())
-        .set_bigint("failed_transactions", &failed_transactions.to_string());
+    row.change("total_transactions", ("", total_transactions.to_string().as_str()))
+        .change("successful_transactions", ("", successful_transactions.to_string().as_str()))
+        .change("failed_transactions", ("", failed_transactions.to_string().as_str()));
 
     // optional fields
     match header.difficulty {
-        Some(difficulty) => row.set_bigint("difficulty", &difficulty.with_decimal(0).to_string()),
+        Some(difficulty) => row.change("difficulty", ("", difficulty.with_decimal(0).to_string().as_str())),
         None => row,
     };
     match header.total_difficulty {
-        Some(total_difficulty) => row.set_bigint("total_difficulty", &total_difficulty.with_decimal(0).to_string()),
+        Some(total_difficulty) => row.change("total_difficulty", ("", total_difficulty.with_decimal(0).to_string().as_str())),
         None => row,
     };
     match header.blob_gas_used {
-        Some(blob_gas_used) => row.set_bigint("blob_gas_used", &blob_gas_used.to_string()),
+        Some(blob_gas_used) => row.change("blob_gas_used", ("", blob_gas_used.to_string().as_str())),
         None => row,
     };
     match header.base_fee_per_gas {
-        Some(base_fee_per_gas) => row.set_bigint("base_fee_per_gas", &base_fee_per_gas.with_decimal(0).to_string()),
+        Some(base_fee_per_gas) => row.change("base_fee_per_gas", ("", base_fee_per_gas.with_decimal(0).to_string().as_str())),
         None => row,
     };
     match header.parent_beacon_root.len() {
         0 => row,
-        _ => row.set("parent_beacon_root", bytes_to_hex(header.parent_beacon_root)),
+        _ => row.change("parent_beacon_root", ("", bytes_to_hex(header.parent_beacon_root).as_str())),
     };
 }

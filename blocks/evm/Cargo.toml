@@ -9,5 +9,5 @@ crate-type = ["cdylib"]
 [dependencies]
 common = { path = "../../common" }
 substreams-ethereum = { workspace = true }
-substreams-entity-change = { workspace = true }
+substreams-database-change = { workspace = true }
 substreams = { workspace = true }
