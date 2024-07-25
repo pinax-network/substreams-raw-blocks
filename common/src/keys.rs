@@ -12,9 +12,9 @@ pub fn block_keys(clock: &Clock) -> HashMap<String, String> {
     let block_date = block_time_to_date(block_time.as_str()).to_string();
 
     HashMap::from([
+        ("block_date".to_string(), block_date),
         ("block_time".to_string(), block_time),
         ("block_number".to_string(), block_number),
-        ("block_hash".to_string(), block_hash),
-        ("block_date".to_string(), block_date)
+        ("block_hash".to_string(), block_hash)
     ])
 }

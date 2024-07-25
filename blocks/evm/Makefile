@@ -29,6 +29,14 @@ run:
 gui:
 	substreams gui -e eth.substreams.pinax.network:443 ch_out -s 20000000 -t 20000010
 
+.PHONY: sql-setup
+sql-setup:
+	substreams-sink-sql setup clickhouse://default:default@localhost:9000/default substreams.yaml
+
+.PHONY: sql-run
+sql-run:
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/default substreams.yaml -e eth.substreams.pinax.network:443 1:10000 --final-blocks-only --undo-buffer-size 1000 --plaintext
+
 .PHONY: deploy
 deploy:
 	graph build
