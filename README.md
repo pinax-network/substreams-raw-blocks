@@ -107,3 +107,21 @@ graph TD;
   sf.substreams.v1.Clock[source: sf.substreams.v1.Clock] --> graph_out;
   sf.ethereum.type.v2.Block[source: sf.ethereum.type.v2.Block] --> graph_out;
 ```
+
+## Export to Parquet & CSV
+
+```sql
+SELECT *
+FROM blocks
+WHERE date='2015-07-31'
+INTO OUTFILE 'eth_2015-07-31_blocks.parquet'
+FORMAT Parquet
+```
+
+```sql
+SELECT *
+FROM blocks
+WHERE date='2015-07-31'
+INTO OUTFILE 'eth_2015-07-31_blocks.csv'
+FORMAT CSVWithNames
+```

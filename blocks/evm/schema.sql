@@ -14,9 +14,9 @@ CREATE TABLE IF NOT EXISTS cursors
 
 CREATE TABLE IF NOT EXISTS blocks
 (
-    time                    DateTime,
+    time                    DateTime('UTC'),
     number                  UInt64,
-    date                    Date,
+    date                    LowCardinality(String), -- Date
     hash                    String,
     parent_hash             String,
     nonce                   UInt64,
@@ -46,10 +46,10 @@ CREATE TABLE IF NOT EXISTS blocks
 
 CREATE TABLE IF NOT EXISTS logs
 (
-    block_time          DateTime,
+    block_time          DateTime('UTC'),
     block_number        UInt64,
     block_hash          String,
-    block_date          Date,
+    block_date          LowCardinality(String), -- Date
     contract_address    String,
     topic0              String,
     topic1              String,
