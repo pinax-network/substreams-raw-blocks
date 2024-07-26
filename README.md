@@ -15,11 +15,17 @@
   - [ ] Solana
   - [ ] Near
   - [ ] Cosmos Hub
+  - [ ] StartNet
+  - [ ] Aptos
+  - [ ] SUI
+  - [ ] TON
 - **EVM**
   - [x] Ethereum
   - [x] Arbitrum
   - [x] BNB
   - [x] Polygon
+  - [ ] Fantom
+  - [ ] zkSync
   - [ ] [Gravity](https://gravity.xyz/)
   - [ ] [Avalanche-C](https://avax.network/)
   - [ ] [SEI](https://www.sei.io/)
