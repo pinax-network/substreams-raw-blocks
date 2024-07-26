@@ -2,15 +2,34 @@
 
 ## Supported Networks
 
-- [x] EVM
+- **no-EVM**
+  - [ ] Bitcoin
+  - [ ] Solana
+  - [ ] Near
+- **EVM**
   - [x] Ethereum
   - [x] Arbitrum
   - [x] BNB
-  - [x] Optimism (OP)
-  - [x] Avalanche-C
   - [x] Polygon
-- [ ] Bitcoin
-- [ ] Solana
+  - [ ] Gravity
+  - [ ] Avalanche-C
+- **Optimistic Rollup (EVM)**
+  - [ ] Optimism (OP)
+  - [ ] opBNB
+  - [ ] Blast
+  - [ ] Base
+  - [ ] Mode
+  - [ ] Zora
+  - [ ] Boba
+  - [ ] BobaBNB
+- **Polygon's Validium**
+  - [ ] X Layer
+- **Polkadot's Parachain**
+  - [ ] Moonbeam
+- **Tezos Smart Rollups**
+  - [ ] Etherlink
+- **ZK Rollup (EVM)**
+  - [ ] Fuse
 
 ## Raw Data
 
