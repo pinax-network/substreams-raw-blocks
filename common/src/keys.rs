@@ -6,10 +6,10 @@ use crate::utils::block_time_to_date;
 
 pub fn block_keys(clock: &Clock) -> HashMap<String, String> {
     let timestamp = clock.clone().timestamp.unwrap();
-    let block_time = timestamp.to_string();
+    let block_date = block_time_to_date(&timestamp.to_string()).to_string();
+    let block_time = timestamp.seconds.to_string();
     let block_number = clock.number.to_string();
     let block_hash = format!("0x{}", clock.id);
-    let block_date = block_time_to_date(block_time.as_str()).to_string();
 
     HashMap::from([
         ("block_date".to_string(), block_date),

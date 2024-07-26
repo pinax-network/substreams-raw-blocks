@@ -6,6 +6,7 @@ use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_ethereum::pb::eth::v2::Block;
 
+// https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L512
 pub fn insert_logs(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
     // logs
     for log in block.logs() {

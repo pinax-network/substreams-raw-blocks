@@ -5,6 +5,7 @@ use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_ethereum::pb::eth::v2::Block;
 
+// https://github.com/streamingfast/firehose-ethereum/blob/develop/proto/sf/ethereum/type/v2/type.proto
 pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
     let header = block.clone().header.unwrap();
     let parent_hash = bytes_to_hex(header.parent_hash);
@@ -58,22 +59,24 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
     // optional fields
     match header.difficulty {
         Some(difficulty) => row.change("difficulty", ("", difficulty.with_decimal(0).to_string().as_str())),
-        None => row,
+        None => row.change("difficulty", ("", "0")), // Nullable
     };
+
     match header.total_difficulty {
         Some(total_difficulty) => row.change("total_difficulty", ("", total_difficulty.with_decimal(0).to_string().as_str())),
-        None => row,
+        None => row.change("total_difficulty", ("", "0")), // Nullable
     };
+
     match header.blob_gas_used {
         Some(blob_gas_used) => row.change("blob_gas_used", ("", blob_gas_used.to_string().as_str())),
-        None => row,
+        None => row.change("blob_gas_used", ("", "0")), // Nullable
     };
     match header.base_fee_per_gas {
         Some(base_fee_per_gas) => row.change("base_fee_per_gas", ("", base_fee_per_gas.with_decimal(0).to_string().as_str())),
-        None => row,
+        None => row.change("base_fee_per_gas", ("", "0")), // Nullable
     };
     match header.parent_beacon_root.len() {
-        0 => row,
+        0 => row.change("parent_beacon_root", ("", "0")), // Nullable,
         _ => row.change("parent_beacon_root", ("", bytes_to_hex(header.parent_beacon_root).as_str())),
     };
 }

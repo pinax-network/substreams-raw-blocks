@@ -26,19 +26,19 @@ CREATE TABLE IF NOT EXISTS blocks
     state_root              String,
     receipts_root           String,
     miner                   String,
-    difficulty              Int64,
-    total_difficulty        Int128,
+    difficulty              Int64, -- Nullable
+    total_difficulty        Int64, -- Nullable
     size                    String,
     mix_hash                String,
     extra_data              String,
     gas_limit               UInt64,
     gas_used                UInt64,
-    blob_gas_used           UInt64,
+    blob_gas_used           UInt64, -- Nullable
     total_transactions      UInt64,
     successful_transactions UInt64,
     failed_transactions     UInt64,
-    base_fee_per_gas        String,
-    parent_beacon_root      String
+    base_fee_per_gas        String, -- Nullable
+    parent_beacon_root      String  -- Nullable
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (date, time, number, hash)
