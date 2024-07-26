@@ -1,18 +1,33 @@
 # Substreams Raw Blocks
 
+## Raw Data
+
+- [x] Blocks
+- [x] Logs
+- [ ] Transactions
+- [ ] Traces
+  - [ ] Creation Traces
+
 ## Supported Networks
 
 - **no-EVM**
   - [ ] Bitcoin
   - [ ] Solana
   - [ ] Near
+  - [ ] Cosmos Hub
 - **EVM**
   - [x] Ethereum
   - [x] Arbitrum
   - [x] BNB
   - [x] Polygon
-  - [ ] Gravity
-  - [ ] Avalanche-C
+  - [ ] [Gravity](https://gravity.xyz/)
+  - [ ] [Avalanche-C](https://avax.network/)
+  - [ ] [SEI](https://www.sei.io/)
+  - [ ] [Harmony](https://www.harmony.one/)
+  - [ ] [Aurora](https://aurora.dev/) (L2 on NEAR protocol)
+  - [ ] [Injective](https://injective.com/) (L2 on Cosmos)
+  - [ ] [Rootstock](https://rootstock.io/) (L2 on Bitcoin)
+  - [ ] [IoTex](https://iotex.io/)
 - **Optimistic Rollup (EVM)**
   - [ ] Optimism (OP)
   - [ ] opBNB
@@ -22,22 +37,21 @@
   - [ ] Zora
   - [ ] Boba
   - [ ] BobaBNB
+- **Cosmos ecosystem**
+  - [ ] Osmosis (L1)
 - **Polygon's Validium**
   - [ ] X Layer
+- **ZK Rollup (EVM)**
+  - [ ] Scroll
+  - [ ] Linea
+  - [ ] Fuse
+  - [ ] [Astar zkEVM](https://astar.network/) (L2)
 - **Polkadot's Parachain**
   - [ ] Moonbeam
+  - [ ] Moonriver
+  - [ ] [Astar](https://astar.network/) (L1)
 - **Tezos Smart Rollups**
   - [ ] Etherlink
-- **ZK Rollup (EVM)**
-  - [ ] Fuse
-
-## Raw Data
-
-- [x] Blocks
-- [x] Logs
-- [ ] Transactions
-- [ ] Traces
-  - [ ] Creation Traces
 
 ## SQL
 
