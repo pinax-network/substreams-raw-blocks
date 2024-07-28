@@ -14,7 +14,7 @@
 - [ ] **Traces**
   - [ ] **Creation Traces**
 - [ ] **Beacon**
-- [ ] **BalanceChanges**
+- [x] **BalanceChanges**
 
 ## Supported Networks
 
@@ -107,11 +107,11 @@ CREATE TABLE IF NOT EXISTS blocks
 - Snowflake
 - BigQuery
 - Databricks
-  https://docs.databricks.com/en/connect/storage/amazon-s3.html
+  <https://docs.databricks.com/en/connect/storage/amazon-s3.html>
 - Clickhouse
 - Postgres
 - Amazon Redshift
-  https://aws.amazon.com/redshift/
+  <https://aws.amazon.com/redshift/>
 
 ## Graph
 

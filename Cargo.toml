@@ -1,9 +1,5 @@
 [workspace]
-members = [
-    "blocks/evm",
-    "common"
-]
-
+members = ["blocks/evm", "common"]
 resolver = "2"
 
 [workspace.package]

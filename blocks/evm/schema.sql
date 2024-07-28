@@ -69,3 +69,20 @@ CREATE TABLE IF NOT EXISTS logs
         PRIMARY KEY (block_date, block_time, block_number, log_index, tx_hash)
         ORDER BY (block_date, block_time, block_number, log_index, tx_hash)
         COMMENT 'Ethereum event logs';
+
+CREATE TABLE IF NOT EXISTS balance_changes
+(
+    block_time          DateTime('UTC'),
+    block_number        UInt64,
+    block_hash          String,
+    block_date          LowCardinality(String),
+    address             String,
+    new_value           String,
+    old_value           String,
+    ordinal             UInt64,
+    reason              Int32
+)
+    ENGINE = ReplacingMergeTree()
+        PRIMARY KEY (block_date, block_time, block_number, log_index, tx_hash)
+        ORDER BY (block_date, block_time, block_number, log_index, tx_hash)
+        COMMENT 'Ethereum balance changes';

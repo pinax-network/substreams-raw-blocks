@@ -27,7 +27,7 @@ run:
 
 .PHONY: gui
 gui:
-	substreams gui -e eth.substreams.pinax.network:443 ch_out -s 1500000
+	substreams gui -e eth.substreams.pinax.network:443 ch_out -s 15000000
 
 .PHONY: sql-setup
 sql-setup:

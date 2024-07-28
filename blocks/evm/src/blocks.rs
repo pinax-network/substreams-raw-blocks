@@ -1,6 +1,6 @@
-use common::{keys::blocks_keys, utils::optional_bigint_to_string};
-use common::utils::{bytes_to_hex, optional_uint64_to_string};
 use common::sinks::insert_timestamp;
+use common::utils::{bytes_to_hex, optional_uint64_to_string};
+use common::{keys::blocks_keys, utils::optional_bigint_to_string};
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_ethereum::pb::eth::v2::Block;
@@ -24,6 +24,12 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
     let withdrawals_root = bytes_to_hex(header.withdrawals_root);
     let parent_beacon_root = bytes_to_hex(header.parent_beacon_root);
 
+    let difficulty = optional_bigint_to_string(header.difficulty);
+    let total_difficulty = optional_bigint_to_string(header.total_difficulty);
+    let base_fee_per_gas = optional_bigint_to_string(header.base_fee_per_gas);
+    let excess_blob_gas = header.excess_blob_gas.unwrap_or_default().to_string();
+    let blob_gas_used = header.blob_gas_used.unwrap_or_default().to_string();
+
     // blocks
     let keys = blocks_keys(&clock);
     let row = tables
@@ -41,20 +47,16 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
         .change("extra_data", ("", extra_data.as_str()))
         .change("gas_limit", ("", gas_limit.as_str()))
         .change("gas_used", ("", gas_used.as_str()))
-        .change("difficulty", ("", optional_bigint_to_string(header.difficulty).as_str()))
-        .change("total_difficulty", ("", optional_bigint_to_string(header.total_difficulty).as_str()))
-
+        .change("difficulty", ("", difficulty.as_str()))
+        .change("total_difficulty", ("", total_difficulty.as_str()))
         // EIP-1559 (London Fork)
-        .change("base_fee_per_gas", ("", optional_bigint_to_string(header.base_fee_per_gas).as_str()))
-
+        .change("base_fee_per_gas", ("", base_fee_per_gas.as_str()))
         // EIP-4895 (Shangai Fork)
         .change("withdrawals_root", ("", withdrawals_root.as_str()))
-
         // EIP-4844 & EIP-4788 (Dencun Fork)
         .change("parent_beacon_root", ("", parent_beacon_root.as_str()))
-        .change("excess_blob_gas", ("", optional_uint64_to_string(header.excess_blob_gas).as_str()))
-        .change("blob_gas_used", ("", optional_uint64_to_string(header.blob_gas_used).as_str()))
-    ;
+        .change("excess_blob_gas", ("", excess_blob_gas.as_str()))
+        .change("blob_gas_used", ("", blob_gas_used.as_str()));
 
     insert_timestamp(row, clock, true);
 
@@ -73,5 +75,4 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
     row.change("total_transactions", ("", total_transactions.to_string().as_str()))
         .change("successful_transactions", ("", successful_transactions.to_string().as_str()))
         .change("failed_transactions", ("", failed_transactions.to_string().as_str()));
-
 }

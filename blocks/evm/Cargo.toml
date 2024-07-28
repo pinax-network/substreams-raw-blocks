@@ -1,7 +1,7 @@
 [package]
 name = "raw_blocks_evm"
-edition.workspace = true
-version.workspace = true
+edition = { workspace = true }
+version = { workspace = true }
 
 [lib]
 crate-type = ["cdylib"]
