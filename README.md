@@ -2,11 +2,19 @@
 
 ## Raw Data
 
-- [x] Blocks
-- [x] Logs
-- [ ] Transactions
-- [ ] Traces
-  - [ ] Creation Traces
+- [x] **Blocks**
+  - [ ] `block_rewards`
+    - [ ] `static_block_reward`
+    - [ ] `transaction_fees`
+    - [ ] `burnt_fees`
+  - [ ] `processed_beacon_chain_withdrawals`
+  - [ ] `contract_internal_transactions`
+- [x] **Logs**
+- [ ] **Transactions**
+- [ ] **Traces**
+  - [ ] **Creation Traces**
+- [ ] **Beacon**
+- [ ] **BalanceChanges**
 
 ## Supported Networks
 

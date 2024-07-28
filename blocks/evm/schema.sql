@@ -25,6 +25,8 @@ CREATE TABLE IF NOT EXISTS blocks
     transactions_root       String,
     state_root              String,
     receipts_root           String,
+    withdrawals_root        String DEFAULT '' COMMENT 'EIP-4895 (Shangai Fork)',
+    parent_beacon_root      String DEFAULT '' COMMENT 'EIP-4788 (Dencun Fork)',
     miner                   String,
     difficulty              Int64 DEFAULT 0,
     total_difficulty        Int128 DEFAULT 0,
@@ -33,16 +35,17 @@ CREATE TABLE IF NOT EXISTS blocks
     extra_data              String,
     gas_limit               UInt64,
     gas_used                UInt64,
-    blob_gas_used           UInt64 DEFAULT 0,
+    base_fee_per_gas        Int64 DEFAULT 0 COMMENT 'EIP-1559 (London Fork)',
+    blob_gas_used           UInt64 DEFAULT 0 COMMENT 'EIP-4844 (Dencun Fork)',
+    excess_blob_gas         UInt64 DEFAULT 0 COMMENT 'EIP-4844 (Dencun Fork)',
     total_transactions      UInt64,
     successful_transactions UInt64,
-    failed_transactions     UInt64,
-    base_fee_per_gas        Int64 DEFAULT 0,
-    parent_beacon_root      String DEFAULT ''
+    failed_transactions     UInt64
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (date, time, number, hash)
-        ORDER BY (date, time, number, hash);
+        ORDER BY (date, time, number, hash)
+        COMMENT 'Ethereum block header';
 
 CREATE TABLE IF NOT EXISTS logs
 (
@@ -64,4 +67,5 @@ CREATE TABLE IF NOT EXISTS logs
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_time, block_number, log_index, tx_hash)
-        ORDER BY (block_date, block_time, block_number, log_index, tx_hash);
+        ORDER BY (block_date, block_time, block_number, log_index, tx_hash)
+        COMMENT 'Ethereum event logs';
