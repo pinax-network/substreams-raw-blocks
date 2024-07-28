@@ -1,6 +1,6 @@
-use common::keys::balance_changes_keys;
 use common::sinks::insert_timestamp;
 use common::utils::bytes_to_hex;
+use common::{keys::balance_changes_keys, utils::optional_bigint_to_string};
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_ethereum::pb::eth::v2::Block;

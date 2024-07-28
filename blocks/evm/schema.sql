@@ -83,6 +83,6 @@ CREATE TABLE IF NOT EXISTS balance_changes
     reason              Int32
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, block_time, block_number, log_index, tx_hash)
-        ORDER BY (block_date, block_time, block_number, log_index, tx_hash)
+        PRIMARY KEY (block_date, block_time, block_number, ordinal)
+        ORDER BY (block_date, block_time, block_number, ordinal)
         COMMENT 'Ethereum balance changes';
