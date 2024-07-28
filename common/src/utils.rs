@@ -1,4 +1,5 @@
 use substreams::Hex;
+use substreams_ethereum::pb::eth::v2::BigInt;
 
 // Timestamp to date conversion
 // ex: 2015-07-30T16:02:18Z => 2015-07-30
@@ -10,7 +11,25 @@ pub fn block_time_to_date(block_time: &str) -> String {
 }
 
 pub fn bytes_to_hex(bytes: Vec<u8>) -> String {
-    format!{"0x{}", Hex::encode(bytes)}.to_string()
+    if bytes.is_empty() {
+        return "".to_string();
+    } else {
+        format!{"0x{}", Hex::encode(bytes)}.to_string()
+    }
+}
+
+pub fn optional_bigint_to_string(value: Option<BigInt>) -> String {
+    match value {
+        Some(bigint) => bigint.with_decimal(0).to_string(),
+        None => "0".to_string(),
+    }
+}
+
+pub fn optional_uint64_to_string(value: Option<u64>) -> String {
+    match value {
+        Some(int) => int.to_string(),
+        None => "0".to_string(),
+    }
 }
 
 pub fn extract_topic(topics: &Vec<Vec<u8>>, index: usize) -> String {

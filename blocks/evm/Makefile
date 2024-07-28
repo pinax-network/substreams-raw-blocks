@@ -23,11 +23,11 @@ info:
 
 .PHONY: run
 run:
-	substreams run -e eth.substreams.pinax.network:443 ch_out -s 6912 -t 13775 -o jsonl
+	substreams run -e eth.substreams.pinax.network:443 ch_out -s 1500000 -t 1500001 -o json
 
 .PHONY: gui
 gui:
-	substreams gui -e eth.substreams.pinax.network:443 ch_out -s 46647
+	substreams gui -e eth.substreams.pinax.network:443 ch_out -s 1500000
 
 .PHONY: sql-setup
 sql-setup:
@@ -35,7 +35,7 @@ sql-setup:
 
 .PHONY: sql-run
 sql-run:
-	substreams-sink-sql run clickhouse://default:default@localhost:9000/default substreams.yaml -e eth.substreams.pinax.network:443 1:100000 --final-blocks-only --undo-buffer-size 100 --on-module-hash-mistmatch=warn --batch-block-flush-interval 10
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/default substreams.yaml -e eth.substreams.pinax.network:443 20000000: --final-blocks-only --undo-buffer-size 100 --on-module-hash-mistmatch=warn --batch-block-flush-interval 10
 
 .PHONY: deploy
 deploy:

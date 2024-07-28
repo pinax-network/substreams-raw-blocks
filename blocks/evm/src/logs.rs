@@ -1,5 +1,4 @@
-use std::collections::HashMap;
-
+use common::keys::logs_keys;
 use common::utils::{bytes_to_hex, extract_topic};
 use common::sinks::insert_timestamp;
 use substreams::pb::substreams::Clock;
@@ -24,11 +23,7 @@ pub fn insert_logs(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
         let topic3 = extract_topic(topics, 3);
         let data = bytes_to_hex(log.data().to_vec());
 
-        let keys = HashMap::from([
-            ("contract_address".to_string(), contract_address.to_string()),
-            ("tx_hash".to_string(), tx_hash.to_string()),
-            ("log_index".to_string(), log_index.to_string()),
-        ]);
+        let keys = logs_keys(&clock, &log_index, &tx_hash);
         let row = tables
             .push_change_composite("logs", keys, 0, table_change::Operation::Create)
             .change("contract_address", ("", contract_address.as_str()))
@@ -37,12 +32,12 @@ pub fn insert_logs(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
             .change("topic2", ("", topic2.as_str()))
             .change("topic3", ("", topic3.as_str()))
             .change("data", ("", data.as_str()))
+            .change("log_index", ("", log_index.as_str()))
             .change("tx_hash", ("", tx_hash.as_str()))
-            .change("index", ("", log_index.as_str()))
             .change("tx_index", ("", tx_index.as_str()))
             .change("tx_from", ("", tx_from.as_str()))
             .change("tx_to", ("", tx_to.as_str()));
 
-        insert_timestamp(row, clock, true);
+        insert_timestamp(row, clock, false);
     }
 }

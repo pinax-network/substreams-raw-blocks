@@ -1,5 +1,5 @@
-use common::keys::block_keys;
-use common::utils::bytes_to_hex;
+use common::{keys::blocks_keys, utils::optional_bigint_to_string};
+use common::utils::{bytes_to_hex, optional_uint64_to_string};
 use common::sinks::insert_timestamp;
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
@@ -23,8 +23,9 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
     let gas_used = header.gas_used.to_string();
 
     // blocks
+    let keys = blocks_keys(&clock);
     let row = tables
-        .push_change_composite("blocks", block_keys(&clock), 0, table_change::Operation::Create)
+        .push_change_composite("blocks", keys, 0, table_change::Operation::Create)
         .change("parent_hash", ("", parent_hash.as_str()))
         .change("nonce", ("", nonce.as_str()))
         .change("ommers_hash", ("", ommers_hash.as_str()))
@@ -37,10 +38,19 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
         .change("mix_hash", ("", mix_hash.as_str()))
         .change("extra_data", ("", extra_data.as_str()))
         .change("gas_limit", ("", gas_limit.as_str()))
-        .change("gas_used", ("", gas_used.as_str()));
+        .change("gas_used", ("", gas_used.as_str()))
+
+        // optional fields
+        .change("parent_beacon_root", ("", bytes_to_hex(header.parent_beacon_root).as_str()))
+        .change("blob_gas_used", ("", optional_uint64_to_string(header.blob_gas_used).as_str()))
+        .change("difficulty", ("", optional_bigint_to_string(header.difficulty).as_str()))
+        .change("total_difficulty", ("", optional_bigint_to_string(header.total_difficulty).as_str()))
+        .change("base_fee_per_gas", ("", optional_bigint_to_string(header.base_fee_per_gas).as_str()))
+    ;
 
     insert_timestamp(row, clock, true);
 
+    // transaction counts
     let mut total_transactions = 0;
     let mut successful_transactions = 0;
     let mut failed_transactions = 0;
@@ -56,27 +66,4 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
         .change("successful_transactions", ("", successful_transactions.to_string().as_str()))
         .change("failed_transactions", ("", failed_transactions.to_string().as_str()));
 
-    // optional fields
-    match header.difficulty {
-        Some(difficulty) => row.change("difficulty", ("", difficulty.with_decimal(0).to_string().as_str())),
-        None => row.change("difficulty", ("", "0")), // Nullable
-    };
-
-    match header.total_difficulty {
-        Some(total_difficulty) => row.change("total_difficulty", ("", total_difficulty.with_decimal(0).to_string().as_str())),
-        None => row.change("total_difficulty", ("", "0")), // Nullable
-    };
-
-    match header.blob_gas_used {
-        Some(blob_gas_used) => row.change("blob_gas_used", ("", blob_gas_used.to_string().as_str())),
-        None => row.change("blob_gas_used", ("", "0")), // Nullable
-    };
-    match header.base_fee_per_gas {
-        Some(base_fee_per_gas) => row.change("base_fee_per_gas", ("", base_fee_per_gas.with_decimal(0).to_string().as_str())),
-        None => row.change("base_fee_per_gas", ("", "0")), // Nullable
-    };
-    match header.parent_beacon_root.len() {
-        0 => row.change("parent_beacon_root", ("", "0")), // Nullable,
-        _ => row.change("parent_beacon_root", ("", bytes_to_hex(header.parent_beacon_root).as_str())),
-    };
 }

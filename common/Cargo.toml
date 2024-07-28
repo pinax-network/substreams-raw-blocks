@@ -4,5 +4,6 @@ edition.workspace = true
 version.workspace = true
 
 [dependencies]
-substreams.workspace = true
-substreams-database-change.workspace = true
+substreams = { workspace = true }
+substreams-database-change = { workspace = true }
+substreams-ethereum = { workspace = true }
