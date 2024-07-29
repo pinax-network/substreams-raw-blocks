@@ -1,5 +1,5 @@
 use common::sinks::insert_timestamp;
-use common::utils::{bytes_to_hex, optional_uint64_to_string};
+use common::utils::bytes_to_hex;
 use common::{keys::blocks_keys, utils::optional_bigint_to_string};
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};

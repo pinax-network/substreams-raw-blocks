@@ -9,12 +9,15 @@
     - [ ] `burnt_fees`
   - [ ] `processed_beacon_chain_withdrawals`
   - [ ] `contract_internal_transactions`
+  - [x] **BalanceChanges**
 - [x] **Logs**
 - [ ] **Transactions**
 - [ ] **Traces**
+  - [ ] **BalanceChanges**
   - [ ] **Creation Traces**
+  - [ ] **Storage Changes**
+  - [ ] **Code Changes**
 - [ ] **Beacon**
-- [x] **BalanceChanges**
 
 ## Supported Networks
 

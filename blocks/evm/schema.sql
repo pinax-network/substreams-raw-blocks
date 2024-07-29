@@ -77,10 +77,11 @@ CREATE TABLE IF NOT EXISTS balance_changes
     block_hash          String,
     block_date          LowCardinality(String),
     address             String,
-    new_value           String,
-    old_value           String,
+    new_value           UInt256,
+    old_value           UInt256,
     ordinal             UInt64,
-    reason              Int32
+    reason              LowCardinality(String),
+    reason_code         Int32,
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_time, block_number, ordinal)
