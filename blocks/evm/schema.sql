@@ -87,3 +87,47 @@ CREATE TABLE IF NOT EXISTS balance_changes
         PRIMARY KEY (block_date, block_time, block_number, ordinal)
         ORDER BY (block_date, block_time, block_number, ordinal)
         COMMENT 'Ethereum balance changes';
+
+CREATE TABLE IF NOT EXISTS traces
+(
+    -- block --
+    block_time          DateTime('UTC'),
+    block_number        UInt64,
+    block_hash          String,
+    block_date          Date,
+
+    -- transaction --
+    tx_hash             String,
+    tx_index            UInt32,
+    tx_status           LowCardinality(String),
+    tx_status_code      Int32,
+    tx_is_successful    Bool,
+    from                String,
+    to                  String,
+
+    -- trace --
+    index               UInt32,
+    parent_index        UInt32,
+    depth               UInt32,
+    caller              String,
+    call_type           LowCardinality(String),
+    call_type_code      Int32,
+    address             String,
+    value               UInt256,
+    gas_limit           UInt64,
+    gas_consumed        UInt64,
+    return_data         String,
+    input               String,
+    suicide             Bool,
+    failure_reason      LowCardinality(String),
+    state_reverted      Bool,
+    status_reverted     Bool,
+    status_failed       Bool,
+    executed_code       Bool,
+    begin_ordinal       UInt64,
+    end_ordinal         UInt64
+)
+    ENGINE = ReplacingMergeTree()
+        PRIMARY KEY (block_date, block_time, block_number, tx_hash, tx_index, index)
+        ORDER BY (block_date, block_time, block_number, tx_hash, tx_index, index)
+        COMMENT 'Ethereum traces';
