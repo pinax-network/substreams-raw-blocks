@@ -59,15 +59,15 @@ CREATE TABLE IF NOT EXISTS logs
     topic2              String DEFAULT '',
     topic3              String DEFAULT '',
     data                String,
-    log_index           UInt32,
+    `index`             UInt32,
     tx_hash             String,
     tx_index            UInt32,
     tx_from             String,
     tx_to               String
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, block_time, block_number, tx_hash, log_index)
-        ORDER BY (block_date, block_time, block_number, tx_hash, log_index)
+        PRIMARY KEY (block_date, block_time, block_number, tx_hash, `index`)
+        ORDER BY (block_date, block_time, block_number, tx_hash, `index`)
         COMMENT 'Ethereum event logs';
 
 CREATE TABLE IF NOT EXISTS balance_changes
@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS traces
     to                          String,
 
     -- trace --
-    index                       UInt32,
+    `index`                     UInt32,
     parent_index                UInt32,
     depth                       UInt32,
     caller                      String,
@@ -128,8 +128,8 @@ CREATE TABLE IF NOT EXISTS traces
     end_ordinal                 UInt64
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, block_time, block_number, tx_hash, tx_index, index)
-        ORDER BY (block_date, block_time, block_number, tx_hash, tx_index, index)
+        PRIMARY KEY (block_date, block_time, block_number, tx_hash, tx_index, `index`)
+        ORDER BY (block_date, block_time, block_number, tx_hash, tx_index, `index`)
         COMMENT 'Ethereum traces';
 
 
@@ -142,7 +142,7 @@ CREATE TABLE IF NOT EXISTS transactions
     block_date                  Date,
 
     -- transaction --
-    index                       UInt32,
+    `index`                     UInt32,
     hash                        String,
     from                        String,
     to                          String,
@@ -168,6 +168,6 @@ CREATE TABLE IF NOT EXISTS transactions
     end_ordinal                 UInt64
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, block_time, block_number, tx_hash, tx_index, index)
-        ORDER BY (block_date, block_time, block_number, tx_hash, tx_index, index)
+        PRIMARY KEY (block_date, block_time, block_number, hash)
+        ORDER BY (block_date, block_time, block_number, hash)
         COMMENT 'Ethereum transactions';

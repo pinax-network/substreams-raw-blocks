@@ -7,7 +7,7 @@ use substreams_ethereum::pb::eth::v2::{Log, TransactionTrace};
 
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L512
 pub fn insert_log(tables: &mut DatabaseChanges, clock: &Clock, log: &Log, transaction: &TransactionTrace) {
-    let log_index = log.index.to_string();
+    let index = log.index.to_string();
     let tx_hash = bytes_to_hex(transaction.hash.to_vec());
     let tx_index = transaction.index.to_string();
     let tx_from = bytes_to_hex(transaction.from.to_vec());
@@ -20,7 +20,7 @@ pub fn insert_log(tables: &mut DatabaseChanges, clock: &Clock, log: &Log, transa
     let topic3 = extract_topic(&topics, 3);
     let data = bytes_to_hex(log.data.to_vec());
 
-    let keys = logs_keys(&clock, &log_index, &tx_hash);
+    let keys = logs_keys(&clock, &index, &tx_hash);
     let row = tables
         .push_change_composite("logs", keys, 0, table_change::Operation::Create)
         .change("contract_address", ("", contract_address.as_str()))
@@ -29,7 +29,7 @@ pub fn insert_log(tables: &mut DatabaseChanges, clock: &Clock, log: &Log, transa
         .change("topic2", ("", topic2.as_str()))
         .change("topic3", ("", topic3.as_str()))
         .change("data", ("", data.as_str()))
-        .change("log_index", ("", log_index.as_str()))
+        .change("index", ("", index.as_str()))
         .change("tx_hash", ("", tx_hash.as_str()))
         .change("tx_index", ("", tx_index.as_str()))
         .change("tx_from", ("", tx_from.as_str()))
