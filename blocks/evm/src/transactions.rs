@@ -5,15 +5,13 @@ use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_ethereum::pb::eth::v2::Block;
 
+use crate::logs::insert_log;
 use crate::traces::insert_traces;
 
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L658
 pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
     // transactions
     for transaction in block.transaction_traces.iter() {
-        insert_traces(tables, clock, transaction);
-        // traces
-        for trace in transaction.calls.iter() {}
         // let address = bytes_to_hex(balance_change.address);
         // let new_value = bytes_to_hex(balance_change.new_value.unwrap_or_default().bytes);
         // let old_value = bytes_to_hex(balance_change.old_value.unwrap_or_default().bytes);
@@ -28,6 +26,11 @@ pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &
         //     .change("ordinal", ("", ordinal.as_str()))
         //     .change("reason", ("", reason.as_str()));
 
-        insert_timestamp(row, clock, false);
+        // insert_timestamp(row, clock, false);
+
+        for (log, call) in transaction.logs_with_calls() {
+            insert_log(tables, clock, log, &transaction);
+            insert_traces(tables, clock, &call);
+        }
     }
 }

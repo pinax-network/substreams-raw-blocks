@@ -3,4 +3,4 @@ mod blocks;
 mod logs;
 mod sinks;
 mod traces;
-// mod transactions;
+mod transactions;
