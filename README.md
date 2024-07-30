@@ -11,8 +11,8 @@
   - [ ] `contract_internal_transactions`
   - [x] **BalanceChanges**
 - [x] **Logs**
-- [ ] **Transactions**
-- [ ] **Traces**
+- [x] **Transactions**
+- [x] **Traces**
   - [ ] **BalanceChanges**
   - [ ] **Creation Traces**
   - [ ] **Storage Changes**

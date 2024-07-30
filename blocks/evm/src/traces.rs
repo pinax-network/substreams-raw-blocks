@@ -7,17 +7,9 @@ use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_ethereum::block_view::CallView;
 
-fn trace_status_to_string(status: i32) -> String {
-    match status {
-        0 => "Unknown".to_string(),
-        1 => "Succeeded".to_string(),
-        2 => "Failed".to_string(),
-        3 => "Reverted".to_string(),
-        _ => "Unknown".to_string(),
-    }
-}
+use crate::transactions::{is_transaction_success, transaction_status_to_string};
 
-fn call_types_to_string(call_type: i32) -> String {
+pub fn call_types_to_string(call_type: i32) -> String {
     match call_type {
         0 => "Unspecified".to_string(),
         1 => "Call".to_string(),
@@ -30,15 +22,15 @@ fn call_types_to_string(call_type: i32) -> String {
 }
 
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L546
-pub fn insert_traces(tables: &mut DatabaseChanges, clock: &Clock, call: &CallView) {
+pub fn insert_trace(tables: &mut DatabaseChanges, clock: &Clock, call: &CallView) {
     let transaction = call.transaction;
     let tx_index = transaction.index.to_string();
     let tx_hash = bytes_to_hex(transaction.hash.clone());
     let from = bytes_to_hex(transaction.from.clone()); // does trace contain `from`?
     let to = bytes_to_hex(transaction.to.clone()); // does trace contain `to`?
-    let tx_status = trace_status_to_string(transaction.status);
+    let tx_status = transaction_status_to_string(transaction.status);
     let tx_status_code = transaction.status.to_string();
-    let tx_is_successful = (transaction.status == 1).to_string();
+    let tx_success = is_transaction_success(transaction.status).to_string();
 
     // traces
     for trace in transaction.calls.iter() {
@@ -76,7 +68,7 @@ pub fn insert_traces(tables: &mut DatabaseChanges, clock: &Clock, call: &CallVie
             .change("to", ("", to.as_str()))
             .change("tx_status", ("", tx_status.as_str()))
             .change("tx_status_code", ("", tx_status_code.as_str()))
-            .change("tx_is_successful", ("", tx_is_successful.as_str()))
+            .change("tx_success", ("", tx_success.as_str()))
             // trace
             .change("address", ("", address.as_str()))
             .change("begin_ordinal", ("", begin_ordinal.as_str()))
