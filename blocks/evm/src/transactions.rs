@@ -70,7 +70,7 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
 
     let keys = transaction_keys(&clock, &hash);
     let row = tables
-        .push_change_composite("balance_changes", keys, 0, table_change::Operation::Create)
+        .push_change_composite("transactions", keys, 0, table_change::Operation::Create)
         .change("index", ("", index.as_str()))
         .change("hash", ("", hash.as_str()))
         .change("from", ("", from.as_str()))

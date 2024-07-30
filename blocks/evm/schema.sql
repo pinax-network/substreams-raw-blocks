@@ -49,21 +49,26 @@ CREATE TABLE IF NOT EXISTS blocks
 
 CREATE TABLE IF NOT EXISTS logs
 (
+    -- block --
     block_time          DateTime('UTC'),
     block_number        UInt64,
     block_hash          String,
     block_date          Date,
+
+    -- transaction --
+    tx_hash             String,
+    tx_index            UInt32,
+    tx_from             String,
+    tx_to               String,
+
+    `index`             UInt32,
     contract_address    String,
     topic0              String,
     topic1              String DEFAULT '',
     topic2              String DEFAULT '',
     topic3              String DEFAULT '',
-    data                String,
-    `index`             UInt32,
-    tx_hash             String,
-    tx_index            UInt32,
-    tx_from             String,
-    tx_to               String
+    data                String
+
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_time, block_number, tx_hash, `index`)

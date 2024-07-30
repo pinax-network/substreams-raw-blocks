@@ -20,20 +20,22 @@ pub fn insert_log(tables: &mut DatabaseChanges, clock: &Clock, log: &Log, transa
     let topic3 = extract_topic(&topics, 3);
     let data = bytes_to_hex(log.data.to_vec());
 
-    let keys = logs_keys(&clock, &index, &tx_hash);
+    let keys = logs_keys(&clock, &tx_hash, &index);
     let row = tables
         .push_change_composite("logs", keys, 0, table_change::Operation::Create)
+        // transaction
+        .change("tx_hash", ("", tx_hash.as_str()))
+        .change("tx_index", ("", tx_index.as_str()))
+        .change("tx_from", ("", tx_from.as_str()))
+        .change("tx_to", ("", tx_to.as_str()))
+        // trace
         .change("contract_address", ("", contract_address.as_str()))
         .change("topic0", ("", topic0.as_str()))
         .change("topic1", ("", topic1.as_str()))
         .change("topic2", ("", topic2.as_str()))
         .change("topic3", ("", topic3.as_str()))
         .change("data", ("", data.as_str()))
-        .change("index", ("", index.as_str()))
-        .change("tx_hash", ("", tx_hash.as_str()))
-        .change("tx_index", ("", tx_index.as_str()))
-        .change("tx_from", ("", tx_from.as_str()))
-        .change("tx_to", ("", tx_to.as_str()));
+        .change("index", ("", index.as_str()));
 
     insert_timestamp(row, clock, false);
 }

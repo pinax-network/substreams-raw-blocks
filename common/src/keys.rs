@@ -33,7 +33,7 @@ pub fn transaction_keys(clock: &Clock, hash: &String) -> HashMap<String, String>
     ])
 }
 
-pub fn logs_keys(clock: &Clock, index: &String, tx_hash: &String) -> HashMap<String, String> {
+pub fn logs_keys(clock: &Clock, tx_hash: &String, index: &String) -> HashMap<String, String> {
     let timestamp = clock.clone().timestamp.unwrap();
     let block_date = block_time_to_date(&timestamp.to_string()).to_string();
     let block_time = timestamp.seconds.to_string();
