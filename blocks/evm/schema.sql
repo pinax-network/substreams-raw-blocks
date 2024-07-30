@@ -73,7 +73,8 @@ CREATE TABLE IF NOT EXISTS logs
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_time, block_number, tx_hash, `index`)
         ORDER BY (block_date, block_time, block_number, tx_hash, `index`)
-        COMMENT 'Ethereum event logs';
+        COMMENT 'Ethereum event logs'
+        TTL block_time + INTERVAL 30 DAY;
 
 CREATE TABLE IF NOT EXISTS balance_changes
 (
@@ -91,7 +92,8 @@ CREATE TABLE IF NOT EXISTS balance_changes
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_time, block_number, ordinal)
         ORDER BY (block_date, block_time, block_number, ordinal)
-        COMMENT 'Ethereum balance changes';
+        COMMENT 'Ethereum balance changes'
+        TTL block_time + INTERVAL 30 DAY;
 
 CREATE TABLE IF NOT EXISTS traces
 (
@@ -135,7 +137,8 @@ CREATE TABLE IF NOT EXISTS traces
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_time, block_number, tx_hash, tx_index, `index`)
         ORDER BY (block_date, block_time, block_number, tx_hash, tx_index, `index`)
-        COMMENT 'Ethereum traces';
+        COMMENT 'Ethereum traces'
+        TTL block_time + INTERVAL 30 DAY;
 
 
 CREATE TABLE IF NOT EXISTS transactions
@@ -175,4 +178,5 @@ CREATE TABLE IF NOT EXISTS transactions
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_time, block_number, hash)
         ORDER BY (block_date, block_time, block_number, hash)
-        COMMENT 'Ethereum transactions';
+        COMMENT 'Ethereum transactions'
+        TTL block_time + INTERVAL 30 DAY;
