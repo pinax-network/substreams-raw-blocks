@@ -1,5 +1,6 @@
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::TableChange;
+use substreams_ethereum::pb::eth::v2::TransactionTrace;
 
 use crate::utils::block_time_to_date;
 
@@ -15,4 +16,23 @@ pub fn insert_timestamp(row: &mut TableChange, clock: &Clock, is_block: bool) {
         .change(format!("{}time", prefix).as_str(), ("", block_time.as_str()))
         .change(format!("{}number", prefix).as_str(), ("", block_number.as_str()))
         .change(format!("{}hash", prefix).as_str(), ("", block_hash.as_str()));
+}
+
+// TO-DO: rewrite using only `all_transaction_status: &Vec<i32>`
+pub fn insert_transaction_counts(row: &mut TableChange, transaction_traces: &Vec<TransactionTrace>) {
+    // transaction counts
+    let mut total_transactions = 0;
+    let mut successful_transactions = 0;
+    let mut failed_transactions = 0;
+    for traces in transaction_traces.iter() {
+        if traces.status == 1 {
+            successful_transactions += 1;
+        } else {
+            failed_transactions += 1;
+        }
+        total_transactions += 1;
+    }
+    row.change("total_transactions", ("", total_transactions.to_string().as_str()))
+        .change("successful_transactions", ("", successful_transactions.to_string().as_str()))
+        .change("failed_transactions", ("", failed_transactions.to_string().as_str()));
 }

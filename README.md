@@ -56,6 +56,10 @@
   - [ ] BobaBNB
 - **Cosmos ecosystem**
   - [ ] Osmosis (L1)
+  - [ ] DyDx
+  - [ ] Celastia
+  - [ ] Akash
+  - [ ] Nobel
 - **Polygon's Validium**
   - [ ] X Layer
 - **ZK Rollup (EVM)**

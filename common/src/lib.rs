@@ -1,3 +1,3 @@
-pub mod sinks;
-pub mod utils;
+pub mod blocks;
 pub mod keys;
+pub mod utils;

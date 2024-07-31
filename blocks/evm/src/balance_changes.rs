@@ -1,4 +1,4 @@
-use common::sinks::insert_timestamp;
+use common::blocks::insert_timestamp;
 use common::utils::bytes_to_hex;
 use common::{keys::balance_changes_keys, utils::optional_bigint_to_string};
 use substreams::pb::substreams::Clock;
@@ -38,7 +38,7 @@ pub fn insert_balance_change(tables: &mut DatabaseChanges, clock: &Clock, balanc
     let address = bytes_to_hex(balance_change.address.clone());
     let new_value = optional_bigint_to_string(balance_change.new_value.clone());
     let old_value = optional_bigint_to_string(balance_change.old_value.clone());
-    let ordinal = balance_change.ordinal.to_string();
+    let ordinal = balance_change.ordinal;
     let reason_code = balance_change.reason;
     let reason = balance_change_reason_to_string(reason_code);
     let keys = balance_changes_keys(&clock, &ordinal);
@@ -47,7 +47,7 @@ pub fn insert_balance_change(tables: &mut DatabaseChanges, clock: &Clock, balanc
         .change("address", ("", address.as_str()))
         .change("new_value", ("", new_value.as_str()))
         .change("old_value", ("", old_value.as_str()))
-        .change("ordinal", ("", ordinal.as_str()))
+        .change("ordinal", ("", ordinal.to_string().as_str()))
         .change("reason", ("", reason.as_str()))
         .change("reason_code", ("", reason_code.to_string().as_str()));
 

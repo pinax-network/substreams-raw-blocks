@@ -1,5 +1,5 @@
+use common::blocks::insert_timestamp;
 use common::keys::transaction_keys;
-use common::sinks::insert_timestamp;
 use common::utils::bytes_to_hex;
 use common::utils::optional_bigint_to_string;
 use substreams::pb::substreams::Clock;
@@ -43,59 +43,59 @@ pub fn is_transaction_success(status: i32) -> bool {
 
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L658
 pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transaction: &TransactionTrace) {
-    let index = transaction.index.to_string();
+    let index = transaction.index;
     let hash = bytes_to_hex(transaction.hash.clone());
-    let from = bytes_to_hex(transaction.from.clone());
-    let to = bytes_to_hex(transaction.to.clone());
-    let nonce = transaction.nonce.to_string();
+    let from = bytes_to_hex(transaction.from.clone()); // EVM Address
+    let to = bytes_to_hex(transaction.to.clone()); // EVM Address
+    let nonce = transaction.nonce;
     let gas_price = optional_bigint_to_string(transaction.gas_price.clone()); // UInt256
-    let gas_limit = transaction.gas_limit.to_string();
-    let value = optional_bigint_to_string(transaction.value.clone());
+    let gas_limit = transaction.gas_limit;
+    let value = optional_bigint_to_string(transaction.value.clone()); // UInt256
     let input = bytes_to_hex(transaction.input.clone());
     let v = bytes_to_hex(transaction.v.clone());
     let r = bytes_to_hex(transaction.r.clone());
     let s = bytes_to_hex(transaction.s.clone());
-    let gas_used = transaction.gas_used.to_string();
+    let gas_used = transaction.gas_used;
     let r#type = transaction_type_to_string(transaction.r#type);
-    let type_code = transaction.r#type.to_string();
-    let max_fee_per_gas = optional_bigint_to_string(transaction.max_fee_per_gas.clone());
-    let max_priority_fee_per_gas = optional_bigint_to_string(transaction.max_priority_fee_per_gas.clone());
+    let type_code = transaction.r#type;
+    let max_fee_per_gas = optional_bigint_to_string(transaction.max_fee_per_gas.clone()); // UInt256
+    let max_priority_fee_per_gas = optional_bigint_to_string(transaction.max_priority_fee_per_gas.clone()); // UInt256
     let return_data = bytes_to_hex(transaction.return_data.clone());
     let public_key = bytes_to_hex(transaction.public_key.clone());
-    let begin_ordinal = transaction.begin_ordinal.to_string();
-    let end_ordinal = transaction.end_ordinal.to_string();
-    let success = is_transaction_success(transaction.status).to_string();
+    let begin_ordinal = transaction.begin_ordinal;
+    let end_ordinal = transaction.end_ordinal;
+    let success = is_transaction_success(transaction.status);
     let status = transaction_status_to_string(transaction.status);
-    let status_code = transaction.status.to_string();
+    let status_code = transaction.status;
 
     let keys = transaction_keys(&clock, &hash);
     let row = tables
         .push_change_composite("transactions", keys, 0, table_change::Operation::Create)
-        .change("index", ("", index.as_str()))
+        .change("index", ("", index.to_string().as_str()))
         .change("hash", ("", hash.as_str()))
         .change("from", ("", from.as_str()))
         .change("to", ("", to.as_str()))
-        .change("nonce", ("", nonce.as_str()))
-        .change("gas_price", ("", gas_price.as_str()))
-        .change("gas_limit", ("", gas_limit.as_str()))
+        .change("nonce", ("", nonce.to_string().as_str()))
+        .change("gas_price", ("", gas_price.to_string().as_str()))
+        .change("gas_limit", ("", gas_limit.to_string().as_str()))
         .change("value", ("", value.as_str()))
         .change("input", ("", input.as_str()))
         .change("v", ("", v.as_str()))
         .change("r", ("", r.as_str()))
         .change("s", ("", s.as_str()))
-        .change("gas_used", ("", gas_used.as_str()))
+        .change("gas_used", ("", gas_used.to_string().as_str()))
         .change("r", ("", r.as_str()))
         .change("type", ("", r#type.as_str()))
-        .change("type_code", ("", type_code.as_str()))
+        .change("type_code", ("", type_code.to_string().as_str()))
         .change("max_fee_per_gas", ("", max_fee_per_gas.as_str()))
         .change("max_priority_fee_per_gas", ("", max_priority_fee_per_gas.as_str()))
         .change("return_data", ("", return_data.as_str()))
         .change("public_key", ("", public_key.as_str()))
-        .change("begin_ordinal", ("", begin_ordinal.as_str()))
-        .change("end_ordinal", ("", end_ordinal.as_str()))
-        .change("success", ("", success.as_str()))
+        .change("begin_ordinal", ("", begin_ordinal.to_string().as_str()))
+        .change("end_ordinal", ("", end_ordinal.to_string().as_str()))
+        .change("success", ("", success.to_string().as_str()))
         .change("status", ("", status.as_str()))
-        .change("status_code", ("", status_code.as_str()));
+        .change("status_code", ("", status_code.to_string().as_str()));
 
     insert_timestamp(row, clock, false);
 
