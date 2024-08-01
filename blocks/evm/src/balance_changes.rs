@@ -2,7 +2,7 @@ use common::blocks::insert_timestamp;
 use common::utils::bytes_to_hex;
 use common::{keys::balance_changes_keys, utils::optional_bigint_to_string};
 use substreams::pb::substreams::Clock;
-use substreams_database_change::pb::database::{table_change, DatabaseChanges};
+use substreams_database_change::pb::database::{table_change, DatabaseChanges, TableChange};
 use substreams_ethereum::pb::eth::v2::BalanceChange;
 
 pub fn balance_change_reason_to_string(reason: i32) -> String {
@@ -33,6 +33,13 @@ pub fn balance_change_reason_to_string(reason: i32) -> String {
     }
 }
 
+// Block balance changes (ex: RewardMineBlock, RewardMineUncle, Withdraw, Burn)
+pub fn insert_balance_changes(tables: &mut DatabaseChanges, clock: &Clock, balance_changes: &Vec<BalanceChange>) {
+    for balance_change in balance_changes {
+        insert_balance_change(tables, &clock, &balance_change);
+    }
+}
+
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L658
 pub fn insert_balance_change(tables: &mut DatabaseChanges, clock: &Clock, balance_change: &BalanceChange) {
     let address = bytes_to_hex(balance_change.address.clone());
@@ -52,4 +59,17 @@ pub fn insert_balance_change(tables: &mut DatabaseChanges, clock: &Clock, balanc
         .change("reason_code", ("", reason_code.to_string().as_str()));
 
     insert_timestamp(row, clock, false);
+}
+
+pub fn insert_balance_change_counts(row: &mut TableChange, all_balance_changes_reason: Vec<i32>) {
+    // transaction counts
+    let total_balance_changes = all_balance_changes_reason.len();
+    let mut total_withdrawals = 0;
+    for reason in all_balance_changes_reason {
+        if reason == 16 {
+            total_withdrawals += 1;
+        }
+    }
+    row.change("total_balance_changes", ("", total_balance_changes.to_string().as_str()))
+        .change("total_withdrawals", ("", total_withdrawals.to_string().as_str()));
 }

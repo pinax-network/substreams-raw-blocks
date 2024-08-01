@@ -10,9 +10,9 @@ pub fn insert_log(tables: &mut DatabaseChanges, clock: &Clock, log: &Log, transa
     let index = log.index;
     let tx_hash = bytes_to_hex(transaction.hash.to_vec());
     let tx_index = transaction.index;
-    let tx_from = bytes_to_hex(transaction.from.to_vec());
-    let tx_to = bytes_to_hex(transaction.to.to_vec());
-    let contract_address = bytes_to_hex(log.address.to_vec());
+    let tx_from = bytes_to_hex(transaction.from.to_vec()); // EVM Address
+    let tx_to = bytes_to_hex(transaction.to.to_vec()); // EVM Address
+    let contract_address = bytes_to_hex(log.address.to_vec()); // EVM Address
     let topics = log.topics.clone();
     let topic0 = extract_topic(&topics, 0);
     let topic1 = extract_topic(&topics, 1);

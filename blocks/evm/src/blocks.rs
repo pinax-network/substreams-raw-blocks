@@ -5,6 +5,8 @@ use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_ethereum::pb::eth::v2::Block;
 
+use crate::balance_changes::insert_balance_change_counts;
+
 // https://github.com/streamingfast/firehose-ethereum/blob/develop/proto/sf/ethereum/type/v2/type.proto
 pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
     let header = block.header.clone().unwrap_or_default();
@@ -15,7 +17,7 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
     let transactions_root = bytes_to_hex(header.transactions_root);
     let state_root = bytes_to_hex(header.state_root);
     let receipts_root = bytes_to_hex(header.receipt_root);
-    let miner = bytes_to_hex(header.coinbase);
+    let miner = bytes_to_hex(header.coinbase); // EVM Address
     let size = block.size;
     let mix_hash = bytes_to_hex(header.mix_hash);
     let extra_data = bytes_to_hex(header.extra_data);
@@ -59,5 +61,12 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
         .change("blob_gas_used", ("", blob_gas_used.to_string().as_str()));
 
     insert_timestamp(row, clock, true);
-    insert_transaction_counts(row, &block.transaction_traces);
+
+    // transaction status counts
+    let all_transaction_status: Vec<i32> = block.transaction_traces.iter().map(|transaction| transaction.status).collect();
+    insert_transaction_counts(row, all_transaction_status);
+
+    // balance changes counts
+    let all_balance_changes_reason: Vec<i32> = block.balance_changes.iter().map(|balance_change| balance_change.reason).collect();
+    insert_balance_change_counts(row, all_balance_changes_reason);
 }

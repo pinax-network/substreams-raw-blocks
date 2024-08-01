@@ -32,7 +32,6 @@
   - [ ] TON
 - **EVM**
   - [x] Ethereum
-  - [x] Arbitrum
   - [x] BNB
   - [x] Polygon
   - [ ] Fantom
@@ -45,7 +44,10 @@
   - [ ] [Injective](https://injective.com/) (L2 on Cosmos)
   - [ ] [Rootstock](https://rootstock.io/) (L2 on Bitcoin)
   - [ ] [IoTex](https://iotex.io/)
+  - [ ] [Celo](https://celo.org/) (L2 on ETH)
 - **Optimistic Rollup (EVM)**
+  - [x] Arbitrum One (L2 on ETH)
+  - [ ] Arbitrum Nova (L2 on ETH using AnyTrust protocol)
   - [ ] Optimism (OP)
   - [ ] opBNB
   - [ ] Blast
@@ -66,6 +68,7 @@
   - [ ] Scroll
   - [ ] Linea
   - [ ] Fuse
+  - [ ] [Polygon zkEVM](https://polygon.technology/polygon-zkevm)
   - [ ] [Astar zkEVM](https://astar.network/) (L2)
 - **Polkadot's Parachain**
   - [ ] Moonbeam

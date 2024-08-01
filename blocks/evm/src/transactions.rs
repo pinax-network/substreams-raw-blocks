@@ -41,6 +41,12 @@ pub fn is_transaction_success(status: i32) -> bool {
     status == 1
 }
 
+pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, transactions: &Vec<TransactionTrace>) {
+    for transaction in transactions {
+        insert_transaction(tables, clock, &transaction);
+    }
+}
+
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L658
 pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transaction: &TransactionTrace) {
     let index = transaction.index;
