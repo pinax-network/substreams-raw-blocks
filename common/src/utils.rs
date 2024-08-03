@@ -1,4 +1,4 @@
-use substreams::Hex;
+use substreams::{scalar::BigDecimal, Hex};
 use substreams_ethereum::pb::eth::v2::BigInt;
 
 // Timestamp to date conversion
@@ -25,10 +25,10 @@ pub fn optional_bigint_to_string(value: Option<BigInt>) -> String {
     }
 }
 
-pub fn optional_bigint_to_uint256_hex(value: Option<BigInt>) -> String {
+pub fn optional_bigint_to_decimal(value: Option<BigInt>) -> BigDecimal {
     match value {
-        Some(bigint) => bytes_to_uint256_hex(bigint.bytes),
-        None => "".to_string(),
+        Some(bigint) => bigint.with_decimal(0),
+        None => 0.into(),
     }
 }
 
@@ -44,13 +44,6 @@ pub fn optional_u64_to_string(value: Option<u64>) -> String {
         Some(uint) => uint.to_string(),
         None => "".to_string(),
     }
-}
-
-pub fn bytes_to_uint256_hex(bytes: Vec<u8>) -> String {
-    if bytes.is_empty() {
-        return "".to_string();
-    }
-    format! {"0x06{}", Hex::encode(bytes)}.to_string()
 }
 
 pub fn optional_uint64_to_string(value: Option<u64>) -> String {
@@ -163,38 +156,5 @@ mod tests {
         let topics = vec![vec![0xaa, 0xbb, 0xcc], vec![0xde, 0xad, 0xbe, 0xef]];
         assert_eq!(extract_topic(&topics, 0), "0xaabbcc");
         assert_eq!(extract_topic(&topics, 1), "0xdeadbeef");
-    }
-
-    #[test]
-    fn test_bytes_to_uint256_hex_empty() {
-        let bytes: Vec<u8> = Vec::new();
-        assert_eq!(bytes_to_uint256_hex(bytes), "");
-    }
-
-    #[test]
-    fn test_bytes_to_uint256_hex_single_byte() {
-        let bytes = vec![0x12];
-        assert_eq!(bytes_to_uint256_hex(bytes), "0x0612");
-    }
-
-    #[test]
-    fn test_bytes_to_uint256_hex_multiple_bytes() {
-        let bytes = vec![0xde, 0xad, 0xbe, 0xef];
-        assert_eq!(bytes_to_uint256_hex(bytes), "0x06deadbeef");
-    }
-
-    #[test]
-    fn test_bytes_to_uint256_hex_zero_bytes() {
-        let bytes = vec![0x00, 0x00, 0x00];
-        assert_eq!(bytes_to_uint256_hex(bytes), "0x06000000");
-    }
-
-    #[test]
-    fn test_bytes_to_uint256_hex_large_bytes() {
-        let bytes = vec![
-            0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-            0xff,
-        ];
-        assert_eq!(bytes_to_uint256_hex(bytes), "0x06ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
     }
 }

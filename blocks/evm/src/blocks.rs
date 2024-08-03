@@ -1,5 +1,5 @@
 use common::blocks::{insert_timestamp, insert_transaction_counts};
-use common::utils::{bytes_to_hex, optional_bigint_to_hex, optional_bigint_to_uint256_hex, optional_u64_to_string};
+use common::utils::{bytes_to_hex, optional_u64_to_string};
 use common::{keys::blocks_keys, utils::optional_bigint_to_string};
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
@@ -20,7 +20,8 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
     let miner = bytes_to_hex(header.coinbase); // EVM Address
     let size = block.size;
     let mix_hash = bytes_to_hex(header.mix_hash);
-    let extra_data = bytes_to_hex(header.extra_data);
+    let extra_data = bytes_to_hex(header.extra_data.clone());
+    let extra_data_utf8 = String::from_utf8(header.extra_data).unwrap_or_default();
     let gas_limit = header.gas_limit;
     let gas_used = header.gas_used;
     let withdrawals_root = bytes_to_hex(header.withdrawals_root);
@@ -47,6 +48,7 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
         .change("size", ("", size.to_string().as_str()))
         .change("mix_hash", ("", mix_hash.as_str()))
         .change("extra_data", ("", extra_data.as_str()))
+        .change("extra_data_utf8", ("", extra_data_utf8.as_str()))
         .change("gas_limit", ("", gas_limit.to_string().as_str()))
         .change("gas_used", ("", gas_used.to_string().as_str()))
         .change("difficulty", ("", difficulty.as_str()))
