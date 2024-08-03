@@ -71,4 +71,6 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
     // balance changes counts
     let all_balance_changes_reason: Vec<i32> = block.balance_changes.iter().map(|balance_change| balance_change.reason).collect();
     insert_balance_change_counts(row, all_balance_changes_reason);
+
+    // TODO: block.code_changes
 }

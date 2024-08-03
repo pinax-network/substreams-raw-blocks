@@ -3,6 +3,7 @@ use common::keys::transaction_keys;
 use common::utils::bytes_to_hex;
 use common::utils::optional_bigint_to_string;
 use substreams::pb::substreams::Clock;
+use substreams_database_change::pb::database::TableChange;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_ethereum::pb::eth::v2::TransactionTrace;
 
@@ -110,4 +111,22 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
         insert_log(tables, clock, log, &transaction);
         insert_trace(tables, clock, &call);
     }
+}
+
+pub fn insert_transaction_metadata(row: &mut TableChange, transaction: &TransactionTrace) {
+    let tx_index = transaction.index;
+    let tx_hash = bytes_to_hex(transaction.hash.clone());
+    let from = bytes_to_hex(transaction.from.clone()); // does trace contain `from`?
+    let to = bytes_to_hex(transaction.to.clone()); // does trace contain `to`?
+    let tx_status = transaction_status_to_string(transaction.status);
+    let tx_status_code = transaction.status;
+    let tx_success = is_transaction_success(transaction.status);
+
+    row.change("tx_index", ("", tx_index.to_string().as_str()))
+        .change("tx_hash", ("", tx_hash.as_str()))
+        .change("from", ("", from.as_str()))
+        .change("to", ("", to.as_str()))
+        .change("tx_status", ("", tx_status.as_str()))
+        .change("tx_status_code", ("", tx_status_code.to_string().as_str()))
+        .change("tx_success", ("", tx_success.to_string().as_str()));
 }

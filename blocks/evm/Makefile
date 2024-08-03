@@ -35,7 +35,7 @@ sql-setup:
 
 .PHONY: sql-run
 sql-run:
-	substreams-sink-sql run clickhouse://default:default@localhost:9000/default substreams.yaml -e eth.substreams.pinax.network:443 1: --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 10 --development-mode
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/default substreams.yaml -e eth.substreams.pinax.network:443 20441659:20448859 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 10 --development-mode
 
 .PHONY: deploy
 deploy:

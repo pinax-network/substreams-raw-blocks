@@ -60,11 +60,15 @@ CREATE TABLE IF NOT EXISTS logs
     block_date          Date,
 
     -- transaction --
-    tx_hash             String,
-    tx_index            UInt32,
-    tx_from             String,
-    tx_to               String,
+    tx_hash                     String,
+    tx_index                    UInt32,
+    tx_status                   LowCardinality(String),
+    tx_status_code              UInt32,
+    tx_success                  Bool,
+    from                        String COMMENT 'EVM Address',
+    to                          String COMMENT 'EVM Address',
 
+    -- logs --
     `index`             UInt32,
     contract_address    String,
     topic0              String,
@@ -79,19 +83,59 @@ CREATE TABLE IF NOT EXISTS logs
         ORDER BY (block_date, block_time, block_number, tx_hash, `index`)
         COMMENT 'Ethereum event logs';
 
+CREATE TABLE IF NOT EXISTS block_balance_changes
+(
+    -- block --
+    block_time                  DateTime('UTC'),
+    block_number                UInt64,
+    block_hash                  String,
+    block_date                  Date,
+
+    -- balance change --
+    address                     String,
+    new_value                   DEFAULT '' COMMENT 'UInt256',
+    old_value                   DEFAULT '' COMMENT 'UInt256',
+    delta_value                 DEFAULT '' COMMENT 'Int256',
+    ordinal                     UInt64,
+    reason                      LowCardinality(String),
+    reason_code                 UInt32,
+)
+    ENGINE = ReplacingMergeTree()
+        PRIMARY KEY (block_date, block_time, block_number, ordinal)
+        ORDER BY (block_date, block_time, block_number, ordinal)
+        COMMENT 'Ethereum block balance changes';
+
 CREATE TABLE IF NOT EXISTS balance_changes
 (
-    block_time          DateTime('UTC'),
-    block_number        UInt64,
-    block_hash          String,
-    block_date          Date,
-    address             String,
-    new_value           DEFAULT '' COMMENT 'UInt256',
-    old_value           DEFAULT '' COMMENT 'UInt256',
-    delta_value         DEFAULT '' COMMENT 'UInt256',
-    ordinal             UInt64,
-    reason              LowCardinality(String),
-    reason_code         UInt32,
+    -- block --
+    block_time                  DateTime('UTC'),
+    block_number                UInt64,
+    block_hash                  String,
+    block_date                  Date,
+
+    -- transaction --
+    tx_hash                     String,
+    tx_index                    UInt32,
+    tx_status                   LowCardinality(String),
+    tx_status_code              UInt32,
+    tx_success                  Bool,
+    from                        String COMMENT 'EVM Address',
+    to                          String COMMENT 'EVM Address',
+
+    -- trace --
+    trace_index                 UInt32,
+    trace_parent_index          UInt32,
+    trace_depth                 UInt32,
+    trace_caller                String,
+
+    -- balance change --
+    address                     String,
+    new_value                   DEFAULT '' COMMENT 'UInt256',
+    old_value                   DEFAULT '' COMMENT 'UInt256',
+    delta_value                 DEFAULT '' COMMENT 'Int256',
+    ordinal                     UInt64,
+    reason                      LowCardinality(String),
+    reason_code                 UInt32,
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_time, block_number, ordinal)
@@ -112,8 +156,8 @@ CREATE TABLE IF NOT EXISTS traces
     tx_status                   LowCardinality(String),
     tx_status_code              UInt32,
     tx_success                  Bool,
-    from                        String,
-    to                          String,
+    from                        String COMMENT 'EVM Address',
+    to                          String COMMENT 'EVM Address',
 
     -- trace --
     `index`                     UInt32,

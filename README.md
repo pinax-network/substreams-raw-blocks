@@ -3,21 +3,17 @@
 ## Raw Data
 
 - [x] **Blocks**
-  - [ ] `block_rewards`
-    - [ ] `static_block_reward`
-    - [ ] `transaction_fees`
-    - [ ] `burnt_fees`
-  - [ ] `processed_beacon_chain_withdrawals`
-  - [ ] `contract_internal_transactions`
   - [x] **BalanceChanges**
+  - [ ] **Code Changes**
 - [x] **Logs**
 - [x] **Transactions**
 - [x] **Traces**
-  - [ ] **BalanceChanges**
-  - [ ] **Creation Traces**
+  - [x] **BalanceChanges**
   - [ ] **Storage Changes**
   - [ ] **Code Changes**
-- [ ] **Beacon**
+  - [ ] **Account Creation**
+  - [ ] **Gas Changes**
+  - [ ] **Nonce Changes**
 
 ## Supported Networks
 
