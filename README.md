@@ -9,7 +9,7 @@
 - [x] **Transactions**
 - [x] **Traces**
   - [x] **BalanceChanges**
-  - [ ] **Storage Changes**
+  - [x] **Storage Changes**
   - [ ] **Code Changes**
   - [ ] **Account Creation**
   - [ ] **Gas Changes**

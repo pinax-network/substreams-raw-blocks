@@ -225,3 +225,38 @@ CREATE TABLE IF NOT EXISTS transactions
         PRIMARY KEY (block_date, block_time, block_number, hash)
         ORDER BY (block_date, block_time, block_number, hash)
         COMMENT 'Ethereum transactions';
+
+CREATE TABLE IF NOT EXISTS storage_changes
+(
+    -- block --
+    block_time                  DateTime('UTC'),
+    block_number                UInt64,
+    block_hash                  String,
+    block_date                  Date,
+
+    -- transaction --
+    tx_hash                     String,
+    tx_index                    UInt32,
+    tx_status                   LowCardinality(String),
+    tx_status_code              UInt32,
+    tx_success                  Bool,
+    from                        String COMMENT 'EVM Address',
+    to                          String COMMENT 'EVM Address',
+
+    -- trace --
+    trace_index                 UInt32,
+    trace_parent_index          UInt32,
+    trace_depth                 UInt32,
+    trace_caller                String,
+
+    -- balance change --
+    address                     String,
+    key                         String,
+    new_value                   String DEFAULT '',
+    old_value                   String DEFAULT '',
+    ordinal                     UInt64,
+)
+    ENGINE = ReplacingMergeTree()
+        PRIMARY KEY (block_date, block_time, block_number, ordinal)
+        ORDER BY (block_date, block_time, block_number, ordinal)
+        COMMENT 'Ethereum storage changes';
