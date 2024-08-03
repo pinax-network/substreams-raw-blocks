@@ -1,5 +1,5 @@
 use common::blocks::{insert_timestamp, insert_transaction_counts};
-use common::utils::bytes_to_hex;
+use common::utils::{bytes_to_hex, optional_bigint_to_hex, optional_bigint_to_uint256_hex, optional_u64_to_string};
 use common::{keys::blocks_keys, utils::optional_bigint_to_string};
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
@@ -27,10 +27,10 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
     let parent_beacon_root = bytes_to_hex(header.parent_beacon_root);
 
     let difficulty = optional_bigint_to_string(header.difficulty);
-    let total_difficulty = optional_bigint_to_string(header.total_difficulty); // UInt256
+    let total_difficulty = optional_bigint_to_string(header.total_difficulty.clone()); // UInt256
     let base_fee_per_gas = optional_bigint_to_string(header.base_fee_per_gas); // UInt256
-    let excess_blob_gas = header.excess_blob_gas.unwrap_or_default();
-    let blob_gas_used = header.blob_gas_used.unwrap_or_default();
+    let excess_blob_gas = optional_u64_to_string(header.excess_blob_gas); // uint64
+    let blob_gas_used = optional_u64_to_string(header.blob_gas_used); // uint64
 
     // blocks
     let keys = blocks_keys(&clock);
@@ -57,8 +57,8 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
         .change("withdrawals_root", ("", withdrawals_root.as_str()))
         // EIP-4844 & EIP-4788 (Dencun Fork)
         .change("parent_beacon_root", ("", parent_beacon_root.as_str()))
-        .change("excess_blob_gas", ("", excess_blob_gas.to_string().as_str()))
-        .change("blob_gas_used", ("", blob_gas_used.to_string().as_str()));
+        .change("excess_blob_gas", ("", excess_blob_gas.as_str()))
+        .change("blob_gas_used", ("", blob_gas_used.as_str()));
 
     insert_timestamp(row, clock, true);
 

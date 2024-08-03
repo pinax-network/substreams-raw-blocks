@@ -28,19 +28,22 @@ CREATE TABLE IF NOT EXISTS blocks
     withdrawals_root        String DEFAULT '' COMMENT 'EIP-4895 (Shangai Fork)',
     parent_beacon_root      String DEFAULT '' COMMENT 'EIP-4788 (Dencun Fork)',
     miner                   String,
-    difficulty              Int64 DEFAULT 0,
-    total_difficulty        Int128 DEFAULT 0,
+    difficulty              UInt64 DEFAULT 0,
+    total_difficulty        String DEFAULT '' COMMENT 'UInt256',
     size                    String,
     mix_hash                String,
     extra_data              String,
     gas_limit               UInt64,
     gas_used                UInt64,
-    base_fee_per_gas        Int64 DEFAULT 0 COMMENT 'EIP-1559 (London Fork)',
-    blob_gas_used           UInt64 DEFAULT 0 COMMENT 'EIP-4844 (Dencun Fork)',
-    excess_blob_gas         UInt64 DEFAULT 0 COMMENT 'EIP-4844 (Dencun Fork)',
+    base_fee_per_gas        String DEFAULT '' COMMENT 'EIP-1559 (London Fork)',
+    blob_gas_used           String DEFAULT '' COMMENT 'EIP-4844 (Dencun Fork)',
+    excess_blob_gas         String DEFAULT '' COMMENT 'EIP-4844 (Dencun Fork)',
     total_transactions      UInt64,
     successful_transactions UInt64,
-    failed_transactions     UInt64
+    failed_transactions     UInt64,
+    total_balance_changes   UInt64,
+    total_withdrawals       UInt64
+
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (date, time, number, hash)
@@ -73,8 +76,7 @@ CREATE TABLE IF NOT EXISTS logs
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_time, block_number, tx_hash, `index`)
         ORDER BY (block_date, block_time, block_number, tx_hash, `index`)
-        COMMENT 'Ethereum event logs'
-        TTL block_time + INTERVAL 30 DAY;
+        COMMENT 'Ethereum event logs';
 
 CREATE TABLE IF NOT EXISTS balance_changes
 (
@@ -87,13 +89,12 @@ CREATE TABLE IF NOT EXISTS balance_changes
     old_value           UInt256,
     ordinal             UInt64,
     reason              LowCardinality(String),
-    reason_code         Int32,
+    reason_code         UInt32,
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_time, block_number, ordinal)
         ORDER BY (block_date, block_time, block_number, ordinal)
-        COMMENT 'Ethereum balance changes'
-        TTL block_time + INTERVAL 30 DAY;
+        COMMENT 'Ethereum balance changes';
 
 CREATE TABLE IF NOT EXISTS traces
 (
@@ -107,7 +108,7 @@ CREATE TABLE IF NOT EXISTS traces
     tx_hash                     String,
     tx_index                    UInt32,
     tx_status                   LowCardinality(String),
-    tx_status_code              Int32,
+    tx_status_code              UInt32,
     tx_success                  Bool,
     from                        String,
     to                          String,
@@ -118,7 +119,7 @@ CREATE TABLE IF NOT EXISTS traces
     depth                       UInt32,
     caller                      String,
     call_type                   LowCardinality(String),
-    call_type_code              Int32,
+    call_type_code              UInt32,
     address                     String,
     value                       UInt256,
     gas_limit                   UInt64,
@@ -137,8 +138,7 @@ CREATE TABLE IF NOT EXISTS traces
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_time, block_number, tx_hash, tx_index, `index`)
         ORDER BY (block_date, block_time, block_number, tx_hash, tx_index, `index`)
-        COMMENT 'Ethereum traces'
-        TTL block_time + INTERVAL 30 DAY;
+        COMMENT 'Ethereum traces';
 
 
 CREATE TABLE IF NOT EXISTS transactions
@@ -156,7 +156,7 @@ CREATE TABLE IF NOT EXISTS transactions
     to                          String,
     nonce                       UInt64,
     status                      LowCardinality(String),
-    status_code                 Int32,
+    status_code                 UInt32,
     success                     Bool,
     gas_price                   UInt256,
     gas_limit                   UInt64,
@@ -167,7 +167,7 @@ CREATE TABLE IF NOT EXISTS transactions
     s                           String,
     gas_used                    UInt64,
     type                        LowCardinality(String),
-    type_code                   Int32,
+    type_code                   UInt32,
     max_fee_per_gas             UInt256,
     max_priority_fee_per_gas    UInt256,
     return_data                 String,
@@ -178,5 +178,4 @@ CREATE TABLE IF NOT EXISTS transactions
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_time, block_number, hash)
         ORDER BY (block_date, block_time, block_number, hash)
-        COMMENT 'Ethereum transactions'
-        TTL block_time + INTERVAL 30 DAY;
+        COMMENT 'Ethereum transactions';

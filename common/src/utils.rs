@@ -14,15 +14,43 @@ pub fn bytes_to_hex(bytes: Vec<u8>) -> String {
     if bytes.is_empty() {
         return "".to_string();
     } else {
-        format!{"0x{}", Hex::encode(bytes)}.to_string()
+        format! {"0x{}", Hex::encode(bytes)}.to_string()
     }
 }
 
 pub fn optional_bigint_to_string(value: Option<BigInt>) -> String {
     match value {
         Some(bigint) => bigint.with_decimal(0).to_string(),
-        None => "0".to_string(),
+        None => "".to_string(),
     }
+}
+
+pub fn optional_bigint_to_uint256_hex(value: Option<BigInt>) -> String {
+    match value {
+        Some(bigint) => bytes_to_uint256_hex(bigint.bytes),
+        None => "".to_string(),
+    }
+}
+
+pub fn optional_bigint_to_hex(value: Option<BigInt>) -> String {
+    match value {
+        Some(bigint) => bytes_to_hex(bigint.bytes),
+        None => "".to_string(),
+    }
+}
+
+pub fn optional_u64_to_string(value: Option<u64>) -> String {
+    match value {
+        Some(uint) => uint.to_string(),
+        None => "".to_string(),
+    }
+}
+
+pub fn bytes_to_uint256_hex(bytes: Vec<u8>) -> String {
+    if bytes.is_empty() {
+        return "".to_string();
+    }
+    format! {"0x06{}", Hex::encode(bytes)}.to_string()
 }
 
 pub fn optional_uint64_to_string(value: Option<u64>) -> String {
@@ -59,11 +87,10 @@ mod tests {
         assert_eq!(block_time_to_date(""), "");
     }
 
-
     #[test]
     fn test_empty_vector() {
         let bytes = vec![];
-        let expected = "0x";
+        let expected = "";
         assert_eq!(bytes_to_hex(bytes), expected);
     }
 
@@ -104,11 +131,7 @@ mod tests {
 
     #[test]
     fn test_extract_topic_valid_index() {
-        let topics = vec![
-            vec![0x01, 0x02, 0x03],
-            vec![0x0a, 0x0b, 0x0c],
-            vec![0xff, 0xfe, 0xfd],
-        ];
+        let topics = vec![vec![0x01, 0x02, 0x03], vec![0x0a, 0x0b, 0x0c], vec![0xff, 0xfe, 0xfd]];
         assert_eq!(extract_topic(&topics, 0), "0x010203");
         assert_eq!(extract_topic(&topics, 1), "0x0a0b0c");
         assert_eq!(extract_topic(&topics, 2), "0xfffefd");
@@ -116,10 +139,7 @@ mod tests {
 
     #[test]
     fn test_extract_topic_invalid_index() {
-        let topics = vec![
-            vec![0x01, 0x02, 0x03],
-            vec![0x0a, 0x0b, 0x0c],
-        ];
+        let topics = vec![vec![0x01, 0x02, 0x03], vec![0x0a, 0x0b, 0x0c]];
         assert_eq!(extract_topic(&topics, 3), "");
         assert_eq!(extract_topic(&topics, 100), "");
     }
@@ -140,11 +160,41 @@ mod tests {
 
     #[test]
     fn test_extract_topic_large_numbers() {
-        let topics = vec![
-            vec![0xaa, 0xbb, 0xcc],
-            vec![0xde, 0xad, 0xbe, 0xef],
-        ];
+        let topics = vec![vec![0xaa, 0xbb, 0xcc], vec![0xde, 0xad, 0xbe, 0xef]];
         assert_eq!(extract_topic(&topics, 0), "0xaabbcc");
         assert_eq!(extract_topic(&topics, 1), "0xdeadbeef");
+    }
+
+    #[test]
+    fn test_bytes_to_uint256_hex_empty() {
+        let bytes: Vec<u8> = Vec::new();
+        assert_eq!(bytes_to_uint256_hex(bytes), "");
+    }
+
+    #[test]
+    fn test_bytes_to_uint256_hex_single_byte() {
+        let bytes = vec![0x12];
+        assert_eq!(bytes_to_uint256_hex(bytes), "0x0612");
+    }
+
+    #[test]
+    fn test_bytes_to_uint256_hex_multiple_bytes() {
+        let bytes = vec![0xde, 0xad, 0xbe, 0xef];
+        assert_eq!(bytes_to_uint256_hex(bytes), "0x06deadbeef");
+    }
+
+    #[test]
+    fn test_bytes_to_uint256_hex_zero_bytes() {
+        let bytes = vec![0x00, 0x00, 0x00];
+        assert_eq!(bytes_to_uint256_hex(bytes), "0x06000000");
+    }
+
+    #[test]
+    fn test_bytes_to_uint256_hex_large_bytes() {
+        let bytes = vec![
+            0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+            0xff,
+        ];
+        assert_eq!(bytes_to_uint256_hex(bytes), "0x06ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
     }
 }

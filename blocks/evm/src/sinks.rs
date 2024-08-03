@@ -11,8 +11,8 @@ use crate::transactions::insert_transactions;
 pub fn ch_out(clock: Clock, block: Block) -> Result<DatabaseChanges, Error> {
     let mut tables: DatabaseChanges = DatabaseChanges::default();
     insert_blocks(&mut tables, &clock, &block);
-    insert_balance_changes(&mut tables, &clock, &block.balance_changes);
-    insert_transactions(&mut tables, &clock, &block.transaction_traces);
+    // insert_balance_changes(&mut tables, &clock, &block.balance_changes);
+    // insert_transactions(&mut tables, &clock, &block.transaction_traces);
 
     Ok(tables)
 }
