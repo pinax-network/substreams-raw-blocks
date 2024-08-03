@@ -10,8 +10,14 @@ use crate::transactions::insert_transactions;
 #[substreams::handlers::map]
 pub fn ch_out(clock: Clock, block: Block) -> Result<DatabaseChanges, Error> {
     let mut tables: DatabaseChanges = DatabaseChanges::default();
+
+    // TABLE::blocks
     insert_blocks(&mut tables, &clock, &block);
+
+    // TABLE::block_balance_changes
     insert_block_balance_changes(&mut tables, &clock, &block.balance_changes);
+
+    // TABLE::transactions
     insert_transactions(&mut tables, &clock, &block.transaction_traces);
 
     Ok(tables)

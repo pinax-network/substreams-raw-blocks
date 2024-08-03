@@ -7,7 +7,6 @@ use substreams_database_change::pb::database::TableChange;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_ethereum::pb::eth::v2::TransactionTrace;
 
-use crate::logs::insert_log;
 use crate::traces::insert_trace;
 
 pub fn transaction_type_to_string(r#type: i32) -> String {
@@ -106,10 +105,9 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
 
     insert_timestamp(row, clock, false);
 
-    // traces & logs
-    for (log, call) in transaction.logs_with_calls() {
-        insert_log(tables, clock, log, &transaction);
-        insert_trace(tables, clock, &call);
+    // TABLE::traces
+    for call in transaction.calls.iter() {
+        insert_trace(tables, clock, call, transaction);
     }
 }
 

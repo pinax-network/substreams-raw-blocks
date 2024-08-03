@@ -5,9 +5,9 @@ use common::{
 };
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges, TableChange};
-use substreams_ethereum::{block_view::CallView, pb::eth::v2::Call};
+use substreams_ethereum::pb::eth::v2::{Call, TransactionTrace};
 
-use crate::{balance_changes::insert_trace_balance_change, storage_changes::insert_storage_change, transactions::insert_transaction_metadata};
+use crate::{balance_changes::insert_trace_balance_change, logs::insert_log, storage_changes::insert_storage_change, transactions::insert_transaction_metadata};
 
 pub fn call_types_to_string(call_type: i32) -> String {
     match call_type {
@@ -22,34 +22,32 @@ pub fn call_types_to_string(call_type: i32) -> String {
 }
 
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L546
-pub fn insert_trace(tables: &mut DatabaseChanges, clock: &Clock, call: &CallView) {
+pub fn insert_trace(tables: &mut DatabaseChanges, clock: &Clock, call: &Call, transaction: &TransactionTrace) {
     // transaction
-    let transaction = call.transaction;
     let tx_index = transaction.index;
     let tx_hash = bytes_to_hex(transaction.hash.clone());
 
     // trace
-    let trace = call.call;
-    let address = bytes_to_hex(trace.address.clone()); // additional `trace_address`?
-    let begin_ordinal = trace.begin_ordinal;
-    let call_type = call_types_to_string(trace.call_type);
-    let call_type_code = trace.call_type;
-    let caller = bytes_to_hex(trace.caller.clone());
-    let depth = trace.depth;
-    let end_ordinal = trace.end_ordinal;
-    let executed_code = trace.executed_code;
-    let failure_reason = &trace.failure_reason;
-    let gas_consumed = trace.gas_consumed;
-    let gas_limit = trace.gas_limit;
-    let index = trace.index; // or `subtraces`?
-    let input = bytes_to_hex(trace.input.clone());
-    let parent_index = trace.parent_index;
-    let return_data = bytes_to_hex(trace.return_data.clone());
-    let state_reverted = trace.state_reverted;
-    let status_failed = trace.status_failed;
-    let status_reverted = trace.status_reverted;
-    let suicide = trace.suicide; // or `selfdestruct`?
-    let value = optional_bigint_to_string(trace.value.clone()); // UInt256
+    let address = bytes_to_hex(call.address.clone()); // additional `trace_address`?
+    let begin_ordinal = call.begin_ordinal;
+    let call_type = call_types_to_string(call.call_type);
+    let call_type_code = call.call_type;
+    let caller = bytes_to_hex(call.caller.clone());
+    let depth = call.depth;
+    let end_ordinal = call.end_ordinal;
+    let executed_code = call.executed_code;
+    let failure_reason = &call.failure_reason;
+    let gas_consumed = call.gas_consumed;
+    let gas_limit = call.gas_limit;
+    let index = call.index; // or `subtraces`?
+    let input = bytes_to_hex(call.input.clone());
+    let parent_index = call.parent_index;
+    let return_data = bytes_to_hex(call.return_data.clone());
+    let state_reverted = call.state_reverted;
+    let status_failed = call.status_failed;
+    let status_reverted = call.status_reverted;
+    let suicide = call.suicide; // or `selfdestruct`?
+    let value = optional_bigint_to_string(call.value.clone()); // UInt256
 
     let keys = traces_keys(&clock, &tx_hash, &tx_index, &index);
     let row = tables
@@ -76,19 +74,26 @@ pub fn insert_trace(tables: &mut DatabaseChanges, clock: &Clock, call: &CallView
         .change("value", ("", value.as_str()));
 
     insert_timestamp(row, clock, false);
-    insert_transaction_metadata(row, call.transaction);
+    insert_transaction_metadata(row, transaction);
 
-    // TODO: trace.code_changes
-    // TODO: trace.balance_changes
-    // TODO: trace.account_creation
-    // TODO: trace.gas_changes
-    // TODO: trace.nonce_changes
-    for balance_change in trace.balance_changes.iter() {
-        insert_trace_balance_change(tables, clock, balance_change, transaction, trace);
+    // TABLE::logs
+    for log in call.logs.iter() {
+        insert_log(tables, clock, log, transaction);
     }
-    for storage_change in trace.storage_changes.iter() {
-        insert_storage_change(tables, clock, &storage_change, transaction, trace);
+    // TABLE::balance_changes
+    for balance_change in call.balance_changes.iter() {
+        insert_trace_balance_change(tables, clock, balance_change, transaction, call);
     }
+    // TABLE::storage_changes
+    for storage_change in call.storage_changes.iter() {
+        insert_storage_change(tables, clock, &storage_change, transaction, call);
+    }
+
+    // TODO: call.code_changes
+    // TODO: call.balance_changes
+    // TODO: call.account_creation
+    // TODO: call.gas_changes
+    // TODO: call.nonce_changes
 }
 
 pub fn insert_trace_metadata(row: &mut TableChange, trace: &Call) {
