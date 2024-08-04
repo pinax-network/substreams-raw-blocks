@@ -13,6 +13,7 @@ localblocks
 rpc-cache
 localdata
 *.spkg
+*.parquet
 
 ### VisualStudioCode template
 .vscode/*

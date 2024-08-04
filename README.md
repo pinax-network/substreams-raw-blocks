@@ -133,15 +133,15 @@ graph TD;
 ```sql
 SELECT *
 FROM blocks
-WHERE date='2015-07-31'
-INTO OUTFILE 'eth_2015-07-31_blocks.parquet'
+WHERE date='2024-08-03'
+INTO OUTFILE 'eth_2024-08-03_blocks.parquet'
 FORMAT Parquet
 ```
 
 ```sql
 SELECT *
 FROM blocks
-WHERE date='2015-07-31'
-INTO OUTFILE 'eth_2015-07-31_blocks.csv'
+WHERE date='2024-08-03'
+INTO OUTFILE 'eth_2024-08-03_blocks.csv'
 FORMAT CSVWithNames
 ```

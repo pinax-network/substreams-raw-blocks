@@ -23,19 +23,41 @@ info:
 
 .PHONY: run
 run:
-	substreams run -e eth.substreams.pinax.network:443 ch_out -s 20423024 -t 20423025 -o json
+	substreams run -e eth.substreams.pinax.network:443 ch_out -s 20437424 -t 20423025 -o json
 
 .PHONY: gui
 gui:
-	substreams gui -e eth.substreams.pinax.network:443 ch_out -s 20441659 --production-mode
+	substreams gui -e eth.substreams.pinax.network:443 ch_out -s 20437424 -t 20423025
 
 .PHONY: sql-setup
 sql-setup:
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/default substreams.yaml
 
-.PHONY: sql-run
-sql-run:
-	substreams-sink-sql run clickhouse://default:default@localhost:9000/default substreams.yaml -e eth.substreams.pinax.network:443 20441659:20448859 --final-blocks-only --undo-buffer-size 10 --on-module-hash-mistmatch=warn --batch-block-flush-interval 10 --development-mode
+	substreams-sink-sql setup clickhouse://default:default@localhost:9000/eth substreams.yaml
+	substreams-sink-sql setup clickhouse://default:default@localhost:9000/eth substreams.yaml
+	substreams-sink-sql setup clickhouse://default:default@localhost:9000/bsc substreams.yaml
+	substreams-sink-sql setup clickhouse://default:default@localhost:9000/base substreams.yaml
+	substreams-sink-sql setup clickhouse://default:default@localhost:9000/polygon substreams.yaml
+	substreams-sink-sql setup clickhouse://default:default@localhost:9000/arbone substreams.yaml
+
+.PHONY: sql-run-eth
+sql-run-eth:
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/eth substreams.yaml -e eth.substreams.pinax.network:443 20444295:20451460 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
+
+.PHONY: sql-run-base
+sql-run-base:
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/base substreams.yaml -e base.substreams.pinax.network:443 17926927:17970126 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
+
+.PHONY: sql-run-bsc
+sql-run-bsc:
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/bsc substreams.yaml -e bsc.substreams.pinax.network:443 41025119:41053841 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
+
+.PHONY: sql-run-polygon
+sql-run-polygon:
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/polygon substreams.yaml -e polygon.substreams.pinax.network:443 60124533:60163432 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
+
+.PHONY: sql-run-arbone
+sql-run-arbone:
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/arbone substreams.yaml -e arbone.substreams.pinax.network:443 238816998: --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
 
 .PHONY: deploy
 deploy:
