@@ -23,7 +23,7 @@ info:
 
 .PHONY: run
 run:
-	substreams run -e eth.substreams.pinax.network:443 ch_out -s 20437424 -t 20423025 -o json
+	substreams run -e eth.substreams.pinax.network:443 ch_out -s -1 -o json
 
 .PHONY: gui
 gui:
@@ -32,15 +32,37 @@ gui:
 .PHONY: sql-setup
 sql-setup:
 
+	# EVM blocks
 	substreams-sink-sql setup clickhouse://default:default@localhost:9000/eth substreams.yaml
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/eth substreams.yaml
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/bsc substreams.yaml
 	substreams-sink-sql setup clickhouse://default:default@localhost:9000/base substreams.yaml
+	substreams-sink-sql setup clickhouse://default:default@localhost:9000/bsc substreams.yaml
 	substreams-sink-sql setup clickhouse://default:default@localhost:9000/polygon substreams.yaml
 	substreams-sink-sql setup clickhouse://default:default@localhost:9000/arbone substreams.yaml
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/avalanche substreams.yaml
 	substreams-sink-sql setup clickhouse://default:default@localhost:9000/mode substreams.yaml
+	substreams-sink-sql setup clickhouse://default:default@localhost:9000/zora substreams.yaml
+	substreams-sink-sql setup clickhouse://default:default@localhost:9000/xai substreams.yaml
+	substreams-sink-sql setup clickhouse://default:default@localhost:9000/linea substreams.yaml
 
+	# testnets
+	substreams-sink-sql setup clickhouse://default:default@localhost:9000/arbsepolia substreams.yaml
+	substreams-sink-sql setup clickhouse://default:default@localhost:9000/sepolia substreams.yaml
+	substreams-sink-sql setup clickhouse://default:default@localhost:9000/chapel substreams.yaml
+	substreams-sink-sql setup clickhouse://default:default@localhost:9000/holesky substreams.yaml
+	substreams-sink-sql setup clickhouse://default:default@localhost:9000/amoy substreams.yaml
+
+	# not detailed EVM blocks
+	substreams-sink-sql setup clickhouse://default:default@localhost:9000/avalanche substreams.yaml
+	substreams-sink-sql setup clickhouse://default:default@localhost:9000/optimism substreams.yaml
+	substreams-sink-sql setup clickhouse://default:default@localhost:9000/blast substreams.yaml
+	substreams-sink-sql setup clickhouse://default:default@localhost:9000/boba substreams.yaml
+
+	# not compatible with EVM blocks
+	substreams-sink-sql setup clickhouse://default:default@localhost:9000/injective substreams.yaml
+
+	# not ready
+	substreams-sink-sql setup clickhouse://default:default@localhost:9000/fantom substreams.yaml
+
+# EVM blocks
 .PHONY: sql-run-eth
 sql-run-eth:
 	substreams-sink-sql run clickhouse://default:default@localhost:9000/eth substreams.yaml -e eth.substreams.pinax.network:443 20444295:20451460 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
@@ -59,15 +81,71 @@ sql-run-polygon:
 
 .PHONY: sql-run-arbone
 sql-run-arbone:
-	substreams-sink-sql run clickhouse://default:default@localhost:9000/arbone substreams.yaml -e arbone.substreams.pinax.network:443 238821160: --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/arbone substreams.yaml -e arbone.substreams.pinax.network:443 238821160:239165328 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
 
+.PHONY: sql-run-mode
+sql-run-mode:
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/mode substreams.yaml -e mode.substreams.pinax.network:443 11237809:11281009 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
+
+.PHONY: sql-run-zora
+sql-run-zora:
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/zora substreams.yaml -e zora.substreams.pinax.network:443 17974681:18017880 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
+
+.PHONY: sql-run-xai
+sql-run-xai:
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/xai substreams.yaml -e xai.substreams.pinax.network:443 23596657:23895839 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
+
+.PHONY: sql-run-linea
+sql-run-linea:
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/linea substreams.yaml -e linea.substreams.pinax.network:443 7619882:7663070 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
+
+# EVM Testnets
+.PHONY: sql-run-arbsepolia
+sql-run-arbsepolia:
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/arbsepolia substreams.yaml -e arbsepolia.substreams.pinax.network:443 68562960:68762761 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
+
+.PHONY: sql-run-chapel
+sql-run-chapel:
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/chapel substreams.yaml -e chapel.substreams.pinax.network:443 42641054:42669854 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
+
+.PHONY: sql-run-sepolia
+sql-run-sepolia:
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/sepolia substreams.yaml -e sepolia.substreams.pinax.network:443 6425676:6432059 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
+
+.PHONY: sql-run-holesky
+sql-run-holesky:
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/holesky substreams.yaml -e holesky.substreams.pinax.network:443 2055608:2062315 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
+
+.PHONY: sql-run-amoy
+sql-run-amoy:
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/amoy substreams.yaml -e amoy.substreams.pinax.network:443 10256772:10294903 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
+
+# Not detailed EVM blocks
 .PHONY: sql-run-avalanche
 sql-run-avalanche:
 	substreams-sink-sql run clickhouse://default:default@localhost:9000/avalanche substreams.yaml -e avalanche.substreams.pinax.network:443 48771562:48813123 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
 
-.PHONY: sql-run-mode
-sql-run-mode:
-	substreams-sink-sql run clickhouse://default:default@localhost:9000/mode substreams.yaml -e mode.substreams.pinax.network:443 11212266: --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
+.PHONY: sql-run-optimism
+sql-run-optimism:
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/optimism substreams.yaml -e optimism.substreams.pinax.network:443 123511924: --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
+
+.PHONY: sql-run-blast
+sql-run-blast:
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/blast substreams.yaml -e blast.substreams.pinax.network:443 6916693:6959893 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
+
+.PHONY: sql-run-boba
+sql-run-boba:
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/boba substreams.yaml -e boba.substreams.pinax.network:443 5819180:5862380 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
+
+# Not working with EVM blocks
+.PHONY: sql-run-injective
+sql-run-injective:
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/injective substreams.yaml -e mainnet.injective.streamingfast.io:443 80303917: --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
+
+# Not ready yet
+.PHONY: sql-run-fantom
+sql-run-fantom:
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/fantom substreams.yaml -e fantom.substreams.pinax.network:443 87542657: --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
 
 .PHONY: deploy
 deploy:

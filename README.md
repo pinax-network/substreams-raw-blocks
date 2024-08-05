@@ -29,7 +29,9 @@
   - [ ] TON
 - **EVM**
   - [x] Ethereum
+    - [x] Sepolia Testnet
   - [x] BNB
+    - [x] Chapel Testnet
   - [x] Polygon
   - [ ] Fantom
   - [ ] zkSync
@@ -38,35 +40,46 @@
   - [ ] [SEI](https://www.sei.io/)
   - [ ] [Harmony](https://www.harmony.one/)
   - [ ] [Aurora](https://aurora.dev/) (L2 on NEAR protocol)
-  - [ ] [Injective](https://injective.com/) (L2 on Cosmos)
   - [ ] [Rootstock](https://rootstock.io/) (L2 on Bitcoin)
   - [ ] [IoTex](https://iotex.io/)
   - [ ] [Celo](https://celo.org/) (L2 on ETH)
+  - [ ] [Gnosis]
+    - [ ] Chiado Testnet
 - **Optimistic Rollup (EVM)**
   - [x] Base
   - [x] Arbitrum One (L2 on ETH)
+    - [x] Arbitrum Sepolia (Testnet)
   - [ ] Arbitrum Nova (L2 on ETH using AnyTrust protocol)
-  - [ ] Optimism (OP)
-  - [ ] opBNB
-  - [ ] Blast
+  - [ ] ~~Optimism (OP)~~
+  - [ ] [opBNB](https://docs.bnbchain.org/bnb-opbnb/)
+  - [ ] ~~Blast~~
   - [x] Mode
-  - [ ] Zora
-  - [ ] Boba
-  - [ ] BobaBNB
+  - [x] Zora
+  - [ ] [~~Boba~~](https://boba.network/)
+  - [ ] [BobaBNB](https://boba.network/)
+  - [ ] [Combo](https://combonetwork.io/) (L2 on BNB)
+  - [x] [Xai](https://xai.games/) (L3 on Arbitrum)
 - **Cosmos ecosystem**
+  - [ ] ~~[Injective](https://injective.com/)~~ (L2 on Cosmos)
   - [ ] Osmosis (L1)
   - [ ] DyDx
   - [ ] Celastia
   - [ ] Akash
   - [ ] Nobel
+  - [ ] [Kava](https://www.kava.io/)
+  - [ ] [Cronos](https://cronos.org/) (POS)
+  - [ ] [Cronos](https://cronos.org/) (EVM)
+  - [ ] [Cronos](https://cronos.org/) (zkEVM)
 - **Polygon's Validium**
-  - [ ] X Layer
+  - [ ] [~~X-Layer~~](https://www.okx.com/xlayer) (L2 on Polygon)
 - **ZK Rollup (EVM)**
   - [ ] Scroll
-  - [ ] Linea
-  - [ ] Fuse
+  - [x] Linea
+  - [ ] ~~[Fuse](https://www.fuse.io/)~~ (L2 on Polygon)
+  - [ ] [zkBNB](https://docs.bnbchain.org/zkbnb/)
   - [ ] [Polygon zkEVM](https://polygon.technology/polygon-zkevm)
   - [ ] [Astar zkEVM](https://astar.network/) (L2)
+    - [ ] zKatana Testnet
 - **Polkadot's Parachain**
   - [ ] Moonbeam
   - [ ] Moonriver
