@@ -7,7 +7,7 @@ use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges, TableChange};
 use substreams_ethereum::pb::eth::v2::{Call, TransactionTrace};
 
-use crate::{balance_changes::insert_trace_balance_change, logs::insert_log, storage_changes::insert_storage_change, transactions::insert_transaction_metadata};
+use crate::{balance_changes::insert_trace_balance_change, code_changes::insert_code_change, logs::insert_log, storage_changes::insert_storage_change, transactions::insert_transaction_metadata};
 
 pub fn call_types_to_string(call_type: i32) -> String {
     match call_type {
@@ -88,9 +88,11 @@ pub fn insert_trace(tables: &mut DatabaseChanges, clock: &Clock, call: &Call, tr
     for storage_change in call.storage_changes.iter() {
         insert_storage_change(tables, clock, &storage_change, transaction, call);
     }
+    // TABLE::code_changes
+    for code_change in call.code_changes.iter() {
+        insert_code_change(tables, clock, &code_change, transaction, call);
+    }
 
-    // TODO: call.code_changes
-    // TODO: call.balance_changes
     // TODO: call.account_creation
     // TODO: call.gas_changes
     // TODO: call.nonce_changes

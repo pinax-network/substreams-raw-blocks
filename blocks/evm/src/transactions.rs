@@ -106,8 +106,8 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
     insert_timestamp(row, clock, false);
 
     // TABLE::traces
-    for call in transaction.calls.iter() {
-        insert_trace(tables, clock, call, transaction);
+    for call in transaction.calls() {
+        insert_trace(tables, clock, call.call, call.transaction);
     }
 }
 

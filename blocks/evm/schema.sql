@@ -249,7 +249,7 @@ CREATE TABLE IF NOT EXISTS storage_changes
     trace_depth                 UInt32,
     trace_caller                String,
 
-    -- balance change --
+    -- storage change --
     address                     String,
     key                         String,
     new_value                   String DEFAULT '',
@@ -260,3 +260,39 @@ CREATE TABLE IF NOT EXISTS storage_changes
         PRIMARY KEY (block_date, block_time, block_number, ordinal)
         ORDER BY (block_date, block_time, block_number, ordinal)
         COMMENT 'Ethereum storage changes';
+
+CREATE TABLE IF NOT EXISTS code_changes
+(
+    -- block --
+    block_time                  DateTime('UTC'),
+    block_number                UInt64,
+    block_hash                  String,
+    block_date                  Date,
+
+    -- transaction --
+    tx_hash                     String,
+    tx_index                    UInt32,
+    tx_status                   LowCardinality(String),
+    tx_status_code              UInt32,
+    tx_success                  Bool,
+    from                        String COMMENT 'EVM Address',
+    to                          String COMMENT 'EVM Address',
+
+    -- trace --
+    trace_index                 UInt32,
+    trace_parent_index          UInt32,
+    trace_depth                 UInt32,
+    trace_caller                String,
+
+    -- code change --
+    address                     String,
+    old_hash                    String DEFAULT '',
+    old_code                    String DEFAULT '',
+    new_hash                    String DEFAULT '',
+    new_code                    String DEFAULT '',
+    ordinal                     UInt64,
+)
+    ENGINE = ReplacingMergeTree()
+        PRIMARY KEY (block_date, block_time, block_number, ordinal)
+        ORDER BY (block_date, block_time, block_number, ordinal)
+        COMMENT 'Ethereum code changes';

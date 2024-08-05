@@ -5,12 +5,13 @@
 - [x] **Blocks**
   - [x] **BalanceChanges**
   - [ ] **Code Changes**
+  - [ ] **System Calls**
 - [x] **Logs**
 - [x] **Transactions**
 - [x] **Traces**
   - [x] **BalanceChanges**
   - [x] **Storage Changes**
-  - [ ] **Code Changes**
+  - [x] **Code Changes**
   - [ ] **Account Creation**
   - [ ] **Gas Changes**
   - [ ] **Nonce Changes**
@@ -33,7 +34,7 @@
   - [ ] Fantom
   - [ ] zkSync
   - [ ] [Gravity](https://gravity.xyz/)
-  - [ ] [Avalanche-C](https://avax.network/)
+  - [ ] ~~[Avalanche-C](https://avax.network/)~~
   - [ ] [SEI](https://www.sei.io/)
   - [ ] [Harmony](https://www.harmony.one/)
   - [ ] [Aurora](https://aurora.dev/) (L2 on NEAR protocol)
@@ -42,13 +43,13 @@
   - [ ] [IoTex](https://iotex.io/)
   - [ ] [Celo](https://celo.org/) (L2 on ETH)
 - **Optimistic Rollup (EVM)**
+  - [x] Base
   - [x] Arbitrum One (L2 on ETH)
   - [ ] Arbitrum Nova (L2 on ETH using AnyTrust protocol)
   - [ ] Optimism (OP)
   - [ ] opBNB
   - [ ] Blast
-  - [ ] Base
-  - [ ] Mode
+  - [x] Mode
   - [ ] Zora
   - [ ] Boba
   - [ ] BobaBNB
