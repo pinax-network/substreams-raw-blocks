@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS blocks
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (date, time, number, hash)
         ORDER BY (date, time, number, hash)
-        COMMENT 'Ethereum block header';
+        COMMENT 'EVM block header';
 
 CREATE TABLE IF NOT EXISTS logs
 (
@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS logs
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_time, block_number, tx_hash, `index`)
         ORDER BY (block_date, block_time, block_number, tx_hash, `index`)
-        COMMENT 'Ethereum event logs';
+        COMMENT 'EVM event logs';
 
 CREATE TABLE IF NOT EXISTS block_balance_changes
 (
@@ -103,7 +103,7 @@ CREATE TABLE IF NOT EXISTS block_balance_changes
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_time, block_number, ordinal)
         ORDER BY (block_date, block_time, block_number, ordinal)
-        COMMENT 'Ethereum block balance changes';
+        COMMENT 'EVM block balance changes';
 
 CREATE TABLE IF NOT EXISTS balance_changes
 (
@@ -140,7 +140,7 @@ CREATE TABLE IF NOT EXISTS balance_changes
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_time, block_number, ordinal)
         ORDER BY (block_date, block_time, block_number, ordinal)
-        COMMENT 'Ethereum balance changes';
+        COMMENT 'EVM balance changes';
 
 CREATE TABLE IF NOT EXISTS traces
 (
@@ -184,7 +184,7 @@ CREATE TABLE IF NOT EXISTS traces
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_time, block_number, tx_hash, tx_index, `index`)
         ORDER BY (block_date, block_time, block_number, tx_hash, tx_index, `index`)
-        COMMENT 'Ethereum traces';
+        COMMENT 'EVM traces';
 
 
 CREATE TABLE IF NOT EXISTS transactions
@@ -224,7 +224,7 @@ CREATE TABLE IF NOT EXISTS transactions
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_time, block_number, hash)
         ORDER BY (block_date, block_time, block_number, hash)
-        COMMENT 'Ethereum transactions';
+        COMMENT 'EVM transactions';
 
 CREATE TABLE IF NOT EXISTS storage_changes
 (
@@ -259,7 +259,7 @@ CREATE TABLE IF NOT EXISTS storage_changes
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_time, block_number, ordinal)
         ORDER BY (block_date, block_time, block_number, ordinal)
-        COMMENT 'Ethereum storage changes';
+        COMMENT 'EVM storage changes';
 
 CREATE TABLE IF NOT EXISTS code_changes
 (
@@ -295,4 +295,105 @@ CREATE TABLE IF NOT EXISTS code_changes
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_time, block_number, ordinal)
         ORDER BY (block_date, block_time, block_number, ordinal)
-        COMMENT 'Ethereum code changes';
+        COMMENT 'EVM code changes';
+
+CREATE TABLE IF NOT EXISTS account_creations
+(
+    -- block --
+    block_time                  DateTime('UTC'),
+    block_number                UInt64,
+    block_hash                  String,
+    block_date                  Date,
+
+    -- transaction --
+    tx_hash                     String,
+    tx_index                    UInt32,
+    tx_status                   LowCardinality(String),
+    tx_status_code              UInt32,
+    tx_success                  Bool,
+    from                        String COMMENT 'EVM Address',
+    to                          String COMMENT 'EVM Address',
+
+    -- trace --
+    trace_index                 UInt32,
+    trace_parent_index          UInt32,
+    trace_depth                 UInt32,
+    trace_caller                String,
+
+    -- account creation --
+    account                     String,
+    ordinal                     UInt64,
+)
+    ENGINE = ReplacingMergeTree()
+        PRIMARY KEY (block_date, block_time, block_number, ordinal)
+        ORDER BY (block_date, block_time, block_number, ordinal)
+        COMMENT 'EVM account creations';
+
+CREATE TABLE IF NOT EXISTS nonce_changes
+(
+    -- block --
+    block_time                  DateTime('UTC'),
+    block_number                UInt64,
+    block_hash                  String,
+    block_date                  Date,
+
+    -- transaction --
+    tx_hash                     String,
+    tx_index                    UInt32,
+    tx_status                   LowCardinality(String),
+    tx_status_code              UInt32,
+    tx_success                  Bool,
+    from                        String COMMENT 'EVM Address',
+    to                          String COMMENT 'EVM Address',
+
+    -- trace --
+    trace_index                 UInt32,
+    trace_parent_index          UInt32,
+    trace_depth                 UInt32,
+    trace_caller                String,
+
+    -- nonce change --
+    address                     String,
+    old_value                   UInt64,
+    new_value                   UInt64,
+    ordinal                     UInt64,
+)
+    ENGINE = ReplacingMergeTree()
+        PRIMARY KEY (block_date, block_time, block_number, ordinal)
+        ORDER BY (block_date, block_time, block_number, ordinal)
+        COMMENT 'EVM nonce changes';
+
+CREATE TABLE IF NOT EXISTS gas_changes
+(
+    -- block --
+    block_time                  DateTime('UTC'),
+    block_number                UInt64,
+    block_hash                  String,
+    block_date                  Date,
+
+    -- transaction --
+    tx_hash                     String,
+    tx_index                    UInt32,
+    tx_status                   LowCardinality(String),
+    tx_status_code              UInt32,
+    tx_success                  Bool,
+    from                        String COMMENT 'EVM Address',
+    to                          String COMMENT 'EVM Address',
+
+    -- trace --
+    trace_index                 UInt32,
+    trace_parent_index          UInt32,
+    trace_depth                 UInt32,
+    trace_caller                String,
+
+    -- gas change --
+    old_value                   UInt64,
+    new_value                   UInt64,
+    reason                      LowCardinality(String),
+    reason_code                 UInt32,
+    ordinal                     UInt64,
+)
+    ENGINE = ReplacingMergeTree()
+        PRIMARY KEY (block_date, block_time, block_number, ordinal)
+        ORDER BY (block_date, block_time, block_number, ordinal)
+        COMMENT 'EVM gas changes';

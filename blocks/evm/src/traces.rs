@@ -7,7 +7,10 @@ use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges, TableChange};
 use substreams_ethereum::pb::eth::v2::{Call, TransactionTrace};
 
-use crate::{balance_changes::insert_trace_balance_change, code_changes::insert_code_change, logs::insert_log, storage_changes::insert_storage_change, transactions::insert_transaction_metadata};
+use crate::{
+    account_creations::insert_account_creation, balance_changes::insert_trace_balance_change, code_changes::insert_code_change, gas_changes::insert_gas_change, logs::insert_log,
+    nonce_changes::insert_nonce_change, storage_changes::insert_storage_change, transactions::insert_transaction_metadata,
+};
 
 pub fn call_types_to_string(call_type: i32) -> String {
     match call_type {
@@ -92,10 +95,18 @@ pub fn insert_trace(tables: &mut DatabaseChanges, clock: &Clock, call: &Call, tr
     for code_change in call.code_changes.iter() {
         insert_code_change(tables, clock, &code_change, transaction, call);
     }
-
-    // TODO: call.account_creation
-    // TODO: call.gas_changes
-    // TODO: call.nonce_changes
+    // TABLE::account_creations
+    for account_creation in call.account_creations.iter() {
+        insert_account_creation(tables, clock, &account_creation, transaction, call);
+    }
+    // TABLE::nonce_changes
+    for nonce_change in call.nonce_changes.iter() {
+        insert_nonce_change(tables, clock, &nonce_change, transaction, call);
+    }
+    // TABLE::gas_changes
+    for gas_change in call.gas_changes.iter() {
+        insert_gas_change(tables, clock, &gas_change, transaction, call);
+    }
 }
 
 pub fn insert_trace_metadata(row: &mut TableChange, trace: &Call) {

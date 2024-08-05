@@ -31,7 +31,6 @@ gui:
 
 .PHONY: sql-setup
 sql-setup:
-
 	# EVM blocks
 	substreams-sink-sql setup clickhouse://default:default@localhost:9000/eth substreams.yaml
 	substreams-sink-sql setup clickhouse://default:default@localhost:9000/base substreams.yaml
