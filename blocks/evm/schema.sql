@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS blocks
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (date, number)
-        ORDER BY (date, number)
+        ORDER BY (date, number, hash)
         COMMENT 'EVM block header';
 
 CREATE TABLE IF NOT EXISTS logs
@@ -77,8 +77,8 @@ CREATE TABLE IF NOT EXISTS logs
     data                String
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, tx_hash, `index`)
-        ORDER BY (block_date, tx_hash, `index`)
+        PRIMARY KEY (block_date, block_number)
+        ORDER BY (block_date, block_number, tx_hash, `index`)
         COMMENT 'EVM event logs';
 
 CREATE TABLE IF NOT EXISTS block_balance_changes
@@ -99,8 +99,8 @@ CREATE TABLE IF NOT EXISTS block_balance_changes
     reason_code                 UInt32
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, block_number, ordinal)
-        ORDER BY (block_date, block_number, ordinal)
+        PRIMARY KEY (block_date, block_number)
+        ORDER BY (block_date, block_number, block_hash, ordinal)
         COMMENT 'EVM block balance changes';
 
 CREATE TABLE IF NOT EXISTS balance_changes
@@ -136,8 +136,8 @@ CREATE TABLE IF NOT EXISTS balance_changes
     reason_code                 UInt32
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, block_number, ordinal)
-        ORDER BY (block_date, block_number, ordinal)
+        PRIMARY KEY (block_date, block_number)
+        ORDER BY (block_date, block_number, block_hash, ordinal)
         COMMENT 'EVM balance changes';
 
 CREATE TABLE IF NOT EXISTS traces
@@ -180,8 +180,8 @@ CREATE TABLE IF NOT EXISTS traces
     end_ordinal                 UInt64
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, tx_hash, tx_index, `index`)
-        ORDER BY (block_date, tx_hash, tx_index, `index`)
+        PRIMARY KEY (block_date, block_number)
+        ORDER BY (block_date, block_number, tx_hash, tx_index, `index`)
         COMMENT 'EVM traces';
 
 
@@ -220,8 +220,8 @@ CREATE TABLE IF NOT EXISTS transactions
     end_ordinal                 UInt64
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, hash)
-        ORDER BY (block_date, hash)
+        PRIMARY KEY (block_date, block_number)
+        ORDER BY (block_date, block_number, hash)
         COMMENT 'EVM transactions';
 
 CREATE TABLE IF NOT EXISTS storage_changes
@@ -255,8 +255,8 @@ CREATE TABLE IF NOT EXISTS storage_changes
     ordinal                     UInt64
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, block_number, ordinal)
-        ORDER BY (block_date, block_number, ordinal)
+        PRIMARY KEY (block_date, block_number)
+        ORDER BY (block_date, block_number, block_hash, ordinal)
         COMMENT 'EVM storage changes';
 
 CREATE TABLE IF NOT EXISTS code_changes
@@ -291,8 +291,8 @@ CREATE TABLE IF NOT EXISTS code_changes
     ordinal                     UInt64
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, block_number, ordinal)
-        ORDER BY (block_date, block_number, ordinal)
+        PRIMARY KEY (block_date, block_number)
+        ORDER BY (block_date, block_number, block_hash, ordinal)
         COMMENT 'EVM code changes';
 
 CREATE TABLE IF NOT EXISTS account_creations
@@ -323,8 +323,8 @@ CREATE TABLE IF NOT EXISTS account_creations
     ordinal                     UInt64
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, block_number, ordinal)
-        ORDER BY (block_date, block_number, ordinal)
+        PRIMARY KEY (block_date, block_number)
+        ORDER BY (block_date, block_number, block_hash, ordinal)
         COMMENT 'EVM account creations';
 
 CREATE TABLE IF NOT EXISTS nonce_changes
@@ -357,7 +357,7 @@ CREATE TABLE IF NOT EXISTS nonce_changes
     ordinal                     UInt64
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, block_number, ordinal)
+        PRIMARY KEY (block_date, block_number)
         ORDER BY (block_date, block_number, ordinal)
         COMMENT 'EVM nonce changes';
 
@@ -393,6 +393,6 @@ CREATE TABLE IF NOT EXISTS gas_changes
     ordinal                     UInt64
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, block_number, ordinal)
-        ORDER BY (block_date, block_number, ordinal)
+        PRIMARY KEY (block_date, block_number)
+        ORDER BY (block_date, block_number, block_hash, ordinal)
         COMMENT 'EVM gas changes';
