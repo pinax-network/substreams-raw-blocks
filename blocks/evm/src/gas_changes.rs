@@ -43,6 +43,8 @@ pub fn gas_change_reason_to_string(reason: i32) -> String {
 pub fn insert_gas_change(tables: &mut DatabaseChanges, clock: &Clock, gas_change: &GasChange, transaction: &TransactionTrace, trace: &Call) {
     let old_value = gas_change.old_value;
     let new_value = gas_change.new_value;
+    let delta_value = new_value as i128 - old_value as i128;
+
     let reason = gas_change_reason_to_string(gas_change.reason);
     let reason_code = gas_change.reason;
     let ordinal = gas_change.ordinal;
@@ -54,6 +56,7 @@ pub fn insert_gas_change(tables: &mut DatabaseChanges, clock: &Clock, gas_change
         .change("reason_code", ("", reason_code.to_string().as_str()))
         .change("old_value", ("", old_value.to_string().as_str()))
         .change("new_value", ("", new_value.to_string().as_str()))
+        .change("delta_value", ("", delta_value.to_string().as_str()))
         .change("ordinal", ("", ordinal.to_string().as_str()));
 
     insert_timestamp(row, clock, false);

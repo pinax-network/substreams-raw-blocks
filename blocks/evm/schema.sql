@@ -389,6 +389,7 @@ CREATE TABLE IF NOT EXISTS gas_changes
     -- gas change --
     old_value                   UInt64,
     new_value                   UInt64,
+    delta_value                 DEFAULT '' COMMENT 'Int128',
     reason                      LowCardinality(String),
     reason_code                 UInt32,
     ordinal                     UInt64,
