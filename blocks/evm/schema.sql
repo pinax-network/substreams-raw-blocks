@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS blocks
     receipts_root           FixedString(66),
     withdrawals_root        FixedString(66) DEFAULT '' COMMENT 'EIP-4895 (Shangai Fork)',
     parent_beacon_root      FixedString(66) DEFAULT '' COMMENT 'EIP-4788 (Dencun Fork)',
-    miner                   FixedString(44),
+    miner                   FixedString(42),
     difficulty              UInt64 DEFAULT 0,
     total_difficulty        String DEFAULT '' COMMENT 'UInt256',
     size                    String,
@@ -53,13 +53,13 @@ CREATE TABLE IF NOT EXISTS blocks
 CREATE TABLE IF NOT EXISTS logs
 (
     -- block --
-    block_time          DateTime('UTC'),
-    block_number        UInt64,
-    block_hash          String,
-    block_date          Date,
+    block_time                  DateTime('UTC'),
+    block_number                UInt64,
+    block_hash                  FixedString(66),
+    block_date                  Date,
 
     -- transaction --
-    tx_hash                     String,
+    tx_hash                     FixedString(66),
     tx_index                    UInt32,
     tx_status                   LowCardinality(String),
     tx_status_code              UInt32,
@@ -68,13 +68,13 @@ CREATE TABLE IF NOT EXISTS logs
     to                          String COMMENT 'EVM Address',
 
     -- logs --
-    `index`             UInt32,
-    contract_address    String,
-    topic0              String,
-    topic1              String DEFAULT '',
-    topic2              String DEFAULT '',
-    topic3              String DEFAULT '',
-    data                String
+    `index`                     UInt32,
+    contract_address            FixedString(42),
+    topic0                      FixedString(66),
+    topic1                      FixedString(66) DEFAULT '',
+    topic2                      FixedString(66) DEFAULT '',
+    topic3                      FixedString(66) DEFAULT '',
+    data                        String
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_number)
@@ -86,11 +86,11 @@ CREATE TABLE IF NOT EXISTS block_balance_changes
     -- block --
     block_time                  DateTime('UTC'),
     block_number                UInt64,
-    block_hash                  String,
+    block_hash                  FixedString(66),
     block_date                  Date,
 
     -- balance change --
-    address                     String,
+    address                     FixedString(42),
     new_value                   DEFAULT '' COMMENT 'UInt256',
     old_value                   DEFAULT '' COMMENT 'UInt256',
     delta_value                 DEFAULT '' COMMENT 'Int256',
@@ -108,26 +108,26 @@ CREATE TABLE IF NOT EXISTS balance_changes
     -- block --
     block_time                  DateTime('UTC'),
     block_number                UInt64,
-    block_hash                  String,
+    block_hash                  FixedString(66),
     block_date                  Date,
 
     -- transaction --
-    tx_hash                     String,
+    tx_hash                     FixedString(66),
     tx_index                    UInt32,
     tx_status                   LowCardinality(String),
     tx_status_code              UInt32,
     tx_success                  Bool,
-    from                        String COMMENT 'EVM Address',
-    to                          String COMMENT 'EVM Address',
+    from                        FixedString(42) COMMENT 'EVM Address',
+    to                          FixedString(42) COMMENT 'EVM Address',
 
     -- trace --
     trace_index                 UInt32,
     trace_parent_index          UInt32,
     trace_depth                 UInt32,
-    trace_caller                String,
+    trace_caller                FixedString(42),
 
     -- balance change --
-    address                     String,
+    address                     FixedString(42),
     new_value                   DEFAULT '' COMMENT 'UInt256',
     old_value                   DEFAULT '' COMMENT 'UInt256',
     delta_value                 DEFAULT '' COMMENT 'Int256',
@@ -145,26 +145,26 @@ CREATE TABLE IF NOT EXISTS traces
     -- block --
     block_time                  DateTime('UTC'),
     block_number                UInt64,
-    block_hash                  String,
+    block_hash                  FixedString(66),
     block_date                  Date,
 
     -- transaction --
-    tx_hash                     String,
+    tx_hash                     FixedString(66),
     tx_index                    UInt32,
     tx_status                   LowCardinality(String),
     tx_status_code              UInt32,
     tx_success                  Bool,
-    from                        String COMMENT 'EVM Address',
-    to                          String COMMENT 'EVM Address',
+    from                        FixedString(42) COMMENT 'EVM Address',
+    to                          FixedString(42) COMMENT 'EVM Address',
 
     -- trace --
     `index`                     UInt32,
     parent_index                UInt32,
     depth                       UInt32,
-    caller                      String,
+    caller                      FixedString(42),
     call_type                   LowCardinality(String),
     call_type_code              UInt32,
-    address                     String,
+    address                     FixedString(42),
     value                       DEFAULT '' COMMENT 'UInt256',
     gas_limit                   UInt64,
     gas_consumed                UInt64,
@@ -190,14 +190,14 @@ CREATE TABLE IF NOT EXISTS transactions
     -- block --
     block_time                  DateTime('UTC'),
     block_number                UInt64,
-    block_hash                  String,
+    block_hash                  FixedString(66),
     block_date                  Date,
 
     -- transaction --
     `index`                     UInt32,
-    hash                        String,
-    from                        String,
-    to                          String,
+    hash                        FixedString(66),
+    from                        FixedString(42),
+    to                          FixedString(42),
     nonce                       UInt64,
     status                      LowCardinality(String),
     status_code                 UInt32,
@@ -207,8 +207,8 @@ CREATE TABLE IF NOT EXISTS transactions
     value                       DEFAULT '' COMMENT 'UInt256',
     input                       String,
     v                           String,
-    r                           String,
-    s                           String,
+    r                           FixedString(66),
+    s                           FixedString(66),
     gas_used                    UInt64,
     type                        LowCardinality(String),
     type_code                   UInt32,
@@ -229,29 +229,29 @@ CREATE TABLE IF NOT EXISTS storage_changes
     -- block --
     block_time                  DateTime('UTC'),
     block_number                UInt64,
-    block_hash                  String,
+    block_hash                  FixedString(66),
     block_date                  Date,
 
     -- transaction --
-    tx_hash                     String,
+    tx_hash                     FixedString(66),
     tx_index                    UInt32,
     tx_status                   LowCardinality(String),
     tx_status_code              UInt32,
     tx_success                  Bool,
-    from                        String COMMENT 'EVM Address',
-    to                          String COMMENT 'EVM Address',
+    from                        FixedString(42) COMMENT 'EVM Address',
+    to                          FixedString(42) COMMENT 'EVM Address',
 
     -- trace --
     trace_index                 UInt32,
     trace_parent_index          UInt32,
     trace_depth                 UInt32,
-    trace_caller                String,
+    trace_caller                FixedString(42),
 
     -- storage change --
-    address                     String,
-    key                         String,
-    new_value                   String DEFAULT '',
-    old_value                   String DEFAULT '',
+    address                     FixedString(42),
+    key                         FixedString(66),
+    new_value                   FixedString(66) DEFAULT '',
+    old_value                   FixedString(66) DEFAULT '',
     ordinal                     UInt64
 )
     ENGINE = ReplacingMergeTree()
@@ -264,29 +264,29 @@ CREATE TABLE IF NOT EXISTS code_changes
     -- block --
     block_time                  DateTime('UTC'),
     block_number                UInt64,
-    block_hash                  String,
+    block_hash                  FixedString(66),
     block_date                  Date,
 
     -- transaction --
-    tx_hash                     String,
+    tx_hash                     FixedString(66),
     tx_index                    UInt32,
     tx_status                   LowCardinality(String),
     tx_status_code              UInt32,
     tx_success                  Bool,
-    from                        String COMMENT 'EVM Address',
-    to                          String COMMENT 'EVM Address',
+    from                        FixedString(42) COMMENT 'EVM Address',
+    to                          FixedString(42) COMMENT 'EVM Address',
 
     -- trace --
     trace_index                 UInt32,
     trace_parent_index          UInt32,
     trace_depth                 UInt32,
-    trace_caller                String,
+    trace_caller                FixedString(42),
 
     -- code change --
-    address                     String,
-    old_hash                    String DEFAULT '',
+    address                     FixedString(42),
+    old_hash                    FixedString(66) DEFAULT '',
     old_code                    String DEFAULT '',
-    new_hash                    String DEFAULT '',
+    new_hash                    FixedString(66) DEFAULT '',
     new_code                    String DEFAULT '',
     ordinal                     UInt64
 )
@@ -300,26 +300,26 @@ CREATE TABLE IF NOT EXISTS account_creations
     -- block --
     block_time                  DateTime('UTC'),
     block_number                UInt64,
-    block_hash                  String,
+    block_hash                  FixedString(66),
     block_date                  Date,
 
     -- transaction --
-    tx_hash                     String,
+    tx_hash                     FixedString(66),
     tx_index                    UInt32,
     tx_status                   LowCardinality(String),
     tx_status_code              UInt32,
     tx_success                  Bool,
-    from                        String COMMENT 'EVM Address',
-    to                          String COMMENT 'EVM Address',
+    from                        FixedString(42) COMMENT 'EVM Address',
+    to                          FixedString(42) COMMENT 'EVM Address',
 
     -- trace --
     trace_index                 UInt32,
     trace_parent_index          UInt32,
     trace_depth                 UInt32,
-    trace_caller                String,
+    trace_caller                FixedString(42),
 
     -- account creation --
-    account                     String,
+    account                     FixedString(42),
     ordinal                     UInt64
 )
     ENGINE = ReplacingMergeTree()
@@ -332,26 +332,26 @@ CREATE TABLE IF NOT EXISTS nonce_changes
     -- block --
     block_time                  DateTime('UTC'),
     block_number                UInt64,
-    block_hash                  String,
+    block_hash                  FixedString(66),
     block_date                  Date,
 
     -- transaction --
-    tx_hash                     String,
+    tx_hash                     FixedString(66),
     tx_index                    UInt32,
     tx_status                   LowCardinality(String),
     tx_status_code              UInt32,
     tx_success                  Bool,
-    from                        String COMMENT 'EVM Address',
-    to                          String COMMENT 'EVM Address',
+    from                        FixedString(42) COMMENT 'EVM Address',
+    to                          FixedString(42) COMMENT 'EVM Address',
 
     -- trace --
     trace_index                 UInt32,
     trace_parent_index          UInt32,
     trace_depth                 UInt32,
-    trace_caller                String,
+    trace_caller                FixedString(42),
 
     -- nonce change --
-    address                     String,
+    address                     FixedString(42),
     old_value                   UInt64,
     new_value                   UInt64,
     ordinal                     UInt64
@@ -366,28 +366,28 @@ CREATE TABLE IF NOT EXISTS gas_changes
     -- block --
     block_time                  DateTime('UTC'),
     block_number                UInt64,
-    block_hash                  String,
+    block_hash                  FixedString(66),
     block_date                  Date,
 
     -- transaction --
-    tx_hash                     String,
+    tx_hash                     FixedString(66),
     tx_index                    UInt32,
     tx_status                   LowCardinality(String),
     tx_status_code              UInt32,
     tx_success                  Bool,
-    from                        String COMMENT 'EVM Address',
-    to                          String COMMENT 'EVM Address',
+    from                        FixedString(42) COMMENT 'EVM Address',
+    to                          FixedString(42) COMMENT 'EVM Address',
 
     -- trace --
     trace_index                 UInt32,
     trace_parent_index          UInt32,
     trace_depth                 UInt32,
-    trace_caller                String,
+    trace_caller                FixedString(42),
 
     -- gas change --
     old_value                   UInt64,
     new_value                   UInt64,
-    delta_value                 DEFAULT '' COMMENT 'Int128',
+    delta_value                 String DEFAULT '' COMMENT 'Int128',
     reason                      LowCardinality(String),
     reason_code                 UInt32,
     ordinal                     UInt64
