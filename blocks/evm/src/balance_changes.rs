@@ -1,6 +1,6 @@
 use common::blocks::insert_timestamp;
 use common::utils::{bytes_to_hex, optional_bigint_to_decimal};
-use common::{keys::balance_changes_keys, utils::optional_bigint_to_string};
+use common::{keys::block_ordinal_keys, utils::optional_bigint_to_string};
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges, TableChange};
 use substreams_ethereum::pb::eth::v2::{BalanceChange, Call, TransactionTrace};
@@ -64,7 +64,7 @@ pub fn insert_balance_change(row: &mut TableChange, balance_change: &BalanceChan
 
 pub fn insert_block_balance_change(tables: &mut DatabaseChanges, clock: &Clock, balance_change: &BalanceChange) {
     let ordinal = balance_change.ordinal;
-    let keys = balance_changes_keys(&clock, &ordinal);
+    let keys = block_ordinal_keys(&clock, &ordinal);
     let row = tables.push_change_composite("block_balance_changes", keys, 0, table_change::Operation::Create);
 
     insert_balance_change(row, balance_change);
@@ -73,7 +73,7 @@ pub fn insert_block_balance_change(tables: &mut DatabaseChanges, clock: &Clock, 
 
 pub fn insert_trace_balance_change(tables: &mut DatabaseChanges, clock: &Clock, balance_change: &BalanceChange, transaction: &TransactionTrace, trace: &Call) {
     let ordinal = balance_change.ordinal;
-    let keys = balance_changes_keys(&clock, &ordinal);
+    let keys = block_ordinal_keys(&clock, &ordinal);
     let row = tables.push_change_composite("balance_changes", keys, 0, table_change::Operation::Create);
 
     insert_balance_change(row, balance_change);

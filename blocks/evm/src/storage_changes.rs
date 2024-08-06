@@ -1,5 +1,5 @@
 use common::blocks::insert_timestamp;
-use common::keys::balance_changes_keys;
+use common::keys::block_ordinal_keys;
 use common::utils::bytes_to_hex;
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
@@ -16,7 +16,7 @@ pub fn insert_storage_change(tables: &mut DatabaseChanges, clock: &Clock, storag
     let old_value = bytes_to_hex(storage_change.old_value.clone());
     let ordinal = storage_change.ordinal;
 
-    let keys = balance_changes_keys(&clock, &ordinal);
+    let keys = block_ordinal_keys(&clock, &ordinal);
     let row = tables
         .push_change_composite("storage_changes", keys, 0, table_change::Operation::Create)
         .change("address", ("", address.as_str()))

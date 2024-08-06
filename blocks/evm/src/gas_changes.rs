@@ -1,5 +1,5 @@
 use common::blocks::insert_timestamp;
-use common::keys::balance_changes_keys;
+use common::keys::block_ordinal_keys;
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_ethereum::pb::eth::v2::{Call, GasChange, TransactionTrace};
@@ -49,7 +49,7 @@ pub fn insert_gas_change(tables: &mut DatabaseChanges, clock: &Clock, gas_change
     let reason_code = gas_change.reason;
     let ordinal = gas_change.ordinal;
 
-    let keys = balance_changes_keys(&clock, &ordinal);
+    let keys = block_ordinal_keys(&clock, &ordinal);
     let row = tables
         .push_change_composite("gas_changes", keys, 0, table_change::Operation::Create)
         .change("reason", ("", reason.as_str()))

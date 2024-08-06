@@ -12,9 +12,9 @@
   - [x] **BalanceChanges**
   - [x] **Storage Changes**
   - [x] **Code Changes**
-  - [ ] **Account Creation**
-  - [ ] **Gas Changes**
-  - [ ] **Nonce Changes**
+  - [x] **Account Creation**
+  - [x] **Gas Changes**
+  - [x] **Nonce Changes**
 
 ## Supported Networks
 
