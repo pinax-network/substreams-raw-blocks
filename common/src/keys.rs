@@ -4,52 +4,39 @@ use substreams::pb::substreams::Clock;
 
 use crate::utils::block_time_to_date;
 
-pub fn blocks_keys(clock: &Clock) -> HashMap<String, String> {
+pub fn blocks_keys(clock: &Clock, is_block: bool) -> HashMap<String, String> {
     let timestamp = clock.clone().timestamp.unwrap();
     let block_date = block_time_to_date(&timestamp.to_string()).to_string();
     let block_number = clock.number.to_string();
-
-    HashMap::from([("date".to_string(), block_date), ("number".to_string(), block_number)])
+    let prefix = if is_block { "" } else { "block_" };
+    let block_date_key = format!("{}date", prefix);
+    let block_number_key = format!("{}number", prefix);
+    HashMap::from([(block_date_key, block_date), (block_number_key, block_number)])
 }
 
 pub fn transaction_keys(clock: &Clock, hash: &String) -> HashMap<String, String> {
-    let timestamp = clock.clone().timestamp.unwrap();
-    let block_date = block_time_to_date(&timestamp.to_string()).to_string();
-
-    HashMap::from([("block_date".to_string(), block_date), ("hash".to_string(), hash.to_string())])
+    let mut keys = blocks_keys(clock, false);
+    keys.insert("hash".to_string(), hash.to_string());
+    keys
 }
 
 pub fn logs_keys(clock: &Clock, tx_hash: &String, index: &u32) -> HashMap<String, String> {
-    let timestamp = clock.clone().timestamp.unwrap();
-    let block_date = block_time_to_date(&timestamp.to_string()).to_string();
-
-    HashMap::from([
-        ("block_date".to_string(), block_date),
-        ("tx_hash".to_string(), tx_hash.to_string()),
-        ("index".to_string(), index.to_string()),
-    ])
+    let mut keys = blocks_keys(clock, false);
+    keys.insert("tx_hash".to_string(), tx_hash.to_string());
+    keys.insert("index".to_string(), index.to_string());
+    keys
 }
 
 pub fn block_ordinal_keys(clock: &Clock, ordinal: &u64) -> HashMap<String, String> {
-    let timestamp = clock.clone().timestamp.unwrap();
-    let block_date = block_time_to_date(&timestamp.to_string()).to_string();
-    let block_number = clock.number.to_string();
-
-    HashMap::from([
-        ("block_date".to_string(), block_date),
-        ("block_number".to_string(), block_number),
-        ("ordinal".to_string(), ordinal.to_string()),
-    ])
+    let mut keys = blocks_keys(clock, false);
+    keys.insert("ordinal".to_string(), ordinal.to_string());
+    keys
 }
 
 pub fn traces_keys(clock: &Clock, tx_hash: &String, tx_index: &u32, index: &u32) -> HashMap<String, String> {
-    let timestamp = clock.clone().timestamp.unwrap();
-    let block_date = block_time_to_date(&timestamp.to_string()).to_string();
-
-    HashMap::from([
-        ("block_date".to_string(), block_date),
-        ("tx_hash".to_string(), tx_hash.to_string()),
-        ("tx_index".to_string(), tx_index.to_string()),
-        ("index".to_string(), index.to_string()),
-    ])
+    let mut keys = blocks_keys(clock, false);
+    keys.insert("tx_hash".to_string(), tx_hash.to_string());
+    keys.insert("tx_index".to_string(), tx_index.to_string());
+    keys.insert("index".to_string(), index.to_string());
+    keys
 }

@@ -52,7 +52,7 @@
   - [ ] Arbitrum Nova (L2 on ETH using AnyTrust protocol)
   - [ ] ~~Optimism (OP)~~
   - [ ] [opBNB](https://docs.bnbchain.org/bnb-opbnb/)
-  - [ ] ~~Blast~~
+  - [ ] 🕔 Blast
   - [x] Mode
   - [x] Zora
   - [ ] [~~Boba~~](https://boba.network/)
@@ -75,17 +75,21 @@
 - **ZK Rollup (EVM)**
   - [ ] Scroll
   - [x] Linea
-  - [ ] ~~[Fuse](https://www.fuse.io/)~~ (L2 on Polygon)
+  - [ ] 🕔 [Fuse](https://www.fuse.io/) (L2 on Polygon)
   - [ ] [zkBNB](https://docs.bnbchain.org/zkbnb/)
   - [ ] [Polygon zkEVM](https://polygon.technology/polygon-zkevm)
   - [ ] [Astar zkEVM](https://astar.network/) (L2)
     - [ ] zKatana Testnet
 - **Polkadot's Parachain**
-  - [ ] Moonbeam
+  - [ ] 🕔 [Moonbeam](https://moonbeam.network/)
   - [ ] Moonriver
   - [ ] [Astar](https://astar.network/) (L1)
 - **Tezos Smart Rollups**
   - [ ] Etherlink
+
+## Legend
+
+- 🕔 Upcoming full protocol support
 
 ## SQL
 

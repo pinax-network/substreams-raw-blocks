@@ -34,7 +34,7 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
     let blob_gas_used = optional_u64_to_string(header.blob_gas_used); // uint64
 
     // blocks
-    let keys = blocks_keys(&clock);
+    let keys = blocks_keys(&clock, true);
     let row = tables
         .push_change_composite("blocks", keys, 0, table_change::Operation::Create)
         .change("parent_hash", ("", parent_hash.as_str()))

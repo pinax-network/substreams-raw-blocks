@@ -66,8 +66,8 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
     let type_code = transaction.r#type;
     let max_fee_per_gas = optional_bigint_to_string(transaction.max_fee_per_gas.clone()); // UInt256
     let max_priority_fee_per_gas = optional_bigint_to_string(transaction.max_priority_fee_per_gas.clone()); // UInt256
-    let return_data = bytes_to_hex(transaction.return_data.clone());
-    let public_key = bytes_to_hex(transaction.public_key.clone());
+    let return_data = bytes_to_hex(transaction.return_data.clone()); // TO-CHECK: empty on ETH
+    let public_key = bytes_to_hex(transaction.public_key.clone()); // TO-CHECK: empty on ETH
     let begin_ordinal = transaction.begin_ordinal;
     let end_ordinal = transaction.end_ordinal;
     let success = is_transaction_success(transaction.status);
