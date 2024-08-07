@@ -54,9 +54,9 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
     let from = bytes_to_hex(transaction.from.clone()); // EVM Address
     let to = bytes_to_hex(transaction.to.clone()); // EVM Address
     let nonce = transaction.nonce;
-    let gas_price = optional_bigint_to_string(transaction.gas_price.clone()); // UInt256
+    let gas_price = optional_bigint_to_string(transaction.gas_price.clone(), "0"); // UInt256
     let gas_limit = transaction.gas_limit;
-    let value = optional_bigint_to_string(transaction.value.clone()); // UInt256
+    let value = optional_bigint_to_string(transaction.value.clone(), "0"); // UInt256
     let input = bytes_to_hex(transaction.input.clone());
     let v = bytes_to_hex(transaction.v.clone());
     let r = bytes_to_hex(transaction.r.clone());
@@ -64,8 +64,8 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
     let gas_used = transaction.gas_used;
     let r#type = transaction_type_to_string(transaction.r#type);
     let type_code = transaction.r#type;
-    let max_fee_per_gas = optional_bigint_to_string(transaction.max_fee_per_gas.clone()); // UInt256
-    let max_priority_fee_per_gas = optional_bigint_to_string(transaction.max_priority_fee_per_gas.clone()); // UInt256
+    let max_fee_per_gas = optional_bigint_to_string(transaction.max_fee_per_gas.clone(), "0"); // UInt256
+    let max_priority_fee_per_gas = optional_bigint_to_string(transaction.max_priority_fee_per_gas.clone(), "0"); // UInt256
     let return_data = bytes_to_hex(transaction.return_data.clone()); // TO-CHECK: empty on ETH
     let public_key = bytes_to_hex(transaction.public_key.clone()); // TO-CHECK: empty on ETH
     let begin_ordinal = transaction.begin_ordinal;

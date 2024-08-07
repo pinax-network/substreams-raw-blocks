@@ -50,7 +50,7 @@ pub fn insert_trace(tables: &mut DatabaseChanges, clock: &Clock, call: &Call, tr
     let status_failed = call.status_failed;
     let status_reverted = call.status_reverted;
     let suicide = call.suicide; // or `selfdestruct`?
-    let value = optional_bigint_to_string(call.value.clone()); // UInt256
+    let value = optional_bigint_to_string(call.value.clone(), "0"); // UInt256
 
     let keys = traces_keys(&clock, &tx_hash, &tx_index, &index);
     let row = tables

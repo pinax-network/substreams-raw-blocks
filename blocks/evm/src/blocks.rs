@@ -24,14 +24,16 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
     let extra_data_utf8 = String::from_utf8(header.extra_data).unwrap_or_default();
     let gas_limit = header.gas_limit;
     let gas_used = header.gas_used;
-    let withdrawals_root = bytes_to_hex(header.withdrawals_root);
-    let parent_beacon_root = bytes_to_hex(header.parent_beacon_root);
 
-    let difficulty = optional_bigint_to_string(header.difficulty);
-    let total_difficulty = optional_bigint_to_string(header.total_difficulty.clone()); // UInt256
-    let base_fee_per_gas = optional_bigint_to_string(header.base_fee_per_gas); // UInt256
-    let excess_blob_gas = optional_u64_to_string(header.excess_blob_gas); // uint64
-    let blob_gas_used = optional_u64_to_string(header.blob_gas_used); // uint64
+    let difficulty = optional_bigint_to_string(header.difficulty, "0"); // UInt64
+    let total_difficulty = optional_bigint_to_string(header.total_difficulty.clone(), "0"); // UInt256
+
+    // forks
+    let withdrawals_root = bytes_to_hex(header.withdrawals_root); // EIP-4895 (Shangai Fork)
+    let parent_beacon_root = bytes_to_hex(header.parent_beacon_root); // EIP-4788 (Dencun Fork)
+    let base_fee_per_gas = optional_bigint_to_string(header.base_fee_per_gas, ""); // UInt256 - EIP-1559 (London Fork)
+    let excess_blob_gas = optional_u64_to_string(header.excess_blob_gas, ""); // UInt64 - EIP-4844 (Dencun Fork)
+    let blob_gas_used = optional_u64_to_string(header.blob_gas_used, ""); // UInt64 - EIP-4844 (Dencun Fork)
 
     // blocks
     let keys = blocks_keys(&clock, true);
