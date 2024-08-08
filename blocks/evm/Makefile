@@ -23,7 +23,7 @@ info:
 
 .PHONY: run
 run:
-	substreams run -e eth.substreams.pinax.network:443 ch_out -s -1 -o json
+	substreams run -e eth.substreams.pinax.network:443 ch_out -s 2060000 -t 2060001 -o json
 
 .PHONY: gui
 gui:

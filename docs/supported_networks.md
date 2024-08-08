@@ -1,0 +1,74 @@
+## Supported Networks
+
+- **no-EVM**
+  - [ ] Bitcoin
+  - [ ] Solana
+  - [ ] Near
+  - [ ] Cosmos Hub
+  - [ ] StartNet
+  - [ ] Aptos
+  - [ ] SUI
+  - [ ] TON
+- **EVM**
+  - [x] Ethereum
+    - [x] Sepolia Testnet
+  - [x] BNB
+    - [x] Chapel Testnet
+  - [x] Polygon
+  - [ ] Fantom
+  - [ ] zkSync
+  - [ ] [Gravity](https://gravity.xyz/)
+  - [ ] ~~[Avalanche-C](https://avax.network/)~~
+  - [ ] [SEI](https://www.sei.io/)
+  - [ ] [Harmony](https://www.harmony.one/)
+  - [ ] [Aurora](https://aurora.dev/) (L2 on NEAR protocol)
+  - [ ] [Rootstock](https://rootstock.io/) (L2 on Bitcoin)
+  - [ ] [IoTex](https://iotex.io/)
+  - [ ] [Celo](https://celo.org/) (L2 on ETH)
+  - [ ] [Gnosis]
+    - [ ] Chiado Testnet
+- **Optimistic Rollup (EVM)**
+  - [x] Base
+  - [x] Arbitrum One (L2 on ETH)
+    - [x] Arbitrum Sepolia (Testnet)
+  - [ ] Arbitrum Nova (L2 on ETH using AnyTrust protocol)
+  - [ ] ~~Optimism (OP)~~
+  - [ ] [opBNB](https://docs.bnbchain.org/bnb-opbnb/)
+  - [ ] 🕔 Blast
+  - [x] Mode
+  - [x] Zora
+  - [ ] [~~Boba~~](https://boba.network/)
+  - [ ] [BobaBNB](https://boba.network/)
+  - [ ] [Combo](https://combonetwork.io/) (L2 on BNB)
+  - [x] [Xai](https://xai.games/) (L3 on Arbitrum)
+- **Cosmos ecosystem**
+  - [ ] ~~[Injective](https://injective.com/)~~ (L2 on Cosmos)
+  - [ ] Osmosis (L1)
+  - [ ] DyDx
+  - [ ] Celastia
+  - [ ] Akash
+  - [ ] Nobel
+  - [ ] [Kava](https://www.kava.io/)
+  - [ ] [Cronos](https://cronos.org/) (POS)
+  - [ ] [Cronos](https://cronos.org/) (EVM)
+  - [ ] [Cronos](https://cronos.org/) (zkEVM)
+- **Polygon's Validium**
+  - [ ] [~~X-Layer~~](https://www.okx.com/xlayer) (L2 on Polygon)
+- **ZK Rollup (EVM)**
+  - [ ] Scroll
+  - [x] Linea
+  - [ ] 🕔 [Fuse](https://www.fuse.io/) (L2 on Polygon)
+  - [ ] [zkBNB](https://docs.bnbchain.org/zkbnb/)
+  - [ ] [Polygon zkEVM](https://polygon.technology/polygon-zkevm)
+  - [ ] [Astar zkEVM](https://astar.network/) (L2)
+    - [ ] zKatana Testnet
+- **Polkadot's Parachain**
+  - [ ] 🕔 [Moonbeam](https://moonbeam.network/)
+  - [ ] Moonriver
+  - [ ] [Astar](https://astar.network/) (L1)
+- **Tezos Smart Rollups**
+  - [ ] Etherlink
+
+## Legend
+
+- 🕔 Upcoming full protocol support
