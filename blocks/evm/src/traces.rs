@@ -79,10 +79,11 @@ pub fn insert_trace(tables: &mut DatabaseChanges, clock: &Clock, call: &Call, tr
     insert_timestamp(row, clock, false);
     insert_transaction_metadata(row, transaction);
 
-    // TABLE::logs
-    for log in call.logs.iter() {
-        insert_log(tables, clock, log, transaction);
-    }
+    // // TABLE::logs
+    // for log in call.logs.iter() {
+    //     insert_log(tables, clock, log, transaction);
+    // }
+
     // TABLE::balance_changes
     for balance_change in call.balance_changes.iter() {
         insert_trace_balance_change(tables, clock, balance_change, transaction, call);

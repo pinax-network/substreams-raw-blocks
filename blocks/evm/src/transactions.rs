@@ -7,6 +7,7 @@ use substreams_database_change::pb::database::TableChange;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_ethereum::pb::eth::v2::TransactionTrace;
 
+use crate::logs::insert_log;
 use crate::traces::insert_trace;
 
 pub fn transaction_type_to_string(r#type: i32) -> String {
@@ -74,6 +75,14 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
     let status = transaction_status_to_string(transaction.status);
     let status_code = transaction.status;
 
+    // transaction receipt
+    let receipt = transaction.receipt.clone().unwrap();
+    let blob_gas_price = optional_bigint_to_string(receipt.clone().blob_gas_price, "0");
+    let blob_gas_used = receipt.blob_gas_used();
+    let cumulative_gas_used = receipt.cumulative_gas_used;
+    let logs_bloom = bytes_to_hex(receipt.logs_bloom);
+    let state_root = bytes_to_hex(receipt.state_root);
+
     let keys = transaction_keys(&clock, &hash);
     let row = tables
         .push_change_composite("transactions", keys, 0, table_change::Operation::Create)
@@ -101,7 +110,12 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
         .change("end_ordinal", ("", end_ordinal.to_string().as_str()))
         .change("success", ("", success.to_string().as_str()))
         .change("status", ("", status.as_str()))
-        .change("status_code", ("", status_code.to_string().as_str()));
+        .change("status_code", ("", status_code.to_string().as_str()))
+        .change("blob_gas_price", ("", blob_gas_price.as_str()))
+        .change("blob_gas_used", ("", blob_gas_used.to_string().as_str()))
+        .change("cumulative_gas_used", ("", cumulative_gas_used.to_string().as_str()))
+        .change("logs_bloom", ("", logs_bloom.as_str()))
+        .change("state_root", ("", state_root.as_str()));
 
     insert_timestamp(row, clock, false);
 
@@ -109,6 +123,12 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
     for call in transaction.calls() {
         insert_trace(tables, clock, call.call, call.transaction);
     }
+
+    // TABLE::logs
+    for log in receipt.logs {
+        insert_log(tables, clock, &log, transaction);
+    }
+
 }
 
 pub fn insert_transaction_metadata(row: &mut TableChange, transaction: &TransactionTrace) {

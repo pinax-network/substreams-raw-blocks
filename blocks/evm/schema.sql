@@ -217,7 +217,14 @@ CREATE TABLE IF NOT EXISTS transactions
     return_data                 String,
     public_key                  String,
     begin_ordinal               UInt64,
-    end_ordinal                 UInt64
+    end_ordinal                 UInt64,
+
+    -- transaction receipt --
+    blob_gas_price              DEFAULT '' COMMENT 'UInt256',,
+    blob_gas_used               UInt64,
+    cumulative_gas_used         UInt64,
+    logs_bloom                  FixedString(66),
+    state_root                  FixedString(66),
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_number)
