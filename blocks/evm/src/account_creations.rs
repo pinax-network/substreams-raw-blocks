@@ -9,6 +9,7 @@ use crate::traces::insert_trace_metadata;
 use crate::transactions::insert_transaction_metadata;
 
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L736
+// DetailLevel: EXTENDED
 pub fn insert_account_creation(tables: &mut DatabaseChanges, clock: &Clock, account_creation: &AccountCreation, transaction: &TransactionTrace, trace: &Call) {
     let account = bytes_to_hex(account_creation.account.clone());
     let ordinal = account_creation.ordinal;

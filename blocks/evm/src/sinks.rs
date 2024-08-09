@@ -18,7 +18,7 @@ pub fn ch_out(clock: Clock, block: Block) -> Result<DatabaseChanges, Error> {
     insert_block_balance_changes(&mut tables, &clock, &block.balance_changes);
 
     // TABLE::transactions
-    insert_transactions(&mut tables, &clock, &block.transaction_traces);
+    insert_transactions(&mut tables, &clock, &block);
 
     Ok(tables)
 }

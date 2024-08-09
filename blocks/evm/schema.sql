@@ -220,10 +220,10 @@ CREATE TABLE IF NOT EXISTS transactions
     end_ordinal                 UInt64,
 
     -- transaction receipt --
-    blob_gas_price              DEFAULT '' COMMENT 'UInt256',,
+    blob_gas_price              DEFAULT '' COMMENT 'UInt256',
     blob_gas_used               UInt64,
     cumulative_gas_used         UInt64,
-    logs_bloom                  FixedString(66),
+    logs_bloom                  String,
     state_root                  FixedString(66),
 )
     ENGINE = ReplacingMergeTree()

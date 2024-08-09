@@ -2,6 +2,12 @@
 
 > Based on research conducted by [Semiotic Labs](https://semiotic.ai/)
 
+**Resources:**
+- https://hackmd.io/@severiano4/H1AXcOK2n
+- https://ethresear.ch/t/using-the-graph-to-preserve-historical-data-and-enable-eip-4444/17318
+
+<img width="1298" alt="image" src="https://github.com/user-attachments/assets/df7a3476-52ce-4df2-aee2-c7c52ac5dd53">
+
 #### Introduction
 
 The process of verifying Ethereum blocks stored in Firehose flat files is crucial for ensuring the integrity and accuracy of blockchain data. The following methodology, developed by [Semiotic Labs](https://semiotic.ai/), closely mirrors traditional verification methods but incorporates specific tools and strategies to handle both pre-merge and post-merge Ethereum data effectively.

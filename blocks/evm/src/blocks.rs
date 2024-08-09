@@ -7,7 +7,17 @@ use substreams_ethereum::pb::eth::v2::Block;
 
 use crate::balance_changes::insert_balance_change_counts;
 
+pub fn block_detail_to_string(detail_level: i32) -> String {
+    match detail_level {
+        0 => "Extended".to_string(),
+        1 => "Trace".to_string(),
+        2 => "Base".to_string(),
+        _ => "Base".to_string(),
+    }
+}
+
 // https://github.com/streamingfast/firehose-ethereum/blob/develop/proto/sf/ethereum/type/v2/type.proto
+// DetailLevel: BASE
 pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
     let header = block.header.clone().unwrap_or_default();
     let parent_hash = bytes_to_hex(header.parent_hash);
@@ -27,6 +37,11 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
 
     let difficulty = optional_bigint_to_string(header.difficulty, "0"); // UInt64
     let total_difficulty = optional_bigint_to_string(header.total_difficulty.clone(), "0"); // UInt256
+
+    // block detail levels
+    // https://streamingfastio.medium.com/new-block-model-to-accelerate-chain-integration-9f65126e5425
+    let detail_level_code = block.detail_level;
+    let detail_level = block_detail_to_string(detail_level_code);
 
     // forks
     let withdrawals_root = bytes_to_hex(header.withdrawals_root); // EIP-4895 (Shangai Fork)
@@ -62,7 +77,12 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
         // EIP-4844 & EIP-4788 (Dencun Fork)
         .change("parent_beacon_root", ("", parent_beacon_root.as_str()))
         .change("excess_blob_gas", ("", excess_blob_gas.as_str()))
-        .change("blob_gas_used", ("", blob_gas_used.as_str()));
+        .change("blob_gas_used", ("", blob_gas_used.as_str()))
+
+        // block detail levels
+        .change("detail_level", ("", detail_level.as_str()))
+        .change("detail_level_code", ("", detail_level_code.to_string().as_str()))
+        ;
 
     insert_timestamp(row, clock, true);
 

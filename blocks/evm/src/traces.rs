@@ -25,6 +25,7 @@ pub fn call_types_to_string(call_type: i32) -> String {
 }
 
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L546
+// DetailLevel: EXTENDED
 pub fn insert_trace(tables: &mut DatabaseChanges, clock: &Clock, call: &Call, transaction: &TransactionTrace) {
     // transaction
     let tx_index = transaction.index;
@@ -79,10 +80,10 @@ pub fn insert_trace(tables: &mut DatabaseChanges, clock: &Clock, call: &Call, tr
     insert_timestamp(row, clock, false);
     insert_transaction_metadata(row, transaction);
 
-    // // TABLE::logs
-    // for log in call.logs.iter() {
-    //     insert_log(tables, clock, log, transaction);
-    // }
+    // TABLE::logs
+    for log in call.logs.iter() {
+        insert_log(tables, clock, log, transaction);
+    }
 
     // TABLE::balance_changes
     for balance_change in call.balance_changes.iter() {

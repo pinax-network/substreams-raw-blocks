@@ -44,6 +44,7 @@ pub fn insert_block_balance_changes(tables: &mut DatabaseChanges, clock: &Clock,
 }
 
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L658
+// DetailLevel: EXTENDED
 pub fn insert_balance_change(row: &mut TableChange, balance_change: &BalanceChange) {
     let address = bytes_to_hex(balance_change.address.clone());
     let new_value = optional_bigint_to_string(balance_change.new_value.clone(), "0");

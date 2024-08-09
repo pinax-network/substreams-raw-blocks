@@ -9,6 +9,7 @@ use crate::traces::insert_trace_metadata;
 use crate::transactions::insert_transaction_metadata;
 
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L744
+// DetailLevel: EXTENDED
 pub fn insert_code_change(tables: &mut DatabaseChanges, clock: &Clock, code_change: &CodeChange, transaction: &TransactionTrace, trace: &Call) {
     let address = bytes_to_hex(code_change.address.clone());
     let old_hash = bytes_to_hex(code_change.old_hash.clone());

@@ -8,6 +8,7 @@ use substreams_ethereum::pb::eth::v2::{Log, TransactionTrace};
 use crate::transactions::insert_transaction_metadata;
 
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L512
+// DetailLevel: BASE (only successful transactions) & EXTENDED
 pub fn insert_log(tables: &mut DatabaseChanges, clock: &Clock, log: &Log, transaction: &TransactionTrace) {
     let index = log.index;
     let tx_hash = bytes_to_hex(transaction.hash.to_vec());

@@ -5,6 +5,7 @@ use common::utils::optional_bigint_to_string;
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::TableChange;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
+use substreams_ethereum::pb::eth::v2::Block;
 use substreams_ethereum::pb::eth::v2::TransactionTrace;
 
 use crate::logs::insert_log;
@@ -42,14 +43,15 @@ pub fn is_transaction_success(status: i32) -> bool {
     status == 1
 }
 
-pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, transactions: &Vec<TransactionTrace>) {
-    for transaction in transactions {
-        insert_transaction(tables, clock, &transaction);
+pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
+    for transaction in block.transaction_traces.iter() {
+        insert_transaction(tables, clock, &transaction, &block);
     }
 }
 
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L658
-pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transaction: &TransactionTrace) {
+// DetailLevel: BASE & EXTENDED
+pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transaction: &TransactionTrace, block: &Block) {
     let index = transaction.index;
     let hash = bytes_to_hex(transaction.hash.clone());
     let from = bytes_to_hex(transaction.from.clone()); // EVM Address
@@ -111,6 +113,7 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
         .change("success", ("", success.to_string().as_str()))
         .change("status", ("", status.as_str()))
         .change("status_code", ("", status_code.to_string().as_str()))
+
         .change("blob_gas_price", ("", blob_gas_price.as_str()))
         .change("blob_gas_used", ("", blob_gas_used.to_string().as_str()))
         .change("cumulative_gas_used", ("", cumulative_gas_used.to_string().as_str()))
@@ -125,10 +128,13 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
     }
 
     // TABLE::logs
-    for log in receipt.logs {
-        insert_log(tables, clock, &log, transaction);
+    // Only required DetailLevel=BASE since traces are not available in BASE
+    let detail_level = block.detail_level;
+    if detail_level == 2 {
+        for log in receipt.logs {
+            insert_log(tables, clock, &log, transaction);
+        }
     }
-
 }
 
 pub fn insert_transaction_metadata(row: &mut TableChange, transaction: &TransactionTrace) {

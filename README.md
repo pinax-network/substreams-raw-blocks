@@ -4,12 +4,12 @@
 > Ethereum, Base, Arbitrum One, Polygon, BNB...
 
 - [x] **Blocks**
-  - [x] **BalanceChanges**
-  - [ ] **Code Changes**
-  - [ ] **System Calls**
+  - [x] **BalanceChanges** (EXTENDED)
+  - [ ] **Code Changes** (EXTENDED)
+  - [ ] **System Calls** (EXTENDED)
 - [x] **Logs**
 - [x] **Transactions**
-- [x] **Traces**
+- [x] **Traces** (EXTENDED)
   - [x] **BalanceChanges**
   - [x] **Storage Changes**
   - [x] **Code Changes**
