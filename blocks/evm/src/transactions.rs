@@ -87,7 +87,7 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
 
     // block roots
     let header = block.header.clone().unwrap();
-    let transaction_root = bytes_to_hex(header.transactions_root.clone());
+    let transactions_root = bytes_to_hex(header.transactions_root.clone());
     let receipts_root = bytes_to_hex(header.receipt_root.clone());
 
     let keys = transaction_keys(&clock, &hash);
@@ -127,7 +127,7 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
         .change("state_root", ("", state_root.as_str()))
 
         // block roots
-        .change("transaction_root", ("", transaction_root.as_str()))
+        .change("transactions_root", ("", transactions_root.as_str()))
         .change("receipts_root", ("", receipts_root.as_str()))
         ;
 
