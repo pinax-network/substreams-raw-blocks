@@ -14,36 +14,43 @@ CREATE TABLE IF NOT EXISTS cursors
 
 CREATE TABLE IF NOT EXISTS blocks
 (
-    time                    DateTime('UTC'),
-    number                  UInt64,
-    date                    Date,
-    hash                    FixedString(66),
-    parent_hash             FixedString(66),
-    nonce                   UInt64,
-    ommers_hash             FixedString(66),
-    logs_bloom              String,
-    transactions_root       FixedString(66),
-    state_root              FixedString(66),
-    receipts_root           FixedString(66),
-    withdrawals_root        FixedString(66) DEFAULT '' COMMENT 'EIP-4895 (Shangai Fork)',
-    parent_beacon_root      FixedString(66) DEFAULT '' COMMENT 'EIP-4788 (Dencun Fork)',
-    miner                   FixedString(42),
-    difficulty              UInt64 DEFAULT 0,
-    total_difficulty        String DEFAULT '' COMMENT 'UInt256',
-    size                    String,
-    mix_hash                FixedString(66),
-    extra_data              String,
-    extra_data_utf8         String,
-    gas_limit               UInt64,
-    gas_used                UInt64,
-    base_fee_per_gas        String DEFAULT '' COMMENT 'EIP-1559 (London Fork)',
-    blob_gas_used           String DEFAULT '' COMMENT 'EIP-4844 (Dencun Fork)',
-    excess_blob_gas         String DEFAULT '' COMMENT 'EIP-4844 (Dencun Fork)',
-    total_transactions      UInt64,
-    successful_transactions UInt64,
-    failed_transactions     UInt64,
-    total_balance_changes   UInt64,
-    total_withdrawals       UInt64
+    -- clock --
+    time                        DateTime('UTC'),
+    number                      UInt64,
+    date                        Date,
+    hash                        FixedString(66),
+
+    -- header --
+    parent_hash                 FixedString(66),
+    nonce                       UInt64,
+    ommers_hash                 FixedString(66),
+    logs_bloom                  String,
+    transactions_root           FixedString(66),
+    state_root                  FixedString(66),
+    receipts_root               FixedString(66),
+    withdrawals_root            FixedString(66) DEFAULT '' COMMENT 'EIP-4895 (Shangai Fork)',
+    parent_beacon_root          FixedString(66) DEFAULT '' COMMENT 'EIP-4788 (Dencun Fork)',
+    miner                       FixedString(42),
+    difficulty                  UInt64 DEFAULT 0,
+    total_difficulty            String DEFAULT '' COMMENT 'UInt256',
+    size                        String,
+    mix_hash                    FixedString(66),
+    extra_data                  String,
+    extra_data_utf8             String,
+    gas_limit                   UInt64,
+    gas_used                    UInt64,
+    base_fee_per_gas            String DEFAULT '' COMMENT 'EIP-1559 (London Fork)',
+    blob_gas_used               String DEFAULT '' COMMENT 'EIP-4844 (Dencun Fork)',
+    excess_blob_gas             String DEFAULT '' COMMENT 'EIP-4844 (Dencun Fork)',
+    total_transactions          UInt64,
+    successful_transactions     UInt64,
+    failed_transactions         UInt64,
+    total_balance_changes       UInt64,
+    total_withdrawals           UInt64,
+
+    -- detail level --
+    detail_level                LowCardinality(String),
+    detail_level_code           UInt32,
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (date, number)
@@ -192,6 +199,10 @@ CREATE TABLE IF NOT EXISTS transactions
     block_number                UInt64,
     block_hash                  FixedString(66),
     block_date                  Date,
+
+    -- block roots --
+    transactions_root           FixedString(66),
+    receipts_root               FixedString(66),
 
     -- transaction --
     `index`                     UInt32,

@@ -34,7 +34,6 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
     let extra_data_utf8 = String::from_utf8(header.extra_data).unwrap_or_default();
     let gas_limit = header.gas_limit;
     let gas_used = header.gas_used;
-
     let difficulty = optional_bigint_to_string(header.difficulty, "0"); // UInt64
     let total_difficulty = optional_bigint_to_string(header.total_difficulty.clone(), "0"); // UInt256
 

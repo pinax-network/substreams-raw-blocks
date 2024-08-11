@@ -85,6 +85,11 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
     let logs_bloom = bytes_to_hex(receipt.logs_bloom);
     let state_root = bytes_to_hex(receipt.state_root);
 
+    // block roots
+    let header = block.header.clone().unwrap();
+    let transaction_root = bytes_to_hex(header.transactions_root.clone());
+    let receipts_root = bytes_to_hex(header.receipt_root.clone());
+
     let keys = transaction_keys(&clock, &hash);
     let row = tables
         .push_change_composite("transactions", keys, 0, table_change::Operation::Create)
@@ -114,11 +119,17 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
         .change("status", ("", status.as_str()))
         .change("status_code", ("", status_code.to_string().as_str()))
 
+        // transaction receipt
         .change("blob_gas_price", ("", blob_gas_price.as_str()))
         .change("blob_gas_used", ("", blob_gas_used.to_string().as_str()))
         .change("cumulative_gas_used", ("", cumulative_gas_used.to_string().as_str()))
         .change("logs_bloom", ("", logs_bloom.as_str()))
-        .change("state_root", ("", state_root.as_str()));
+        .change("state_root", ("", state_root.as_str()))
+
+        // block roots
+        .change("transaction_root", ("", transaction_root.as_str()))
+        .change("receipts_root", ("", receipts_root.as_str()))
+        ;
 
     insert_timestamp(row, clock, false);
 
