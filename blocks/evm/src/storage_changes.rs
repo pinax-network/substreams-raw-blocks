@@ -27,6 +27,6 @@ pub fn insert_storage_change(tables: &mut DatabaseChanges, clock: &Clock, storag
         .change("ordinal", ("", ordinal.to_string().as_str()));
 
     insert_timestamp(row, clock, false);
-    insert_transaction_metadata(row, transaction);
+    insert_transaction_metadata(row, transaction, false);
     insert_trace_metadata(row, trace);
 }

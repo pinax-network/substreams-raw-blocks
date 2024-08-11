@@ -78,7 +78,7 @@ pub fn insert_trace(tables: &mut DatabaseChanges, clock: &Clock, call: &Call, tr
         .change("value", ("", value.as_str()));
 
     insert_timestamp(row, clock, false);
-    insert_transaction_metadata(row, transaction);
+    insert_transaction_metadata(row, transaction, true);
 
     // TABLE::logs
     for log in call.logs.iter() {

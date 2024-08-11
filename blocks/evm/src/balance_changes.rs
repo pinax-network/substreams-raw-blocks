@@ -79,7 +79,7 @@ pub fn insert_trace_balance_change(tables: &mut DatabaseChanges, clock: &Clock, 
 
     insert_balance_change(row, balance_change);
     insert_timestamp(row, clock, false);
-    insert_transaction_metadata(row, transaction);
+    insert_transaction_metadata(row, transaction, false);
     insert_trace_metadata(row, trace);
 }
 

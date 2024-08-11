@@ -69,8 +69,6 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
     let type_code = transaction.r#type;
     let max_fee_per_gas = optional_bigint_to_string(transaction.max_fee_per_gas.clone(), "0"); // UInt256
     let max_priority_fee_per_gas = optional_bigint_to_string(transaction.max_priority_fee_per_gas.clone(), "0"); // UInt256
-    let return_data = bytes_to_hex(transaction.return_data.clone()); // TO-CHECK: empty on ETH
-    let public_key = bytes_to_hex(transaction.public_key.clone()); // TO-CHECK: empty on ETH
     let begin_ordinal = transaction.begin_ordinal;
     let end_ordinal = transaction.end_ordinal;
     let success = is_transaction_success(transaction.status);
@@ -111,8 +109,6 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
         .change("type_code", ("", type_code.to_string().as_str()))
         .change("max_fee_per_gas", ("", max_fee_per_gas.as_str()))
         .change("max_priority_fee_per_gas", ("", max_priority_fee_per_gas.as_str()))
-        .change("return_data", ("", return_data.as_str()))
-        .change("public_key", ("", public_key.as_str()))
         .change("begin_ordinal", ("", begin_ordinal.to_string().as_str()))
         .change("end_ordinal", ("", end_ordinal.to_string().as_str()))
         .change("success", ("", success.to_string().as_str()))
@@ -148,7 +144,7 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
     }
 }
 
-pub fn insert_transaction_metadata(row: &mut TableChange, transaction: &TransactionTrace) {
+pub fn insert_transaction_metadata(row: &mut TableChange, transaction: &TransactionTrace, is_transaction: bool) {
     let tx_index = transaction.index;
     let tx_hash = bytes_to_hex(transaction.hash.clone());
     let from = bytes_to_hex(transaction.from.clone()); // does trace contain `from`?
@@ -156,11 +152,12 @@ pub fn insert_transaction_metadata(row: &mut TableChange, transaction: &Transact
     let tx_status = transaction_status_to_string(transaction.status);
     let tx_status_code = transaction.status;
     let tx_success = is_transaction_success(transaction.status);
+    let prefix = if is_transaction { "" } else { "tx_" };
 
     row.change("tx_index", ("", tx_index.to_string().as_str()))
         .change("tx_hash", ("", tx_hash.as_str()))
-        .change("from", ("", from.as_str()))
-        .change("to", ("", to.as_str()))
+        .change(format!("{}from", prefix).as_str(), ("", from.as_str()))
+        .change(format!("{}to", prefix).as_str(), ("", to.as_str()))
         .change("tx_status", ("", tx_status.as_str()))
         .change("tx_status_code", ("", tx_status_code.to_string().as_str()))
         .change("tx_success", ("", tx_success.to_string().as_str()));

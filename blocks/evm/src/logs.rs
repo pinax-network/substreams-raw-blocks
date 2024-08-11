@@ -32,5 +32,5 @@ pub fn insert_log(tables: &mut DatabaseChanges, clock: &Clock, log: &Log, transa
         .change("index", ("", index.to_string().as_str()));
 
     insert_timestamp(row, clock, false);
-    insert_transaction_metadata(row, transaction);
+    insert_transaction_metadata(row, transaction, false);
 }

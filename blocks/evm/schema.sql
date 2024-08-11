@@ -57,6 +57,55 @@ CREATE TABLE IF NOT EXISTS blocks
         ORDER BY (date, number, hash)
         COMMENT 'EVM block header';
 
+
+CREATE TABLE IF NOT EXISTS transactions
+(
+    -- block --
+    block_time                  DateTime('UTC'),
+    block_number                UInt64,
+    block_hash                  FixedString(66),
+    block_date                  Date,
+
+    -- block roots --
+    transactions_root           FixedString(66),
+    receipts_root               FixedString(66),
+
+    -- transaction --
+    `index`                     UInt32,
+    hash                        FixedString(66),
+    from                        FixedString(42),
+    to                          FixedString(42),
+    nonce                       UInt64,
+    status                      LowCardinality(String),
+    status_code                 UInt32,
+    success                     Bool,
+    gas_price                   DEFAULT '' COMMENT 'UInt256',
+    gas_limit                   UInt64,
+    value                       DEFAULT '' COMMENT 'UInt256',
+    input                       String,
+    v                           String,
+    r                           FixedString(66),
+    s                           FixedString(66),
+    gas_used                    UInt64,
+    type                        LowCardinality(String),
+    type_code                   UInt32,
+    max_fee_per_gas             DEFAULT '' COMMENT 'UInt256',
+    max_priority_fee_per_gas    DEFAULT '' COMMENT 'UInt256',
+    begin_ordinal               UInt64,
+    end_ordinal                 UInt64,
+
+    -- transaction receipt --
+    blob_gas_price              DEFAULT '' COMMENT 'UInt256',
+    blob_gas_used               UInt64,
+    cumulative_gas_used         UInt64,
+    logs_bloom                  String,
+    state_root                  FixedString(66),
+)
+    ENGINE = ReplacingMergeTree()
+        PRIMARY KEY (block_date, block_number)
+        ORDER BY (block_date, block_number, hash)
+        COMMENT 'EVM transactions';
+
 CREATE TABLE IF NOT EXISTS logs
 (
     -- block --
@@ -71,8 +120,8 @@ CREATE TABLE IF NOT EXISTS logs
     tx_status                   LowCardinality(String),
     tx_status_code              UInt32,
     tx_success                  Bool,
-    from                        String COMMENT 'EVM Address',
-    to                          String COMMENT 'EVM Address',
+    tx_from                     FixedString(42) COMMENT 'EVM Address',
+    tx_to                       FixedString(42) COMMENT 'EVM Address',
 
     -- logs --
     `index`                     UInt32,
@@ -124,8 +173,8 @@ CREATE TABLE IF NOT EXISTS balance_changes
     tx_status                   LowCardinality(String),
     tx_status_code              UInt32,
     tx_success                  Bool,
-    from                        FixedString(42) COMMENT 'EVM Address',
-    to                          FixedString(42) COMMENT 'EVM Address',
+    tx_from                     FixedString(42) COMMENT 'EVM Address',
+    tx_to                       FixedString(42) COMMENT 'EVM Address',
 
     -- trace --
     trace_index                 UInt32,
@@ -175,7 +224,7 @@ CREATE TABLE IF NOT EXISTS traces
     value                       DEFAULT '' COMMENT 'UInt256',
     gas_limit                   UInt64,
     gas_consumed                UInt64,
-    return_data                 String,
+    return_data                 String COMMENT 'Return data is set by contract calls using RETURN or REVERT.',
     input                       String,
     suicide                     Bool,
     failure_reason              LowCardinality(String),
@@ -192,55 +241,6 @@ CREATE TABLE IF NOT EXISTS traces
         COMMENT 'EVM traces';
 
 
-CREATE TABLE IF NOT EXISTS transactions
-(
-    -- block --
-    block_time                  DateTime('UTC'),
-    block_number                UInt64,
-    block_hash                  FixedString(66),
-    block_date                  Date,
-
-    -- block roots --
-    transactions_root           FixedString(66),
-    receipts_root               FixedString(66),
-
-    -- transaction --
-    `index`                     UInt32,
-    hash                        FixedString(66),
-    from                        FixedString(42),
-    to                          FixedString(42),
-    nonce                       UInt64,
-    status                      LowCardinality(String),
-    status_code                 UInt32,
-    success                     Bool,
-    gas_price                   DEFAULT '' COMMENT 'UInt256',
-    gas_limit                   UInt64,
-    value                       DEFAULT '' COMMENT 'UInt256',
-    input                       String,
-    v                           String,
-    r                           FixedString(66),
-    s                           FixedString(66),
-    gas_used                    UInt64,
-    type                        LowCardinality(String),
-    type_code                   UInt32,
-    max_fee_per_gas             DEFAULT '' COMMENT 'UInt256',
-    max_priority_fee_per_gas    DEFAULT '' COMMENT 'UInt256',
-    return_data                 String,
-    public_key                  String,
-    begin_ordinal               UInt64,
-    end_ordinal                 UInt64,
-
-    -- transaction receipt --
-    blob_gas_price              DEFAULT '' COMMENT 'UInt256',
-    blob_gas_used               UInt64,
-    cumulative_gas_used         UInt64,
-    logs_bloom                  String,
-    state_root                  FixedString(66),
-)
-    ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, block_number)
-        ORDER BY (block_date, block_number, hash)
-        COMMENT 'EVM transactions';
 
 CREATE TABLE IF NOT EXISTS storage_changes
 (
@@ -256,8 +256,8 @@ CREATE TABLE IF NOT EXISTS storage_changes
     tx_status                   LowCardinality(String),
     tx_status_code              UInt32,
     tx_success                  Bool,
-    from                        FixedString(42) COMMENT 'EVM Address',
-    to                          FixedString(42) COMMENT 'EVM Address',
+    tx_from                     FixedString(42) COMMENT 'EVM Address',
+    tx_to                       FixedString(42) COMMENT 'EVM Address',
 
     -- trace --
     trace_index                 UInt32,
@@ -291,8 +291,8 @@ CREATE TABLE IF NOT EXISTS code_changes
     tx_status                   LowCardinality(String),
     tx_status_code              UInt32,
     tx_success                  Bool,
-    from                        FixedString(42) COMMENT 'EVM Address',
-    to                          FixedString(42) COMMENT 'EVM Address',
+    tx_from                        FixedString(42) COMMENT 'EVM Address',
+    tx_to                          FixedString(42) COMMENT 'EVM Address',
 
     -- trace --
     trace_index                 UInt32,
@@ -327,8 +327,8 @@ CREATE TABLE IF NOT EXISTS account_creations
     tx_status                   LowCardinality(String),
     tx_status_code              UInt32,
     tx_success                  Bool,
-    from                        FixedString(42) COMMENT 'EVM Address',
-    to                          FixedString(42) COMMENT 'EVM Address',
+    tx_from                     FixedString(42) COMMENT 'EVM Address',
+    tx_to                       FixedString(42) COMMENT 'EVM Address',
 
     -- trace --
     trace_index                 UInt32,
@@ -359,8 +359,8 @@ CREATE TABLE IF NOT EXISTS nonce_changes
     tx_status                   LowCardinality(String),
     tx_status_code              UInt32,
     tx_success                  Bool,
-    from                        FixedString(42) COMMENT 'EVM Address',
-    to                          FixedString(42) COMMENT 'EVM Address',
+    tx_from                     FixedString(42) COMMENT 'EVM Address',
+    tx_to                       FixedString(42) COMMENT 'EVM Address',
 
     -- trace --
     trace_index                 UInt32,
@@ -393,8 +393,8 @@ CREATE TABLE IF NOT EXISTS gas_changes
     tx_status                   LowCardinality(String),
     tx_status_code              UInt32,
     tx_success                  Bool,
-    from                        FixedString(42) COMMENT 'EVM Address',
-    to                          FixedString(42) COMMENT 'EVM Address',
+    tx_from                     FixedString(42) COMMENT 'EVM Address',
+    tx_to                       FixedString(42) COMMENT 'EVM Address',
 
     -- trace --
     trace_index                 UInt32,

@@ -21,6 +21,6 @@ pub fn insert_account_creation(tables: &mut DatabaseChanges, clock: &Clock, acco
         .change("ordinal", ("", ordinal.to_string().as_str()));
 
     insert_timestamp(row, clock, false);
-    insert_transaction_metadata(row, transaction);
+    insert_transaction_metadata(row, transaction, false);
     insert_trace_metadata(row, trace);
 }
