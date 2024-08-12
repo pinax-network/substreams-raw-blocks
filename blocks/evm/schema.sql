@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS cursors
 CREATE TABLE IF NOT EXISTS blocks
 (
     -- clock --
-    time                        DateTime('UTC'),
+    time                        DateTime64(3, 'UTC'),
     number                      UInt64,
     date                        Date,
     hash                        FixedString(66),
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS blocks
 CREATE TABLE IF NOT EXISTS transactions
 (
     -- block --
-    block_time                  DateTime('UTC'),
+    block_time                  DateTime64(3, 'UTC'),
     block_number                UInt64,
     block_hash                  FixedString(66),
     block_date                  Date,
@@ -109,7 +109,7 @@ CREATE TABLE IF NOT EXISTS transactions
 CREATE TABLE IF NOT EXISTS logs
 (
     -- block --
-    block_time                  DateTime('UTC'),
+    block_time                  DateTime64(3, 'UTC'),
     block_number                UInt64,
     block_hash                  FixedString(66),
     block_date                  Date,
@@ -140,7 +140,7 @@ CREATE TABLE IF NOT EXISTS logs
 CREATE TABLE IF NOT EXISTS block_balance_changes
 (
     -- block --
-    block_time                  DateTime('UTC'),
+    block_time                  DateTime64(3, 'UTC'),
     block_number                UInt64,
     block_hash                  FixedString(66),
     block_date                  Date,
@@ -162,7 +162,7 @@ CREATE TABLE IF NOT EXISTS block_balance_changes
 CREATE TABLE IF NOT EXISTS balance_changes
 (
     -- block --
-    block_time                  DateTime('UTC'),
+    block_time                  DateTime64(3, 'UTC'),
     block_number                UInt64,
     block_hash                  FixedString(66),
     block_date                  Date,
@@ -199,7 +199,7 @@ CREATE TABLE IF NOT EXISTS balance_changes
 CREATE TABLE IF NOT EXISTS traces
 (
     -- block --
-    block_time                  DateTime('UTC'),
+    block_time                  DateTime64(3, 'UTC'),
     block_number                UInt64,
     block_hash                  FixedString(66),
     block_date                  Date,
@@ -245,7 +245,7 @@ CREATE TABLE IF NOT EXISTS traces
 CREATE TABLE IF NOT EXISTS storage_changes
 (
     -- block --
-    block_time                  DateTime('UTC'),
+    block_time                  DateTime64(3, 'UTC'),
     block_number                UInt64,
     block_hash                  FixedString(66),
     block_date                  Date,
@@ -280,7 +280,7 @@ CREATE TABLE IF NOT EXISTS storage_changes
 CREATE TABLE IF NOT EXISTS code_changes
 (
     -- block --
-    block_time                  DateTime('UTC'),
+    block_time                  DateTime64(3, 'UTC'),
     block_number                UInt64,
     block_hash                  FixedString(66),
     block_date                  Date,
@@ -316,7 +316,7 @@ CREATE TABLE IF NOT EXISTS code_changes
 CREATE TABLE IF NOT EXISTS account_creations
 (
     -- block --
-    block_time                  DateTime('UTC'),
+    block_time                  DateTime64(3, 'UTC'),
     block_number                UInt64,
     block_hash                  FixedString(66),
     block_date                  Date,
@@ -348,7 +348,7 @@ CREATE TABLE IF NOT EXISTS account_creations
 CREATE TABLE IF NOT EXISTS nonce_changes
 (
     -- block --
-    block_time                  DateTime('UTC'),
+    block_time                  DateTime64(3, 'UTC'),
     block_number                UInt64,
     block_hash                  FixedString(66),
     block_date                  Date,
@@ -382,7 +382,7 @@ CREATE TABLE IF NOT EXISTS nonce_changes
 CREATE TABLE IF NOT EXISTS gas_changes
 (
     -- block --
-    block_time                  DateTime('UTC'),
+    block_time                  DateTime64(3, 'UTC'),
     block_number                UInt64,
     block_hash                  FixedString(66),
     block_date                  Date,
