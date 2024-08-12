@@ -57,14 +57,14 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
     let from = bytes_to_hex(transaction.from.clone()); // EVM Address
     let to = bytes_to_hex(transaction.to.clone()); // EVM Address
     let nonce = transaction.nonce;
+    let gas_used = transaction.gas_used; // TO-DO: rename to `gas`? https://github.com/pinax-network/substreams-raw-blocks/issues/1
     let gas_price = optional_bigint_to_string(transaction.gas_price.clone(), "0"); // UInt256
     let gas_limit = transaction.gas_limit;
     let value = optional_bigint_to_string(transaction.value.clone(), "0"); // UInt256
-    let input = bytes_to_hex(transaction.input.clone());
+    let input = bytes_to_hex(transaction.input.clone()); // TO-DO: change to 0x? rename to `data`? https://github.com/pinax-network/substreams-raw-blocks/issues/1
     let v = bytes_to_hex(transaction.v.clone());
     let r = bytes_to_hex(transaction.r.clone());
     let s = bytes_to_hex(transaction.s.clone());
-    let gas_used = transaction.gas_used;
     let r#type = transaction_type_to_string(transaction.r#type);
     let type_code = transaction.r#type;
     let max_fee_per_gas = optional_bigint_to_string(transaction.max_fee_per_gas.clone(), "0"); // UInt256
@@ -96,6 +96,7 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
         .change("from", ("", from.as_str()))
         .change("to", ("", to.as_str()))
         .change("nonce", ("", nonce.to_string().as_str()))
+        .change("gas_used", ("", gas_used.to_string().as_str()))
         .change("gas_price", ("", gas_price.to_string().as_str()))
         .change("gas_limit", ("", gas_limit.to_string().as_str()))
         .change("value", ("", value.as_str()))
@@ -103,7 +104,6 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
         .change("v", ("", v.as_str()))
         .change("r", ("", r.as_str()))
         .change("s", ("", s.as_str()))
-        .change("gas_used", ("", gas_used.to_string().as_str()))
         .change("r", ("", r.as_str()))
         .change("type", ("", r#type.as_str()))
         .change("type_code", ("", type_code.to_string().as_str()))
