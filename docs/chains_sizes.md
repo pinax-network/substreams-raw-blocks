@@ -17,6 +17,8 @@
 | **Chapel** (BNB)              | ~0.387 GB            | 0.16   | 1.27 TB        | 0.14 TB       | 2020-07-09    | 1486 days   |
 | **Amoy** (Polygon)            | ~113 MB              | 0.05   | 0.40 TB        | 0.04 TB       | 2023-11-19    | 258 days    |
 
+> In total **180 TB** for all chains with **20 TB/yearly** growth.
+
 ## Clickhouse Storage Size
 
 **Total Size by Table**
