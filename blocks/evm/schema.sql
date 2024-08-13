@@ -87,8 +87,8 @@ CREATE TABLE IF NOT EXISTS transactions
     r                           FixedString(66),
     s                           FixedString(66),
     gas_used                    UInt64,
-    type                        LowCardinality(String),
-    type_code                   UInt32,
+    type                        LowCardinality(String) COMMENT 'EIP-1559',
+    type_code                   UInt32 COMMENT 'EIP-1559',
     max_fee_per_gas             DEFAULT '' COMMENT 'UInt256',
     max_priority_fee_per_gas    DEFAULT '' COMMENT 'UInt256',
     begin_ordinal               UInt64,
@@ -227,6 +227,7 @@ CREATE TABLE IF NOT EXISTS traces
     gas_consumed                UInt64,
     return_data                 String COMMENT 'Return data is set by contract calls using RETURN or REVERT.',
     input                       String,
+    method_id                   String(8) COMMENT 'Method ID is the first 4 bytes of the Keccak-256 hash of the function signature.'
     suicide                     Bool,
     failure_reason              LowCardinality(String),
     state_reverted              Bool,
@@ -234,7 +235,7 @@ CREATE TABLE IF NOT EXISTS traces
     status_failed               Bool,
     executed_code               Bool,
     begin_ordinal               UInt64,
-    end_ordinal                 UInt64
+    end_ordinal                 UInt64,
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_number)

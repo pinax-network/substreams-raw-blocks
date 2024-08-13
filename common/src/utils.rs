@@ -10,7 +10,7 @@ pub fn block_time_to_date(block_time: &str) -> String {
     }
 }
 
-pub fn bytes_to_hex(bytes: Vec<u8>) -> String {
+pub fn bytes_to_hex(bytes: &Vec<u8>) -> String {
     if bytes.is_empty() {
         return "".to_string();
     } else {
@@ -34,7 +34,7 @@ pub fn optional_bigint_to_decimal(value: Option<BigInt>) -> BigDecimal {
 
 pub fn optional_bigint_to_hex(value: Option<BigInt>) -> String {
     match value {
-        Some(bigint) => bytes_to_hex(bigint.bytes),
+        Some(bigint) => bytes_to_hex(&bigint.bytes),
         None => "".to_string(),
     }
 }
@@ -55,7 +55,16 @@ pub fn optional_uint64_to_string(value: Option<u64>) -> String {
 
 pub fn extract_topic(topics: &Vec<Vec<u8>>, index: usize) -> String {
     if index < topics.len() {
-        bytes_to_hex(topics[index].clone())
+        bytes_to_hex(&topics[index])
+    } else {
+        "".to_string()
+    }
+}
+
+// The Method ID for the function signature is the first 4 bytes (or the first 8 digits) of the Keccak-256 hash.
+pub fn extract_method_id(data: &Vec<u8>) -> String {
+    if data.len() >= 4 {
+        bytes_to_hex(&data[..4].to_vec())
     } else {
         "".to_string()
     }
@@ -84,42 +93,42 @@ mod tests {
     fn test_empty_vector() {
         let bytes = vec![];
         let expected = "";
-        assert_eq!(bytes_to_hex(bytes), expected);
+        assert_eq!(bytes_to_hex(&bytes), expected);
     }
 
     #[test]
     fn test_single_byte() {
         let bytes = vec![0x01];
         let expected = "0x01";
-        assert_eq!(bytes_to_hex(bytes), expected);
+        assert_eq!(bytes_to_hex(&bytes), expected);
     }
 
     #[test]
     fn test_multiple_bytes() {
         let bytes = vec![0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef];
         let expected = "0x0123456789abcdef";
-        assert_eq!(bytes_to_hex(bytes), expected);
+        assert_eq!(bytes_to_hex(&bytes), expected);
     }
 
     #[test]
     fn test_all_zeroes() {
         let bytes = vec![0x00, 0x00, 0x00];
         let expected = "0x000000";
-        assert_eq!(bytes_to_hex(bytes), expected);
+        assert_eq!(bytes_to_hex(&bytes), expected);
     }
 
     #[test]
     fn test_mixed_bytes() {
         let bytes = vec![0xff, 0x00, 0xab, 0x12];
         let expected = "0xff00ab12";
-        assert_eq!(bytes_to_hex(bytes), expected);
+        assert_eq!(bytes_to_hex(&bytes), expected);
     }
 
     #[test]
     fn test_large_bytes() {
         let bytes = vec![0xde, 0xad, 0xbe, 0xef];
         let expected = "0xdeadbeef";
-        assert_eq!(bytes_to_hex(bytes), expected);
+        assert_eq!(bytes_to_hex(&bytes), expected);
     }
 
     #[test]

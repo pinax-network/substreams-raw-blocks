@@ -1,7 +1,7 @@
 use common::{
     blocks::insert_timestamp,
     keys::{system_traces_keys, traces_keys},
-    utils::{bytes_to_hex, optional_bigint_to_string},
+    utils::{bytes_to_hex, extract_method_id, optional_bigint_to_string},
 };
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges, TableChange};
@@ -29,7 +29,7 @@ pub fn call_types_to_string(call_type: i32) -> String {
 pub fn insert_trace(tables: &mut DatabaseChanges, clock: &Clock, call: &Call, transaction: &TransactionTrace) {
     // transaction
     let tx_index = transaction.index;
-    let tx_hash = bytes_to_hex(transaction.hash.clone());
+    let tx_hash = bytes_to_hex(&transaction.hash);
     let keys = traces_keys(&clock, &tx_hash, &tx_index, &call.index);
     let row = tables.push_change_composite("traces", keys, 0, table_change::Operation::Create);
     insert_trace_values(row, call);
@@ -81,11 +81,11 @@ pub fn insert_system_trace(tables: &mut DatabaseChanges, clock: &Clock, system_c
 
 pub fn insert_trace_values(row: &mut TableChange, call: &Call) {
     // trace
-    let address = bytes_to_hex(call.address.clone()); // additional `trace_address`?
+    let address = bytes_to_hex(&call.address); // additional `trace_address`?
     let begin_ordinal = call.begin_ordinal;
     let call_type = call_types_to_string(call.call_type);
     let call_type_code = call.call_type;
-    let caller = bytes_to_hex(call.caller.clone());
+    let caller = bytes_to_hex(&call.caller);
     let depth = call.depth;
     let end_ordinal = call.end_ordinal;
     let executed_code = call.executed_code;
@@ -93,14 +93,15 @@ pub fn insert_trace_values(row: &mut TableChange, call: &Call) {
     let gas_consumed = call.gas_consumed;
     let gas_limit = call.gas_limit;
     let index = call.index; // or `subtraces`?
-    let input = bytes_to_hex(call.input.clone());
+    let input = bytes_to_hex(&call.input);
     let parent_index = call.parent_index;
-    let return_data = bytes_to_hex(call.return_data.clone());
+    let return_data = bytes_to_hex(&call.return_data);
     let state_reverted = call.state_reverted;
     let status_failed = call.status_failed;
     let status_reverted = call.status_reverted;
     let suicide = call.suicide; // or `selfdestruct`?
     let value = optional_bigint_to_string(call.value.clone(), "0"); // UInt256
+    let method_id = extract_method_id(&call.input);
 
     row.change("address", ("", address.as_str()))
         .change("begin_ordinal", ("", begin_ordinal.to_string().as_str()))
@@ -115,20 +116,22 @@ pub fn insert_trace_values(row: &mut TableChange, call: &Call) {
         .change("gas_limit", ("", gas_limit.to_string().as_str()))
         .change("index", ("", index.to_string().as_str()))
         .change("input", ("", input.as_str()))
+        .change("method_id", ("", method_id.as_str()))
         .change("parent_index", ("", parent_index.to_string().as_str()))
         .change("return_data", ("", return_data.as_str()))
         .change("state_reverted", ("", state_reverted.to_string().as_str()))
         .change("status_failed", ("", status_failed.to_string().as_str()))
         .change("status_reverted", ("", status_reverted.to_string().as_str()))
         .change("suicide", ("", suicide.to_string().as_str()))
-        .change("value", ("", value.as_str()));
+        .change("value", ("", value.as_str()))
+        ;
 }
 
 pub fn insert_trace_metadata(row: &mut TableChange, trace: &Call) {
     let trace_index = trace.index;
     let trace_parent_index = trace.parent_index;
     let trace_depth = trace.depth;
-    let trace_caller = bytes_to_hex(trace.caller.clone());
+    let trace_caller = bytes_to_hex(&trace.caller);
 
     // TODO: could add additional trace metadata here
     row.change("trace_index", ("", trace_index.to_string().as_str()))
