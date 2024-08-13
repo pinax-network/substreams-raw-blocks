@@ -5,8 +5,8 @@
 
 - [x] **Blocks**
   - [x] **BalanceChanges** (EXTENDED)
-  - [ ] **Code Changes** (EXTENDED)
-  - [ ] **System Calls** (EXTENDED)
+  - [x] **Code Changes** (EXTENDED)
+  - [x] **System Calls** (EXTENDED)
 - [x] **Logs**
 - [x] **Transactions**
 - [x] **Traces** (EXTENDED)

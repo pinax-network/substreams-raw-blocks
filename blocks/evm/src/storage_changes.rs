@@ -11,10 +11,10 @@ use crate::transactions::insert_transaction_metadata;
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L647
 // DetailLevel: EXTENDED
 pub fn insert_storage_change(tables: &mut DatabaseChanges, clock: &Clock, storage_change: &StorageChange, transaction: &TransactionTrace, trace: &Call) {
-    let address = bytes_to_hex(storage_change.address.clone());
-    let key = bytes_to_hex(storage_change.key.clone());
-    let new_value = bytes_to_hex(storage_change.new_value.clone());
-    let old_value = bytes_to_hex(storage_change.old_value.clone());
+    let address = bytes_to_hex(&storage_change.address);
+    let key = bytes_to_hex(&storage_change.key);
+    let new_value = bytes_to_hex(&storage_change.new_value);
+    let old_value = bytes_to_hex(&storage_change.old_value);
     let ordinal = storage_change.ordinal;
 
     let keys = block_ordinal_keys(&clock, &ordinal);

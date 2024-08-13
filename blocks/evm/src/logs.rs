@@ -12,14 +12,14 @@ use crate::transactions::insert_transaction_metadata;
 pub fn insert_log(tables: &mut DatabaseChanges, clock: &Clock, log: &Log, transaction: &TransactionTrace) {
     let index = log.index;
     let block_index = log.block_index;
-    let tx_hash = bytes_to_hex(transaction.hash.to_vec());
-    let contract_address = bytes_to_hex(log.address.to_vec()); // EVM Address
+    let tx_hash = bytes_to_hex(&transaction.hash.to_vec());
+    let contract_address = bytes_to_hex(&log.address.to_vec()); // EVM Address
     let topics = log.topics.clone();
     let topic0 = extract_topic(&topics, 0);
     let topic1 = extract_topic(&topics, 1);
     let topic2 = extract_topic(&topics, 2);
     let topic3 = extract_topic(&topics, 3);
-    let data = bytes_to_hex(log.data.to_vec());
+    let data = bytes_to_hex(&log.data.to_vec());
 
     let keys = logs_keys(&clock, &tx_hash, &index);
     let row = tables

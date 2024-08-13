@@ -11,11 +11,11 @@ use crate::transactions::insert_transaction_metadata;
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L744
 // DetailLevel: EXTENDED
 pub fn insert_code_change(row: &mut TableChange, code_change: &CodeChange) {
-    let address = bytes_to_hex(code_change.address.clone());
-    let old_hash = bytes_to_hex(code_change.old_hash.clone());
-    let old_code = bytes_to_hex(code_change.old_code.clone());
-    let new_hash = bytes_to_hex(code_change.new_hash.clone());
-    let new_code = bytes_to_hex(code_change.new_code.clone());
+    let address = bytes_to_hex(&code_change.address);
+    let old_hash = bytes_to_hex(&code_change.old_hash);
+    let old_code = bytes_to_hex(&code_change.old_code);
+    let new_hash = bytes_to_hex(&code_change.new_hash);
+    let new_code = bytes_to_hex(&code_change.new_code);
     let ordinal = code_change.ordinal;
 
     row.change("address", ("", address.as_str()))

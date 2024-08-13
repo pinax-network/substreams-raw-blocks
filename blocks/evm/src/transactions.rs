@@ -53,18 +53,18 @@ pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &
 // DetailLevel: BASE & EXTENDED
 pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transaction: &TransactionTrace, block: &Block) {
     let index = transaction.index;
-    let hash = bytes_to_hex(transaction.hash.clone());
-    let from = bytes_to_hex(transaction.from.clone()); // EVM Address
-    let to = bytes_to_hex(transaction.to.clone()); // EVM Address
+    let hash = bytes_to_hex(&transaction.hash);
+    let from = bytes_to_hex(&transaction.from); // EVM Address
+    let to = bytes_to_hex(&transaction.to); // EVM Address
     let nonce = transaction.nonce;
     let gas_used = transaction.gas_used; // TO-DO: rename to `gas`? https://github.com/pinax-network/substreams-raw-blocks/issues/1
     let gas_price = optional_bigint_to_string(transaction.gas_price.clone(), "0"); // UInt256
     let gas_limit = transaction.gas_limit;
     let value = optional_bigint_to_string(transaction.value.clone(), "0"); // UInt256
-    let input = bytes_to_hex(transaction.input.clone()); // TO-DO: change to 0x? rename to `data`? https://github.com/pinax-network/substreams-raw-blocks/issues/1
-    let v = bytes_to_hex(transaction.v.clone());
-    let r = bytes_to_hex(transaction.r.clone());
-    let s = bytes_to_hex(transaction.s.clone());
+    let input = bytes_to_hex(&transaction.input); // TO-DO: change to 0x? rename to `data`? https://github.com/pinax-network/substreams-raw-blocks/issues/1
+    let v = bytes_to_hex(&transaction.v);
+    let r = bytes_to_hex(&transaction.r);
+    let s = bytes_to_hex(&transaction.s);
     let r#type = transaction_type_to_string(transaction.r#type);
     let type_code = transaction.r#type;
     let max_fee_per_gas = optional_bigint_to_string(transaction.max_fee_per_gas.clone(), "0"); // UInt256
@@ -80,13 +80,13 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
     let blob_gas_price = optional_bigint_to_string(receipt.clone().blob_gas_price, "0");
     let blob_gas_used = receipt.blob_gas_used();
     let cumulative_gas_used = receipt.cumulative_gas_used;
-    let logs_bloom = bytes_to_hex(receipt.logs_bloom);
-    let state_root = bytes_to_hex(receipt.state_root);
+    let logs_bloom = bytes_to_hex(&receipt.logs_bloom);
+    let state_root = bytes_to_hex(&receipt.state_root);
 
     // block roots
     let header = block.header.clone().unwrap();
-    let transactions_root = bytes_to_hex(header.transactions_root.clone());
-    let receipts_root = bytes_to_hex(header.receipt_root.clone());
+    let transactions_root = bytes_to_hex(&header.transactions_root);
+    let receipts_root = bytes_to_hex(&header.receipt_root);
 
     let keys = transaction_keys(&clock, &hash);
     let row = tables
@@ -146,9 +146,9 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
 
 pub fn insert_transaction_metadata(row: &mut TableChange, transaction: &TransactionTrace, is_transaction: bool) {
     let tx_index = transaction.index;
-    let tx_hash = bytes_to_hex(transaction.hash.clone());
-    let from = bytes_to_hex(transaction.from.clone()); // does trace contain `from`?
-    let to = bytes_to_hex(transaction.to.clone()); // does trace contain `to`?
+    let tx_hash = bytes_to_hex(&transaction.hash);
+    let from = bytes_to_hex(&transaction.from); // does trace contain `from`?
+    let to = bytes_to_hex(&transaction.to); // does trace contain `to`?
     let tx_status = transaction_status_to_string(transaction.status);
     let tx_status_code = transaction.status;
     let tx_success = is_transaction_success(transaction.status);
