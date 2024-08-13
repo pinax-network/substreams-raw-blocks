@@ -125,6 +125,7 @@ CREATE TABLE IF NOT EXISTS logs
 
     -- logs --
     `index`                     UInt32,
+    block_index                 UInt32,
     contract_address            FixedString(42),
     topic0                      FixedString(66),
     topic1                      FixedString(66) DEFAULT '',
@@ -277,6 +278,27 @@ CREATE TABLE IF NOT EXISTS storage_changes
         ORDER BY (block_date, block_number, block_hash, ordinal)
         COMMENT 'EVM storage changes';
 
+CREATE TABLE IF NOT EXISTS block_code_changes
+(
+    -- block --
+    block_time                  DateTime64(3, 'UTC'),
+    block_number                UInt64,
+    block_hash                  FixedString(66),
+    block_date                  Date,
+
+    -- code change --
+    address                     FixedString(42),
+    old_hash                    FixedString(66) DEFAULT '',
+    old_code                    String DEFAULT '',
+    new_hash                    FixedString(66) DEFAULT '',
+    new_code                    String DEFAULT '',
+    ordinal                     UInt64
+)
+    ENGINE = ReplacingMergeTree()
+        PRIMARY KEY (block_date, block_number)
+        ORDER BY (block_date, block_number, block_hash, ordinal)
+        COMMENT 'EVM block code changes';
+
 CREATE TABLE IF NOT EXISTS code_changes
 (
     -- block --
@@ -414,3 +436,38 @@ CREATE TABLE IF NOT EXISTS gas_changes
         PRIMARY KEY (block_date, block_number)
         ORDER BY (block_date, block_number, block_hash, ordinal)
         COMMENT 'EVM gas changes';
+
+CREATE TABLE IF NOT EXISTS system_traces
+(
+    -- block --
+    block_time                  DateTime64(3, 'UTC'),
+    block_number                UInt64,
+    block_hash                  FixedString(66),
+    block_date                  Date,
+
+    -- trace --
+    `index`                     UInt32,
+    parent_index                UInt32,
+    depth                       UInt32,
+    caller                      FixedString(42),
+    call_type                   LowCardinality(String),
+    call_type_code              UInt32,
+    address                     FixedString(42),
+    value                       DEFAULT '' COMMENT 'UInt256',
+    gas_limit                   UInt64,
+    gas_consumed                UInt64,
+    return_data                 String COMMENT 'Return data is set by contract calls using RETURN or REVERT.',
+    input                       String,
+    suicide                     Bool,
+    failure_reason              LowCardinality(String),
+    state_reverted              Bool,
+    status_reverted             Bool,
+    status_failed               Bool,
+    executed_code               Bool,
+    begin_ordinal               UInt64,
+    end_ordinal                 UInt64
+)
+    ENGINE = ReplacingMergeTree()
+        PRIMARY KEY (block_date, block_number)
+        ORDER BY (block_date, block_number, `index`)
+        COMMENT 'EVM system traces';

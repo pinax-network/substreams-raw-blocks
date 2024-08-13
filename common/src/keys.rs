@@ -40,3 +40,9 @@ pub fn traces_keys(clock: &Clock, tx_hash: &String, tx_index: &u32, index: &u32)
     keys.insert("index".to_string(), index.to_string());
     keys
 }
+
+pub fn system_traces_keys(clock: &Clock, index: &u32) -> HashMap<String, String> {
+    let mut keys = blocks_keys(clock, false);
+    keys.insert("index".to_string(), index.to_string());
+    keys
+}

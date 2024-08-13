@@ -6,6 +6,8 @@ use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_ethereum::pb::eth::v2::Block;
 
 use crate::balance_changes::insert_balance_change_counts;
+use crate::code_changes::insert_block_code_change;
+use crate::traces::insert_system_trace;
 
 pub fn block_detail_to_string(detail_level: i32) -> String {
     match detail_level {
@@ -93,5 +95,12 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
     let all_balance_changes_reason: Vec<i32> = block.balance_changes.iter().map(|balance_change| balance_change.reason).collect();
     insert_balance_change_counts(row, all_balance_changes_reason);
 
-    // TODO: block.code_changes
+    // code changes
+    for code_change in block.code_changes.iter() {
+        insert_block_code_change(tables, clock, code_change);
+    }
+
+    for system_call in block.system_calls.iter() {
+        insert_system_trace(tables, clock, system_call);
+    }
 }

@@ -1,6 +1,6 @@
 use common::{
     blocks::insert_timestamp,
-    keys::traces_keys,
+    keys::{system_traces_keys, traces_keys},
     utils::{bytes_to_hex, optional_bigint_to_string},
 };
 use substreams::pb::substreams::Clock;
@@ -8,7 +8,7 @@ use substreams_database_change::pb::database::{table_change, DatabaseChanges, Ta
 use substreams_ethereum::pb::eth::v2::{Call, TransactionTrace};
 
 use crate::{
-    account_creations::insert_account_creation, balance_changes::insert_trace_balance_change, code_changes::insert_code_change, gas_changes::insert_gas_change, logs::insert_log,
+    account_creations::insert_account_creation, balance_changes::insert_trace_balance_change, code_changes::insert_trace_code_change, gas_changes::insert_gas_change, logs::insert_log,
     nonce_changes::insert_nonce_change, storage_changes::insert_storage_change, transactions::insert_transaction_metadata,
 };
 
@@ -30,7 +30,56 @@ pub fn insert_trace(tables: &mut DatabaseChanges, clock: &Clock, call: &Call, tr
     // transaction
     let tx_index = transaction.index;
     let tx_hash = bytes_to_hex(transaction.hash.clone());
+    let keys = traces_keys(&clock, &tx_hash, &tx_index, &call.index);
+    let row = tables.push_change_composite("traces", keys, 0, table_change::Operation::Create);
+    insert_trace_values(row, call);
+    insert_timestamp(row, clock, false);
+    insert_transaction_metadata(row, transaction, true);
 
+    // TABLE::logs
+    for log in call.logs.iter() {
+        insert_log(tables, clock, log, transaction);
+    }
+
+    // TABLE::balance_changes
+    for balance_change in call.balance_changes.iter() {
+        insert_trace_balance_change(tables, clock, balance_change, transaction, call);
+    }
+    // TABLE::storage_changes
+    for storage_change in call.storage_changes.iter() {
+        insert_storage_change(tables, clock, &storage_change, transaction, call);
+    }
+    // TABLE::code_changes
+    for code_change in call.code_changes.iter() {
+        insert_trace_code_change(tables, clock, &code_change, transaction, call);
+    }
+    // TABLE::account_creations
+    for account_creation in call.account_creations.iter() {
+        insert_account_creation(tables, clock, &account_creation, transaction, call);
+    }
+    // TABLE::nonce_changes
+    for nonce_change in call.nonce_changes.iter() {
+        insert_nonce_change(tables, clock, &nonce_change, transaction, call);
+    }
+    // TABLE::gas_changes
+    for gas_change in call.gas_changes.iter() {
+        insert_gas_change(tables, clock, &gas_change, transaction, call);
+    }
+}
+
+// https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L546
+// DetailLevel: EXTENDED
+pub fn insert_system_trace(tables: &mut DatabaseChanges, clock: &Clock, system_call: &Call) {
+    let keys = system_traces_keys(&clock, &system_call.index);
+    let row = tables.push_change_composite("system_traces", keys, 0, table_change::Operation::Create);
+    insert_trace_values(row, system_call);
+    insert_timestamp(row, clock, false);
+
+    // TO-DO: add additional tables? (e.g. logs, balance_changes, storage_changes, code_changes, account_creations, nonce_changes, gas_changes)
+    // would require to drop `transaction` from those tables
+}
+
+pub fn insert_trace_values(row: &mut TableChange, call: &Call) {
     // trace
     let address = bytes_to_hex(call.address.clone()); // additional `trace_address`?
     let begin_ordinal = call.begin_ordinal;
@@ -53,10 +102,7 @@ pub fn insert_trace(tables: &mut DatabaseChanges, clock: &Clock, call: &Call, tr
     let suicide = call.suicide; // or `selfdestruct`?
     let value = optional_bigint_to_string(call.value.clone(), "0"); // UInt256
 
-    let keys = traces_keys(&clock, &tx_hash, &tx_index, &index);
-    let row = tables
-        .push_change_composite("traces", keys, 0, table_change::Operation::Create)
-        .change("address", ("", address.as_str()))
+    row.change("address", ("", address.as_str()))
         .change("begin_ordinal", ("", begin_ordinal.to_string().as_str()))
         .change("call_type", ("", call_type.as_str()))
         .change("call_type_code", ("", call_type_code.to_string().as_str()))
@@ -76,39 +122,6 @@ pub fn insert_trace(tables: &mut DatabaseChanges, clock: &Clock, call: &Call, tr
         .change("status_reverted", ("", status_reverted.to_string().as_str()))
         .change("suicide", ("", suicide.to_string().as_str()))
         .change("value", ("", value.as_str()));
-
-    insert_timestamp(row, clock, false);
-    insert_transaction_metadata(row, transaction, true);
-
-    // TABLE::logs
-    for log in call.logs.iter() {
-        insert_log(tables, clock, log, transaction);
-    }
-
-    // TABLE::balance_changes
-    for balance_change in call.balance_changes.iter() {
-        insert_trace_balance_change(tables, clock, balance_change, transaction, call);
-    }
-    // TABLE::storage_changes
-    for storage_change in call.storage_changes.iter() {
-        insert_storage_change(tables, clock, &storage_change, transaction, call);
-    }
-    // TABLE::code_changes
-    for code_change in call.code_changes.iter() {
-        insert_code_change(tables, clock, &code_change, transaction, call);
-    }
-    // TABLE::account_creations
-    for account_creation in call.account_creations.iter() {
-        insert_account_creation(tables, clock, &account_creation, transaction, call);
-    }
-    // TABLE::nonce_changes
-    for nonce_change in call.nonce_changes.iter() {
-        insert_nonce_change(tables, clock, &nonce_change, transaction, call);
-    }
-    // TABLE::gas_changes
-    for gas_change in call.gas_changes.iter() {
-        insert_gas_change(tables, clock, &gas_change, transaction, call);
-    }
 }
 
 pub fn insert_trace_metadata(row: &mut TableChange, trace: &Call) {
