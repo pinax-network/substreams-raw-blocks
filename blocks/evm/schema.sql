@@ -227,7 +227,7 @@ CREATE TABLE IF NOT EXISTS traces
     gas_consumed                UInt64,
     return_data                 String COMMENT 'Return data is set by contract calls using RETURN or REVERT.',
     input                       String,
-    method_id                   String(8) COMMENT 'Method ID is the first 4 bytes of the Keccak-256 hash of the function signature.'
+    method_id                   FixedString(10) COMMENT 'Method ID is the first 4 bytes of the Keccak-256 hash of the function signature.',
     suicide                     Bool,
     failure_reason              LowCardinality(String),
     state_reverted              Bool,
@@ -459,6 +459,7 @@ CREATE TABLE IF NOT EXISTS system_traces
     gas_consumed                UInt64,
     return_data                 String COMMENT 'Return data is set by contract calls using RETURN or REVERT.',
     input                       String,
+    method_id                   FixedString(10) COMMENT 'Method ID is the first 4 bytes of the Keccak-256 hash of the function signature.',
     suicide                     Bool,
     failure_reason              LowCardinality(String),
     state_reverted              Bool,

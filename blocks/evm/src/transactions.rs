@@ -145,8 +145,8 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
 }
 
 pub fn insert_transaction_metadata(row: &mut TableChange, transaction: &TransactionTrace, is_transaction: bool) {
-    let tx_index = transaction.index;
     let tx_hash = bytes_to_hex(&transaction.hash);
+    let tx_index = transaction.index;
     let from = bytes_to_hex(&transaction.from); // does trace contain `from`?
     let to = bytes_to_hex(&transaction.to); // does trace contain `to`?
     let tx_status = transaction_status_to_string(transaction.status);
@@ -154,8 +154,8 @@ pub fn insert_transaction_metadata(row: &mut TableChange, transaction: &Transact
     let tx_success = is_transaction_success(transaction.status);
     let prefix = if is_transaction { "" } else { "tx_" };
 
-    row.change("tx_index", ("", tx_index.to_string().as_str()))
-        .change("tx_hash", ("", tx_hash.as_str()))
+    row.change("tx_hash", ("", tx_hash.as_str()))
+        .change("tx_index", ("", tx_index.to_string().as_str()))
         .change(format!("{}from", prefix).as_str(), ("", from.as_str()))
         .change(format!("{}to", prefix).as_str(), ("", to.as_str()))
         .change("tx_status", ("", tx_status.as_str()))

@@ -89,19 +89,21 @@ pub fn insert_trace_values(row: &mut TableChange, call: &Call) {
     let depth = call.depth;
     let end_ordinal = call.end_ordinal;
     let executed_code = call.executed_code;
-    let failure_reason = &call.failure_reason;
     let gas_consumed = call.gas_consumed;
     let gas_limit = call.gas_limit;
     let index = call.index; // or `subtraces`?
     let input = bytes_to_hex(&call.input);
     let parent_index = call.parent_index;
-    let return_data = bytes_to_hex(&call.return_data);
     let state_reverted = call.state_reverted;
     let status_failed = call.status_failed;
     let status_reverted = call.status_reverted;
     let suicide = call.suicide; // or `selfdestruct`?
     let value = optional_bigint_to_string(call.value.clone(), "0"); // UInt256
     let method_id = extract_method_id(&call.input);
+
+    // not available in system traces
+    let failure_reason = call.failure_reason.as_str();
+    let return_data = bytes_to_hex(&call.return_data);
 
     row.change("address", ("", address.as_str()))
         .change("begin_ordinal", ("", begin_ordinal.to_string().as_str()))
@@ -111,20 +113,19 @@ pub fn insert_trace_values(row: &mut TableChange, call: &Call) {
         .change("depth", ("", depth.to_string().as_str()))
         .change("end_ordinal", ("", end_ordinal.to_string().as_str()))
         .change("executed_code", ("", executed_code.to_string().as_str()))
-        .change("failure_reason", ("", failure_reason.as_str()))
         .change("gas_consumed", ("", gas_consumed.to_string().as_str()))
         .change("gas_limit", ("", gas_limit.to_string().as_str()))
         .change("index", ("", index.to_string().as_str()))
         .change("input", ("", input.as_str()))
         .change("method_id", ("", method_id.as_str()))
         .change("parent_index", ("", parent_index.to_string().as_str()))
-        .change("return_data", ("", return_data.as_str()))
         .change("state_reverted", ("", state_reverted.to_string().as_str()))
         .change("status_failed", ("", status_failed.to_string().as_str()))
         .change("status_reverted", ("", status_reverted.to_string().as_str()))
         .change("suicide", ("", suicide.to_string().as_str()))
         .change("value", ("", value.as_str()))
-        ;
+        .change("failure_reason", ("", failure_reason))
+        .change("return_data", ("", return_data.as_str()));
 }
 
 pub fn insert_trace_metadata(row: &mut TableChange, trace: &Call) {
