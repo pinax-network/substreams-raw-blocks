@@ -7,7 +7,7 @@ use substreams_ethereum::pb::eth::v2::Block;
 
 use crate::balance_changes::insert_balance_change_counts;
 use crate::code_changes::insert_block_code_change;
-use crate::traces::insert_system_trace;
+use crate::system_traces::insert_system_trace;
 
 pub fn block_detail_to_string(detail_level: i32) -> String {
     match detail_level {

@@ -1,6 +1,6 @@
 use common::{
     blocks::insert_timestamp,
-    keys::{system_traces_keys, traces_keys},
+    keys::traces_keys,
     utils::{bytes_to_hex, extract_method_id, optional_bigint_to_string},
 };
 use substreams::pb::substreams::Clock;
@@ -65,18 +65,6 @@ pub fn insert_trace(tables: &mut DatabaseChanges, clock: &Clock, call: &Call, tr
     for gas_change in call.gas_changes.iter() {
         insert_gas_change(tables, clock, &gas_change, transaction, call);
     }
-}
-
-// https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L546
-// DetailLevel: EXTENDED
-pub fn insert_system_trace(tables: &mut DatabaseChanges, clock: &Clock, system_call: &Call) {
-    let keys = system_traces_keys(&clock, &system_call.index);
-    let row = tables.push_change_composite("system_traces", keys, 0, table_change::Operation::Create);
-    insert_trace_values(row, system_call);
-    insert_timestamp(row, clock, false);
-
-    // TO-DO: add additional tables? (e.g. logs, balance_changes, storage_changes, code_changes, account_creations, nonce_changes, gas_changes)
-    // would require to drop `transaction` from those tables
 }
 
 pub fn insert_trace_values(row: &mut TableChange, call: &Call) {
