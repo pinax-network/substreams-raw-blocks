@@ -18,23 +18,23 @@ CREATE TABLE IF NOT EXISTS blocks
     time                        DateTime64(3, 'UTC'),
     number                      UInt64,
     date                        Date,
-    hash                        FixedString(66),
+    hash                        String COMMENT 'EVM Hash',
 
     -- header --
-    parent_hash                 FixedString(66),
+    parent_hash                 String COMMENT 'EVM Hash',
     nonce                       UInt64,
-    ommers_hash                 FixedString(66),
+    ommers_hash                 String COMMENT 'EVM Hash',
     logs_bloom                  String,
-    transactions_root           FixedString(66),
-    state_root                  FixedString(66),
-    receipts_root               FixedString(66),
-    withdrawals_root            FixedString(66) DEFAULT '' COMMENT 'EIP-4895 (Shangai Fork)',
-    parent_beacon_root          FixedString(66) DEFAULT '' COMMENT 'EIP-4788 (Dencun Fork)',
-    miner                       FixedString(42),
+    transactions_root           String COMMENT 'EVM Hash',
+    state_root                  String COMMENT 'EVM Hash',
+    receipts_root               String COMMENT 'EVM Hash',
+    withdrawals_root            String DEFAULT '' COMMENT 'EVM Root EIP-4895 (Shangai Fork)',
+    parent_beacon_root          String DEFAULT '' COMMENT 'EVM Root EIP-4788 (Dencun Fork)',
+    miner                       String COMMENT 'EVM Address',
     difficulty                  UInt64 DEFAULT 0,
     total_difficulty            String DEFAULT '' COMMENT 'UInt256',
     size                        String,
-    mix_hash                    FixedString(66),
+    mix_hash                    String COMMENT 'EVM Hash',
     extra_data                  String,
     extra_data_utf8             String,
     gas_limit                   UInt64,
@@ -63,18 +63,18 @@ CREATE TABLE IF NOT EXISTS transactions
     -- block --
     block_time                  DateTime64(3, 'UTC'),
     block_number                UInt64,
-    block_hash                  FixedString(66),
+    block_hash                  String COMMENT 'EVM Hash',
     block_date                  Date,
 
     -- block roots --
-    transactions_root           FixedString(66),
-    receipts_root               FixedString(66),
+    transactions_root           String COMMENT 'EVM Hash',
+    receipts_root               String COMMENT 'EVM Hash',
 
     -- transaction --
     `index`                     UInt32,
-    hash                        FixedString(66),
-    from                        FixedString(42),
-    to                          FixedString(42),
+    hash                        String COMMENT 'EVM Hash',
+    from                        String COMMENT 'EVM Address',
+    to                          String COMMENT 'EVM Address',
     nonce                       UInt64,
     status                      LowCardinality(String),
     status_code                 UInt32,
@@ -84,8 +84,8 @@ CREATE TABLE IF NOT EXISTS transactions
     value                       DEFAULT '' COMMENT 'UInt256',
     input                       String,
     v                           String,
-    r                           FixedString(66),
-    s                           FixedString(66),
+    r                           String COMMENT 'EVM Hash',
+    s                           String COMMENT 'EVM Hash',
     gas_used                    UInt64,
     type                        LowCardinality(String) COMMENT 'EIP-1559',
     type_code                   UInt32 COMMENT 'EIP-1559',
@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS transactions
     blob_gas_used               UInt64,
     cumulative_gas_used         UInt64,
     logs_bloom                  String,
-    state_root                  FixedString(66),
+    state_root                  String COMMENT 'EVM Hash',
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_number)
@@ -111,26 +111,26 @@ CREATE TABLE IF NOT EXISTS logs
     -- block --
     block_time                  DateTime64(3, 'UTC'),
     block_number                UInt64,
-    block_hash                  FixedString(66),
+    block_hash                  String COMMENT 'EVM Hash',
     block_date                  Date,
 
     -- transaction --
-    tx_hash                     FixedString(66),
+    tx_hash                     String COMMENT 'EVM Hash',
     tx_index                    UInt32,
     tx_status                   LowCardinality(String),
     tx_status_code              UInt32,
     tx_success                  Bool,
-    tx_from                     FixedString(42) COMMENT 'EVM Address',
-    tx_to                       FixedString(42) COMMENT 'EVM Address',
+    tx_from                     String COMMENT 'EVM Address',
+    tx_to                       String COMMENT 'EVM Address',
 
     -- logs --
     `index`                     UInt32,
     block_index                 UInt32,
-    contract_address            FixedString(42),
-    topic0                      FixedString(66),
-    topic1                      FixedString(66) DEFAULT '',
-    topic2                      FixedString(66) DEFAULT '',
-    topic3                      FixedString(66) DEFAULT '',
+    contract_address            String COMMENT 'EVM Address',
+    topic0                      String COMMENT 'EVM Hash',
+    topic1                      String DEFAULT '' COMMENT 'EVM Hash',
+    topic2                      String DEFAULT '' COMMENT 'EVM Hash',
+    topic3                      String DEFAULT '' COMMENT 'EVM Hash',
     data                        String
 )
     ENGINE = ReplacingMergeTree()
@@ -143,11 +143,11 @@ CREATE TABLE IF NOT EXISTS block_balance_changes
     -- block --
     block_time                  DateTime64(3, 'UTC'),
     block_number                UInt64,
-    block_hash                  FixedString(66),
+    block_hash                  String COMMENT 'EVM Hash',
     block_date                  Date,
 
     -- balance change --
-    address                     FixedString(42),
+    address                     String COMMENT 'EVM Address',
     new_value                   DEFAULT '' COMMENT 'UInt256',
     old_value                   DEFAULT '' COMMENT 'UInt256',
     delta_value                 DEFAULT '' COMMENT 'Int256',
@@ -165,26 +165,26 @@ CREATE TABLE IF NOT EXISTS balance_changes
     -- block --
     block_time                  DateTime64(3, 'UTC'),
     block_number                UInt64,
-    block_hash                  FixedString(66),
+    block_hash                  String COMMENT 'EVM Hash',
     block_date                  Date,
 
     -- transaction --
-    tx_hash                     FixedString(66),
+    tx_hash                     String COMMENT 'EVM Hash',
     tx_index                    UInt32,
     tx_status                   LowCardinality(String),
     tx_status_code              UInt32,
     tx_success                  Bool,
-    tx_from                     FixedString(42) COMMENT 'EVM Address',
-    tx_to                       FixedString(42) COMMENT 'EVM Address',
+    tx_from                     String COMMENT 'EVM Address',
+    tx_to                       String COMMENT 'EVM Address',
 
     -- trace --
     trace_index                 UInt32,
     trace_parent_index          UInt32,
     trace_depth                 UInt32,
-    trace_caller                FixedString(42),
+    trace_caller                String COMMENT 'EVM Address',
 
     -- balance change --
-    address                     FixedString(42),
+    address                     String COMMENT 'EVM Address',
     new_value                   DEFAULT '' COMMENT 'UInt256',
     old_value                   DEFAULT '' COMMENT 'UInt256',
     delta_value                 DEFAULT '' COMMENT 'Int256',
@@ -202,32 +202,32 @@ CREATE TABLE IF NOT EXISTS traces
     -- block --
     block_time                  DateTime64(3, 'UTC'),
     block_number                UInt64,
-    block_hash                  FixedString(66),
+    block_hash                  String COMMENT 'EVM Hash',
     block_date                  Date,
 
     -- transaction --
-    tx_hash                     FixedString(66),
+    tx_hash                     String COMMENT 'EVM Hash',
     tx_index                    UInt32,
     tx_status                   LowCardinality(String),
     tx_status_code              UInt32,
     tx_success                  Bool,
-    from                        FixedString(42) COMMENT 'EVM Address',
-    to                          FixedString(42) COMMENT 'EVM Address',
+    from                        String COMMENT 'EVM Address',
+    to                          String COMMENT 'EVM Address',
 
     -- trace --
     `index`                     UInt32,
     parent_index                UInt32,
     depth                       UInt32,
-    caller                      FixedString(42),
+    caller                      String COMMENT 'EVM Address',
     call_type                   LowCardinality(String),
     call_type_code              UInt32,
-    address                     FixedString(42),
+    address                     String COMMENT 'EVM Address',
     value                       DEFAULT '' COMMENT 'UInt256',
     gas_limit                   UInt64,
     gas_consumed                UInt64,
     return_data                 String COMMENT 'Return data is set by contract calls using RETURN or REVERT.',
     input                       String,
-    method_id                   FixedString(10) COMMENT 'Method ID is the first 4 bytes of the Keccak-256 hash of the function signature.',
+    method_id                   String COMMENT 'Method ID is the first 4 bytes of the Keccak-256 hash of the function signature.',
     suicide                     Bool,
     failure_reason              LowCardinality(String),
     state_reverted              Bool,
@@ -249,29 +249,29 @@ CREATE TABLE IF NOT EXISTS storage_changes
     -- block --
     block_time                  DateTime64(3, 'UTC'),
     block_number                UInt64,
-    block_hash                  FixedString(66),
+    block_hash                  String COMMENT 'EVM Hash',
     block_date                  Date,
 
     -- transaction --
-    tx_hash                     FixedString(66),
+    tx_hash                     String COMMENT 'EVM Hash',
     tx_index                    UInt32,
     tx_status                   LowCardinality(String),
     tx_status_code              UInt32,
     tx_success                  Bool,
-    tx_from                     FixedString(42) COMMENT 'EVM Address',
-    tx_to                       FixedString(42) COMMENT 'EVM Address',
+    tx_from                     String COMMENT 'EVM Address',
+    tx_to                       String COMMENT 'EVM Address',
 
     -- trace --
     trace_index                 UInt32,
     trace_parent_index          UInt32,
     trace_depth                 UInt32,
-    trace_caller                FixedString(42),
+    trace_caller                String COMMENT 'EVM Address',
 
     -- storage change --
-    address                     FixedString(42),
-    key                         FixedString(66),
-    new_value                   FixedString(66) DEFAULT '',
-    old_value                   FixedString(66) DEFAULT '',
+    address                     String COMMENT 'EVM Address',
+    key                         String COMMENT 'EVM Hash',
+    new_value                   String DEFAULT '' COMMENT 'EVM Hash',
+    old_value                   String DEFAULT '' COMMENT 'EVM Hash',
     ordinal                     UInt64
 )
     ENGINE = ReplacingMergeTree()
@@ -284,14 +284,14 @@ CREATE TABLE IF NOT EXISTS block_code_changes
     -- block --
     block_time                  DateTime64(3, 'UTC'),
     block_number                UInt64,
-    block_hash                  FixedString(66),
+    block_hash                  String COMMENT 'EVM Hash',
     block_date                  Date,
 
     -- code change --
-    address                     FixedString(42),
-    old_hash                    FixedString(66) DEFAULT '',
+    address                     String COMMENT 'EVM Address',
+    old_hash                    String DEFAULT '' COMMENT 'EVM Hash',
     old_code                    String DEFAULT '',
-    new_hash                    FixedString(66) DEFAULT '',
+    new_hash                    String DEFAULT '' COMMENT 'EVM Hash',
     new_code                    String DEFAULT '',
     ordinal                     UInt64
 )
@@ -305,29 +305,29 @@ CREATE TABLE IF NOT EXISTS code_changes
     -- block --
     block_time                  DateTime64(3, 'UTC'),
     block_number                UInt64,
-    block_hash                  FixedString(66),
+    block_hash                  String COMMENT 'EVM Hash',
     block_date                  Date,
 
     -- transaction --
-    tx_hash                     FixedString(66),
+    tx_hash                     String COMMENT 'EVM Hash',
     tx_index                    UInt32,
     tx_status                   LowCardinality(String),
     tx_status_code              UInt32,
     tx_success                  Bool,
-    tx_from                        FixedString(42) COMMENT 'EVM Address',
-    tx_to                          FixedString(42) COMMENT 'EVM Address',
+    tx_from                        String COMMENT 'EVM Address',
+    tx_to                          String COMMENT 'EVM Address',
 
     -- trace --
     trace_index                 UInt32,
     trace_parent_index          UInt32,
     trace_depth                 UInt32,
-    trace_caller                FixedString(42),
+    trace_caller                String COMMENT 'EVM Address',
 
     -- code change --
-    address                     FixedString(42),
-    old_hash                    FixedString(66) DEFAULT '',
+    address                     String COMMENT 'EVM Address',
+    old_hash                    String DEFAULT '' COMMENT 'EVM Hash',
     old_code                    String DEFAULT '',
-    new_hash                    FixedString(66) DEFAULT '',
+    new_hash                    String DEFAULT '' COMMENT 'EVM Hash',
     new_code                    String DEFAULT '',
     ordinal                     UInt64
 )
@@ -341,27 +341,27 @@ CREATE TABLE IF NOT EXISTS account_creations
     -- block --
     block_time                  DateTime64(3, 'UTC'),
     block_number                UInt64,
-    block_hash                  FixedString(66),
+    block_hash                  String COMMENT 'EVM Hash',
     block_date                  Date,
 
     -- transaction --
-    tx_hash                     FixedString(66),
+    tx_hash                     String COMMENT 'EVM Hash',
     tx_index                    UInt32,
     tx_status                   LowCardinality(String),
     tx_status_code              UInt32,
     tx_success                  Bool,
-    tx_from                     FixedString(42) COMMENT 'EVM Address',
-    tx_to                       FixedString(42) COMMENT 'EVM Address',
+    tx_from                     String COMMENT 'EVM Address',
+    tx_to                       String COMMENT 'EVM Address',
 
     -- trace --
     trace_index                 UInt32,
     trace_parent_index          UInt32,
     trace_depth                 UInt32,
-    trace_caller                FixedString(42),
+    trace_caller                String COMMENT 'EVM Address',
 
     -- account creation --
-    account                     FixedString(42),
-    ordinal                     UInt64
+    account                     String COMMENT 'EVM Address',
+    ordinal                     UInt64,
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_number)
@@ -373,29 +373,29 @@ CREATE TABLE IF NOT EXISTS nonce_changes
     -- block --
     block_time                  DateTime64(3, 'UTC'),
     block_number                UInt64,
-    block_hash                  FixedString(66),
+    block_hash                  String COMMENT 'EVM Hash',
     block_date                  Date,
 
     -- transaction --
-    tx_hash                     FixedString(66),
+    tx_hash                     String COMMENT 'EVM Hash',
     tx_index                    UInt32,
     tx_status                   LowCardinality(String),
     tx_status_code              UInt32,
     tx_success                  Bool,
-    tx_from                     FixedString(42) COMMENT 'EVM Address',
-    tx_to                       FixedString(42) COMMENT 'EVM Address',
+    tx_from                     String COMMENT 'EVM Address',
+    tx_to                       String COMMENT 'EVM Address',
 
     -- trace --
     trace_index                 UInt32,
     trace_parent_index          UInt32,
     trace_depth                 UInt32,
-    trace_caller                FixedString(42),
+    trace_caller                String COMMENT 'EVM Address',
 
     -- nonce change --
-    address                     FixedString(42),
+    address                     String COMMENT 'EVM Address',
     old_value                   UInt64,
     new_value                   UInt64,
-    ordinal                     UInt64
+    ordinal                     UInt64,
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_number)
@@ -407,23 +407,23 @@ CREATE TABLE IF NOT EXISTS gas_changes
     -- block --
     block_time                  DateTime64(3, 'UTC'),
     block_number                UInt64,
-    block_hash                  FixedString(66),
+    block_hash                  String COMMENT 'EVM Hash',
     block_date                  Date,
 
     -- transaction --
-    tx_hash                     FixedString(66),
+    tx_hash                     String COMMENT 'EVM Hash',
     tx_index                    UInt32,
     tx_status                   LowCardinality(String),
     tx_status_code              UInt32,
     tx_success                  Bool,
-    tx_from                     FixedString(42) COMMENT 'EVM Address',
-    tx_to                       FixedString(42) COMMENT 'EVM Address',
+    tx_from                     String COMMENT 'EVM Address',
+    tx_to                       String COMMENT 'EVM Address',
 
     -- trace --
     trace_index                 UInt32,
     trace_parent_index          UInt32,
     trace_depth                 UInt32,
-    trace_caller                FixedString(42),
+    trace_caller                String COMMENT 'EVM Address',
 
     -- gas change --
     old_value                   UInt64,
@@ -443,23 +443,23 @@ CREATE TABLE IF NOT EXISTS system_traces
     -- block --
     block_time                  DateTime64(3, 'UTC'),
     block_number                UInt64,
-    block_hash                  FixedString(66),
+    block_hash                  String COMMENT 'EVM Hash',
     block_date                  Date,
 
     -- trace --
     `index`                     UInt32,
     parent_index                UInt32,
     depth                       UInt32,
-    caller                      FixedString(42),
+    caller                      String COMMENT 'EVM Address',
     call_type                   LowCardinality(String),
     call_type_code              UInt32,
-    address                     FixedString(42),
+    address                     String COMMENT 'EVM Address',
     value                       DEFAULT '' COMMENT 'UInt256',
     gas_limit                   UInt64,
     gas_consumed                UInt64,
     return_data                 String COMMENT 'Return data is set by contract calls using RETURN or REVERT.',
     input                       String,
-    method_id                   FixedString(10) COMMENT 'Method ID is the first 4 bytes of the Keccak-256 hash of the function signature.',
+    method_id                   String COMMENT 'Method ID is the first 4 bytes of the Keccak-256 hash of the function signature.',
     suicide                     Bool,
     failure_reason              LowCardinality(String),
     state_reverted              Bool,
