@@ -64,6 +64,7 @@ pub fn extract_topic(topics: &Vec<Vec<u8>>, index: usize) -> String {
 // The Method ID for the function signature is the first 4 bytes (or the first 8 digits) of the Keccak-256 hash.
 pub fn extract_method_id(data: &Vec<u8>) -> String {
     if data.len() >= 4 {
+        // TO-DO: ignore 0x00000000 method id?
         bytes_to_hex(&data[..4].to_vec())
     } else {
         "".to_string()

@@ -33,28 +33,21 @@ pub fn balance_change_reason_to_string(reason: i32) -> String {
     }
 }
 
-// // Block balance changes (ex: RewardMineBlock, RewardMineUncle, Withdraw, Burn)
-// pub fn insert_balance_changes(tables: &mut DatabaseChanges, clock: &Clock, balance_changes: &Vec<BalanceChange>) {
-//     for balance_change in balance_changes {
-//         insert_balance_change(tables, &clock, &balance_change);
-//     }
-// }
-
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L658
 // DetailLevel: EXTENDED
 pub fn insert_balance_change_row(row: &mut TableChange, balance_change: &BalanceChange) {
     let address = bytes_to_hex(&balance_change.address);
-    let new_value = optional_bigint_to_string(balance_change.new_value.clone(), "0");
-    let old_value = optional_bigint_to_string(balance_change.old_value.clone(), "0");
-    let delta_value = optional_bigint_to_decimal(balance_change.new_value.clone()) - optional_bigint_to_decimal(balance_change.old_value.clone());
+    let new_balance = optional_bigint_to_string(balance_change.new_value.clone(), "0");
+    let old_balance = optional_bigint_to_string(balance_change.old_value.clone(), "0");
+    let amount = optional_bigint_to_decimal(balance_change.new_value.clone()) - optional_bigint_to_decimal(balance_change.old_value.clone());
     let ordinal = balance_change.ordinal;
     let reason_code = balance_change.reason;
     let reason = balance_change_reason_to_string(reason_code);
 
     row.change("address", ("", address.as_str()))
-        .change("new_value", ("", new_value.as_str()))
-        .change("old_value", ("", old_value.as_str()))
-        .change("delta_value", ("", delta_value.to_string().as_str()))
+        .change("new_balance", ("", new_balance.as_str()))
+        .change("old_balance", ("", old_balance.as_str()))
+        .change("amount", ("", amount.to_string().as_str()))
         .change("ordinal", ("", ordinal.to_string().as_str()))
         .change("reason", ("", reason.as_str()))
         .change("reason_code", ("", reason_code.to_string().as_str()));

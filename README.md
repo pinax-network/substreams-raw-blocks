@@ -32,6 +32,6 @@
 ```mermaid
 graph TD;
   ch_out[map: ch_out];
-  sf.substreams.v1.Clock[source: sf.substreams.v1.Clock] --> ch_out;
   sf.ethereum.type.v2.Block[source: sf.ethereum.type.v2.Block] --> ch_out;
+  sf.ethereum.type.v2.Block[source: sf.ethereum.type.v2.Block] --> map_blocks;
 ```

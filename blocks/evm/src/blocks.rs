@@ -20,7 +20,7 @@ pub fn block_detail_to_string(detail_level: i32) -> String {
 
 // https://github.com/streamingfast/firehose-ethereum/blob/develop/proto/sf/ethereum/type/v2/type.proto
 // DetailLevel: BASE
-pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
+pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block, block_header_only: bool) {
     let header = block.header.clone().unwrap_or_default();
     let parent_hash = bytes_to_hex(&header.parent_hash);
     let nonce = header.nonce;
@@ -94,6 +94,11 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
     // balance changes counts
     let all_balance_changes_reason: Vec<i32> = block.balance_changes.iter().map(|balance_change| balance_change.reason).collect();
     insert_balance_change_counts(row, all_balance_changes_reason);
+
+    // skip the rest of the block if we only want the header
+    if block_header_only {
+        return;
+    }
 
     // TABLE::code_changes
     for code_change in block.code_changes.iter() {

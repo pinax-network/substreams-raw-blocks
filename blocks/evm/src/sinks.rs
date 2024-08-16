@@ -11,7 +11,7 @@ pub fn ch_out(clock: Clock, block: Block) -> Result<DatabaseChanges, Error> {
     let mut tables: DatabaseChanges = DatabaseChanges::default();
 
     // TABLE::blocks
-    insert_blocks(&mut tables, &clock, &block);
+    insert_blocks(&mut tables, &clock, &block, false);
 
     // TABLE::transactions
     insert_transactions(&mut tables, &clock, &block);
@@ -19,11 +19,21 @@ pub fn ch_out(clock: Clock, block: Block) -> Result<DatabaseChanges, Error> {
     Ok(tables)
 }
 
-// TO-DO: Implement the `graph_out` function using EntityChanges
 #[substreams::handlers::map]
-pub fn graph_out(clock: Clock, block: Block) -> Result<DatabaseChanges, Error> {
+pub fn map_blocks(clock: Clock, block: Block) -> Result<DatabaseChanges, Error> {
     let mut tables: DatabaseChanges = DatabaseChanges::default();
-    insert_blocks(&mut tables, &clock, &block);
-    // TO-DO: Convert DatabaseChanges to EntityChanges
+
+    // TABLE::blocks
+    insert_blocks(&mut tables, &clock, &block, true);
+
     Ok(tables)
 }
+
+// // TO-DO: Implement the `graph_out` function using EntityChanges
+// #[substreams::handlers::map]
+// pub fn graph_out(clock: Clock, block: Block) -> Result<DatabaseChanges, Error> {
+//     let mut tables: DatabaseChanges = DatabaseChanges::default();
+//     insert_blocks(&mut tables, &clock, &block);
+//     // TO-DO: Convert DatabaseChanges to EntityChanges
+//     Ok(tables)
+// }

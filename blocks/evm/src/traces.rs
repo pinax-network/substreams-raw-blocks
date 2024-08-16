@@ -9,7 +9,7 @@ use substreams_ethereum::pb::eth::v2::{Call, TransactionTrace};
 
 use crate::{
     account_creations::insert_account_creation, balance_changes::insert_balance_change, code_changes::insert_code_change, gas_changes::insert_gas_change, logs::insert_log,
-    nonce_changes::insert_nonce_change, storage_changes::insert_storage_change, transactions::insert_transaction_metadata,
+    nonce_changes::insert_nonce_change, storage_changes::insert_storage_change, transactions::{insert_empty_transaction_metadata, insert_transaction_metadata},
 };
 
 pub fn call_types_to_string(call_type: i32) -> String {
@@ -75,6 +75,7 @@ pub fn insert_system_trace(tables: &mut DatabaseChanges, clock: &Clock, call: &C
     let row = tables.push_change_composite("traces", keys, 0, table_change::Operation::Create);
     insert_trace_row(row, call);
     insert_timestamp(row, clock, false);
+    insert_empty_transaction_metadata(row, true);
 }
 
 pub fn insert_trace_row(row: &mut TableChange, call: &Call) {
@@ -100,7 +101,7 @@ pub fn insert_trace_row(row: &mut TableChange, call: &Call) {
     let method_id = extract_method_id(&call.input);
 
     // not available in system traces
-    let failure_reason = call.failure_reason.as_str();
+    let failure_reason = &call.failure_reason;
     let return_data = bytes_to_hex(&call.return_data);
 
     row.change("address", ("", address.as_str()))
@@ -122,6 +123,6 @@ pub fn insert_trace_row(row: &mut TableChange, call: &Call) {
         .change("status_reverted", ("", status_reverted.to_string().as_str()))
         .change("suicide", ("", suicide.to_string().as_str()))
         .change("value", ("", value.as_str()))
-        .change("failure_reason", ("", failure_reason))
+        .change("failure_reason", ("", failure_reason.as_str()))
         .change("return_data", ("", return_data.as_str()));
 }
