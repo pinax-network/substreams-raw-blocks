@@ -3,7 +3,6 @@ use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::DatabaseChanges;
 use substreams_ethereum::pb::eth::v2::Block;
 
-use crate::balance_changes::insert_block_balance_changes;
 use crate::blocks::insert_blocks;
 use crate::transactions::insert_transactions;
 
@@ -13,9 +12,6 @@ pub fn ch_out(clock: Clock, block: Block) -> Result<DatabaseChanges, Error> {
 
     // TABLE::blocks
     insert_blocks(&mut tables, &clock, &block);
-
-    // TABLE::block_balance_changes
-    insert_block_balance_changes(&mut tables, &clock, &block.balance_changes);
 
     // TABLE::transactions
     insert_transactions(&mut tables, &clock, &block);

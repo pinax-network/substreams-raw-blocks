@@ -8,5 +8,4 @@ mod nonce_changes;
 mod sinks;
 mod storage_changes;
 mod traces;
-mod system_traces;
 mod transactions;

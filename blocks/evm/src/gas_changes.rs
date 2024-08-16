@@ -2,10 +2,7 @@ use common::blocks::insert_timestamp;
 use common::keys::block_ordinal_keys;
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
-use substreams_ethereum::pb::eth::v2::{Call, GasChange, TransactionTrace};
-
-use crate::traces::insert_trace_metadata;
-use crate::transactions::insert_transaction_metadata;
+use substreams_ethereum::pb::eth::v2::GasChange;
 
 pub fn gas_change_reason_to_string(reason: i32) -> String {
     match reason {
@@ -41,7 +38,7 @@ pub fn gas_change_reason_to_string(reason: i32) -> String {
 
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L726C9-L726C20
 // DetailLevel: EXTENDED
-pub fn insert_gas_change(tables: &mut DatabaseChanges, clock: &Clock, gas_change: &GasChange, transaction: &TransactionTrace, trace: &Call) {
+pub fn insert_gas_change(tables: &mut DatabaseChanges, clock: &Clock, gas_change: &GasChange) {
     let old_value = gas_change.old_value;
     let new_value = gas_change.new_value;
     let delta_value = new_value as i128 - old_value as i128;
@@ -61,6 +58,4 @@ pub fn insert_gas_change(tables: &mut DatabaseChanges, clock: &Clock, gas_change
         .change("ordinal", ("", ordinal.to_string().as_str()));
 
     insert_timestamp(row, clock, false);
-    insert_transaction_metadata(row, transaction, false);
-    insert_trace_metadata(row, trace);
 }

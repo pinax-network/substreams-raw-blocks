@@ -3,10 +3,7 @@ use common::utils::{bytes_to_hex, optional_bigint_to_decimal};
 use common::{keys::block_ordinal_keys, utils::optional_bigint_to_string};
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges, TableChange};
-use substreams_ethereum::pb::eth::v2::{BalanceChange, Call, TransactionTrace};
-
-use crate::traces::insert_trace_metadata;
-use crate::transactions::insert_transaction_metadata;
+use substreams_ethereum::pb::eth::v2::BalanceChange;
 
 pub fn balance_change_reason_to_string(reason: i32) -> String {
     match reason {
@@ -36,16 +33,16 @@ pub fn balance_change_reason_to_string(reason: i32) -> String {
     }
 }
 
-// Block balance changes (ex: RewardMineBlock, RewardMineUncle, Withdraw, Burn)
-pub fn insert_block_balance_changes(tables: &mut DatabaseChanges, clock: &Clock, balance_changes: &Vec<BalanceChange>) {
-    for balance_change in balance_changes {
-        insert_block_balance_change(tables, &clock, &balance_change);
-    }
-}
+// // Block balance changes (ex: RewardMineBlock, RewardMineUncle, Withdraw, Burn)
+// pub fn insert_balance_changes(tables: &mut DatabaseChanges, clock: &Clock, balance_changes: &Vec<BalanceChange>) {
+//     for balance_change in balance_changes {
+//         insert_balance_change(tables, &clock, &balance_change);
+//     }
+// }
 
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L658
 // DetailLevel: EXTENDED
-pub fn insert_balance_change(row: &mut TableChange, balance_change: &BalanceChange) {
+pub fn insert_balance_change_row(row: &mut TableChange, balance_change: &BalanceChange) {
     let address = bytes_to_hex(&balance_change.address);
     let new_value = optional_bigint_to_string(balance_change.new_value.clone(), "0");
     let old_value = optional_bigint_to_string(balance_change.old_value.clone(), "0");
@@ -63,24 +60,13 @@ pub fn insert_balance_change(row: &mut TableChange, balance_change: &BalanceChan
         .change("reason_code", ("", reason_code.to_string().as_str()));
 }
 
-pub fn insert_block_balance_change(tables: &mut DatabaseChanges, clock: &Clock, balance_change: &BalanceChange) {
-    let ordinal = balance_change.ordinal;
-    let keys = block_ordinal_keys(&clock, &ordinal);
-    let row = tables.push_change_composite("block_balance_changes", keys, 0, table_change::Operation::Create);
-
-    insert_balance_change(row, balance_change);
-    insert_timestamp(row, clock, false);
-}
-
-pub fn insert_trace_balance_change(tables: &mut DatabaseChanges, clock: &Clock, balance_change: &BalanceChange, transaction: &TransactionTrace, trace: &Call) {
+pub fn insert_balance_change(tables: &mut DatabaseChanges, clock: &Clock, balance_change: &BalanceChange) {
     let ordinal = balance_change.ordinal;
     let keys = block_ordinal_keys(&clock, &ordinal);
     let row = tables.push_change_composite("balance_changes", keys, 0, table_change::Operation::Create);
 
-    insert_balance_change(row, balance_change);
+    insert_balance_change_row(row, balance_change);
     insert_timestamp(row, clock, false);
-    insert_transaction_metadata(row, transaction, false);
-    insert_trace_metadata(row, trace);
 }
 
 pub fn insert_balance_change_counts(row: &mut TableChange, all_balance_changes_reason: Vec<i32>) {

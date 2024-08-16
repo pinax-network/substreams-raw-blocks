@@ -138,65 +138,6 @@ CREATE TABLE IF NOT EXISTS logs
         ORDER BY (block_date, block_number, tx_hash, `index`)
         COMMENT 'EVM event logs';
 
-CREATE TABLE IF NOT EXISTS block_balance_changes
-(
-    -- block --
-    block_time                  DateTime64(3, 'UTC'),
-    block_number                UInt64,
-    block_hash                  String COMMENT 'EVM Hash',
-    block_date                  Date,
-
-    -- balance change --
-    address                     String COMMENT 'EVM Address',
-    new_value                   DEFAULT '' COMMENT 'UInt256',
-    old_value                   DEFAULT '' COMMENT 'UInt256',
-    delta_value                 DEFAULT '' COMMENT 'Int256',
-    ordinal                     UInt64,
-    reason                      LowCardinality(String),
-    reason_code                 UInt32
-)
-    ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, block_number)
-        ORDER BY (block_date, block_number, block_hash, ordinal)
-        COMMENT 'EVM block balance changes';
-
-CREATE TABLE IF NOT EXISTS balance_changes
-(
-    -- block --
-    block_time                  DateTime64(3, 'UTC'),
-    block_number                UInt64,
-    block_hash                  String COMMENT 'EVM Hash',
-    block_date                  Date,
-
-    -- transaction --
-    tx_hash                     String COMMENT 'EVM Hash',
-    tx_index                    UInt32,
-    tx_status                   LowCardinality(String),
-    tx_status_code              UInt32,
-    tx_success                  Bool,
-    tx_from                     String COMMENT 'EVM Address',
-    tx_to                       String COMMENT 'EVM Address',
-
-    -- trace --
-    trace_index                 UInt32,
-    trace_parent_index          UInt32,
-    trace_depth                 UInt32,
-    trace_caller                String COMMENT 'EVM Address',
-
-    -- balance change --
-    address                     String COMMENT 'EVM Address',
-    new_value                   DEFAULT '' COMMENT 'UInt256',
-    old_value                   DEFAULT '' COMMENT 'UInt256',
-    delta_value                 DEFAULT '' COMMENT 'Int256',
-    ordinal                     UInt64,
-    reason                      LowCardinality(String),
-    reason_code                 UInt32
-)
-    ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, block_number)
-        ORDER BY (block_date, block_number, block_hash, ordinal)
-        COMMENT 'EVM balance changes';
-
 CREATE TABLE IF NOT EXISTS traces
 (
     -- block --
@@ -242,7 +183,27 @@ CREATE TABLE IF NOT EXISTS traces
         ORDER BY (block_date, block_number, tx_hash, tx_index, `index`)
         COMMENT 'EVM traces';
 
+CREATE TABLE IF NOT EXISTS balance_changes
+(
+    -- block --
+    block_time                  DateTime64(3, 'UTC'),
+    block_number                UInt64,
+    block_hash                  String COMMENT 'EVM Hash',
+    block_date                  Date,
 
+    -- balance change --
+    address                     String COMMENT 'EVM Address',
+    new_value                   DEFAULT '' COMMENT 'UInt256',
+    old_value                   DEFAULT '' COMMENT 'UInt256',
+    delta_value                 DEFAULT '' COMMENT 'Int256',
+    ordinal                     UInt64,
+    reason                      LowCardinality(String),
+    reason_code                 UInt32
+)
+    ENGINE = ReplacingMergeTree()
+        PRIMARY KEY (block_date, block_number)
+        ORDER BY (block_date, block_number, block_hash, ordinal)
+        COMMENT 'EVM balance changes';
 
 CREATE TABLE IF NOT EXISTS storage_changes
 (
@@ -252,53 +213,17 @@ CREATE TABLE IF NOT EXISTS storage_changes
     block_hash                  String COMMENT 'EVM Hash',
     block_date                  Date,
 
-    -- transaction --
-    tx_hash                     String COMMENT 'EVM Hash',
-    tx_index                    UInt32,
-    tx_status                   LowCardinality(String),
-    tx_status_code              UInt32,
-    tx_success                  Bool,
-    tx_from                     String COMMENT 'EVM Address',
-    tx_to                       String COMMENT 'EVM Address',
-
-    -- trace --
-    trace_index                 UInt32,
-    trace_parent_index          UInt32,
-    trace_depth                 UInt32,
-    trace_caller                String COMMENT 'EVM Address',
-
     -- storage change --
+    ordinal                     UInt64 COMMENT 'Block global ordinal',
     address                     String COMMENT 'EVM Address',
     key                         String COMMENT 'EVM Hash',
     new_value                   String DEFAULT '' COMMENT 'EVM Hash',
     old_value                   String DEFAULT '' COMMENT 'EVM Hash',
-    ordinal                     UInt64
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_number)
         ORDER BY (block_date, block_number, block_hash, ordinal)
         COMMENT 'EVM storage changes';
-
-CREATE TABLE IF NOT EXISTS block_code_changes
-(
-    -- block --
-    block_time                  DateTime64(3, 'UTC'),
-    block_number                UInt64,
-    block_hash                  String COMMENT 'EVM Hash',
-    block_date                  Date,
-
-    -- code change --
-    address                     String COMMENT 'EVM Address',
-    old_hash                    String DEFAULT '' COMMENT 'EVM Hash',
-    old_code                    String DEFAULT '',
-    new_hash                    String DEFAULT '' COMMENT 'EVM Hash',
-    new_code                    String DEFAULT '',
-    ordinal                     UInt64
-)
-    ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, block_number)
-        ORDER BY (block_date, block_number, block_hash, ordinal)
-        COMMENT 'EVM block code changes';
 
 CREATE TABLE IF NOT EXISTS code_changes
 (
@@ -308,28 +233,13 @@ CREATE TABLE IF NOT EXISTS code_changes
     block_hash                  String COMMENT 'EVM Hash',
     block_date                  Date,
 
-    -- transaction --
-    tx_hash                     String COMMENT 'EVM Hash',
-    tx_index                    UInt32,
-    tx_status                   LowCardinality(String),
-    tx_status_code              UInt32,
-    tx_success                  Bool,
-    tx_from                        String COMMENT 'EVM Address',
-    tx_to                          String COMMENT 'EVM Address',
-
-    -- trace --
-    trace_index                 UInt32,
-    trace_parent_index          UInt32,
-    trace_depth                 UInt32,
-    trace_caller                String COMMENT 'EVM Address',
-
     -- code change --
+    ordinal                     UInt64 COMMENT 'Block global ordinal',
     address                     String COMMENT 'EVM Address',
     old_hash                    String DEFAULT '' COMMENT 'EVM Hash',
     old_code                    String DEFAULT '',
     new_hash                    String DEFAULT '' COMMENT 'EVM Hash',
     new_code                    String DEFAULT '',
-    ordinal                     UInt64
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_number)
@@ -344,24 +254,9 @@ CREATE TABLE IF NOT EXISTS account_creations
     block_hash                  String COMMENT 'EVM Hash',
     block_date                  Date,
 
-    -- transaction --
-    tx_hash                     String COMMENT 'EVM Hash',
-    tx_index                    UInt32,
-    tx_status                   LowCardinality(String),
-    tx_status_code              UInt32,
-    tx_success                  Bool,
-    tx_from                     String COMMENT 'EVM Address',
-    tx_to                       String COMMENT 'EVM Address',
-
-    -- trace --
-    trace_index                 UInt32,
-    trace_parent_index          UInt32,
-    trace_depth                 UInt32,
-    trace_caller                String COMMENT 'EVM Address',
-
     -- account creation --
+    ordinal                     UInt64 COMMENT 'Block global ordinal',
     account                     String COMMENT 'EVM Address',
-    ordinal                     UInt64,
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_number)
@@ -376,26 +271,11 @@ CREATE TABLE IF NOT EXISTS nonce_changes
     block_hash                  String COMMENT 'EVM Hash',
     block_date                  Date,
 
-    -- transaction --
-    tx_hash                     String COMMENT 'EVM Hash',
-    tx_index                    UInt32,
-    tx_status                   LowCardinality(String),
-    tx_status_code              UInt32,
-    tx_success                  Bool,
-    tx_from                     String COMMENT 'EVM Address',
-    tx_to                       String COMMENT 'EVM Address',
-
-    -- trace --
-    trace_index                 UInt32,
-    trace_parent_index          UInt32,
-    trace_depth                 UInt32,
-    trace_caller                String COMMENT 'EVM Address',
-
     -- nonce change --
+    ordinal                     UInt64 COMMENT 'Block global ordinal',
     address                     String COMMENT 'EVM Address',
     old_value                   UInt64,
     new_value                   UInt64,
-    ordinal                     UInt64,
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_number)
@@ -410,28 +290,13 @@ CREATE TABLE IF NOT EXISTS gas_changes
     block_hash                  String COMMENT 'EVM Hash',
     block_date                  Date,
 
-    -- transaction --
-    tx_hash                     String COMMENT 'EVM Hash',
-    tx_index                    UInt32,
-    tx_status                   LowCardinality(String),
-    tx_status_code              UInt32,
-    tx_success                  Bool,
-    tx_from                     String COMMENT 'EVM Address',
-    tx_to                       String COMMENT 'EVM Address',
-
-    -- trace --
-    trace_index                 UInt32,
-    trace_parent_index          UInt32,
-    trace_depth                 UInt32,
-    trace_caller                String COMMENT 'EVM Address',
-
     -- gas change --
+    ordinal                     UInt64 COMMENT 'Block global ordinal',
     old_value                   UInt64,
     new_value                   UInt64,
     delta_value                 String DEFAULT '' COMMENT 'Int128',
     reason                      LowCardinality(String),
     reason_code                 UInt32,
-    ordinal                     UInt64
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_number)
