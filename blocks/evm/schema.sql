@@ -83,6 +83,7 @@ CREATE TABLE IF NOT EXISTS transactions
     gas_limit                   UInt64,
     value                       DEFAULT '' COMMENT 'UInt256',
     data                        String,
+    method_id                   String COMMENT 'Method ID is the first 4 bytes of the Keccak-256 hash of the function signature.',
     v                           String,
     r                           String COMMENT 'EVM Hash',
     s                           String COMMENT 'EVM Hash',
