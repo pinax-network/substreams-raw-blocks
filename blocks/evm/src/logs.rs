@@ -22,8 +22,9 @@ pub fn insert_log(tables: &mut DatabaseChanges, clock: &Clock, log: &Log, transa
     let data = bytes_to_hex(&log.data.to_vec());
 
     // Missing
-    // - blob_gas_price
-    // - blob_gas_used
+    // - is blob gas information even available in the logs? or is it only available in the transaction receipt?
+    // - blob_gas_price?
+    // - blob_gas_used?
 
     let keys = logs_keys(&clock, &tx_hash, &index);
     let row = tables
