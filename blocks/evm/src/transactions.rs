@@ -61,7 +61,7 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
     let gas_price = optional_bigint_to_string(transaction.gas_price.clone(), "0"); // UInt256
     let gas_limit = transaction.gas_limit;
     let value = optional_bigint_to_string(transaction.value.clone(), "0"); // UInt256
-    let input = bytes_to_hex(&transaction.input); // TO-DO: change to 0x? rename to `data`? https://github.com/pinax-network/substreams-raw-blocks/issues/1
+    let data = bytes_to_hex(&transaction.input); // TO-DO: change to 0x? https://github.com/pinax-network/substreams-raw-blocks/issues/1
     let v = bytes_to_hex(&transaction.v);
     let r = bytes_to_hex(&transaction.r);
     let s = bytes_to_hex(&transaction.s);
@@ -100,7 +100,7 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
         .change("gas_price", ("", gas_price.to_string().as_str()))
         .change("gas_limit", ("", gas_limit.to_string().as_str()))
         .change("value", ("", value.as_str()))
-        .change("input", ("", input.as_str()))
+        .change("data", ("", data.as_str()))
         .change("v", ("", v.as_str()))
         .change("r", ("", r.as_str()))
         .change("s", ("", s.as_str()))

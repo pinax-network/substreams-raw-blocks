@@ -90,8 +90,8 @@ pub fn insert_trace_row(row: &mut TableChange, call: &Call) {
     let executed_code = call.executed_code;
     let gas_consumed = call.gas_consumed;
     let gas_limit = call.gas_limit;
-    let index = call.index; // or `subtraces`?
-    let input = bytes_to_hex(&call.input);
+    let index = call.index; // or `sub_traces`?
+    let input = bytes_to_hex(&call.input); // TO-DO: fallback to 0x?
     let parent_index = call.parent_index;
     let state_reverted = call.state_reverted;
     let status_failed = call.status_failed;
@@ -103,6 +103,10 @@ pub fn insert_trace_row(row: &mut TableChange, call: &Call) {
     // not available in system traces
     let failure_reason = &call.failure_reason;
     let return_data = bytes_to_hex(&call.return_data);
+
+    // missing?
+    // - output
+    // - refund_address
 
     row.change("address", ("", address.as_str()))
         .change("begin_ordinal", ("", begin_ordinal.to_string().as_str()))

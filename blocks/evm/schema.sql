@@ -82,7 +82,7 @@ CREATE TABLE IF NOT EXISTS transactions
     gas_price                   DEFAULT '' COMMENT 'UInt256',
     gas_limit                   UInt64,
     value                       DEFAULT '' COMMENT 'UInt256',
-    input                       String,
+    data                        String,
     v                           String,
     r                           String COMMENT 'EVM Hash',
     s                           String COMMENT 'EVM Hash',
@@ -294,7 +294,6 @@ CREATE TABLE IF NOT EXISTS gas_changes
     ordinal                     UInt64 COMMENT 'Block global ordinal',
     old_value                   UInt64,
     new_value                   UInt64,
-    delta_value                 String DEFAULT '' COMMENT 'Int128',
     reason                      LowCardinality(String),
     reason_code                 UInt32,
 )

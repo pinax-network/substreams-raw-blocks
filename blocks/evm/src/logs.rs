@@ -21,6 +21,10 @@ pub fn insert_log(tables: &mut DatabaseChanges, clock: &Clock, log: &Log, transa
     let topic3 = extract_topic(&topics, 3);
     let data = bytes_to_hex(&log.data.to_vec());
 
+    // Missing
+    // - blob_gas_price
+    // - blob_gas_used
+
     let keys = logs_keys(&clock, &tx_hash, &index);
     let row = tables
         .push_change_composite("logs", keys, 0, table_change::Operation::Create)

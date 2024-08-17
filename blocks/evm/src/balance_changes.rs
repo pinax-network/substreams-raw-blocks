@@ -38,7 +38,7 @@ pub fn balance_change_reason_to_string(reason: i32) -> String {
 pub fn insert_balance_change_row(row: &mut TableChange, balance_change: &BalanceChange) {
     let address = bytes_to_hex(&balance_change.address);
     let new_balance = optional_bigint_to_string(balance_change.new_value.clone(), "0");
-    let old_balance = optional_bigint_to_string(balance_change.old_value.clone(), "0");
+    let old_balance: String = optional_bigint_to_string(balance_change.old_value.clone(), "0");
     let amount = optional_bigint_to_decimal(balance_change.new_value.clone()) - optional_bigint_to_decimal(balance_change.old_value.clone());
     let ordinal = balance_change.ordinal;
     let reason_code = balance_change.reason;
