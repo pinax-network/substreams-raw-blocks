@@ -33,5 +33,4 @@
 graph TD;
   ch_out[map: ch_out];
   sf.ethereum.type.v2.Block[source: sf.ethereum.type.v2.Block] --> ch_out;
-  sf.ethereum.type.v2.Block[source: sf.ethereum.type.v2.Block] --> map_blocks;
 ```

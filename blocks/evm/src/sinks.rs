@@ -11,20 +11,10 @@ pub fn ch_out(clock: Clock, block: Block) -> Result<DatabaseChanges, Error> {
     let mut tables: DatabaseChanges = DatabaseChanges::default();
 
     // TABLE::blocks
-    insert_blocks(&mut tables, &clock, &block, false);
+    insert_blocks(&mut tables, &clock, &block);
 
     // TABLE::transactions
     insert_transactions(&mut tables, &clock, &block);
-
-    Ok(tables)
-}
-
-#[substreams::handlers::map]
-pub fn map_blocks(clock: Clock, block: Block) -> Result<DatabaseChanges, Error> {
-    let mut tables: DatabaseChanges = DatabaseChanges::default();
-
-    // TABLE::blocks
-    insert_blocks(&mut tables, &clock, &block, true);
 
     Ok(tables)
 }
