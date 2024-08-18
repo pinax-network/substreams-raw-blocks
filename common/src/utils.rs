@@ -18,6 +18,35 @@ pub fn bytes_to_hex(bytes: &Vec<u8>) -> String {
     }
 }
 
+pub fn bytes_to_hex_no_prefix(bytes: &Vec<u8>) -> String {
+    if bytes.is_empty() {
+        return "".to_string();
+    } else {
+        Hex::encode(bytes).to_string()
+    }
+}
+
+// pub fn bytes_to_name(bytes: &Vec<u8>) -> String {
+//     if bytes.is_empty() {
+//         return "".to_string();
+//     } else {
+//         //
+//         bytes
+//     }
+// }
+
+pub fn bytes_to_u64(bytes: &Vec<u8>) -> u64 {
+    if bytes.is_empty() {
+        return 0;
+    } else {
+        let mut result = 0;
+        for byte in bytes.iter() {
+            result = result * 256 + *byte as u64;
+        }
+        result
+    }
+}
+
 pub fn optional_bigint_to_string(value: Option<BigInt>, default: &str) -> String {
     match value {
         Some(bigint) => bigint.with_decimal(0).to_string(),

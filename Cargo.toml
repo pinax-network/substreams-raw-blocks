@@ -1,5 +1,5 @@
 [workspace]
-members = ["blocks/evm", "common"]
+members = ["blocks/evm", "blocks/antelope", "common"]
 resolver = "2"
 
 [workspace.package]
@@ -10,6 +10,7 @@ version = "0.2.0"
 substreams = "0.5"
 substreams-database-change = "1.3"
 substreams-ethereum = "0.9"
-# substreams-antelope = "0.4"
+substreams-antelope = "0.4"
+# substreams-solana = "0.11"
 # substreams-bitcoin = "1.0"
 # substreams-near = "0.9"
