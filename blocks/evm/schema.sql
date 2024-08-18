@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS transactions
     gas_limit                   UInt64,
     value                       DEFAULT '' COMMENT 'UInt256',
     data                        String,
-    method_id                   String COMMENT 'Method ID is the first 4 bytes of the Keccak-256 hash of the function signature.',
+    method_id                   LowCardinality(String) COMMENT 'Method ID is the first 4 bytes of the Keccak-256 hash of the function signature.',
     v                           String,
     r                           String COMMENT 'EVM Hash',
     s                           String COMMENT 'EVM Hash',
@@ -169,7 +169,7 @@ CREATE TABLE IF NOT EXISTS traces
     gas_consumed                UInt64,
     return_data                 String COMMENT 'Return data is set by contract calls using RETURN or REVERT.',
     input                       String,
-    method_id                   String COMMENT 'Method ID is the first 4 bytes of the Keccak-256 hash of the function signature.',
+    method_id                   LowCardinality(String) COMMENT 'Method ID is the first 4 bytes of the Keccak-256 hash of the function signature.',
     suicide                     Bool,
     failure_reason              LowCardinality(String),
     state_reverted              Bool,
@@ -302,39 +302,3 @@ CREATE TABLE IF NOT EXISTS gas_changes
         PRIMARY KEY (block_date, block_number)
         ORDER BY (block_date, block_number, block_hash, ordinal)
         COMMENT 'EVM gas changes';
-
-CREATE TABLE IF NOT EXISTS system_traces
-(
-    -- block --
-    block_time                  DateTime64(3, 'UTC'),
-    block_number                UInt64,
-    block_hash                  String COMMENT 'EVM Hash',
-    block_date                  Date,
-
-    -- trace --
-    `index`                     UInt32,
-    parent_index                UInt32,
-    depth                       UInt32,
-    caller                      String COMMENT 'EVM Address',
-    call_type                   LowCardinality(String),
-    call_type_code              UInt32,
-    address                     String COMMENT 'EVM Address',
-    value                       String DEFAULT '' COMMENT 'UInt256',
-    gas_limit                   UInt64,
-    gas_consumed                UInt64,
-    return_data                 String DEFAULT '' COMMENT 'Return data is set by contract calls using RETURN or REVERT.',
-    input                       String,
-    method_id                   String COMMENT 'Method ID is the first 4 bytes of the Keccak-256 hash of the function signature.',
-    suicide                     Bool,
-    failure_reason              LowCardinality(String) DEFAULT '',
-    state_reverted              Bool,
-    status_reverted             Bool,
-    status_failed               Bool,
-    executed_code               Bool,
-    begin_ordinal               UInt64,
-    end_ordinal                 UInt64
-)
-    ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, block_number)
-        ORDER BY (block_date, block_number, `index`)
-        COMMENT 'EVM system traces';
