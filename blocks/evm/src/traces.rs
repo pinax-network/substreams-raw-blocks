@@ -98,7 +98,6 @@ pub fn insert_trace_row(row: &mut TableChange, call: &Call) {
     let status_reverted = call.status_reverted;
     let suicide = call.suicide; // or `selfdestruct`?
     let value = optional_bigint_to_string(call.value.clone(), "0"); // UInt256
-    let method_id = extract_method_id(&call.input);
 
     // not available in system traces
     let failure_reason = &call.failure_reason;
@@ -120,7 +119,6 @@ pub fn insert_trace_row(row: &mut TableChange, call: &Call) {
         .change("gas_limit", ("", gas_limit.to_string().as_str()))
         .change("index", ("", index.to_string().as_str()))
         .change("input", ("", input.as_str()))
-        .change("method_id", ("", method_id.as_str()))
         .change("parent_index", ("", parent_index.to_string().as_str()))
         .change("state_reverted", ("", state_reverted.to_string().as_str()))
         .change("status_failed", ("", status_failed.to_string().as_str()))

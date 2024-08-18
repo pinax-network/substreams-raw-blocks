@@ -75,7 +75,6 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
     let success = is_transaction_success(transaction.status);
     let status = transaction_status_to_string(transaction.status);
     let status_code = transaction.status;
-    let method_id = extract_method_id(&transaction.input);
 
     // transaction receipt
     let receipt = transaction.receipt.clone().unwrap();
@@ -103,7 +102,6 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
         .change("gas_limit", ("", gas_limit.to_string().as_str()))
         .change("value", ("", value.as_str()))
         .change("data", ("", data.as_str()))
-        .change("method_id", ("", method_id.as_str()))
         .change("v", ("", v.as_str()))
         .change("r", ("", r.as_str()))
         .change("s", ("", s.as_str()))
