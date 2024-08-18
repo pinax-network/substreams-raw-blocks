@@ -1,7 +1,7 @@
 use common::{
     blocks::insert_timestamp,
     keys::traces_keys,
-    utils::{bytes_to_hex, extract_method_id, optional_bigint_to_string},
+    utils::{bytes_to_hex, optional_bigint_to_string},
 };
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges, TableChange};

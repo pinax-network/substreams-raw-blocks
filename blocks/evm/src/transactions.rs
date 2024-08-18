@@ -1,7 +1,6 @@
 use common::blocks::insert_timestamp;
 use common::keys::transaction_keys;
 use common::utils::bytes_to_hex;
-use common::utils::extract_method_id;
 use common::utils::optional_bigint_to_string;
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::TableChange;
