@@ -6,6 +6,7 @@ use substreams_database_change::pb::database::TableChange;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_antelope::pb::{Block, BlockHeader, TransactionTrace};
 
+use crate::storage_changes::insert_storage_change;
 use crate::traces::insert_trace;
 
 pub fn transaction_status_to_string(status: i32) -> String {
@@ -79,6 +80,11 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
         insert_trace(tables, clock, trace, transaction, block_header);
     }
 
+    // List of database operations this transaction entailed
+    for storage_change in transaction.db_ops.iter() {
+        insert_storage_change(tables, clock, storage_change);
+    }
+
     // TO-DO
     // Trace of a failed deferred transaction, if any.
     // match transaction.failed_dtrx_trace {
@@ -86,12 +92,6 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
     //         insert_transaction(tables, clock, &failed_dtrx_trace, &block);
     //     }
     //     None => {}
-    // }
-
-    // TO-DO
-    // List of database operations this transaction entailed
-    // for storage_change in transaction.db_ops.iter() {
-    //     insert_storage_change(tables, clock, storage_change, &transaction, &block);
     // }
 
     // TO-DO
@@ -157,7 +157,7 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
 }
 
 pub fn insert_transaction_metadata(row: &mut TableChange, transaction: &TransactionTrace) {
-    let tx_hash = &transaction.id;
+    let tx_hash = format!("0x{}", &transaction.id);
     let tx_index = transaction.index;
     let header = transaction.receipt.clone().unwrap_or_default();
     let tx_status = transaction_status_to_string(header.status);

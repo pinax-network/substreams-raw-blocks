@@ -13,7 +13,7 @@ pub fn insert_trace(tables: &mut DatabaseChanges, clock: &Clock, trace: &ActionT
 	let receipt = trace.receipt.clone().unwrap_or_default();
     let abi_sequence = receipt.abi_sequence;
     let code_sequence = receipt.code_sequence;
-    let digest = receipt.digest;
+    let digest = format!("0x{}", &receipt.digest);
     let global_sequence = receipt.global_sequence;
     let receipt_receiver = receipt.receiver;
     let recv_sequence = receipt.recv_sequence;

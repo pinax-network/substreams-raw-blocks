@@ -77,3 +77,80 @@ CREATE TABLE IF NOT EXISTS transactions
         PRIMARY KEY (block_date, block_number)
         ORDER BY (block_date, block_number, hash)
         COMMENT 'Antelope transactions';
+
+CREATE TABLE IF NOT EXISTS traces
+(
+    -- block --
+    block_time                  DateTime64(3, 'UTC'),
+    block_number                UInt64,
+    block_hash                  String COMMENT 'Hash',
+    block_date                  Date,
+
+    -- transaction --
+    tx_hash                     String COMMENT 'Hash',
+    tx_index                    UInt64,
+    tx_status                   LowCardinality(String),
+    tx_status_code              UInt8,
+    tx_success                  Bool,
+
+    -- receipt --
+    abi_sequence                UInt64,
+    code_sequence               UInt64,
+    digest                      String,
+    global_sequence             UInt64,
+    receipt_receiver            String COMMENT 'Address',
+    recv_sequence               UInt64,
+
+    -- action --
+    account                     String COMMENT 'Address',
+    name                        String COMMENT 'Address',
+    json_data                   String COMMENT 'JSON',
+    raw_data                    String COMMENT 'Hex',
+
+    -- trace --
+	receiver                                        String,
+	context_free                                    Bool,
+	elapsed                                         Int64,
+	console                                         String,
+	raw_return_value                                String,
+	json_return_value                               String,
+	action_ordinal                                  UInt32,
+	creator_action_ordinal                          UInt32,
+	closest_unnotified_ancestor_action_ordinal      UInt32,
+	execution_index                                 UInt32,
+
+    -- block roots --
+    action_mroot                                    String COMMENT 'Hash',
+)
+    ENGINE = ReplacingMergeTree()
+        PRIMARY KEY (block_date, block_number)
+        ORDER BY (block_date, block_number, action_ordinal)
+        COMMENT 'Antelope traces';
+
+CREATE TABLE IF NOT EXISTS storage_changes
+(
+    -- block --
+    block_time                  DateTime64(3, 'UTC'),
+    block_number                UInt64,
+    block_hash                  String COMMENT 'EVM Hash',
+    block_date                  Date,
+
+    -- storage change --
+    operation                   LowCardinality(String) COMMENT 'Operation',
+    operation_code              UInt8,
+    action_index                UInt32,
+    code                        String,
+    scope                       String,
+    table_name                  String,
+    primary_key                 String,
+    old_payer                   String,
+    new_payer                   String,
+    old_data                    String,
+    new_data                    String,
+    old_data_json               String,
+    new_data_json               String,
+)
+    ENGINE = MergeTree()
+        PRIMARY KEY (block_date, block_number)
+        ORDER BY (block_date, block_number, block_hash, action_index)
+        COMMENT 'Antelope storage changes';
