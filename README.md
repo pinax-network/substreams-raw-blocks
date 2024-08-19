@@ -44,6 +44,7 @@
   - [ ] **RAM Operations**
   - [ ] **Table Operations**
   - [ ] **Creation Tree**
+  - [ ] ~~**Deferred Transactions**~~
 - [x] **Actions**
   - [ ] **Authorization**
   - [ ] **Auth Sequence**
@@ -53,7 +54,6 @@
 - [ ] **Feature Operations**
 - [ ] **RAM Operations**
 - [ ] **Table Operations**
-- ~~**Deferred Transactions**~~
 
 ## Substreams Graph
 
