@@ -50,10 +50,6 @@
   - [ ] **Auth Sequence**
   - [ ] **Account RAM Deltas**
 - [x] **Database Operations**
-- [ ] **Permission Changes**
-- [ ] **Feature Operations**
-- [ ] **RAM Operations**
-- [ ] **Table Operations**
 
 ## Substreams Graph
 
