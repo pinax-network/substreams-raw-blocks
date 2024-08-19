@@ -1,9 +1,11 @@
 use common::blocks::insert_timestamp;
-use common::keys::block_ordinal_keys;
+use common::keys::logs_keys;
 use common::utils::bytes_to_hex;
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
-use substreams_antelope::pb::DbOp;
+use substreams_antelope::pb::{DbOp, TransactionTrace};
+
+use crate::transactions::insert_transaction_metadata;
 
 pub fn operation_to_string(operation: i32) -> String {
     match operation {
@@ -16,7 +18,8 @@ pub fn operation_to_string(operation: i32) -> String {
 }
 
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L647
-pub fn insert_storage_change(tables: &mut DatabaseChanges, clock: &Clock, storage_change: &DbOp) {
+pub fn insert_storage_change(tables: &mut DatabaseChanges, clock: &Clock, storage_change: &DbOp, transaction: &TransactionTrace, index: u32) {
+    // storage change
 	let operation = operation_to_string(storage_change.operation);
     let operation_code = storage_change.operation;
 	let action_index = storage_change.action_index;
@@ -31,9 +34,10 @@ pub fn insert_storage_change(tables: &mut DatabaseChanges, clock: &Clock, storag
 	let old_data_json = &storage_change.old_data_json;
 	let new_data_json = &storage_change.new_data_json;
 
-    let keys = block_ordinal_keys(&clock, &action_index.into());
+    let keys = logs_keys(&clock, &transaction.id, &index);
     let row = tables
         .push_change_composite("storage_changes", keys, 0, table_change::Operation::Create)
+        .change("index", ("", index.to_string().as_str()))
         .change("operation", ("", operation.to_string().as_str()))
         .change("operation_code", ("", operation_code.to_string().as_str()))
         .change("action_index", ("", action_index.to_string().as_str()))
@@ -49,4 +53,5 @@ pub fn insert_storage_change(tables: &mut DatabaseChanges, clock: &Clock, storag
         .change("new_data_json", ("", new_data_json.to_string().as_str()));
 
     insert_timestamp(row, clock, false);
+    insert_transaction_metadata(row, transaction);
 }

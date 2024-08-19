@@ -135,7 +135,15 @@ CREATE TABLE IF NOT EXISTS storage_changes
     block_hash                  String COMMENT 'EVM Hash',
     block_date                  Date,
 
+    -- transaction --
+    tx_hash                     String COMMENT 'Hash',
+    tx_index                    UInt64,
+    tx_status                   LowCardinality(String),
+    tx_status_code              UInt8,
+    tx_success                  Bool,
+
     -- storage change --
+    `index`                     UInt32,
     operation                   LowCardinality(String) COMMENT 'Operation',
     operation_code              UInt8,
     action_index                UInt32,
@@ -150,7 +158,7 @@ CREATE TABLE IF NOT EXISTS storage_changes
     old_data_json               String,
     new_data_json               String,
 )
-    ENGINE = MergeTree()
+    ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_number)
-        ORDER BY (block_date, block_number, block_hash, action_index)
+        ORDER BY (block_date, block_number, tx_hash, `index`)
         COMMENT 'Antelope storage changes';

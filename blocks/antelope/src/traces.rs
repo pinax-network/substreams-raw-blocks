@@ -1,6 +1,5 @@
-use common::blocks::insert_timestamp;
+use common::{blocks::insert_timestamp, utils::bytes_to_hex_no_prefix};
 use common::keys::traces_keys;
-use common::utils::bytes_to_hex;
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_antelope::pb::{ActionTrace, BlockHeader, TransactionTrace};
@@ -13,7 +12,7 @@ pub fn insert_trace(tables: &mut DatabaseChanges, clock: &Clock, trace: &ActionT
 	let receipt = trace.receipt.clone().unwrap_or_default();
     let abi_sequence = receipt.abi_sequence;
     let code_sequence = receipt.code_sequence;
-    let digest = format!("0x{}", &receipt.digest);
+    let digest = &receipt.digest;
     let global_sequence = receipt.global_sequence;
     let receipt_receiver = receipt.receiver;
     let recv_sequence = receipt.recv_sequence;
@@ -23,14 +22,14 @@ pub fn insert_trace(tables: &mut DatabaseChanges, clock: &Clock, trace: &ActionT
     let account = action.account;
     let name = action.name;
     let json_data = action.json_data;
-    let raw_data = bytes_to_hex(&action.raw_data.to_vec());
+    let raw_data = bytes_to_hex_no_prefix(&action.raw_data.to_vec());
 
     // trace
 	let receiver = &trace.receiver;
 	let context_free = trace.context_free;
 	let elapsed = trace.elapsed;
 	let console = &trace.console;
-	let raw_return_value = bytes_to_hex(&trace.raw_return_value.to_vec());
+	let raw_return_value = bytes_to_hex_no_prefix(&trace.raw_return_value.to_vec());
 	let json_return_value = &trace.json_return_value;
 	let action_ordinal = trace.action_ordinal;
 	let creator_action_ordinal = trace.creator_action_ordinal;
@@ -38,7 +37,7 @@ pub fn insert_trace(tables: &mut DatabaseChanges, clock: &Clock, trace: &ActionT
 	let execution_index = trace.execution_index;
 
     // block roots
-    let action_mroot = bytes_to_hex(&block_header.action_mroot.to_vec());
+    let action_mroot = bytes_to_hex_no_prefix(&block_header.action_mroot.to_vec());
 
     let keys = traces_keys(&clock, &transaction.id, &transaction.index, &action_ordinal);
     let row = tables

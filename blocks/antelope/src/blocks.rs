@@ -1,5 +1,5 @@
 use common::blocks::{insert_timestamp, insert_transaction_counts};
-use common::utils::bytes_to_hex;
+use common::utils::{bytes_to_hex, bytes_to_hex_no_prefix};
 use common::keys::blocks_keys;
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
@@ -9,7 +9,7 @@ use substreams_antelope::pb::Block;
 pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
     // header
     let header = block.header.clone().unwrap_or_default();
-    let previous = format!("0x{}", header.previous);
+    let previous = header.previous;
     let producer = header.producer;
     let confirmed = header.confirmed;
     let schedule_version = header.schedule_version;
@@ -30,8 +30,8 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
     let blockroot_merkle_node_count = blockroot_merkle.node_count;
 
     // block roots
-    let transaction_mroot = bytes_to_hex(&header.transaction_mroot.to_vec());
-    let action_mroot = bytes_to_hex(&header.action_mroot.to_vec());
+    let transaction_mroot = bytes_to_hex_no_prefix(&header.transaction_mroot.to_vec());
+    let action_mroot = bytes_to_hex_no_prefix(&header.action_mroot.to_vec());
 
     // TO-DO
     // to be used during Legacy to Savanna transition where action_mroot needs to be converted from Legacy merkle to Savanna merkle

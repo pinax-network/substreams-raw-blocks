@@ -1,6 +1,7 @@
 use common::blocks::insert_timestamp;
 use common::keys::transaction_keys;
-use common::utils::bytes_to_hex;
+use common::utils::bytes_to_hex_no_prefix;
+use substreams::log;
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::TableChange;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
@@ -36,7 +37,7 @@ pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &
 
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L525
 pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transaction: &TransactionTrace, block_header: &BlockHeader) {
-    let hash = format!("0x{}", &transaction.id);
+    let hash = &transaction.id;
     let index = transaction.index;
     let elapsed = transaction.elapsed;
     let net_usage = transaction.net_usage;
@@ -51,7 +52,7 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
     let success = is_transaction_success(header.status);
 
     // block roots
-    let transaction_mroot = bytes_to_hex(&block_header.transaction_mroot.to_vec());
+    let transaction_mroot = bytes_to_hex_no_prefix(&block_header.transaction_mroot.to_vec());
 
     let keys = transaction_keys(&clock, &hash);
     let row = tables
@@ -80,9 +81,13 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
         insert_trace(tables, clock, trace, transaction, block_header);
     }
 
+
     // List of database operations this transaction entailed
+    let mut storage_change_index = 0;
     for storage_change in transaction.db_ops.iter() {
-        insert_storage_change(tables, clock, storage_change);
+        log::debug!("Block Number: {:?}, Transaction Index: {:?}, Storage Index : {:?}", clock.number, index, storage_change_index);
+        insert_storage_change(tables, clock, storage_change, transaction, storage_change_index);
+        storage_change_index += 1;
     }
 
     // TO-DO
@@ -157,7 +162,7 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
 }
 
 pub fn insert_transaction_metadata(row: &mut TableChange, transaction: &TransactionTrace) {
-    let tx_hash = format!("0x{}", &transaction.id);
+    let tx_hash = &transaction.id;
     let tx_index = transaction.index;
     let header = transaction.receipt.clone().unwrap_or_default();
     let tx_status = transaction_status_to_string(header.status);
