@@ -6,6 +6,8 @@ use substreams_database_change::pb::database::TableChange;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_antelope::pb::{Block, BlockHeader, TransactionTrace};
 
+use crate::traces::insert_trace;
+
 pub fn transaction_status_to_string(status: i32) -> String {
     match status {
         0 => "None".to_string(),
@@ -70,11 +72,12 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
         .change("transaction_mroot", ("", transaction_mroot.as_str()))
         ;
 
-    // TO-DO
+    insert_timestamp(row, clock, false);
+
     // Traces of each action within the transaction, including all notified and nested actions.
-    // for trace in transaction.action_traces.iter() {
-    //     insert_trace(tables, clock, trace, &transaction, &block);
-    // }
+    for trace in transaction.action_traces.iter() {
+        insert_trace(tables, clock, trace, transaction, block_header);
+    }
 
     // TO-DO
     // Trace of a failed deferred transaction, if any.
@@ -151,11 +154,9 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
     //     }
     //     None => {}
     // }
-
-    insert_timestamp(row, clock, false);
 }
 
-pub fn _insert_transaction_metadata(row: &mut TableChange, transaction: &TransactionTrace) {
+pub fn insert_transaction_metadata(row: &mut TableChange, transaction: &TransactionTrace) {
     let tx_hash = &transaction.id;
     let tx_index = transaction.index;
     let header = transaction.receipt.clone().unwrap_or_default();

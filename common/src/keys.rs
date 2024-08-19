@@ -33,7 +33,7 @@ pub fn block_ordinal_keys(clock: &Clock, ordinal: &u64) -> HashMap<String, Strin
     keys
 }
 
-pub fn traces_keys(clock: &Clock, tx_hash: &String, tx_index: &u32, index: &u32) -> HashMap<String, String> {
+pub fn traces_keys(clock: &Clock, tx_hash: &String, tx_index: &u64, index: &u32) -> HashMap<String, String> {
     let mut keys = blocks_keys(clock, false);
     keys.insert("tx_hash".to_string(), tx_hash.to_string());
     keys.insert("tx_index".to_string(), tx_index.to_string());

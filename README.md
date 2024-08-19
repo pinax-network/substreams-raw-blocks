@@ -38,7 +38,7 @@
 
 - [x] **Blocks**
 - [x] **Transactions**
-- [ ] **Actions**
+- [x] **Actions**
 - [ ] **Database Operations**
 - [ ] **Permission Changes**
 - [ ] **Feature Operations**
