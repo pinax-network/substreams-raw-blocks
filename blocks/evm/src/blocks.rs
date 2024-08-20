@@ -1,8 +1,8 @@
-use common::blocks::{insert_timestamp, insert_transaction_counts};
+use common::blocks::insert_timestamp;
 use common::utils::{bytes_to_hex, optional_u64_to_string};
 use common::{keys::blocks_keys, utils::optional_bigint_to_string};
 use substreams::pb::substreams::Clock;
-use substreams_database_change::pb::database::{table_change, DatabaseChanges};
+use substreams_database_change::pb::database::{table_change, DatabaseChanges, TableChange};
 use substreams_ethereum::pb::eth::v2::Block;
 
 use crate::balance_changes::{insert_balance_change, insert_balance_change_counts};
@@ -86,7 +86,7 @@ pub fn insert_blocks(params: &String, tables: &mut DatabaseChanges, clock: &Cloc
         .change("detail_level_code", ("", detail_level_code.to_string().as_str()))
         ;
 
-    insert_timestamp(row, clock, true);
+    insert_timestamp(row, clock, true, true);
 
     // transaction status counts
     let all_transaction_status: Vec<i32> = block.transaction_traces.iter().map(|transaction| transaction.status).collect();
@@ -118,4 +118,22 @@ pub fn insert_blocks(params: &String, tables: &mut DatabaseChanges, clock: &Cloc
     for transaction in block.transaction_traces.iter() {
         insert_transaction( tables, clock, &transaction, &header, &detail_level);
     }
+}
+
+pub fn insert_transaction_counts(row: &mut TableChange, all_transaction_status: Vec<i32>) {
+    // transaction counts
+    let mut total_transactions = 0;
+    let mut successful_transactions = 0;
+    let mut failed_transactions = 0;
+    for status in all_transaction_status {
+        if status == 1 {
+            successful_transactions += 1;
+        } else {
+            failed_transactions += 1;
+        }
+        total_transactions += 1;
+    }
+    row.change("total_transactions", ("", total_transactions.to_string().as_str()))
+        .change("successful_transactions", ("", successful_transactions.to_string().as_str()))
+        .change("failed_transactions", ("", failed_transactions.to_string().as_str()));
 }

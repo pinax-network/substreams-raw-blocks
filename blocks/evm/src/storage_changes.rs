@@ -23,5 +23,5 @@ pub fn insert_storage_change(tables: &mut DatabaseChanges, clock: &Clock, storag
         .change("old_value", ("", old_value.as_str()))
         .change("ordinal", ("", ordinal.to_string().as_str()));
 
-    insert_timestamp(row, clock, false);
+    insert_timestamp(row, clock, false, true);
 }

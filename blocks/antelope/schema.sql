@@ -39,10 +39,12 @@ CREATE TABLE IF NOT EXISTS blocks
     blockroot_merkle_node_count             UInt32,
 
     -- counters --
+    size                                    UInt64 COMMENT 'Block size in bytes',
     total_transactions                      UInt64,
     successful_transactions                 UInt64,
     failed_transactions                     UInt64,
-    size                                    UInt64 COMMENT 'Block size in bytes',
+    total_actions                           UInt64,
+    total_db_ops                            UInt64,
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (date, number)

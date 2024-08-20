@@ -66,7 +66,7 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
         .change("transaction_mroot", ("", transaction_mroot.as_str()))
         ;
 
-    insert_timestamp(row, clock, false);
+    insert_timestamp(row, clock, false, false);
 
     // Traces of each action within the transaction, including all notified and nested actions.
     for trace in transaction.action_traces.iter() {

@@ -100,5 +100,5 @@ pub fn insert_action(tables: &mut DatabaseChanges, clock: &Clock, trace: &Action
     // for account_ram_delta in transaction.account_ram_deltas.iter() {
     //     insert_account_ram_delta(tables, clock, trace, &account_ram_delta, &block);
     // }
-    insert_timestamp(row, clock, false);
+    insert_timestamp(row, clock, false, false);
 }

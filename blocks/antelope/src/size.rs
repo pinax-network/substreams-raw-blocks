@@ -5,6 +5,7 @@ pub fn compute_size(block: &Block) -> usize {
     let mut size = 0;
 
     // How to calculate Antelope block size (estimated) in bytes
+    // ------------------------------
     // action raw data
     // trace console
     // trace raw return value

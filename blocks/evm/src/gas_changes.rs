@@ -54,5 +54,5 @@ pub fn insert_gas_change(tables: &mut DatabaseChanges, clock: &Clock, gas_change
         .change("new_value", ("", new_value.to_string().as_str()))
         .change("ordinal", ("", ordinal.to_string().as_str()));
 
-    insert_timestamp(row, clock, false);
+    insert_timestamp(row, clock, false, true);
 }

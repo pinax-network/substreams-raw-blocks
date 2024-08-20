@@ -51,6 +51,6 @@ pub fn insert_db_op(tables: &mut DatabaseChanges, clock: &Clock, db_op: &DbOp, t
         .change("old_data_json", ("", old_data_json.to_string().as_str()))
         .change("new_data_json", ("", new_data_json.to_string().as_str()));
 
-    insert_timestamp(row, clock, false);
+    insert_timestamp(row, clock, false, false);
     insert_transaction_metadata(row, transaction);
 }

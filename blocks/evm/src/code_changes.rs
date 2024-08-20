@@ -29,5 +29,5 @@ pub fn insert_code_change(tables: &mut DatabaseChanges, clock: &Clock, code_chan
     let row = tables.push_change_composite("code_changes", keys, 0, table_change::Operation::Create);
 
     insert_code_change_rows(row, code_change);
-    insert_timestamp(row, clock, false);
+    insert_timestamp(row, clock, false, true);
 }
