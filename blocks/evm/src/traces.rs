@@ -97,7 +97,7 @@ pub fn insert_trace_row(row: &mut TableChange, call: &Call) {
     let status_failed = call.status_failed;
     let status_reverted = call.status_reverted;
     let suicide = call.suicide; // or `selfdestruct`?
-    let value = optional_bigint_to_string(call.value.clone(), "0"); // UInt256
+    let value = optional_bigint_to_string(&call.value, "0"); // UInt256
 
     // not available in system traces
     let failure_reason = &call.failure_reason;

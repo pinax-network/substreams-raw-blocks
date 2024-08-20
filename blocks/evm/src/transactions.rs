@@ -5,7 +5,7 @@ use common::utils::optional_bigint_to_string;
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::TableChange;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
-use substreams_ethereum::pb::eth::v2::Block;
+use substreams_ethereum::pb::eth::v2::BlockHeader;
 use substreams_ethereum::pb::eth::v2::TransactionTrace;
 
 use crate::logs::insert_log;
@@ -43,32 +43,26 @@ pub fn is_transaction_success(status: i32) -> bool {
     status == 1
 }
 
-pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
-    for transaction in block.transaction_traces.iter() {
-        insert_transaction(tables, clock, &transaction, &block);
-    }
-}
-
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L658
 // DetailLevel: BASE & EXTENDED
-pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transaction: &TransactionTrace, block: &Block) {
+pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transaction: &TransactionTrace, block_header: &BlockHeader, detail_level: &String) {
     let index = transaction.index;
     let hash = bytes_to_hex(&transaction.hash);
     let from = bytes_to_hex(&transaction.from); // EVM Address
     let to = bytes_to_hex(&transaction.to); // EVM Address
     let nonce = transaction.nonce;
     let gas_used = transaction.gas_used; // TO-DO: rename to `gas`? https://github.com/pinax-network/substreams-raw-blocks/issues/1
-    let gas_price = optional_bigint_to_string(transaction.gas_price.clone(), "0"); // UInt256
+    let gas_price = optional_bigint_to_string(&transaction.gas_price, "0"); // UInt256
     let gas_limit = transaction.gas_limit;
-    let value = optional_bigint_to_string(transaction.value.clone(), "0"); // UInt256
+    let value = optional_bigint_to_string(&transaction.value, "0"); // UInt256
     let data = bytes_to_hex(&transaction.input); // TO-DO: change to 0x? https://github.com/pinax-network/substreams-raw-blocks/issues/1
     let v = bytes_to_hex(&transaction.v);
     let r = bytes_to_hex(&transaction.r);
     let s = bytes_to_hex(&transaction.s);
     let r#type = transaction_type_to_string(transaction.r#type);
     let type_code = transaction.r#type;
-    let max_fee_per_gas = optional_bigint_to_string(transaction.max_fee_per_gas.clone(), "0"); // UInt256
-    let max_priority_fee_per_gas = optional_bigint_to_string(transaction.max_priority_fee_per_gas.clone(), "0"); // UInt256
+    let max_fee_per_gas = optional_bigint_to_string(&transaction.max_fee_per_gas, "0"); // UInt256
+    let max_priority_fee_per_gas = optional_bigint_to_string(&transaction.max_priority_fee_per_gas, "0"); // UInt256
     let begin_ordinal = transaction.begin_ordinal;
     let end_ordinal = transaction.end_ordinal;
     let success = is_transaction_success(transaction.status);
@@ -77,16 +71,15 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
 
     // transaction receipt
     let receipt = transaction.receipt.clone().unwrap();
-    let blob_gas_price = optional_bigint_to_string(receipt.clone().blob_gas_price, "0");
+    let blob_gas_price = optional_bigint_to_string(&receipt.blob_gas_price, "0");
     let blob_gas_used = receipt.blob_gas_used();
     let cumulative_gas_used = receipt.cumulative_gas_used;
     let logs_bloom = bytes_to_hex(&receipt.logs_bloom);
     let state_root = bytes_to_hex(&receipt.state_root);
 
     // block roots
-    let header = block.header.clone().unwrap();
-    let transactions_root = bytes_to_hex(&header.transactions_root);
-    let receipts_root = bytes_to_hex(&header.receipt_root);
+    let transactions_root = bytes_to_hex(&block_header.transactions_root);
+    let receipts_root = bytes_to_hex(&block_header.receipt_root);
 
     let keys = transaction_keys(&clock, &hash);
     let row = tables
@@ -136,8 +129,7 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
 
     // TABLE::logs
     // Only required DetailLevel=BASE since traces are not available in BASE
-    let detail_level = block.detail_level;
-    if detail_level == 2 {
+    if detail_level == "Base" {
         for log in receipt.logs {
             insert_log(tables, clock, &log, transaction);
         }

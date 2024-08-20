@@ -33,6 +33,9 @@ gui:
 sql-setup:
 	# EVM blocks
 	substreams-sink-sql setup clickhouse://default:default@localhost:9000/eth substreams.yaml
+	substreams-sink-sql setup clickhouse://default:default@localhost:9000/eth substreams.yaml --cursors-table cursors1
+	substreams-sink-sql setup clickhouse://default:default@localhost:9000/eth substreams.yaml --cursors-table cursors2
+	substreams-sink-sql setup clickhouse://default:default@localhost:9000/eth substreams.yaml --cursors-table cursors3
 	substreams-sink-sql setup clickhouse://default:default@localhost:9000/base substreams.yaml
 	substreams-sink-sql setup clickhouse://default:default@localhost:9000/bsc substreams.yaml
 	substreams-sink-sql setup clickhouse://default:default@localhost:9000/polygon substreams.yaml
@@ -65,6 +68,18 @@ sql-setup:
 .PHONY: sql-run-eth
 sql-run-eth:
 	substreams-sink-sql run clickhouse://default:default@localhost:9000/eth substreams.yaml -e eth.substreams.pinax.network:443 20444295:20451460 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
+
+.PHONY: sql-run-eth1
+sql-run-eth1:
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/eth substreams.yaml -e eth.substreams.pinax.network:443 1:14164145 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --cursors-table cursors1 --params ch_out=blocks
+
+.PHONY: sql-run-eth2
+sql-run-eth2:
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/eth substreams.yaml -e eth.substreams.pinax.network:443 14164145:17865817 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --cursors-table cursors2 --params ch_out=blocks
+
+.PHONY: sql-run-eth3
+sql-run-eth3:
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/eth substreams.yaml -e eth.substreams.pinax.network:443 17865817:20543112 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --cursors-table cursors3 --params ch_out=blocks
 
 .PHONY: sql-run-base
 sql-run-base:

@@ -47,9 +47,9 @@ pub fn bytes_to_u64(bytes: &Vec<u8>) -> u64 {
     }
 }
 
-pub fn optional_bigint_to_string(value: Option<BigInt>, default: &str) -> String {
+pub fn optional_bigint_to_string(value: &Option<BigInt>, default: &str) -> String {
     match value {
-        Some(bigint) => bigint.with_decimal(0).to_string(),
+        Some(bigint) => bigint.clone().with_decimal(0).to_string(),
         None => default.to_string(),
     }
 }
@@ -68,7 +68,7 @@ pub fn optional_bigint_to_hex(value: Option<BigInt>) -> String {
     }
 }
 
-pub fn optional_u64_to_string(value: Option<u64>, default: &str) -> String {
+pub fn optional_u64_to_string(value: &Option<u64>, default: &str) -> String {
     match value {
         Some(uint) => uint.to_string(),
         None => default.to_string(),
