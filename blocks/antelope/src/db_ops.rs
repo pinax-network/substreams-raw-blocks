@@ -1,6 +1,5 @@
-use common::blocks::insert_timestamp;
+use common::{blocks::insert_timestamp, utils::bytes_to_hex_no_prefix};
 use common::keys::logs_keys;
-use common::utils::bytes_to_hex;
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_antelope::pb::{DbOp, TransactionTrace};
@@ -18,25 +17,25 @@ pub fn operation_to_string(operation: i32) -> String {
 }
 
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L647
-pub fn insert_storage_change(tables: &mut DatabaseChanges, clock: &Clock, storage_change: &DbOp, transaction: &TransactionTrace, index: u32) {
+pub fn insert_db_op(tables: &mut DatabaseChanges, clock: &Clock, db_op: &DbOp, transaction: &TransactionTrace, index: u32) {
     // storage change
-	let operation = operation_to_string(storage_change.operation);
-    let operation_code = storage_change.operation;
-	let action_index = storage_change.action_index;
-	let code = &storage_change.code;
-	let scope = &storage_change.scope;
-	let table_name = &storage_change.table_name;
-	let primary_key = &storage_change.primary_key;
-	let old_payer = &storage_change.old_payer;
-	let new_payer = &storage_change.new_payer;
-	let old_data = bytes_to_hex(&storage_change.old_data.to_vec());
-	let new_data = bytes_to_hex(&storage_change.new_data.to_vec());
-	let old_data_json = &storage_change.old_data_json;
-	let new_data_json = &storage_change.new_data_json;
+	let operation = operation_to_string(db_op.operation);
+    let operation_code = db_op.operation;
+	let action_index = db_op.action_index;
+	let code = &db_op.code;
+	let scope = &db_op.scope;
+	let table_name = &db_op.table_name;
+	let primary_key = &db_op.primary_key;
+	let old_payer = &db_op.old_payer;
+	let new_payer = &db_op.new_payer;
+	let old_data = bytes_to_hex_no_prefix(&db_op.old_data.to_vec());
+	let new_data = bytes_to_hex_no_prefix(&db_op.new_data.to_vec());
+	let old_data_json = &db_op.old_data_json;
+	let new_data_json = &db_op.new_data_json;
 
     let keys = logs_keys(&clock, &transaction.id, &index);
     let row = tables
-        .push_change_composite("storage_changes", keys, 0, table_change::Operation::Create)
+        .push_change_composite("db_ops", keys, 0, table_change::Operation::Create)
         .change("index", ("", index.to_string().as_str()))
         .change("operation", ("", operation.to_string().as_str()))
         .change("operation_code", ("", operation_code.to_string().as_str()))

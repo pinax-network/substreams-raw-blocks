@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS transactions
         ORDER BY (block_date, block_number, hash)
         COMMENT 'Antelope transactions';
 
-CREATE TABLE IF NOT EXISTS traces
+CREATE TABLE IF NOT EXISTS actions
 (
     -- block --
     block_time                  DateTime64(3, 'UTC'),
@@ -125,9 +125,9 @@ CREATE TABLE IF NOT EXISTS traces
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_number)
         ORDER BY (block_date, block_number, action_ordinal)
-        COMMENT 'Antelope traces';
+        COMMENT 'Antelope actions';
 
-CREATE TABLE IF NOT EXISTS storage_changes
+CREATE TABLE IF NOT EXISTS db_ops
 (
     -- block --
     block_time                  DateTime64(3, 'UTC'),
@@ -161,4 +161,4 @@ CREATE TABLE IF NOT EXISTS storage_changes
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_number)
         ORDER BY (block_date, block_number, tx_hash, `index`)
-        COMMENT 'Antelope storage changes';
+        COMMENT 'Antelope database operations';

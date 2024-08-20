@@ -7,8 +7,8 @@ use substreams_database_change::pb::database::TableChange;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_antelope::pb::{Block, BlockHeader, TransactionTrace};
 
-use crate::storage_changes::insert_storage_change;
-use crate::traces::insert_trace;
+use crate::db_ops::insert_db_op;
+use crate::actions::insert_action;
 
 pub fn transaction_status_to_string(status: i32) -> String {
     match status {
@@ -78,16 +78,15 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
 
     // Traces of each action within the transaction, including all notified and nested actions.
     for trace in transaction.action_traces.iter() {
-        insert_trace(tables, clock, trace, transaction, block_header);
+        insert_action(tables, clock, trace, transaction, block_header);
     }
 
-
     // List of database operations this transaction entailed
-    let mut storage_change_index = 0;
-    for storage_change in transaction.db_ops.iter() {
-        log::debug!("Block Number: {:?}, Transaction Index: {:?}, Storage Index : {:?}", clock.number, index, storage_change_index);
-        insert_storage_change(tables, clock, storage_change, transaction, storage_change_index);
-        storage_change_index += 1;
+    let mut db_op_index = 0;
+    for db_op in transaction.db_ops.iter() {
+        log::debug!("Block Number: {:?}, Transaction Index: {:?}, Storage Index : {:?}", clock.number, index, db_op_index);
+        insert_db_op(tables, clock, db_op, transaction, db_op_index);
+        db_op_index += 1;
     }
 
     // TO-DO
@@ -101,8 +100,8 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
 
     // TO-DO
     // List of deferred transactions operations this transaction entailed
-    // for storage_change in transaction.dtrx_ops.iter() {
-    //     insert_storage_change(tables, clock, storage_change, &transaction, &block);
+    // for db_op in transaction.dtrx_ops.iter() {
+    //     insert_db_op(tables, clock, db_op, &transaction, &block);
     // }
 
     // TO-DO

@@ -42,11 +42,11 @@ CREATE TABLE IF NOT EXISTS blocks
     base_fee_per_gas            String DEFAULT '' COMMENT 'EIP-1559 (London Fork)',
     blob_gas_used               String DEFAULT '' COMMENT 'EIP-4844 (Dencun Fork)',
     excess_blob_gas             String DEFAULT '' COMMENT 'EIP-4844 (Dencun Fork)',
-    total_transactions          UInt64 DEFAULT 0,
-    successful_transactions     UInt64 DEFAULT 0,
-    failed_transactions         UInt64 DEFAULT 0,
-    total_balance_changes       UInt64 DEFAULT 0,
-    total_withdrawals           UInt64 DEFAULT 0,
+    total_transactions          UInt64,
+    successful_transactions     UInt64,
+    failed_transactions         UInt64,
+    total_balance_changes       UInt64,
+    total_withdrawals           UInt64,
 
     -- detail level --
     detail_level                LowCardinality(String),

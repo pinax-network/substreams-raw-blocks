@@ -7,7 +7,7 @@ use substreams_antelope::pb::{ActionTrace, BlockHeader, TransactionTrace};
 use crate::transactions::insert_transaction_metadata;
 
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L525
-pub fn insert_trace(tables: &mut DatabaseChanges, clock: &Clock, trace: &ActionTrace, transaction: &TransactionTrace, block_header: &BlockHeader) {
+pub fn insert_action(tables: &mut DatabaseChanges, clock: &Clock, trace: &ActionTrace, transaction: &TransactionTrace, block_header: &BlockHeader) {
     // receipt
 	let receipt = trace.receipt.clone().unwrap_or_default();
     let abi_sequence = receipt.abi_sequence;
@@ -41,7 +41,7 @@ pub fn insert_trace(tables: &mut DatabaseChanges, clock: &Clock, trace: &ActionT
 
     let keys = traces_keys(&clock, &transaction.id, &transaction.index, &action_ordinal);
     let row = tables
-        .push_change_composite("traces", keys, 0, table_change::Operation::Create)
+        .push_change_composite("actions", keys, 0, table_change::Operation::Create)
 
         // receipt
         .change("abi_sequence", ("", abi_sequence.to_string().as_str()))
