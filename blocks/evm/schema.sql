@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS blocks
     miner                       String COMMENT 'EVM Address',
     difficulty                  UInt64 DEFAULT 0,
     total_difficulty            String DEFAULT '' COMMENT 'UInt256',
-    size                        String,
+    size                        UInt64 COMMENT 'Block size in bytes',
     mix_hash                    String COMMENT 'EVM Hash',
     extra_data                  String,
     extra_data_utf8             String,

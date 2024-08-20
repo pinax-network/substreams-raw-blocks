@@ -1,11 +1,10 @@
 use common::blocks::insert_timestamp;
 use common::keys::transaction_keys;
 use common::utils::bytes_to_hex_no_prefix;
-use substreams::log;
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::TableChange;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
-use substreams_antelope::pb::{Block, BlockHeader, TransactionTrace};
+use substreams_antelope::pb::{BlockHeader, TransactionTrace};
 
 use crate::db_ops::insert_db_op;
 use crate::actions::insert_action;
@@ -26,13 +25,6 @@ pub fn transaction_status_to_string(status: i32) -> String {
 
 pub fn is_transaction_success(status: i32) -> bool {
     status == 1
-}
-
-pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
-    let block_header = &block.header.clone().unwrap_or_default();
-    for transaction in block.transaction_traces() {
-        insert_transaction(tables, clock, &transaction, block_header);
-    }
 }
 
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L525
@@ -84,7 +76,6 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
     // List of database operations this transaction entailed
     let mut db_op_index = 0;
     for db_op in transaction.db_ops.iter() {
-        log::debug!("Block Number: {:?}, Transaction Index: {:?}, Storage Index : {:?}", clock.number, index, db_op_index);
         insert_db_op(tables, clock, db_op, transaction, db_op_index);
         db_op_index += 1;
     }

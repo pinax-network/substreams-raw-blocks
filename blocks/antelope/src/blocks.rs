@@ -1,18 +1,21 @@
 use common::blocks::{insert_timestamp, insert_transaction_counts};
-use common::utils::{bytes_to_hex, bytes_to_hex_no_prefix};
+use common::utils::bytes_to_hex_no_prefix;
 use common::keys::blocks_keys;
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_antelope::pb::Block;
 
+use crate::size::insert_size;
+use crate::transactions::insert_transaction;
+
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L21
-pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
+pub fn insert_blocks(params: String, tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
     // header
     let header = block.header.clone().unwrap_or_default();
-    let previous = header.previous;
-    let producer = header.producer;
-    let confirmed = header.confirmed;
-    let schedule_version = header.schedule_version;
+    let previous = &header.previous;
+    let producer = &header.producer;
+    let confirmed = &header.confirmed;
+    let schedule_version = &header.schedule_version;
 
     // block
     let version = block.version;
@@ -63,6 +66,15 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
     // transaction status counts
     let all_transaction_status: Vec<i32> = block.transaction_traces().map(|transaction| transaction.receipt.clone().unwrap().status).collect();
     insert_transaction_counts(row, all_transaction_status);
-
     insert_timestamp(row, clock, true);
+    insert_size(row, block);
+
+    // skip the rest if blocks is the only requested table
+    // designed for high throughput to calculate total block size of the entire chain
+    if params == "blocks" { return; }
+
+    // TABLE::transactions
+    for transaction in block.transaction_traces() {
+        insert_transaction(tables, clock, &transaction, &header);
+    }
 }

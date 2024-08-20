@@ -42,6 +42,7 @@ CREATE TABLE IF NOT EXISTS blocks
     total_transactions                      UInt64,
     successful_transactions                 UInt64,
     failed_transactions                     UInt64,
+    size                                    UInt64 COMMENT 'Block size in bytes',
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (date, number)

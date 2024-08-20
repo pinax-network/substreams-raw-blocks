@@ -88,14 +88,6 @@ pub fn insert_blocks(params: &String, tables: &mut DatabaseChanges, clock: &Cloc
 
     insert_timestamp(row, clock, true);
 
-    // skip the rest if blocks is the only requested table
-    // designed for high throughput to calculate total block size of the entire chain
-    if params == "blocks" {
-        insert_transaction_counts(row, vec!{});
-        insert_balance_change_counts(row, vec!{});
-        return;
-    }
-
     // transaction status counts
     let all_transaction_status: Vec<i32> = block.transaction_traces.iter().map(|transaction| transaction.status).collect();
     insert_transaction_counts(row, all_transaction_status);
@@ -103,6 +95,12 @@ pub fn insert_blocks(params: &String, tables: &mut DatabaseChanges, clock: &Cloc
     // balance changes counts
     let all_balance_changes_reason: Vec<i32> = block.balance_changes.iter().map(|balance_change| balance_change.reason).collect();
     insert_balance_change_counts(row, all_balance_changes_reason);
+
+    // skip the rest if blocks is the only requested table
+    // designed for high throughput to calculate total block size of the entire chain
+    if params == "blocks" {
+        return;
+    }
 
     // TABLE::code_changes
     for code_change in block.code_changes.iter() {
