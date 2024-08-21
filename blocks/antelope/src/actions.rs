@@ -1,7 +1,6 @@
 use common::utils::add_prefix_to_hex;
 use common::{blocks::insert_timestamp, utils::bytes_to_hex};
 use common::keys::traces_keys;
-use substreams::log;
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_antelope::pb::{ActionTrace, BlockHeader, TransactionTrace};

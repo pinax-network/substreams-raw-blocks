@@ -15,7 +15,7 @@
   - [x] BNB
     - [x] Chapel Testnet
   - [x] Polygon
-  - [ ] Fantom
+  - [x] *Fantom
   - [ ] zkSync
   - [ ] [Gravity](https://gravity.xyz/)
   - [ ] ~~[Avalanche-C](https://avax.network/)~~
@@ -72,3 +72,4 @@
 ## Legend
 
 - 🕔 Upcoming full protocol support
+- * Block Base Detail

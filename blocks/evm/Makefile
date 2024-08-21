@@ -57,12 +57,10 @@ sql-setup:
 	substreams-sink-sql setup clickhouse://default:default@localhost:9000/optimism substreams.yaml
 	substreams-sink-sql setup clickhouse://default:default@localhost:9000/blast substreams.yaml
 	substreams-sink-sql setup clickhouse://default:default@localhost:9000/boba substreams.yaml
+	substreams-sink-sql setup clickhouse://default:default@localhost:9000/fantom substreams.yaml
 
 	# not compatible with EVM blocks
 	substreams-sink-sql setup clickhouse://default:default@localhost:9000/injective substreams.yaml
-
-	# not ready
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/fantom substreams.yaml
 
 # EVM blocks
 .PHONY: sql-run-eth
@@ -159,7 +157,7 @@ sql-run-injective:
 # Not ready yet
 .PHONY: sql-run-fantom
 sql-run-fantom:
-	substreams-sink-sql run clickhouse://default:default@localhost:9000/fantom substreams.yaml -e fantom.substreams.pinax.network:443 87542657: --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/fantom substreams.yaml -e fantom.substreams.pinax.network:443 87606376:87714334 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
 
 .PHONY: deploy
 deploy:
