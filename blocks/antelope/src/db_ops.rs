@@ -1,3 +1,4 @@
+use common::utils::add_prefix_to_hex;
 use common::{blocks::insert_timestamp, utils::bytes_to_hex};
 use common::keys::logs_keys;
 use substreams::pb::substreams::Clock;
@@ -33,7 +34,10 @@ pub fn insert_db_op(tables: &mut DatabaseChanges, clock: &Clock, db_op: &DbOp, t
 	let old_data_json = &db_op.old_data_json;
 	let new_data_json = &db_op.new_data_json;
 
-    let keys = logs_keys(&clock, &transaction.id, &index);
+    // transaction
+    let tx_hash = add_prefix_to_hex(&transaction.id);
+
+    let keys = logs_keys(&clock, &tx_hash, &index);
     let row = tables
         .push_change_composite("db_ops", keys, 0, table_change::Operation::Create)
         .change("index", ("", index.to_string().as_str()))
