@@ -111,13 +111,13 @@ CREATE TABLE IF NOT EXISTS actions
     raw_data                    String COMMENT 'Hex',
 
     -- trace --
+	`index`                                         UInt32 COMMENT 'Action Ordinal',
 	receiver                                        String,
 	context_free                                    Bool,
 	elapsed                                         Int64,
 	console                                         String,
 	raw_return_value                                String,
 	json_return_value                               String,
-	action_ordinal                                  UInt32,
 	creator_action_ordinal                          UInt32,
 	closest_unnotified_ancestor_action_ordinal      UInt32,
 	execution_index                                 UInt32,
@@ -127,7 +127,7 @@ CREATE TABLE IF NOT EXISTS actions
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_number)
-        ORDER BY (block_date, block_number, action_ordinal)
+        ORDER BY (block_date, block_number, tx_hash, tx_index, `index`)
         COMMENT 'Antelope actions';
 
 CREATE TABLE IF NOT EXISTS db_ops

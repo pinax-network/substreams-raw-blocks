@@ -23,11 +23,11 @@ info:
 
 .PHONY: run
 run:
-	substreams run -e wax.substreams.pinax.network:443 ch_out -s 5624351 -t 5624352 -o json
+	substreams run -e eos.substreams.pinax.network:443 ch_out -s 386946801 -t 386946802 -o json
 
 .PHONY: gui
 gui:
-	substreams gui -e wax.substreams.pinax.network:443 ch_out -s 5624351 -t 5624352
+	substreams gui -e eos.substreams.pinax.network:443 ch_out -s 386946801 -t 386946802
 
 .PHONY: sql-setup
 sql-setup:
@@ -40,6 +40,14 @@ sql-setup:
 .PHONY: sql-run-eos
 sql-run-eos:
 	substreams-sink-sql run clickhouse://default:default@localhost:9000/eos substreams.yaml -e eos.substreams.pinax.network:443 386841287:387014085 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
+
+.PHONY: sql-run-eos-test
+sql-run-eos-test:
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/eos substreams.yaml -e eos.substreams.pinax.network:443 386946800:386946810 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 1 --development-mode
+
+.PHONY: sql-run-eos-blocks
+sql-run-eos-blocks:
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/eos substreams.yaml -e eos.substreams.pinax.network:443 2: --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --params ch_out=blocks
 
 .PHONY: sql-run-wax
 sql-run-wax:

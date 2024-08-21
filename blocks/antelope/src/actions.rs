@@ -1,5 +1,6 @@
 use common::{blocks::insert_timestamp, utils::bytes_to_hex_no_prefix};
 use common::keys::traces_keys;
+use substreams::log;
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_antelope::pb::{ActionTrace, BlockHeader, TransactionTrace};
@@ -25,21 +26,22 @@ pub fn insert_action(tables: &mut DatabaseChanges, clock: &Clock, trace: &Action
     let raw_data = bytes_to_hex_no_prefix(&action.raw_data.to_vec());
 
     // trace
+	let index = trace.action_ordinal;
 	let receiver = &trace.receiver;
 	let context_free = trace.context_free;
 	let elapsed = trace.elapsed;
 	let console = &trace.console;
 	let raw_return_value = bytes_to_hex_no_prefix(&trace.raw_return_value.to_vec());
 	let json_return_value = &trace.json_return_value;
-	let action_ordinal = trace.action_ordinal;
 	let creator_action_ordinal = trace.creator_action_ordinal;
 	let closest_unnotified_ancestor_action_ordinal = trace.closest_unnotified_ancestor_action_ordinal;
 	let execution_index = trace.execution_index;
 
     // block roots
     let action_mroot = bytes_to_hex_no_prefix(&block_header.action_mroot.to_vec());
+    // log::debug!("account={:?} name={:?} tx_index={:?} index: {:?}", account, name, transaction.index, index);
 
-    let keys = traces_keys(&clock, &transaction.id, &transaction.index, &action_ordinal);
+    let keys = traces_keys(&clock, &transaction.id, &transaction.index, &index);
     let row = tables
         .push_change_composite("actions", keys, 0, table_change::Operation::Create)
 
@@ -58,13 +60,13 @@ pub fn insert_action(tables: &mut DatabaseChanges, clock: &Clock, trace: &Action
         .change("raw_data", ("", raw_data.to_string().as_str()))
 
         // trace
+        .change("index", ("", index.to_string().as_str()))
         .change("receiver", ("", receiver.to_string().as_str()))
         .change("context_free", ("", context_free.to_string().as_str()))
         .change("elapsed", ("", elapsed.to_string().as_str()))
         .change("console", ("", console.to_string().as_str()))
         .change("raw_return_value", ("", raw_return_value.to_string().as_str()))
         .change("json_return_value", ("", json_return_value.to_string().as_str()))
-        .change("action_ordinal", ("", action_ordinal.to_string().as_str()))
         .change("creator_action_ordinal", ("", creator_action_ordinal.to_string().as_str()))
         .change("closest_unnotified_ancestor_action_ordinal", ("", closest_unnotified_ancestor_action_ordinal.to_string().as_str()))
         .change("execution_index", ("", execution_index.to_string().as_str()))
