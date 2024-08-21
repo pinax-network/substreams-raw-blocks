@@ -21,5 +21,5 @@ pub fn insert_nonce_change(tables: &mut DatabaseChanges, clock: &Clock, nonce_ch
         .change("new_value", ("", new_value.to_string().as_str()))
         .change("ordinal", ("", ordinal.to_string().as_str()));
 
-    insert_timestamp(row, clock, false, true);
+    insert_timestamp(row, clock, false);
 }

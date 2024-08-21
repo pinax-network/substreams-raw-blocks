@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS blocks
     hash                                    String COMMENT 'Hash',
 
     -- header --
-    previous                                String COMMENT 'Hash',
+    parent_hash                             String COMMENT 'Hash',
     producer                                String COMMENT 'Address',
     confirmed                               UInt32,
     schedule_version                        UInt32,
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS blocks
     blockroot_merkle_node_count             UInt32,
 
     -- counters --
-    size                                    UInt64 COMMENT 'Block size in bytes',
+    size                                    UInt64 COMMENT 'Block size estimate in bytes',
     total_transactions                      UInt64,
     successful_transactions                 UInt64,
     failed_transactions                     UInt64,
@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS transactions
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_number)
-        ORDER BY (block_date, block_number, hash)
+        ORDER BY (block_date, block_number, block_hash, hash)
         COMMENT 'Antelope transactions';
 
 CREATE TABLE IF NOT EXISTS actions
@@ -127,7 +127,7 @@ CREATE TABLE IF NOT EXISTS actions
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_number)
-        ORDER BY (block_date, block_number, tx_hash, tx_index, `index`)
+        ORDER BY (block_date, block_number, block_hash, tx_hash, tx_index, `index`)
         COMMENT 'Antelope actions';
 
 CREATE TABLE IF NOT EXISTS db_ops
@@ -163,5 +163,5 @@ CREATE TABLE IF NOT EXISTS db_ops
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_number)
-        ORDER BY (block_date, block_number, tx_hash, `index`)
+        ORDER BY (block_date, block_number, block_hash, tx_hash, `index`)
         COMMENT 'Antelope database operations';

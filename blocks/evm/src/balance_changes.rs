@@ -59,7 +59,7 @@ pub fn insert_balance_change(tables: &mut DatabaseChanges, clock: &Clock, balanc
     let row = tables.push_change_composite("balance_changes", keys, 0, table_change::Operation::Create);
 
     insert_balance_change_row(row, balance_change);
-    insert_timestamp(row, clock, false, true);
+    insert_timestamp(row, clock, false);
 }
 
 pub fn insert_balance_change_counts(row: &mut TableChange, all_balance_changes_reason: Vec<i32>) {

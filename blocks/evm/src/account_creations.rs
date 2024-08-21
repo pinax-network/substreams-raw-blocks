@@ -17,5 +17,5 @@ pub fn insert_account_creation(tables: &mut DatabaseChanges, clock: &Clock, acco
         .change("account", ("", account.as_str()))
         .change("ordinal", ("", ordinal.to_string().as_str()));
 
-    insert_timestamp(row, clock, false, true);
+    insert_timestamp(row, clock, false);
 }

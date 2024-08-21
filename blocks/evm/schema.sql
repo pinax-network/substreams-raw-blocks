@@ -33,7 +33,6 @@ CREATE TABLE IF NOT EXISTS blocks
     miner                       String COMMENT 'EVM Address',
     difficulty                  UInt64 DEFAULT 0,
     total_difficulty            String DEFAULT '' COMMENT 'UInt256',
-    size                        UInt64 COMMENT 'Block size in bytes',
     mix_hash                    String COMMENT 'EVM Hash',
     extra_data                  String,
     extra_data_utf8             String,
@@ -42,6 +41,9 @@ CREATE TABLE IF NOT EXISTS blocks
     base_fee_per_gas            String DEFAULT '' COMMENT 'EIP-1559 (London Fork)',
     blob_gas_used               String DEFAULT '' COMMENT 'EIP-4844 (Dencun Fork)',
     excess_blob_gas             String DEFAULT '' COMMENT 'EIP-4844 (Dencun Fork)',
+
+    -- counters --
+    size                        UInt64 COMMENT 'Block size in bytes',
     total_transactions          UInt64,
     successful_transactions     UInt64,
     failed_transactions         UInt64,
@@ -103,7 +105,7 @@ CREATE TABLE IF NOT EXISTS transactions
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_number)
-        ORDER BY (block_date, block_number, hash)
+        ORDER BY (block_date, block_number, block_hash, hash)
         COMMENT 'EVM transactions';
 
 CREATE TABLE IF NOT EXISTS logs
@@ -135,7 +137,7 @@ CREATE TABLE IF NOT EXISTS logs
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_number)
-        ORDER BY (block_date, block_number, tx_hash, `index`)
+        ORDER BY (block_date, block_number, block_hash, tx_hash, `index`)
         COMMENT 'EVM event logs';
 
 CREATE TABLE IF NOT EXISTS traces
@@ -179,7 +181,7 @@ CREATE TABLE IF NOT EXISTS traces
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_number)
-        ORDER BY (block_date, block_number, tx_hash, tx_index, `index`)
+        ORDER BY (block_date, block_number, block_hash, tx_hash, tx_index, `index`)
         COMMENT 'EVM traces';
 
 CREATE TABLE IF NOT EXISTS balance_changes
@@ -278,7 +280,7 @@ CREATE TABLE IF NOT EXISTS nonce_changes
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_number)
-        ORDER BY (block_date, block_number, ordinal)
+        ORDER BY (block_date, block_number, block_hash, ordinal)
         COMMENT 'EVM nonce changes';
 
 CREATE TABLE IF NOT EXISTS gas_changes

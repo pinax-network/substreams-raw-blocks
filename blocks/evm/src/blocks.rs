@@ -86,7 +86,7 @@ pub fn insert_blocks(params: &String, tables: &mut DatabaseChanges, clock: &Cloc
         .change("detail_level_code", ("", detail_level_code.to_string().as_str()))
         ;
 
-    insert_timestamp(row, clock, true, true);
+    insert_timestamp(row, clock, true);
 
     // transaction status counts
     let all_transaction_status: Vec<i32> = block.transaction_traces.iter().map(|transaction| transaction.status).collect();

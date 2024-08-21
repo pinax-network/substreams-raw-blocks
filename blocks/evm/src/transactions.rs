@@ -120,7 +120,7 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
         .change("receipts_root", ("", receipts_root.as_str()))
         ;
 
-    insert_timestamp(row, clock, false, true);
+    insert_timestamp(row, clock, false);
 
     // TABLE::traces
     for call in transaction.calls() {

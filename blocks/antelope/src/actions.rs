@@ -1,4 +1,5 @@
-use common::{blocks::insert_timestamp, utils::bytes_to_hex_no_prefix};
+use common::utils::add_prefix_to_hex;
+use common::{blocks::insert_timestamp, utils::bytes_to_hex};
 use common::keys::traces_keys;
 use substreams::log;
 use substreams::pb::substreams::Clock;
@@ -23,7 +24,7 @@ pub fn insert_action(tables: &mut DatabaseChanges, clock: &Clock, trace: &Action
     let account = action.account;
     let name = action.name;
     let json_data = action.json_data;
-    let raw_data = bytes_to_hex_no_prefix(&action.raw_data.to_vec());
+    let raw_data = bytes_to_hex(&action.raw_data.to_vec());
 
     // trace
 	let index = trace.action_ordinal;
@@ -31,17 +32,21 @@ pub fn insert_action(tables: &mut DatabaseChanges, clock: &Clock, trace: &Action
 	let context_free = trace.context_free;
 	let elapsed = trace.elapsed;
 	let console = &trace.console;
-	let raw_return_value = bytes_to_hex_no_prefix(&trace.raw_return_value.to_vec());
+	let raw_return_value = bytes_to_hex(&trace.raw_return_value.to_vec());
 	let json_return_value = &trace.json_return_value;
 	let creator_action_ordinal = trace.creator_action_ordinal;
 	let closest_unnotified_ancestor_action_ordinal = trace.closest_unnotified_ancestor_action_ordinal;
 	let execution_index = trace.execution_index;
 
     // block roots
-    let action_mroot = bytes_to_hex_no_prefix(&block_header.action_mroot.to_vec());
+    let action_mroot = bytes_to_hex(&block_header.action_mroot.to_vec());
     // log::debug!("account={:?} name={:?} tx_index={:?} index: {:?}", account, name, transaction.index, index);
 
-    let keys = traces_keys(&clock, &transaction.id, &transaction.index, &index);
+    // transaction
+    let tx_hash = add_prefix_to_hex(&transaction.id);
+    let tx_index = transaction.index;
+
+    let keys = traces_keys(&clock, &tx_hash, &tx_index, &index);
     let row = tables
         .push_change_composite("actions", keys, 0, table_change::Operation::Create)
 
@@ -102,5 +107,5 @@ pub fn insert_action(tables: &mut DatabaseChanges, clock: &Clock, trace: &Action
     // for account_ram_delta in transaction.account_ram_deltas.iter() {
     //     insert_account_ram_delta(tables, clock, trace, &account_ram_delta, &block);
     // }
-    insert_timestamp(row, clock, false, false);
+    insert_timestamp(row, clock, false);
 }

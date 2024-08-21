@@ -1,4 +1,4 @@
-use common::{blocks::insert_timestamp, utils::bytes_to_hex_no_prefix};
+use common::{blocks::insert_timestamp, utils::bytes_to_hex};
 use common::keys::logs_keys;
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
@@ -28,8 +28,8 @@ pub fn insert_db_op(tables: &mut DatabaseChanges, clock: &Clock, db_op: &DbOp, t
 	let primary_key = &db_op.primary_key;
 	let old_payer = &db_op.old_payer;
 	let new_payer = &db_op.new_payer;
-	let old_data = bytes_to_hex_no_prefix(&db_op.old_data.to_vec());
-	let new_data = bytes_to_hex_no_prefix(&db_op.new_data.to_vec());
+	let old_data = bytes_to_hex(&db_op.old_data.to_vec());
+	let new_data = bytes_to_hex(&db_op.new_data.to_vec());
 	let old_data_json = &db_op.old_data_json;
 	let new_data_json = &db_op.new_data_json;
 
@@ -51,6 +51,6 @@ pub fn insert_db_op(tables: &mut DatabaseChanges, clock: &Clock, db_op: &DbOp, t
         .change("old_data_json", ("", old_data_json.to_string().as_str()))
         .change("new_data_json", ("", new_data_json.to_string().as_str()));
 
-    insert_timestamp(row, clock, false, false);
+    insert_timestamp(row, clock, false);
     insert_transaction_metadata(row, transaction);
 }

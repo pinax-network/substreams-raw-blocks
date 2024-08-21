@@ -1,5 +1,5 @@
 use common::blocks::insert_timestamp;
-use common::utils::bytes_to_hex_no_prefix;
+use common::utils::bytes_to_hex;
 use common::keys::blocks_keys;
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges, TableChange};
@@ -12,7 +12,7 @@ use crate::transactions::insert_transaction;
 pub fn insert_blocks(params: String, tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
     // header
     let header = block.header.clone().unwrap_or_default();
-    let previous = &header.previous;
+    let parent_hash = &header.previous;
     let producer = &header.producer;
     let confirmed = &header.confirmed;
     let schedule_version = &header.schedule_version;
@@ -29,12 +29,12 @@ pub fn insert_blocks(params: String, tables: &mut DatabaseChanges, clock: &Clock
     // TO-DO
     // Array(String) type is not supported by `substreams-sink-sql`
     // https://github.com/pinax-network/substreams-sink-sql/issues/18
-    // let blockroot_merkle_active_nodes = blockroot_merkle.active_nodes.iter().map(|row| bytes_to_hex_no_prefix(row).to_string()).collect::<Vec<String>>();
+    // let blockroot_merkle_active_nodes = blockroot_merkle.active_nodes.iter().map(|row| bytes_to_hex(row).to_string()).collect::<Vec<String>>();
     let blockroot_merkle_node_count = blockroot_merkle.node_count;
 
     // block roots
-    let transaction_mroot = bytes_to_hex_no_prefix(&header.transaction_mroot.to_vec());
-    let action_mroot = bytes_to_hex_no_prefix(&header.action_mroot.to_vec());
+    let transaction_mroot = bytes_to_hex(&header.transaction_mroot.to_vec());
+    let action_mroot = bytes_to_hex(&header.action_mroot.to_vec());
 
     // TO-DO
     // to be used during Legacy to Savanna transition where action_mroot needs to be converted from Legacy merkle to Savanna merkle
@@ -45,7 +45,7 @@ pub fn insert_blocks(params: String, tables: &mut DatabaseChanges, clock: &Clock
     let row = tables
         .push_change_composite("blocks", keys, 0, table_change::Operation::Create)
         // header
-        .change("previous", ("", previous.as_str()))
+        .change("parent_hash", ("", parent_hash.as_str()))
         .change("producer", ("", producer.to_string().as_str()))
         .change("confirmed", ("", confirmed.to_string().as_str()))
         .change("schedule_version", ("", schedule_version.to_string().as_str()))
@@ -66,7 +66,7 @@ pub fn insert_blocks(params: String, tables: &mut DatabaseChanges, clock: &Clock
     // transaction status counts
     insert_size(row, block);
     insert_transaction_counters(row, block);
-    insert_timestamp(row, clock, true, false);
+    insert_timestamp(row, clock, true);
 
     // skip the rest if blocks is the only requested table
     // designed for high throughput to calculate total block size of the entire chain

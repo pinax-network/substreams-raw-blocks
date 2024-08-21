@@ -18,13 +18,21 @@ pub fn bytes_to_hex(bytes: &Vec<u8>) -> String {
     }
 }
 
-pub fn bytes_to_hex_no_prefix(bytes: &Vec<u8>) -> String {
-    if bytes.is_empty() {
+pub fn add_prefix_to_hex(hex: &str) -> String {
+    if hex.is_empty() {
         return "".to_string();
     } else {
-        Hex::encode(bytes).to_string()
+        format! {"0x{}", hex}.to_string()
     }
 }
+
+// pub fn bytes_to_hex_no_prefix(bytes: &Vec<u8>) -> String {
+//     if bytes.is_empty() {
+//         return "".to_string();
+//     } else {
+//         Hex::encode(bytes).to_string()
+//     }
+// }
 
 // pub fn bytes_to_name(bytes: &Vec<u8>) -> String {
 //     if bytes.is_empty() {

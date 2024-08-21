@@ -33,7 +33,7 @@ pub fn insert_trace(tables: &mut DatabaseChanges, clock: &Clock, call: &Call, tr
     let keys = traces_keys(&clock, &tx_hash, &tx_index.into(), &call.index);
     let row = tables.push_change_composite("traces", keys, 0, table_change::Operation::Create);
     insert_trace_row(row, call);
-    insert_timestamp(row, clock, false, true);
+    insert_timestamp(row, clock, false);
     insert_transaction_metadata(row, transaction, true);
 
     // TABLE::logs
@@ -74,7 +74,7 @@ pub fn insert_system_trace(tables: &mut DatabaseChanges, clock: &Clock, call: &C
     let keys = traces_keys(&clock, &"".to_string(), &0, &call.index);
     let row = tables.push_change_composite("traces", keys, 0, table_change::Operation::Create);
     insert_trace_row(row, call);
-    insert_timestamp(row, clock, false, true);
+    insert_timestamp(row, clock, false);
     insert_empty_transaction_metadata(row, true);
 }
 
