@@ -61,16 +61,3 @@ pub fn insert_balance_change(tables: &mut DatabaseChanges, clock: &Clock, balanc
     insert_balance_change_row(row, balance_change);
     insert_timestamp(row, clock, false);
 }
-
-pub fn insert_balance_change_counts(row: &mut TableChange, all_balance_changes_reason: Vec<i32>) {
-    // transaction counts
-    let total_balance_changes = all_balance_changes_reason.len();
-    let mut total_withdrawals = 0;
-    for reason in all_balance_changes_reason {
-        if reason == 16 {
-            total_withdrawals += 1;
-        }
-    }
-    row.change("total_balance_changes", ("", total_balance_changes.to_string().as_str()))
-        .change("total_withdrawals", ("", total_withdrawals.to_string().as_str()));
-}

@@ -2,7 +2,7 @@ use common::blocks::insert_timestamp;
 use common::utils::bytes_to_hex;
 use common::keys::blocks_keys;
 use substreams::pb::substreams::Clock;
-use substreams_database_change::pb::database::{table_change, DatabaseChanges, TableChange};
+use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_antelope::pb::Block;
 
 use crate::size::insert_size;
@@ -65,7 +65,6 @@ pub fn insert_blocks(params: String, tables: &mut DatabaseChanges, clock: &Clock
 
     // transaction status counts
     insert_size(row, block);
-    insert_transaction_counters(row, block);
     insert_timestamp(row, clock, true);
 
     // skip the rest if blocks is the only requested table
@@ -76,32 +75,4 @@ pub fn insert_blocks(params: String, tables: &mut DatabaseChanges, clock: &Clock
     for transaction in block.transaction_traces() {
         insert_transaction(tables, clock, &transaction, &header);
     }
-}
-
-pub fn insert_transaction_counters(row: &mut TableChange, block: &Block) {
-    // counters
-    let mut total_transactions = 0;
-    let mut successful_transactions = 0;
-    let mut failed_transactions = 0;
-    let mut total_actions = 0;
-    let mut total_db_ops = 0;
-
-    for transaction in block.transaction_traces() {
-        let status = transaction.receipt.clone().unwrap_or_default().status;
-        if status == 1 {
-            successful_transactions += 1;
-        } else {
-            failed_transactions += 1;
-        }
-        total_transactions += 1;
-        total_actions += transaction.action_traces.len();
-        total_db_ops += transaction.db_ops.len();
-    }
-
-    row.change("total_transactions", ("", total_transactions.to_string().as_str()))
-        .change("successful_transactions", ("", successful_transactions.to_string().as_str()))
-        .change("failed_transactions", ("", failed_transactions.to_string().as_str()))
-        .change("total_actions", ("", total_actions.to_string().as_str()))
-        .change("total_db_ops", ("", total_db_ops.to_string().as_str()))
-    ;
 }

@@ -2,11 +2,12 @@ use common::blocks::insert_timestamp;
 use common::utils::{bytes_to_hex, optional_u64_to_string};
 use common::{keys::blocks_keys, utils::optional_bigint_to_string};
 use substreams::pb::substreams::Clock;
-use substreams_database_change::pb::database::{table_change, DatabaseChanges, TableChange};
+use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_ethereum::pb::eth::v2::Block;
 
-use crate::balance_changes::{insert_balance_change, insert_balance_change_counts};
+use crate::balance_changes::insert_balance_change;
 use crate::code_changes::insert_code_change;
+use crate::size::insert_size;
 use crate::traces::insert_system_trace;
 use crate::transactions::insert_transaction;
 
@@ -31,7 +32,6 @@ pub fn insert_blocks(params: &String, tables: &mut DatabaseChanges, clock: &Cloc
     let state_root = bytes_to_hex(&header.state_root);
     let receipts_root = bytes_to_hex(&header.receipt_root);
     let miner = bytes_to_hex(&header.coinbase); // EVM Address
-    let size = block.size;
     let mix_hash = bytes_to_hex(&header.mix_hash);
     let extra_data = bytes_to_hex(&header.extra_data.clone());
     let extra_data_utf8 = String::from_utf8(header.extra_data.clone()).unwrap_or_default();
@@ -64,7 +64,6 @@ pub fn insert_blocks(params: &String, tables: &mut DatabaseChanges, clock: &Cloc
         .change("state_root", ("", state_root.as_str()))
         .change("receipts_root", ("", receipts_root.as_str()))
         .change("miner", ("", miner.as_str()))
-        .change("size", ("", size.to_string().as_str()))
         .change("mix_hash", ("", mix_hash.as_str()))
         .change("extra_data", ("", extra_data.as_str()))
         .change("extra_data_utf8", ("", extra_data_utf8.as_str()))
@@ -87,14 +86,7 @@ pub fn insert_blocks(params: &String, tables: &mut DatabaseChanges, clock: &Cloc
         ;
 
     insert_timestamp(row, clock, true);
-
-    // transaction status counts
-    let all_transaction_status: Vec<i32> = block.transaction_traces.iter().map(|transaction| transaction.status).collect();
-    insert_transaction_counts(row, all_transaction_status);
-
-    // balance changes counts
-    let all_balance_changes_reason: Vec<i32> = block.balance_changes.iter().map(|balance_change| balance_change.reason).collect();
-    insert_balance_change_counts(row, all_balance_changes_reason);
+    insert_size(row, &block);
 
     // skip the rest if blocks is the only requested table
     // designed for high throughput to calculate total block size of the entire chain
@@ -118,22 +110,4 @@ pub fn insert_blocks(params: &String, tables: &mut DatabaseChanges, clock: &Cloc
     for transaction in block.transaction_traces.iter() {
         insert_transaction( tables, clock, &transaction, &header, &detail_level);
     }
-}
-
-pub fn insert_transaction_counts(row: &mut TableChange, all_transaction_status: Vec<i32>) {
-    // transaction counts
-    let mut total_transactions = 0;
-    let mut successful_transactions = 0;
-    let mut failed_transactions = 0;
-    for status in all_transaction_status {
-        if status == 1 {
-            successful_transactions += 1;
-        } else {
-            failed_transactions += 1;
-        }
-        total_transactions += 1;
-    }
-    row.change("total_transactions", ("", total_transactions.to_string().as_str()))
-        .change("successful_transactions", ("", successful_transactions.to_string().as_str()))
-        .change("failed_transactions", ("", failed_transactions.to_string().as_str()));
 }
