@@ -39,7 +39,7 @@ sql-setup:
 # Antelope blocks
 .PHONY: sql-run-eos
 sql-run-eos:
-	substreams-sink-sql run clickhouse://default:default@localhost:9000/eos substreams.yaml -e eos.substreams.pinax.network:443 386841287:387014085 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/eos substreams.yaml -e eos.substreams.pinax.network:443 386841287:387014085 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 1 --development-mode
 
 .PHONY: sql-run-eos-test
 sql-run-eos-test:

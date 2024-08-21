@@ -111,16 +111,16 @@ CREATE TABLE IF NOT EXISTS actions
     raw_data                    String COMMENT 'Hex',
 
     -- trace --
-	`index`                                         UInt32 COMMENT 'Action Ordinal',
-	receiver                                        String,
-	context_free                                    Bool,
-	elapsed                                         Int64,
-	console                                         String,
-	raw_return_value                                String,
-	json_return_value                               String,
-	creator_action_ordinal                          UInt32,
-	closest_unnotified_ancestor_action_ordinal      UInt32,
-	execution_index                                 UInt32,
+    `index`                                         UInt32 COMMENT 'Action Ordinal',
+    receiver                                        String,
+    context_free                                    Bool,
+    elapsed                                         Int64,
+    console                                         String,
+    raw_return_value                                String,
+    json_return_value                               String,
+    creator_action_ordinal                          UInt32,
+    closest_unnotified_ancestor_action_ordinal      UInt32,
+    execution_index                                 UInt32,
 
     -- block roots --
     action_mroot                                    String COMMENT 'Hash',
