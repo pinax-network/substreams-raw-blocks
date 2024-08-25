@@ -18,6 +18,23 @@
   - [x] **Gas Changes**
   - [x] **Nonce Changes**
 
+```mermaid
+graph TD;
+  raw[sf.ethereum.type.v2.Block];
+  raw --> base(BASE)
+  raw --> extended(EXTENDED);
+  base --> blocks;
+  base --> logs;
+  base --> transactions;
+  extended --> traces;
+  extended --> balance_changes;
+  extended --> storage_changes;
+  extended --> code_changes;
+  extended --> account_creations;
+  extended --> gas_changes;
+  extended --> nonce_changes;
+```
+
 ## `Solana` Raw Blockchain Data
 
 > Solana
@@ -30,6 +47,18 @@
 - [ ] **Discriminators**
 - [ ] **Rewards**
 - [ ] **Vote Transactions**
+
+```mermaid
+graph TD;
+  raw[sf.solana.type.v1.Block];
+  raw --> blocks;
+  raw --> transactions;
+  raw --> instruction_calls;
+  raw --> account_activity;
+  raw --> discriminators;
+  raw --> rewards;
+  raw --> vote_transactions;
+```
 
 ## `Antelope` Raw Blockchain Data
 
@@ -55,7 +84,9 @@
 
 ```mermaid
 graph TD;
-  ch_out[map: ch_out];
-  sf.ethereum.type.v2.Block[source: sf.ethereum.type.v2.Block] --> ch_out;
-  sf.antelope.type.v1.Block[source: sf.antelope.type.v1.Block] --> ch_out;
+  raw[sf.antelope.type.v1.Block];
+  raw --> blocks;
+  raw --> transactions;
+  raw --> actions;
+  raw --> db_ops;
 ```

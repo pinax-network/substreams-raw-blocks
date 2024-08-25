@@ -51,7 +51,7 @@ sql-run-eos-blocks:
 
 .PHONY: sql-run-wax
 sql-run-wax:
-	substreams-sink-sql run clickhouse://default:default@localhost:9000/wax substreams.yaml -e wax.substreams.pinax.network:443 5624351: --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/wax substreams.yaml -e wax.substreams.pinax.network:443 322339177:322511977 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
 
 .PHONY: deploy
 deploy:
