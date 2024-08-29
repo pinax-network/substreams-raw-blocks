@@ -27,12 +27,13 @@ run:
 
 .PHONY: gui
 gui:
-	substreams gui -e eth.substreams.pinax.network:443 ch_out -s 95005 -t 95006
+	substreams gui -e eth.substreams.pinax.network:443 ch_out -s 20500000 -t 20501001 --production-mode
 
 .PHONY: sql-setup
 sql-setup:
 	# EVM blocks
 	substreams-sink-sql setup clickhouse://default:default@localhost:9000/eth substreams.yaml
+	substreams-sink-sql setup clickhouse://default:default@localhost:9000/ethtest substreams.yaml
 	substreams-sink-sql setup clickhouse://default:default@localhost:9000/eth substreams.yaml --cursors-table cursors1
 	substreams-sink-sql setup clickhouse://default:default@localhost:9000/eth substreams.yaml --cursors-table cursors2
 	substreams-sink-sql setup clickhouse://default:default@localhost:9000/eth substreams.yaml --cursors-table cursors3
@@ -66,6 +67,10 @@ sql-setup:
 .PHONY: sql-run-eth
 sql-run-eth:
 	substreams-sink-sql run clickhouse://default:default@localhost:9000/eth substreams.yaml -e eth.substreams.pinax.network:443 20444295:20451460 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
+
+.PHONY: sql-run-eth-test
+sql-run-eth-test:
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/ethtest substreams.yaml -e eth.substreams.pinax.network:443 20500000:20501001 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
 
 .PHONY: sql-run-eth1
 sql-run-eth1:
