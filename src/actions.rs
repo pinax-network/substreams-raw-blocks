@@ -85,6 +85,6 @@ pub fn insert_action(tables: &mut DatabaseChanges, clock: &Clock, trace: &Action
 
     // TABLE::authorizations
     for authorization in action.authorization.iter() {
-        insert_authorization(tables, trace, transaction, authorization);
+        insert_authorization(tables, clock, trace, transaction, authorization);
     };
 }

@@ -70,7 +70,7 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
 
     // Traces of each action within the transaction, including all notified and nested actions.
     for trace in transaction.action_traces.iter() {
-        insert_receiver(tables, trace, transaction);
+        insert_receiver(tables, clock, trace, transaction);
         insert_action(tables, clock, trace, transaction, block_header);
     }
 }

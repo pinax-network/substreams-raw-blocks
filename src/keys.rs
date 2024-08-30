@@ -30,16 +30,16 @@ pub fn actions_keys(clock: &Clock, tx_hash: &String, tx_index: &u64, action_ordi
     keys
 }
 
-pub fn receivers_keys(tx_hash: &String, action_ordinal: &u32, receiver: &String) -> HashMap<String, String> {
-    let mut keys = HashMap::new();
+pub fn receivers_keys(clock: &Clock, tx_hash: &String, action_ordinal: &u32, receiver: &String) -> HashMap<String, String> {
+    let mut keys = blocks_keys(clock);
     keys.insert("tx_hash".to_string(), tx_hash.to_string());
     keys.insert("action_ordinal".to_string(), action_ordinal.to_string());
     keys.insert("receiver".to_string(), receiver.to_string());
     keys
 }
 
-pub fn authorizations_keys(tx_hash: &String, action_ordinal: &u32, actor: &String, permission: &String) -> HashMap<String, String> {
-    let mut keys = HashMap::new();
+pub fn authorizations_keys(clock: &Clock, tx_hash: &String, action_ordinal: &u32, actor: &String, permission: &String) -> HashMap<String, String> {
+    let mut keys = blocks_keys(clock);
     keys.insert("tx_hash".to_string(), tx_hash.to_string());
     keys.insert("action_ordinal".to_string(), action_ordinal.to_string());
     keys.insert("actor".to_string(), actor.to_string());

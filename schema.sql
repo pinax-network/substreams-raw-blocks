@@ -132,6 +132,12 @@ CREATE TABLE IF NOT EXISTS actions
 
 CREATE TABLE IF NOT EXISTS receivers
 (
+    -- clock --
+    block_time                  DateTime64(3, 'UTC'),
+    block_number                UInt64,
+    block_hash                  String,
+    block_date                  Date,
+
     -- transaction --
     tx_hash                 String,
 
@@ -140,12 +146,18 @@ CREATE TABLE IF NOT EXISTS receivers
     receiver                String
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (tx_hash, action_ordinal)
-        ORDER BY (tx_hash, action_ordinal, receiver)
+        PRIMARY KEY (block_date, block_number)
+        ORDER BY (block_date, block_number, block_hash, tx_hash, action_ordinal, receiver)
         COMMENT 'Antelope action receivers';
 
 CREATE TABLE IF NOT EXISTS authorizations
 (
+    -- clock --
+    block_time                  DateTime64(3, 'UTC'),
+    block_number                UInt64,
+    block_hash                  String,
+    block_date                  Date,
+
     -- transaction --
     tx_hash                 String,
 
@@ -155,7 +167,7 @@ CREATE TABLE IF NOT EXISTS authorizations
     permission              LowCardinality(String)
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (tx_hash, action_ordinal)
-        ORDER BY (tx_hash, action_ordinal, actor, permission)
+        PRIMARY KEY (block_date, block_number)
+        ORDER BY (block_date, block_number, block_hash, tx_hash, action_ordinal, actor, permission)
         COMMENT 'Antelope action authorizations';
 
