@@ -1,12 +1,29 @@
-use common::blocks::insert_timestamp;
-use common::utils::bytes_to_hex;
-use common::keys::blocks_keys;
-use substreams::pb::substreams::Clock;
+use substreams::{pb::substreams::Clock, Hex};
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_antelope::pb::Block;
 
-use crate::size::insert_size;
+use crate::{keys::blocks_keys, size::insert_size};
 use crate::transactions::insert_transaction;
+use substreams_database_change::pb::database::TableChange;
+
+use crate::utils::{add_prefix_to_hex, block_time_to_date};
+
+pub fn insert_timestamp(row: &mut TableChange, clock: &Clock) {
+    let timestamp = clock.clone().timestamp.unwrap();
+    let block_date = block_time_to_date(timestamp.to_string().as_str());
+    let seconds = timestamp.seconds;
+    let nanos = timestamp.nanos;
+    let milliseconds = seconds * 1000 + i64::from(nanos) / 1_000_000;
+    let block_time = milliseconds.to_string();
+    let block_number = clock.number.to_string();
+    let block_hash = add_prefix_to_hex(&clock.id);
+
+    row.change("block_date".to_string(), ("", block_date.as_str()))
+        .change("block_time".to_string(), ("", block_time.as_str()))
+        .change("block_number".to_string(), ("", block_number.as_str()))
+        .change("block_hash".to_string(), ("", block_hash.as_str()));
+}
+
 
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L21
 pub fn insert_blocks(params: String, tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
@@ -33,15 +50,15 @@ pub fn insert_blocks(params: String, tables: &mut DatabaseChanges, clock: &Clock
     let blockroot_merkle_node_count = blockroot_merkle.node_count;
 
     // block roots
-    let transaction_mroot = bytes_to_hex(&header.transaction_mroot.to_vec());
-    let action_mroot = bytes_to_hex(&header.action_mroot.to_vec());
+    let transaction_mroot = Hex::encode(&header.transaction_mroot.to_vec());
+    let action_mroot = Hex::encode(&header.action_mroot.to_vec());
 
     // TO-DO
     // to be used during Legacy to Savanna transition where action_mroot needs to be converted from Legacy merkle to Savanna merkle
     // let action_mroot_savanna = block.action_mroot_savanna;
 
     // blocks
-    let keys = blocks_keys(&clock, true);
+    let keys = blocks_keys(&clock);
     let row = tables
         .push_change_composite("blocks", keys, 0, table_change::Operation::Create)
         // header
@@ -65,7 +82,7 @@ pub fn insert_blocks(params: String, tables: &mut DatabaseChanges, clock: &Clock
 
     // transaction status counts
     insert_size(row, block);
-    insert_timestamp(row, clock, true);
+    insert_timestamp(row, clock);
 
     // skip the rest if blocks is the only requested table
     // designed for high throughput to calculate total block size of the entire chain
