@@ -6,7 +6,7 @@ use crate::{keys::blocks_keys, size::insert_size};
 use crate::transactions::insert_transaction;
 use substreams_database_change::pb::database::TableChange;
 
-use crate::utils::{add_prefix_to_hex, block_time_to_date};
+use crate::utils::block_time_to_date;
 
 pub fn insert_timestamp(row: &mut TableChange, clock: &Clock) {
     let timestamp = clock.clone().timestamp.unwrap();
@@ -16,7 +16,7 @@ pub fn insert_timestamp(row: &mut TableChange, clock: &Clock) {
     let milliseconds = seconds * 1000 + i64::from(nanos) / 1_000_000;
     let block_time = milliseconds.to_string();
     let block_number = clock.number.to_string();
-    let block_hash = add_prefix_to_hex(&clock.id);
+    let block_hash = &clock.id;
 
     row.change("block_date".to_string(), ("", block_date.as_str()))
         .change("block_time".to_string(), ("", block_time.as_str()))
@@ -29,7 +29,7 @@ pub fn insert_timestamp(row: &mut TableChange, clock: &Clock) {
 pub fn insert_blocks(params: String, tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
     // header
     let header = block.header.clone().unwrap_or_default();
-    let parent_hash = &header.previous;
+    let previous = &header.previous;
     let producer = &header.producer;
     let confirmed = &header.confirmed;
     let schedule_version = &header.schedule_version;
@@ -62,7 +62,7 @@ pub fn insert_blocks(params: String, tables: &mut DatabaseChanges, clock: &Clock
     let row = tables
         .push_change_composite("blocks", keys, 0, table_change::Operation::Create)
         // header
-        .change("parent_hash", ("", parent_hash.as_str()))
+        .change("previous", ("", previous.as_str()))
         .change("producer", ("", producer.to_string().as_str()))
         .change("confirmed", ("", confirmed.to_string().as_str()))
         .change("schedule_version", ("", schedule_version.to_string().as_str()))

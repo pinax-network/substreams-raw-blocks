@@ -18,11 +18,11 @@ CREATE TABLE IF NOT EXISTS blocks
     block_time                              DateTime64(3, 'UTC'),
     block_number                            UInt64,
     block_date                              Date,
-    block_hash                              FixedString(64),
+    block_hash                              String,
 
     -- header --
-    parent_hash                             FixedString(64),
-    producer                                FixedString(12),
+    previous                                String,
+    producer                                String,
     confirmed                               UInt32,
     schedule_version                        UInt32,
 
@@ -33,8 +33,8 @@ CREATE TABLE IF NOT EXISTS blocks
     dpos_irreversible_blocknum              UInt32,
 
     -- block roots --
-    transaction_mroot                       FixedString(64),
-    action_mroot                            FixedString(64),
+    transaction_mroot                       String,
+    action_mroot                            String,
     -- blockroot_merkle_active_nodes           Array(String) COMMENT 'A blockroot Merkle tree uses hashes to verify blockchain data integrity. Leaf nodes hash data blocks, non-leaf nodes hash child nodes. The root hash efficiently verifies all data.',
     blockroot_merkle_node_count             UInt32,
 
@@ -56,11 +56,11 @@ CREATE TABLE IF NOT EXISTS transactions
     -- clock --
     block_time                  DateTime64(3, 'UTC'),
     block_number                UInt64,
-    block_hash                  FixedString(64),
+    block_hash                  String,
     block_date                  Date,
 
     -- transaction --
-    hash                        FixedString(64),
+    hash                        String,
     `index`                     UInt64,
     elapsed                     Int64,
     net_usage                   UInt64,
@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS transactions
     success                     Bool,
 
     -- block roots --
-    transaction_mroot           FixedString(64),
+    transaction_mroot           String,
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_number)
@@ -86,11 +86,11 @@ CREATE TABLE IF NOT EXISTS actions
     -- clock --
     block_time                  DateTime64(3, 'UTC'),
     block_number                UInt64,
-    block_hash                  FixedString(64),
+    block_hash                  String,
     block_date                  Date,
 
     -- transaction --
-    tx_hash                     FixedString(64),
+    tx_hash                     String,
     tx_index                    UInt64,
     tx_status                   LowCardinality(String),
     tx_status_code              UInt8,
@@ -101,18 +101,18 @@ CREATE TABLE IF NOT EXISTS actions
     code_sequence               UInt64,
     digest                      String,
     global_sequence             UInt64,
-    receipt_receiver            FixedString(12),
+    receipt_receiver            String,
     recv_sequence               UInt64,
 
     -- action --
-    account                     FixedString(12),
-    name                        FixedString(12),
+    account                     String,
+    name                        String,
     json_data                   String COMMENT 'JSON',
     raw_data                    String COMMENT 'Hex',
 
     -- trace --
     action_ordinal                                  UInt32 COMMENT 'Action Ordinal',
-    receiver                                        FixedString(12),
+    receiver                                        String,
     context_free                                    Bool,
     elapsed                                         Int64,
     console                                         String,
@@ -123,7 +123,7 @@ CREATE TABLE IF NOT EXISTS actions
     execution_index                                 UInt32,
 
     -- block roots --
-    action_mroot                                    FixedString(64),
+    action_mroot                                    String,
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_number)
@@ -133,25 +133,25 @@ CREATE TABLE IF NOT EXISTS actions
 CREATE TABLE IF NOT EXISTS receivers
 (
     -- transaction --
-    tx_hash                 FixedString(64),
+    tx_hash                 String,
 
     -- action --
     action_ordinal          UInt32,
-    receiver                FixedString(12)
+    receiver                String
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (tx_hash, action_ordinal)
-        ORDER BY (tx_hash, action_ordinal)
+        ORDER BY (tx_hash, action_ordinal, receiver)
         COMMENT 'Antelope action receivers';
 
 CREATE TABLE IF NOT EXISTS authorizations
 (
     -- transaction --
-    tx_hash                 FixedString(64),
+    tx_hash                 String,
 
     -- action --
     action_ordinal          UInt32,
-    actor                   FixedString(12),
+    actor                   String,
     permission              LowCardinality(String)
 )
     ENGINE = ReplacingMergeTree()

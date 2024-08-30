@@ -7,14 +7,6 @@ pub fn block_time_to_date(block_time: &str) -> String {
     }
 }
 
-pub fn add_prefix_to_hex(hex: &str) -> String {
-    if hex.is_empty() {
-        return "".to_string();
-    } else {
-        format! {"0x{}", hex}.to_string()
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;

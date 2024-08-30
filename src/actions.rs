@@ -16,7 +16,7 @@ pub fn insert_action(tables: &mut DatabaseChanges, clock: &Clock, trace: &Action
     // skip if action is an inline notification
     // notifications are not included in the actions table
     // `receivers` table is used to store notifications
-    if trace.receiver == account { return; }
+    if trace.receiver != account { return; }
 
     // receipt
 	let receipt = trace.receipt.clone().unwrap_or_default();
