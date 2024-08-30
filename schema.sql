@@ -47,8 +47,8 @@ CREATE TABLE IF NOT EXISTS blocks
     total_db_ops                            UInt64,
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (date, number)
-        ORDER BY (date, number, hash)
+        PRIMARY KEY (block_date, block_number)
+        ORDER BY (block_date, block_number, block_hash)
         COMMENT 'Antelope block header';
 
 CREATE TABLE IF NOT EXISTS transactions

@@ -31,12 +31,10 @@ gui:
 
 .PHONY: sql-setup
 sql-setup:
-	# EVM blocks
 	substreams-sink-sql setup clickhouse://default:default@localhost:9000/eos substreams.yaml
 	substreams-sink-sql setup clickhouse://default:default@localhost:9000/wax substreams.yaml
 	substreams-sink-sql setup clickhouse://default:default@localhost:9000/telos substreams.yaml
 
-# Antelope blocks
 .PHONY: sql-run-eos
 sql-run-eos:
 	substreams-sink-sql run clickhouse://default:default@localhost:9000/eos substreams.yaml -e eos.substreams.pinax.network:443 386841287:387014085 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 1 --development-mode
