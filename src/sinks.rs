@@ -28,7 +28,7 @@ pub fn graph_out(clock: Clock, block: Block) -> Result<EntityChanges, Error> {
     let previous = header.previous;
 
     // TABLE::blocks
-    tables.create_row("blocks", &block_hash)
+    tables.create_row("Block", &block_hash)
         .set("block_hash", &block_hash)
         .set("block_time", &block_time.to_string())
         .set("previous", &previous)
@@ -40,7 +40,8 @@ pub fn graph_out(clock: Clock, block: Block) -> Result<EntityChanges, Error> {
         // transactions
         let tx_hash = transaction.id.clone();
 
-        tables.create_row("transactions", &tx_hash)
+        tables.create_row("Transaction", &tx_hash)
+            .set("block", &block_hash) // pointer to block
             .set("block_hash", &block_hash)
             .set("tx_hash", &tx_hash)
         ;
@@ -56,7 +57,8 @@ pub fn graph_out(clock: Clock, block: Block) -> Result<EntityChanges, Error> {
             let action_ordinal = trace.action_ordinal;
 
             let key = format!("{}-{}", &tx_hash, &action_ordinal);
-            tables.create_row("actions", &key)
+            tables.create_row("Action", &key)
+                .set("transaction", &tx_hash) // pointer to transaction
                 .set("tx_hash", &tx_hash)
                 .set("action_ordinal", &action_ordinal.to_string())
                 .set("account", &account)

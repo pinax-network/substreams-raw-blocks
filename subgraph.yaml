@@ -6,7 +6,7 @@ schema:
 dataSources:
   - kind: substreams
     name: antelope_transactions
-    network: mainnet
+    network: eos
     source:
       package:
         moduleName: graph_out

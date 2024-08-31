@@ -1,20 +1,25 @@
 type Block @entity {
-  blockHash                String!
-  blockHash                Int!
-  previous                 String!
-  transactions: [Transaction!]! @derivedFrom(field: "txHash")
+  id:                             ID!
+  blockHash:                      String!
+  blockTime:                      Int!
+  previous:                       String!
+  transactions: [Transaction!]! @derivedFrom(field: "block")
 }
 
 type Transaction @entity {
-  txHash                 String!
-  actions: [Action!]! @derivedFrom(field: "txHash")
+  id:                 ID!
+  txHash:             String!
+  block:              Block!
+  actions: [Action!]! @derivedFrom(field: "transaction")
 }
 
 type Action @entity {
-  txHash                 String!
-  actionOrdinal          Int!
-  account                String!
-  name                   String!
-  jsonData               String!
-  rawData                String!
+  id:                       ID!
+  txHash:                   String!
+  actionOrdinal:            Int!
+  account:                  String!
+  name:                     String!
+  jsonData:                 String!
+  rawData:                  String!
+  transaction:              Transaction!
 }
