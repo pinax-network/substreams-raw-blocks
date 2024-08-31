@@ -26,7 +26,7 @@ pub fn insert_timestamp(row: &mut TableChange, clock: &Clock) {
 
 
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L21
-pub fn insert_blocks(params: String, tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
+pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
     // header
     let header = block.header.clone().unwrap_or_default();
     let previous = &header.previous;
@@ -83,10 +83,6 @@ pub fn insert_blocks(params: String, tables: &mut DatabaseChanges, clock: &Clock
     // transaction status counts
     insert_size(row, block);
     insert_timestamp(row, clock);
-
-    // skip the rest if blocks is the only requested table
-    // designed for high throughput to calculate total block size of the entire chain
-    if params == "blocks" { return; }
 
     // TABLE::transactions
     for transaction in block.transaction_traces() {

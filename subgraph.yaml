@@ -1,0 +1,16 @@
+specVersion: 0.0.4
+description: Antelope Transactions Subgraph (powered by Substreams)
+repository: https://github.com/pinax-network/antelope-transactions-substreams
+schema:
+  file: schema.graphql
+dataSources:
+  - kind: substreams
+    name: antelope_transactions
+    network: mainnet
+    source:
+      package:
+        moduleName: graph_out
+        file: antelope-transactions-v0.2.0.spkg
+    mapping:
+      kind: substreams/graph-entities
+      apiVersion: 0.0.5

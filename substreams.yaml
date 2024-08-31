@@ -7,6 +7,7 @@ package:
 
 imports:
   database_change: https://github.com/streamingfast/substreams-sink-database-changes/releases/download/v1.3.1/substreams-database-change-v1.3.1.spkg
+  entity_changes: https://github.com/streamingfast/substreams-sink-entity-changes/releases/download/v1.3.2/substreams-sink-entity-changes-v1.3.2.spkg
   sql: https://github.com/streamingfast/substreams-sink-sql/releases/download/protodefs-v1.0.7/substreams-sink-sql-protodefs-v1.0.7.spkg
 
 binaries:
@@ -18,11 +19,17 @@ modules:
   - name: ch_out
     kind: map
     inputs:
-      - params: string
       - source: sf.substreams.v1.Clock
       - source: sf.antelope.type.v1.Block
     output:
       type: proto:sf.substreams.sink.database.v1.DatabaseChanges
+  - name: graph_out
+    kind: map
+    inputs:
+      - source: sf.substreams.v1.Clock
+      - source: sf.antelope.type.v1.Block
+    output:
+      type: proto:substreams.sink.entity.v1.EntityChanges
 
 network: mainnet
 
@@ -34,6 +41,3 @@ sink:
     engine: clickhouse
     postgraphile_frontend:
       enabled: false
-
-params:
-  ch_out: '*'

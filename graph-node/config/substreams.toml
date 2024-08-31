@@ -1,0 +1,22 @@
+[general]
+
+[store]
+[store.primary]
+connection = "postgresql://graph-node:let-me-in@host.docker.internal:5432/graph-node"
+weight = 1
+pool_size = 10
+
+[chains]
+ingestor = "block_ingestor_node"
+
+[chains.eos]
+protocol = "substreams"
+shard = "primary"
+provider = [
+    { label = "substreams-eos", details = { type = "substreams", url = "https://eos.substreams.pinax.network:443" } },
+]
+
+[deployment]
+[[deployment.rule]]
+shard = "primary"
+indexers = ["default"]

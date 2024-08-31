@@ -1,0 +1,20 @@
+type Block @entity {
+  blockHash                String!
+  blockHash                Int!
+  previous                 String!
+  transactions: [Transaction!]! @derivedFrom(field: "txHash")
+}
+
+type Transaction @entity {
+  txHash                 String!
+  actions: [Action!]! @derivedFrom(field: "txHash")
+}
+
+type Action @entity {
+  txHash                 String!
+  actionOrdinal          Int!
+  account                String!
+  name                   String!
+  jsonData               String!
+  rawData                String!
+}
