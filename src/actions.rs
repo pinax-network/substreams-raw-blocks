@@ -44,9 +44,8 @@ pub fn insert_action(tables: &mut DatabaseChanges, clock: &Clock, trace: &Action
 
     // transaction
     let tx_hash = &transaction.id;
-    let tx_index = transaction.index;
 
-    let keys = actions_keys(&clock, &tx_hash, &tx_index, &action_ordinal);
+    let keys = actions_keys(&clock, &tx_hash, &action_ordinal);
     let row = tables
         .push_change_composite("actions", keys, 0, table_change::Operation::Create)
 

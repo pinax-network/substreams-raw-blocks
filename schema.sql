@@ -77,8 +77,8 @@ CREATE TABLE IF NOT EXISTS transactions
     transaction_mroot           String,
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, block_number)
-        ORDER BY (block_date, block_number, block_hash, hash)
+        PRIMARY KEY (hash)
+        ORDER BY (hash)
         COMMENT 'Antelope transactions';
 
 CREATE TABLE IF NOT EXISTS actions
@@ -126,8 +126,8 @@ CREATE TABLE IF NOT EXISTS actions
     action_mroot                                    String,
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, block_number)
-        ORDER BY (block_date, block_number, block_hash, tx_hash, tx_index, action_ordinal)
+        PRIMARY KEY (tx_hash, action_ordinal)
+        ORDER BY (tx_hash, action_ordinal)
         COMMENT 'Antelope actions';
 
 CREATE TABLE IF NOT EXISTS receivers
@@ -143,11 +143,13 @@ CREATE TABLE IF NOT EXISTS receivers
 
     -- action --
     action_ordinal          UInt32,
+
+    -- receiver --
     receiver                String
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, block_number)
-        ORDER BY (block_date, block_number, block_hash, tx_hash, action_ordinal, receiver)
+        PRIMARY KEY (tx_hash, action_ordinal, receiver)
+        ORDER BY (tx_hash, action_ordinal, receiver)
         COMMENT 'Antelope action receivers';
 
 CREATE TABLE IF NOT EXISTS authorizations
@@ -163,11 +165,60 @@ CREATE TABLE IF NOT EXISTS authorizations
 
     -- action --
     action_ordinal          UInt32,
+
+    -- authorization --
     actor                   String,
     permission              LowCardinality(String)
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, block_number)
-        ORDER BY (block_date, block_number, block_hash, tx_hash, action_ordinal, actor, permission)
+        PRIMARY KEY (tx_hash, action_ordinal, actor, permission)
+        ORDER BY (tx_hash, action_ordinal, actor, permission)
         COMMENT 'Antelope action authorizations';
 
+-- MV TABLE::receivers (tx_hash) --
+CREATE TABLE IF NOT EXISTS receivers_by_receiver
+(
+    -- transaction --
+    tx_hash                 String,
+
+    -- action --
+    action_ordinal          UInt32,
+
+    -- receiver --
+    receiver                String
+)
+    ENGINE = ReplacingMergeTree()
+        ORDER BY (receiver, tx_hash, action_ordinal);
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS receivers_by_receiver_mv
+    TO receivers_by_receiver
+AS
+SELECT tx_hash,
+       action_ordinal,
+       receiver
+FROM receivers;
+
+-- MV TABLE::authorizations (tx_hash) --
+CREATE TABLE IF NOT EXISTS authorizations_by_actor
+(
+    -- transaction --
+    tx_hash                 String,
+
+    -- action --
+    action_ordinal          UInt32,
+
+    -- authorization --
+    actor                   String,
+    permission              LowCardinality(String)
+)
+    ENGINE = ReplacingMergeTree()
+        ORDER BY (actor, permission, tx_hash, action_ordinal);
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS authorizations_by_actor_mv
+    TO authorizations_by_actor
+AS
+SELECT tx_hash,
+       action_ordinal,
+       actor,
+       permission
+FROM authorizations;
