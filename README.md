@@ -5,16 +5,20 @@
 
 - [x] **Blocks**
 - [x] **Transactions**
+  - [x] **DatabaseOperations** (only available in Clickhouse)
 - [x] **Actions**
   - [x] **Authorization**
   - [x] **Receiver**
 
-## Substreams Graph
+## Support For
+
+- [x] Clickhouse
+- [x] Subgraph
 
 ```mermaid
 graph TD;
   ch_out[map: ch_out];
-  ch_out:params[params] --> ch_out;
-  sf.substreams.v1.Clock[source: sf.substreams.v1.Clock] --> ch_out;
   sf.antelope.type.v1.Block[source: sf.antelope.type.v1.Block] --> ch_out;
+  graph_out[map: graph_out];
+  sf.antelope.type.v1.Block[source: sf.antelope.type.v1.Block] --> graph_out;
 ```

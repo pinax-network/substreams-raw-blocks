@@ -18,7 +18,7 @@ pub fn insert_authorization(tables: &mut DatabaseChanges, clock: &Clock, action:
     let actor = &authorization.actor;
     let permission = &authorization.permission;
 
-    let keys = authorizations_keys(clock,&tx_hash, &action_ordinal, actor, permission);
+    let keys = authorizations_keys(&tx_hash, &action_ordinal, actor, permission);
     let row = tables
         .push_change_composite("authorizations", keys, 0, table_change::Operation::Create)
 

@@ -130,6 +130,42 @@ CREATE TABLE IF NOT EXISTS actions
         ORDER BY (tx_hash, action_ordinal)
         COMMENT 'Antelope actions';
 
+CREATE TABLE IF NOT EXISTS db_ops
+(
+    -- clock --
+    block_time                  DateTime64(3, 'UTC'),
+    block_number                UInt64,
+    block_hash                  String,
+    block_date                  Date,
+
+    -- transaction --
+    tx_hash                     String,
+    tx_index                    UInt64,
+    tx_status                   LowCardinality(String),
+    tx_status_code              UInt8,
+    tx_success                  Bool,
+
+    -- database operation --
+    `index`                     UInt32,
+    operation                   LowCardinality(String) COMMENT 'Operation',
+    operation_code              UInt8,
+    action_index                UInt32,
+    code                        String,
+    scope                       String,
+    table_name                  String,
+    primary_key                 String,
+    old_payer                   String,
+    new_payer                   String,
+    old_data                    String,
+    new_data                    String,
+    old_data_json               String,
+    new_data_json               String,
+)
+    ENGINE = ReplacingMergeTree()
+        PRIMARY KEY (tx_hash, `index`)
+        ORDER BY (tx_hash, `index`)
+        COMMENT 'Antelope database operations';
+
 CREATE TABLE IF NOT EXISTS receivers
 (
     -- clock --

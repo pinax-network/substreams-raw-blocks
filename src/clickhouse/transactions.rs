@@ -8,6 +8,7 @@ use crate::keys::transactions_keys;
 
 use super::actions::insert_action;
 use super::blocks::insert_timestamp;
+use super::db_ops::insert_db_op;
 use super::receivers::insert_receiver;
 
 pub fn transaction_status_to_string(status: i32) -> String {
@@ -47,7 +48,7 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
     // block roots
     let transaction_mroot = Hex::encode(&block_header.transaction_mroot.to_vec());
 
-    let keys = transactions_keys(&clock, &hash);
+    let keys = transactions_keys(hash);
     let row = tables
         .push_change_composite("transactions", keys, 0, table_change::Operation::Create)
         .change("index", ("", index.to_string().as_str()))
@@ -73,6 +74,13 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
     for trace in transaction.action_traces.iter() {
         insert_receiver(tables, clock, trace, transaction);
         insert_action(tables, clock, trace, transaction, block_header);
+    }
+
+    // List of database operations this transaction entailed
+    let mut db_op_index = 0;
+    for db_op in transaction.db_ops.iter() {
+        insert_db_op(tables, clock, db_op, transaction, db_op_index);
+        db_op_index += 1;
     }
 }
 

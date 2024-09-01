@@ -5,7 +5,6 @@ use substreams_entity_change::tables::Tables;
 
 use super::{actions::insert_action, receivers::insert_receiver};
 
-
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L525
 pub fn insert_transaction(tables: &mut Tables, clock: &Clock, transaction: &TransactionTrace) {
     let hash = &transaction.id;

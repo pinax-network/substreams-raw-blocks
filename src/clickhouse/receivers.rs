@@ -13,7 +13,7 @@ pub fn insert_receiver(tables: &mut DatabaseChanges, clock: &Clock, action: &Act
     // action
     let action_ordinal = &action.action_ordinal;
     let receiver = &action.receiver;
-    let keys = receivers_keys(clock, &tx_hash, &action_ordinal, &receiver);
+    let keys = receivers_keys(&tx_hash, &action_ordinal, &receiver);
     let row = tables
         .push_change_composite("receivers", keys, 0, table_change::Operation::Create)
 
