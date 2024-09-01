@@ -40,7 +40,8 @@ pub fn insert_blocks(tables: &mut Tables, clock: &Clock, block: &Block) {
 
     // blockroot_merkle
     let blockroot_merkle = block.blockroot_merkle.clone().unwrap_or_default();
-    let blockroot_merkle_active_nodes = blockroot_merkle.active_nodes.iter().map(|row| Hex::encode(row)).collect::<Vec<String>>();
+    // TO-DO: Array(String)
+    // let blockroot_merkle_active_nodes = blockroot_merkle.active_nodes.iter().map(|row| Hex::encode(row)).collect::<Vec<String>>();
     let blockroot_merkle_node_count = blockroot_merkle.node_count;
 
     // block roots
@@ -57,7 +58,7 @@ pub fn insert_blocks(tables: &mut Tables, clock: &Clock, block: &Block) {
         .set("previous", previous)
         .set("producer", producer)
         .set_bigint("confirmed", &confirmed.to_string())
-        .set("scheduleVersion", schedule_version.to_string())
+        .set_bigint("scheduleVersion", &schedule_version.to_string())
 
         // block
         .set_bigint("version", &version.to_string())
@@ -68,7 +69,7 @@ pub fn insert_blocks(tables: &mut Tables, clock: &Clock, block: &Block) {
         // block roots
         .set("transactionMroot", transaction_mroot)
         .set("actionMroot", action_mroot)
-        .set("blockrootMerkleActiveNodes", blockroot_merkle_active_nodes)
+        // .set("blockrootMerkleActiveNodes", blockroot_merkle_active_nodes)
         .set_bigint("blockrootMerkleNodeCount", &blockroot_merkle_node_count.to_string());
 
     // transaction status counts

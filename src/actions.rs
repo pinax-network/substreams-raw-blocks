@@ -26,7 +26,7 @@ pub fn insert_action(tables: &mut Tables, trace: &ActionTrace, transaction: &Tra
         .set("transaction", tx_hash)
 
         // action
-        .set("ordinal", action_ordinal.to_string())
+        .set_bigint("ordinal", &action_ordinal.to_string())
         .set("account", account.to_string())
         .set("name", name.to_string())
         .set("jsonData", json_data.to_string())

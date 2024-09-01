@@ -48,6 +48,8 @@ pub fn insert_transaction(tables: &mut Tables, clock: &Clock, transaction: &Tran
 
     let row = tables
         .create_row("Transaction", hash)
+
+        .set("block", &clock.id) // pointer to Block
         .set_bigint("index", &index.to_string())
         .set("hash", hash)
         .set_bigint("elapsed", &elapsed.to_string())

@@ -14,8 +14,8 @@ type Block @entity {
   dposIrreversibleBlocknum:             BigInt!
   transactionMroot:                     String!
   actionMroot:                          String!
-  blockrootMerkleActiveNodes:           String!
-  blockrootMerkleNodeCount:             String!
+  # blockrootMerkleActiveNodes:           [String!]!
+  blockrootMerkleNodeCount:             BigInt!
   size:                                 BigInt!
   totalTransactions:                    BigInt!
   successfulTransactions:               BigInt!
@@ -36,7 +36,7 @@ type Transaction @entity {
   netUsageWords:          BigInt!
   status:                 String!
   statusCode:             BigInt!
-  success:                Boolean!
+  success:                String!
   transactionMroot:       String!
   actionMroot:            String!
   actions: [Action!]! @derivedFrom(field: "transaction")
@@ -50,7 +50,6 @@ type Action @entity {
   jsonData:                 String!
   rawData:                  String!
   transaction:              Transaction!
-  block:                    Block!
   receivers:                [Receiver!]! @derivedFrom(field: "action")
   authorization:            [PermissionLevel!]! @derivedFrom(field: "action")
 }
