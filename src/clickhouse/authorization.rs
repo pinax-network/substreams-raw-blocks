@@ -2,7 +2,9 @@ use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_antelope::pb::{ActionTrace, PermissionLevel, TransactionTrace};
 
-use crate::{blocks_clickhouse::insert_timestamp_clickhouse, keys::authorizations_keys};
+use crate::keys::authorizations_keys;
+
+use super::blocks::insert_timestamp_clickhouse;
 
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L616
 pub fn insert_authorization_clickhouse(tables: &mut DatabaseChanges, clock: &Clock, action: &ActionTrace, transaction: &TransactionTrace, authorization: &PermissionLevel) {

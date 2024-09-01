@@ -4,10 +4,11 @@ use substreams_database_change::pb::database::TableChange;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_antelope::pb::{BlockHeader, TransactionTrace};
 
-use crate::actions_clickhouse::insert_action_clickhouse;
-use crate::blocks_clickhouse::insert_timestamp_clickhouse;
 use crate::keys::transactions_keys;
-use crate::receivers_clickhouse::insert_receiver_clickhouse;
+
+use super::actions::insert_action_clickhouse;
+use super::blocks::insert_timestamp_clickhouse;
+use super::receivers::insert_receiver_clickhouse;
 
 pub fn transaction_status_to_string(status: i32) -> String {
     match status {

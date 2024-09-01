@@ -26,14 +26,14 @@ modules:
 
   - name: graph_out
     kind: map
-    initialBlock: 390000000
+    initialBlock: 386841287
     inputs:
       - source: sf.substreams.v1.Clock
       - source: sf.antelope.type.v1.Block
     output:
       type: proto:sf.substreams.sink.entity.v1.EntityChanges
 
-network: mainnet
+network: eos
 
 sink:
   module: ch_out

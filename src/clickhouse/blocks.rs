@@ -2,11 +2,12 @@ use substreams::{pb::substreams::Clock, Hex};
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_antelope::pb::Block;
 
-use crate::transactions_clickhouse::insert_transaction_clickhouse;
 use crate::{keys::blocks_keys, size::insert_size};
 use substreams_database_change::pb::database::TableChange;
 
 use crate::utils::block_time_to_date;
+
+use super::transactions::insert_transaction_clickhouse;
 
 pub fn insert_timestamp_clickhouse(row: &mut TableChange, clock: &Clock) {
     let timestamp = clock.clone().timestamp.unwrap();

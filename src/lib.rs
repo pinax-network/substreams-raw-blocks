@@ -7,9 +7,5 @@ mod utils;
 mod keys;
 mod receivers;
 mod authorization;
-// Clickhouse
-mod actions_clickhouse;
-mod blocks_clickhouse;
-mod transactions_clickhouse;
-mod receivers_clickhouse;
-mod authorization_clickhouse;
+
+mod clickhouse;
