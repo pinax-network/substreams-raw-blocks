@@ -1,25 +1,69 @@
 type Block @entity {
-  id:                             ID!
-  blockHash:                      String!
-  blockTime:                      Int!
-  previous:                       String!
+  id:                                   ID!
+  date:                                 String!
+  time:                                 BigInt!
+  number:                               BigInt!
+  hash:                                 String!
+  previous:                             String!
+  producer:                             String!
+  confirmed:                            BigInt!
+  scheduleVersion:                      BigInt!
+  version:                              BigInt!
+  producerSignature:                    String!
+  dposProposedIrreversibleBlocknum:     BigInt!
+  dposIrreversibleBlocknum:             BigInt!
+  transactionMroot:                     String!
+  actionMroot:                          String!
+  blockrootMerkleActiveNodes:           String!
+  blockrootMerkleNodeCount:             String!
+  size:                                 BigInt!
+  totalTransactions:                    BigInt!
+  successfulTransactions:               BigInt!
+  failedTransactions:                   BigInt!
+  totalActions:                         BigInt!
+  totalDbOps:                           BigInt!
   transactions: [Transaction!]! @derivedFrom(field: "block")
 }
 
 type Transaction @entity {
-  id:                 ID!
-  txHash:             String!
-  block:              Block!
+  id:                     ID!
+  block:                  Block!
+  index:                  BigInt!
+  hash:                   String!
+  elapsed:                BigInt!
+  netUsage:               BigInt!
+  cpuUsageMicroSeconds:   BigInt!
+  netUsageWords:          BigInt!
+  status:                 String!
+  statusCode:             BigInt!
+  success:                Boolean!
+  transactionMroot:       String!
+  actionMroot:            String!
   actions: [Action!]! @derivedFrom(field: "transaction")
 }
 
 type Action @entity {
   id:                       ID!
-  txHash:                   String!
-  actionOrdinal:            Int!
+  ordinal:                  BigInt!
   account:                  String!
   name:                     String!
   jsonData:                 String!
   rawData:                  String!
   transaction:              Transaction!
+  block:                    Block!
+  receivers:                [Receiver!]! @derivedFrom(field: "action")
+  authorization:            [PermissionLevel!]! @derivedFrom(field: "action")
+}
+
+type Receiver @entity {
+  id:                 ID!
+  receiver:           String!
+  action:             Action!
+}
+
+type PermissionLevel @entity {
+  id:                 ID!
+  actor:              String!
+  permission:         String!
+  action:             Action!
 }

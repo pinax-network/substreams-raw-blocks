@@ -1,6 +1,6 @@
 services:
   graph-node:
-    container_name: graph-node-bps
+    container_name: graph-node
     # image: graph-node:latest
     image: graphprotocol/graph-node:f99d68c
     ports:
@@ -33,7 +33,7 @@ services:
       ETHEREUM_POLLING_INTERVAL: 10000
     restart: "on-failure"
   ipfs:
-    container_name: ipfs-bps
+    container_name: ipfs
     image: ipfs/kubo:v0.14.0
     ports:
       - "5001:5001"
@@ -42,7 +42,7 @@ services:
       - ./data/ipfs:/data/ipfs
       - ./data/ipfs-export:/export
   postgres:
-    container_name: postgres-bps
+    container_name: postgres
     image: postgres:14
     ports:
       - "5432:5432"
@@ -66,7 +66,7 @@ services:
       retries: 15
 
   pgweb:
-    container_name: pgweb-bps
+    container_name: pgweb
     image: sosedoff/pgweb:0.11.12
     restart: on-failure
     ports:

@@ -1,11 +1,10 @@
-use substreams::pb::substreams::Clock;
-use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_antelope::pb::{ActionTrace, PermissionLevel, TransactionTrace};
+use substreams_entity_change::tables::Tables;
 
-use crate::{blocks::insert_timestamp, keys::authorizations_keys};
+use crate::keys::{action_key, authorization_key};
 
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L616
-pub fn insert_authorization(tables: &mut DatabaseChanges, clock: &Clock, action: &ActionTrace, transaction: &TransactionTrace, authorization: &PermissionLevel) {
+pub fn insert_authorization(tables: &mut Tables, action: &ActionTrace, transaction: &TransactionTrace, authorization: &PermissionLevel) {
     // transaction
     let tx_hash = &transaction.id;
 
@@ -16,17 +15,12 @@ pub fn insert_authorization(tables: &mut DatabaseChanges, clock: &Clock, action:
     let actor = &authorization.actor;
     let permission = &authorization.permission;
 
-    let keys = authorizations_keys(clock,&tx_hash, &action_ordinal, actor, permission);
-    let row = tables
-        .push_change_composite("authorizations", keys, 0, table_change::Operation::Create)
-
-        // transaction
-        .change("tx_hash", ("", tx_hash.to_string().as_str()))
-
-        // action
-        .change("action_ordinal", ("", action_ordinal.to_string().as_str()))
-        .change("actor", ("", actor.to_string().as_str()))
-        .change("permission", ("", permission.to_string().as_str()));
-
-    insert_timestamp(row, clock);
+    let action_key = action_key(tx_hash, action_ordinal);
+    let key = authorization_key(&action_key, actor, permission);
+    tables
+        .create_row("PermissionLevel", key)
+        .set("action", action_key)
+        .set("actor", actor.to_string())
+        .set("permission", permission.to_string())
+    ;
 }

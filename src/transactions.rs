@@ -1,12 +1,12 @@
+use std::collections::HashMap;
+
 use substreams::pb::substreams::Clock;
 use substreams::Hex;
-use substreams_database_change::pb::database::TableChange;
-use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_antelope::pb::{BlockHeader, TransactionTrace};
+use substreams_entity_change::tables::Tables;
 
 use crate::actions::insert_action;
 use crate::blocks::insert_timestamp;
-use crate::keys::transactions_keys;
 use crate::receivers::insert_receiver;
 
 pub fn transaction_status_to_string(status: i32) -> String {
@@ -28,12 +28,11 @@ pub fn is_transaction_success(status: i32) -> bool {
 }
 
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L525
-pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transaction: &TransactionTrace, block_header: &BlockHeader) {
+pub fn insert_transaction(tables: &mut Tables, clock: &Clock, transaction: &TransactionTrace, block_header: &BlockHeader) {
     let hash = &transaction.id;
     let index = transaction.index;
     let elapsed = transaction.elapsed;
     let net_usage = transaction.net_usage;
-    let scheduled = transaction.scheduled;
 
     // header
     let header = transaction.receipt.clone().unwrap_or_default();
@@ -45,47 +44,55 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
 
     // block roots
     let transaction_mroot = Hex::encode(&block_header.transaction_mroot.to_vec());
+    let action_mroot = Hex::encode(&block_header.action_mroot.to_vec());
 
-    let keys = transactions_keys(&clock, &hash);
     let row = tables
-        .push_change_composite("transactions", keys, 0, table_change::Operation::Create)
-        .change("index", ("", index.to_string().as_str()))
-        .change("hash", ("", hash.as_str()))
-        .change("elapsed", ("", elapsed.to_string().as_str()))
-        .change("net_usage", ("", net_usage.to_string().as_str()))
-        .change("scheduled", ("", scheduled.to_string().as_str()))
+        .create_row("Transaction", hash)
+        .set_bigint("index", &index.to_string())
+        .set("hash", hash)
+        .set_bigint("elapsed", &elapsed.to_string())
+        .set_bigint("netUsage", &net_usage.to_string())
 
         // header
-        .change("cpu_usage_micro_seconds", ("", cpu_usage_micro_seconds.to_string().as_str()))
-        .change("net_usage_words", ("", net_usage_words.to_string().as_str()))
-        .change("status", ("", status.as_str()))
-        .change("status_code", ("", status_code.to_string().as_str()))
-        .change("success", ("", success.to_string().as_str()))
+        .set_bigint("cpuUsageMicroSeconds", &cpu_usage_micro_seconds.to_string())
+        .set_bigint("netUsageWords", &net_usage_words.to_string())
+        .set("status", status)
+        .set_bigint("statusCode", &status_code.to_string())
+        .set("success", success.to_string())
 
         // block roots
-        .change("transaction_mroot", ("", transaction_mroot.as_str()))
+        .set("transactionMroot", transaction_mroot)
+        .set("actionMroot", action_mroot)
         ;
 
     insert_timestamp(row, clock);
 
-    // Traces of each action within the transaction, including all notified and nested actions.
+    // first find all receivers in action traces by contract
+    let mut previous_receivers = HashMap::new();
     for trace in transaction.action_traces.iter() {
-        insert_receiver(tables, clock, trace, transaction);
-        insert_action(tables, clock, trace, transaction, block_header);
+        let action = trace.clone().action.unwrap_or_default();
+        let account = action.account;
+        let receiver = trace.clone().receiver;
+        let mut previous = previous_receivers.get(&account).unwrap_or(&vec![]).clone();
+        previous.push(receiver);
+        previous_receivers.insert(account, previous);
     }
-}
 
-pub fn insert_transaction_metadata(row: &mut TableChange, transaction: &TransactionTrace) {
-    let tx_hash = &transaction.id;
-    let tx_index = transaction.index;
-    let header = transaction.receipt.clone().unwrap_or_default();
-    let tx_status = transaction_status_to_string(header.status);
-    let tx_status_code = header.status;
-    let tx_success = is_transaction_success(header.status);
+    // Traces of each action within the transaction, excluding all notifications
+    for trace in transaction.action_traces.iter() {
+        let action = trace.clone().action.unwrap_or_default();
+        let account = action.account;
 
-    row.change("tx_hash", ("", tx_hash.as_str()))
-        .change("tx_index", ("", tx_index.to_string().as_str()))
-        .change("tx_status", ("", tx_status.as_str()))
-        .change("tx_status_code", ("", tx_status_code.to_string().as_str()))
-        .change("tx_success", ("", tx_success.to_string().as_str()));
+        // skip if action is an inline notification
+        // notifications are not included in the actions table
+        // `receivers` table is used to store notifications
+        if trace.receiver != account { return; }
+        insert_action(tables, trace, transaction);
+
+        // TABLE::receivers
+        let receivers = previous_receivers.get(&account).unwrap_or(&vec![]).clone();
+        for receiver in receivers.iter() {
+            insert_receiver(tables, trace, transaction, receiver);
+        }
+    }
 }
