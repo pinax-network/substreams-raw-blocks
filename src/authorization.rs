@@ -15,10 +15,12 @@ pub fn insert_authorization(tables: &mut Tables, action: &ActionTrace, transacti
     let actor = &authorization.actor;
     let permission = &authorization.permission;
 
+    // TABLE::PermissionLevel
     let action_key = action_key(tx_hash, action_ordinal);
     let key = authorization_key(&action_key, actor, permission);
     tables
         .create_row("PermissionLevel", key)
+        .set("transaction", tx_hash)
         .set("action", action_key)
         .set("actor", actor.to_string())
         .set("permission", permission.to_string())

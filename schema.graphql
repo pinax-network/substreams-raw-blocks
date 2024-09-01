@@ -6,22 +6,6 @@ type Block @entity {
   hash:                                 String!
   previous:                             String!
   producer:                             String!
-  confirmed:                            BigInt!
-  scheduleVersion:                      BigInt!
-  version:                              BigInt!
-  producerSignature:                    String!
-  dposProposedIrreversibleBlocknum:     BigInt!
-  dposIrreversibleBlocknum:             BigInt!
-  transactionMroot:                     String!
-  actionMroot:                          String!
-  # blockrootMerkleActiveNodes:           [String!]!
-  blockrootMerkleNodeCount:             BigInt!
-  size:                                 BigInt!
-  totalTransactions:                    BigInt!
-  successfulTransactions:               BigInt!
-  failedTransactions:                   BigInt!
-  totalActions:                         BigInt!
-  totalDbOps:                           BigInt!
   transactions: [Transaction!]! @derivedFrom(field: "block")
 }
 
@@ -32,14 +16,8 @@ type Transaction @entity {
   hash:                   String!
   elapsed:                BigInt!
   netUsage:               BigInt!
-  cpuUsageMicroSeconds:   BigInt!
-  netUsageWords:          BigInt!
-  status:                 String!
-  statusCode:             BigInt!
-  success:                String!
-  transactionMroot:       String!
-  actionMroot:            String!
-  actions: [Action!]! @derivedFrom(field: "transaction")
+  actions:                [Action!]! @derivedFrom(field: "transaction")
+  receivers:              [Receiver!]! @derivedFrom(field: "transaction")
 }
 
 type Action @entity {
@@ -50,14 +28,14 @@ type Action @entity {
   jsonData:                 String!
   rawData:                  String!
   transaction:              Transaction!
-  receivers:                [Receiver!]! @derivedFrom(field: "action")
+  block:                    Block!
   authorization:            [PermissionLevel!]! @derivedFrom(field: "action")
 }
 
 type Receiver @entity {
   id:                 ID!
   receiver:           String!
-  action:             Action!
+  transaction:        Transaction!
 }
 
 type PermissionLevel @entity {

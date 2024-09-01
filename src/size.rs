@@ -1,7 +1,7 @@
 use substreams_antelope::Block;
-use substreams_entity_change::tables::Row;
+use substreams_database_change::pb::database::TableChange;
 
-pub fn insert_size(row: &mut Row, block: &Block) {
+pub fn insert_size(row: &mut TableChange, block: &Block) {
     // counters
     let mut size = 0;
     let mut total_transactions = 0;
@@ -57,10 +57,10 @@ pub fn insert_size(row: &mut Row, block: &Block) {
             size += db_op.old_data_json.len();
         }
     }
-    row.set_bigint("size", &size.to_string())
-        .set_bigint("totalTransactions", &total_transactions.to_string())
-        .set_bigint("successfulTransactions", &successful_transactions.to_string())
-        .set_bigint("failedTransactions", &failed_transactions.to_string())
-        .set_bigint("totalActions", &total_actions.to_string())
-        .set_bigint("totalDbOps", &total_db_ops.to_string());
+    row.change("size", ("", size.to_string().as_str()))
+        .change("total_transactions", ("", total_transactions.to_string().as_str()))
+        .change("successful_transactions", ("", successful_transactions.to_string().as_str()))
+        .change("failed_transactions", ("", failed_transactions.to_string().as_str()))
+        .change("total_actions", ("", total_actions.to_string().as_str()))
+        .change("total_db_ops", ("", total_db_ops.to_string().as_str()));
 }
