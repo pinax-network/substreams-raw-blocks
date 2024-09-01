@@ -4,10 +4,10 @@ use substreams_antelope::pb::{ActionTrace, PermissionLevel, TransactionTrace};
 
 use crate::keys::authorizations_keys;
 
-use super::blocks::insert_timestamp_clickhouse;
+use super::blocks::insert_timestamp;
 
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L616
-pub fn insert_authorization_clickhouse(tables: &mut DatabaseChanges, clock: &Clock, action: &ActionTrace, transaction: &TransactionTrace, authorization: &PermissionLevel) {
+pub fn insert_authorization(tables: &mut DatabaseChanges, clock: &Clock, action: &ActionTrace, transaction: &TransactionTrace, authorization: &PermissionLevel) {
     // transaction
     let tx_hash = &transaction.id;
 
@@ -30,5 +30,5 @@ pub fn insert_authorization_clickhouse(tables: &mut DatabaseChanges, clock: &Clo
         .change("actor", ("", actor.to_string().as_str()))
         .change("permission", ("", permission.to_string().as_str()));
 
-    insert_timestamp_clickhouse(row, clock);
+    insert_timestamp(row, clock);
 }

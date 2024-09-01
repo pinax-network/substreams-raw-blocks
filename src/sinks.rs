@@ -4,7 +4,7 @@ use substreams_antelope::pb::Block;
 use substreams_entity_change::pb::entity::EntityChanges;
 use substreams_database_change::pb::database::DatabaseChanges;
 
-use crate::blocks::insert_blocks;
+use crate::subgraph::blocks::insert_blocks_subgraph;
 use crate::clickhouse::blocks::insert_blocks_clickhouse;
 
 #[substreams::handlers::map]
@@ -12,7 +12,7 @@ pub fn graph_out(clock: Clock, block: Block) -> Result<EntityChanges, Error> {
     let mut tables = substreams_entity_change::tables::Tables::new();
 
     // TABLE::blocks
-    insert_blocks(&mut tables, &clock, &block);
+    insert_blocks_subgraph(&mut tables, &clock, &block);
 
     Ok(tables.to_entity_changes())
 }

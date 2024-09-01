@@ -2,7 +2,9 @@ use substreams::{pb::substreams::Clock, Hex};
 use substreams_antelope::pb::{ActionTrace, TransactionTrace};
 use substreams_entity_change::tables::Tables;
 
-use crate::{authorization::insert_authorization, keys::action_key};
+use crate::keys::action_key;
+
+use super::authorization::insert_authorization;
 
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L525
 pub fn insert_action(tables: &mut Tables, clock: &Clock, trace: &ActionTrace, transaction: &TransactionTrace) {

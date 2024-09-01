@@ -6,9 +6,9 @@ use substreams_antelope::pb::{BlockHeader, TransactionTrace};
 
 use crate::keys::transactions_keys;
 
-use super::actions::insert_action_clickhouse;
-use super::blocks::insert_timestamp_clickhouse;
-use super::receivers::insert_receiver_clickhouse;
+use super::actions::insert_action;
+use super::blocks::insert_timestamp;
+use super::receivers::insert_receiver;
 
 pub fn transaction_status_to_string(status: i32) -> String {
     match status {
@@ -29,7 +29,7 @@ pub fn is_transaction_success(status: i32) -> bool {
 }
 
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L525
-pub fn insert_transaction_clickhouse(tables: &mut DatabaseChanges, clock: &Clock, transaction: &TransactionTrace, block_header: &BlockHeader) {
+pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transaction: &TransactionTrace, block_header: &BlockHeader) {
     let hash = &transaction.id;
     let index = transaction.index;
     let elapsed = transaction.elapsed;
@@ -67,16 +67,16 @@ pub fn insert_transaction_clickhouse(tables: &mut DatabaseChanges, clock: &Clock
         .change("transaction_mroot", ("", transaction_mroot.as_str()))
         ;
 
-    insert_timestamp_clickhouse(row, clock);
+    insert_timestamp(row, clock);
 
     // Traces of each action within the transaction, including all notified and nested actions.
     for trace in transaction.action_traces.iter() {
-        insert_receiver_clickhouse(tables, clock, trace, transaction);
-        insert_action_clickhouse(tables, clock, trace, transaction, block_header);
+        insert_receiver(tables, clock, trace, transaction);
+        insert_action(tables, clock, trace, transaction, block_header);
     }
 }
 
-pub fn insert_transaction_metadata_clickhouse(row: &mut TableChange, transaction: &TransactionTrace) {
+pub fn insert_transaction_metadata(row: &mut TableChange, transaction: &TransactionTrace) {
     let tx_hash = &transaction.id;
     let tx_index = transaction.index;
     let header = transaction.receipt.clone().unwrap_or_default();

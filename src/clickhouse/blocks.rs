@@ -2,14 +2,13 @@ use substreams::{pb::substreams::Clock, Hex};
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_antelope::pb::Block;
 
-use crate::{keys::blocks_keys, size::insert_size};
+use crate::keys::blocks_keys;
 use substreams_database_change::pb::database::TableChange;
 
 use crate::utils::block_time_to_date;
+use super::{size::insert_size, transactions::insert_transaction};
 
-use super::transactions::insert_transaction_clickhouse;
-
-pub fn insert_timestamp_clickhouse(row: &mut TableChange, clock: &Clock) {
+pub fn insert_timestamp(row: &mut TableChange, clock: &Clock) {
     let timestamp = clock.clone().timestamp.unwrap();
     let block_date = block_time_to_date(timestamp.to_string().as_str());
     let seconds = timestamp.seconds;
@@ -82,10 +81,10 @@ pub fn insert_blocks_clickhouse(tables: &mut DatabaseChanges, clock: &Clock, blo
 
     // transaction status counts
     insert_size(row, block);
-    insert_timestamp_clickhouse(row, clock);
+    insert_timestamp(row, clock);
 
     // TABLE::transactions
     for transaction in block.transaction_traces() {
-        insert_transaction_clickhouse(tables, clock, &transaction, &header);
+        insert_transaction(tables, clock, &transaction, &header);
     }
 }

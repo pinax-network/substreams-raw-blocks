@@ -4,10 +4,10 @@ use substreams_antelope::pb::{ActionTrace, BlockHeader, TransactionTrace};
 
 use crate::keys::actions_keys;
 
-use super::{authorization::insert_authorization_clickhouse, blocks::insert_timestamp_clickhouse, transactions::insert_transaction_metadata_clickhouse};
+use super::{authorization::insert_authorization, blocks::insert_timestamp, transactions::insert_transaction_metadata};
 
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L525
-pub fn insert_action_clickhouse(tables: &mut DatabaseChanges, clock: &Clock, trace: &ActionTrace, transaction: &TransactionTrace, block_header: &BlockHeader) {
+pub fn insert_action(tables: &mut DatabaseChanges, clock: &Clock, trace: &ActionTrace, transaction: &TransactionTrace, block_header: &BlockHeader) {
     // action
 	let action = trace.action.clone().unwrap_or_default();
     let account = action.account;
@@ -81,11 +81,11 @@ pub fn insert_action_clickhouse(tables: &mut DatabaseChanges, clock: &Clock, tra
         .change("action_mroot", ("", action_mroot.as_str()))
         ;
 
-    insert_transaction_metadata_clickhouse(row, transaction);
-    insert_timestamp_clickhouse(row, clock);
+    insert_transaction_metadata(row, transaction);
+    insert_timestamp(row, clock);
 
     // TABLE::authorizations
     for authorization in action.authorization.iter() {
-        insert_authorization_clickhouse(tables, clock, trace, transaction, authorization);
+        insert_authorization(tables, clock, trace, transaction, authorization);
     };
 }

@@ -3,8 +3,8 @@ use substreams::pb::substreams::Clock;
 use substreams_antelope::pb::TransactionTrace;
 use substreams_entity_change::tables::Tables;
 
-use crate::actions::insert_action;
-use crate::receivers::insert_receiver;
+use super::{actions::insert_action, receivers::insert_receiver};
+
 
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L525
 pub fn insert_transaction(tables: &mut Tables, clock: &Clock, transaction: &TransactionTrace) {
