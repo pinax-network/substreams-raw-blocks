@@ -5,7 +5,7 @@
 
 - [x] **Blocks**
 - [x] **Transactions**
-  - [x] **DatabaseOperations** (only available in Clickhouse)
+  - [x] **DatabaseOperations**
 - [x] **Actions**
   - [x] **Authorization**
   - [x] **Receiver**

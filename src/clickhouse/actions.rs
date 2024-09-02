@@ -15,11 +15,6 @@ pub fn insert_action(tables: &mut DatabaseChanges, clock: &Clock, trace: &Action
     let json_data = action.json_data;
     let raw_data = Hex::encode(&action.raw_data.to_vec());
 
-    // skip if action is an inline notification
-    // notifications are not included in the actions table
-    // `receivers` table is used to store notifications
-    if trace.receiver != account { return; }
-
     // receipt
 	let receipt = trace.receipt.clone().unwrap_or_default();
     let abi_sequence = receipt.abi_sequence;

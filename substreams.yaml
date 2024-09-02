@@ -26,7 +26,7 @@ modules:
 
   - name: graph_out
     kind: map
-    initialBlock: 386841287
+    initialBlock: 392000000
     inputs:
       - source: sf.substreams.v1.Clock
       - source: sf.antelope.type.v1.Block

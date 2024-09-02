@@ -41,14 +41,6 @@ pub fn db_ops_keys(tx_hash: &String, db_op_index: &u32) -> HashMap<String, Strin
     keys
 }
 
-pub fn receivers_keys(tx_hash: &String, action_ordinal: &u32, receiver: &String) -> HashMap<String, String> {
-    let mut keys = HashMap::new();
-    keys.insert("tx_hash".to_string(), tx_hash.to_string());
-    keys.insert("action_ordinal".to_string(), action_ordinal.to_string());
-    keys.insert("receiver".to_string(), receiver.to_string());
-    keys
-}
-
 pub fn authorizations_keys(tx_hash: &String, action_ordinal: &u32, actor: &String, permission: &String) -> HashMap<String, String> {
     let mut keys = HashMap::new();
     keys.insert("actor".to_string(), actor.to_string());
@@ -68,4 +60,8 @@ pub fn receiver_key(tx_hash: &String, receiver: &String) -> String {
 
 pub fn authorization_key(action_key: &String, actor: &String, permission: &String) -> String {
     format!("{}:{}:{}", action_key, actor, permission)
+}
+
+pub fn db_ops_key(tx_hash: &String, db_op_index: &u32) -> String {
+    format!("{}:{}", tx_hash, db_op_index)
 }
