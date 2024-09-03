@@ -14,6 +14,7 @@
 
 - [x] Clickhouse
 - [x] Subgraph
+- [ ] ~~Postgres~~
 
 ```mermaid
 graph TD;
