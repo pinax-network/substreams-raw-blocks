@@ -1,9 +1,8 @@
-use std::collections::HashSet;
 use substreams::pb::substreams::Clock;
 use substreams_antelope::pb::TransactionTrace;
 use substreams_entity_change::tables::Tables;
 
-use super::{actions::insert_action, db_ops::insert_db_op, receivers::insert_receiver};
+use super::{actions::insert_action, db_ops::insert_db_op, receivers::{get_receivers, insert_receiver}};
 
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L525
 pub fn insert_transaction(tables: &mut Tables, clock: &Clock, transaction: &TransactionTrace) {
@@ -28,13 +27,12 @@ pub fn insert_transaction(tables: &mut Tables, clock: &Clock, transaction: &Tran
     ;
 
     // TABLE::Action
-    let mut receivers = HashSet::new();
     for trace in transaction.action_traces.iter() {
         insert_action(tables, clock, trace, transaction);
-        receivers.insert(&trace.receiver);
     }
 
     // TABLE::Receiver
+    let receivers = get_receivers(transaction);
     for receiver in receivers.iter() {
         insert_receiver(tables, transaction, receiver);
     }

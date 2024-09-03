@@ -23,11 +23,11 @@ info:
 
 .PHONY: run
 run:
-	substreams run -e eos.substreams.pinax.network:443 graph_out -s 386841287 -t 386841288 -o json
+	substreams run -e eos.substreams.pinax.network:443 graph_out -s -1 -o json
 
 .PHONY: gui
 gui:
-	substreams gui -e eos.substreams.pinax.network:443 graph_out -s 386841287
+	substreams gui -e eos.substreams.pinax.network:443 graph_out -s -1
 
 .PHONY: sql-setup
 sql-setup:

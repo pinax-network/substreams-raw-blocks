@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use substreams_antelope::pb::TransactionTrace;
 use substreams_entity_change::tables::Tables;
 
@@ -15,4 +17,12 @@ pub fn insert_receiver(tables: &mut Tables, transaction: &TransactionTrace, rece
         .set("transaction", tx_hash)
         .set("receiver", receiver)
     ;
+}
+
+pub fn get_receivers(transaction: &TransactionTrace) -> Vec<String> {
+    let mut receivers = HashSet::new();
+    for trace in transaction.action_traces.iter() {
+        receivers.insert(&trace.receiver);
+    }
+    receivers.iter().map(|x| x.to_string()).collect::<Vec<String>>()
 }
