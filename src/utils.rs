@@ -1,3 +1,5 @@
+use substreams::matches_keys_in_parsed_expr;
+
 // Timestamp to date conversion
 // ex: 2015-07-30T16:02:18Z => 2015-07-30
 pub fn block_time_to_date(block_time: &str) -> String {
@@ -5,6 +7,24 @@ pub fn block_time_to_date(block_time: &str) -> String {
         Some(date) => date.to_string(),
         None => "".to_string(),
     }
+}
+
+pub fn is_match(query: &str, params: &String) -> bool {
+    // match all if no params provided
+    if params.len() == 0 {
+        return true;
+    }
+    match matches_keys_in_parsed_expr(&[query], &params) {
+        Ok(true) => {
+            return true;
+        }
+        Ok(false) => {
+            return false;
+        }
+        Err(e) => {
+            panic!("Error: {:?}", e);
+        }
+    };
 }
 
 #[cfg(test)]

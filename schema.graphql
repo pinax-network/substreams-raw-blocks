@@ -17,9 +17,9 @@ type Transaction @entity {
   elapsed:                BigInt!
   netUsage:               BigInt!
   actions:                [Action!]! @derivedFrom(field: "transaction")
-  dbOps:                  [DbOps!]! @derivedFrom(field: "transaction")
+  dbOps:                  [DbOp!]! @derivedFrom(field: "transaction")
   receivers:              [Receiver!]! @derivedFrom(field: "transaction")
-  authorizations:         [PermissionLevel!]! @derivedFrom(field: "transaction")
+  authorizations:         [Authorization!]! @derivedFrom(field: "transaction")
 }
 
 type Action @entity {
@@ -31,11 +31,11 @@ type Action @entity {
   rawData:                  String!
   transaction:              Transaction!
   block:                    Block!
-  dbOps:                    [DbOps!]! @derivedFrom(field: "action")
-  authorization:            [PermissionLevel!]! @derivedFrom(field: "action")
+  dbOps:                    [DbOp!]! @derivedFrom(field: "action")
+  authorizations:           [Authorization!]! @derivedFrom(field: "action")
 }
 
-type DbOps @entity {
+type DbOp @entity {
   id:                       ID!
   index:                    BigInt!
   operation:                String!
@@ -58,7 +58,7 @@ type Receiver @entity {
   transaction:        Transaction!
 }
 
-type PermissionLevel @entity {
+type Authorization @entity {
   id:                 ID!
   actor:              String!
   permission:         String!

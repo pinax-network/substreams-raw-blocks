@@ -13,7 +13,14 @@ ingestor = "block_ingestor_node"
 protocol = "substreams"
 shard = "primary"
 provider = [
-    { label = "substreams-eos", details = { type = "substreams", url = "https://eos.substreams.pinax.network:443", token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2FwaS5hY2NvdW50LnBpbmF4Lm5ldHdvcmsvdjEvIiwic3ViIjoiZDRjZTdmMjItNzNhNy00YWUyLWEzZWItOWYyOGJhMDBhODQ1IiwiYXVkIjpbImh0dHBzOi8vYWNjb3VudC5waW5heC5uZXR3b3JrLyJdLCJleHAiOjIwNDA0OTY5MzgsImlhdCI6MTcyNTEzNjkzOCwiYXBpX2tleV9pZCI6ImIyYmE3OWFkLTUxNzktNGIxZC1hYjJmLTA2OGYzMTFhY2ZiZCJ9.YTbWbE0_6GWzFQi-_XNTrNoRWow3SRKc8ZUBNaJp5Es" } },
+    { label = "substreams-eos", details = { type = "substreams", url = "https://eos.substreams.pinax.network:443", token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2FwaS5hY2NvdW50LnBpbmF4Lm5ldHdvcmsvdjEvIiwic3ViIjoiZDRjZTdmMjItNzNhNy00YWUyLWEzZWItOWYyOGJhMDBhODQ1IiwiYXVkIjpbImh0dHBzOi8vYWNjb3VudC5waW5heC5uZXR3b3JrLyJdLCJleHAiOjIwNDA0OTY5MzgsImlhdCI6MTcyNTEzNjkzOCwiYXBpX2tleV9pZCI6ImIyYmE3OWFkLTUxNzktNGIxZC1hYjJmLTA2OGYzMTFhY2ZiZCJ9.YTbWbE0_6GWzFQi-_XNTrNoRWow3SRKc8ZUBNaJp5Es"} },
+]
+
+[chains.wax]
+protocol = "substreams"
+shard = "primary"
+provider = [
+    { label = "substreams-wax", details = { type = "substreams", url = "https://wax.substreams.pinax.network:443", token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2FwaS5hY2NvdW50LnBpbmF4Lm5ldHdvcmsvdjEvIiwic3ViIjoiZDRjZTdmMjItNzNhNy00YWUyLWEzZWItOWYyOGJhMDBhODQ1IiwiYXVkIjpbImh0dHBzOi8vYWNjb3VudC5waW5heC5uZXR3b3JrLyJdLCJleHAiOjIwNDA0OTY5MzgsImlhdCI6MTcyNTEzNjkzOCwiYXBpX2tleV9pZCI6ImIyYmE3OWFkLTUxNzktNGIxZC1hYjJmLTA2OGYzMTFhY2ZiZCJ9.YTbWbE0_6GWzFQi-_XNTrNoRWow3SRKc8ZUBNaJp5Es"} },
 ]
 
 [deployment]
