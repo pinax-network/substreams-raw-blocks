@@ -1,5 +1,6 @@
 # Antelope Transactions Substreams
 
+> Transactions, Decoded Actions & Database Operations
 > EOS, WAX, Telos, Ultra...
 > [`sf.antelope.type.v1.Block`](https://buf.build/pinax/firehose-antelope/docs/main:sf.antelope.type.v1)
 
