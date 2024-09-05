@@ -62,6 +62,6 @@ pub fn authorization_key(action_key: &String, actor: &String, permission: &Strin
     format!("{}:{}:{}", action_key, actor, permission)
 }
 
-pub fn db_ops_key(tx_hash: &String, db_op_index: &u32) -> String {
-    format!("{}:{}", tx_hash, db_op_index)
+pub fn db_ops_key(tx_hash: &String, action_ordinal: &u32, db_op_index: &u32) -> String {
+    format!("{}:{}:{}", tx_hash, action_ordinal, db_op_index)
 }
