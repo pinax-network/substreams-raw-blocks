@@ -15,6 +15,8 @@ pub fn insert_blocks_subgraph(params: &String, tables: &mut Tables, clock: &Cloc
 
     // timestamp
     let timestamp = clock.clone().timestamp.unwrap();
+    // let nanos = timestamp.nanos;
+    // let microseconds = seconds * 1_000_000 + i64::from(nanos) / 1_000;
     let block_date = block_time_to_date(timestamp.to_string().as_str());
     let seconds = timestamp.seconds;
     let block_time = seconds;

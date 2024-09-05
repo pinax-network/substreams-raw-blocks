@@ -1,7 +1,7 @@
 type Block @entity {
   id:                                   ID!
   date:                                 String!
-  time:                                 BigInt!
+  time:                                 BigInt! #Timestamp issue: https://github.com/pinax-network/antelope-transactions-subgraph/issues/2
   number:                               BigInt!
   hash:                                 String!
   previous:                             String!
