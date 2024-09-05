@@ -1,7 +1,7 @@
 specVersion: v0.1.0
 package:
   name: antelope_transactions
-  version: v0.3.2
+  version: v0.3.3
   url: https://github.com/pinax-network/antelope-transactions-substreams
   image: ./logo.png
 
@@ -34,16 +34,6 @@ modules:
     output:
       type: proto:sf.substreams.sink.entity.v1.EntityChanges
 
-network: eos
-
-networks:
-  eos:
-    initialBlock:
-      graph_out: 392479516
-  wax:
-    initialBlock:
-      graph_out: 327977311
-
 sink:
   module: ch_out
   type: sf.substreams.sink.sql.v1.Service
@@ -52,6 +42,16 @@ sink:
     engine: clickhouse
     postgraphile_frontend:
       enabled: false
+
+network: eos
+
+# networks:
+#   eos:
+#     initialBlock:
+#       graph_out: 392479516
+#   wax:
+#     initialBlock:
+#       graph_out: 327977311
 
 # params:
 #   graph_out: "table:Block&table:Transaction&table:Action&table:DbOp&table:Receiver&table:Authorization"

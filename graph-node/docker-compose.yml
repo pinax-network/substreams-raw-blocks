@@ -1,8 +1,7 @@
 services:
   graph-node:
     container_name: graph-node
-    # image: graph-node:latest
-    image: graphprotocol/graph-node:f99d68c
+    image: graphprotocol/graph-node:b72621e
     ports:
       - '8000:8000'
       - '8001:8001'

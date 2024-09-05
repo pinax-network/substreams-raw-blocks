@@ -1,6 +1,6 @@
-specVersion: 1.0.0
-description: Antelope Transactions Subgraph (powered by Substreams)
-repository: https://github.com/pinax-network/antelope-transactions-substreams
+specVersion: 1.2.0
+description: EOS Transactions, Decoded Actions & Database Operations
+repository: https://github.com/pinax-network/antelope-transactions-subgraph
 schema:
   file: schema.graphql
 indexerHints:
@@ -10,9 +10,10 @@ dataSources:
     name: eos_transactions
     network: eos
     source:
+      startBlock: 392558352
       package:
         moduleName: graph_out
-        file: antelope-transactions-v0.3.2.spkg
+        file: antelope-transactions-v0.3.3.spkg
     mapping:
       kind: substreams/graph-entities
       apiVersion: 0.0.5
