@@ -45,13 +45,13 @@ sink:
 
 network: eos
 
-# networks:
-#   eos:
-#     initialBlock:
-#       graph_out: 392479516
-#   wax:
-#     initialBlock:
-#       graph_out: 327977311
+networks:
+  eos:
+    initialBlock:
+      graph_out: 392558352
+  wax:
+    initialBlock:
+      graph_out: 327977311
 
 # params:
 #   graph_out: "table:Block&table:Transaction&table:Action&table:DbOp&table:Receiver&table:Authorization"
