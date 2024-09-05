@@ -166,28 +166,6 @@ CREATE TABLE IF NOT EXISTS db_ops
         ORDER BY (tx_hash, `index`)
         COMMENT 'Antelope database operations';
 
-CREATE TABLE IF NOT EXISTS receivers
-(
-    -- clock --
-    block_time                  DateTime64(3, 'UTC'),
-    block_number                UInt64,
-    block_hash                  String,
-    block_date                  Date,
-
-    -- transaction --
-    tx_hash                 String,
-
-    -- action --
-    action_ordinal          UInt32,
-
-    -- receiver --
-    receiver                String
-)
-    ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (tx_hash, action_ordinal, receiver)
-        ORDER BY (tx_hash, action_ordinal, receiver)
-        COMMENT 'Antelope action receivers';
-
 CREATE TABLE IF NOT EXISTS authorizations
 (
     -- clock --
@@ -211,50 +189,42 @@ CREATE TABLE IF NOT EXISTS authorizations
         ORDER BY (tx_hash, action_ordinal, actor, permission)
         COMMENT 'Antelope action authorizations';
 
--- MV TABLE::receivers (tx_hash) --
-CREATE TABLE IF NOT EXISTS receivers_by_receiver
+-- MV TABLE::actions_by_receiver (by tx_hash) --
+CREATE TABLE IF NOT EXISTS actions_by_receiver
 (
     -- transaction --
     tx_hash                 String,
-
-    -- action --
-    action_ordinal          UInt32,
 
     -- receiver --
     receiver                String
 )
     ENGINE = ReplacingMergeTree()
-        ORDER BY (receiver, tx_hash, action_ordinal);
+        ORDER BY (receiver, tx_hash);
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS receivers_by_receiver_mv
-    TO receivers_by_receiver
+CREATE MATERIALIZED VIEW IF NOT EXISTS actions_by_receiver_mv
+    TO actions_by_receiver
 AS
 SELECT tx_hash,
-       action_ordinal,
        receiver
-FROM receivers;
+FROM actions;
 
--- MV TABLE::authorizations (tx_hash) --
+-- MV TABLE::authorizations_by_actor (by tx_hash) --
 CREATE TABLE IF NOT EXISTS authorizations_by_actor
 (
     -- transaction --
     tx_hash                 String,
-
-    -- action --
-    action_ordinal          UInt32,
 
     -- authorization --
     actor                   String,
     permission              LowCardinality(String)
 )
     ENGINE = ReplacingMergeTree()
-        ORDER BY (actor, permission, tx_hash, action_ordinal);
+        ORDER BY (actor, permission, tx_hash);
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS authorizations_by_actor_mv
     TO authorizations_by_actor
 AS
 SELECT tx_hash,
-       action_ordinal,
        actor,
        permission
 FROM authorizations;
