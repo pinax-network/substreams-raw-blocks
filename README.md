@@ -1,7 +1,7 @@
 # Antelope Transactions Substreams
 
 > Transactions, Decoded Actions & Database Operations
-> EOS, WAX, Telos, Ultra...
+> WAX, EOS, Ultra, Telos...
 > [`sf.antelope.type.v1.Block`](https://buf.build/pinax/firehose-antelope/docs/main:sf.antelope.type.v1)
 
 - [x] **Blocks**
@@ -13,8 +13,8 @@
 
 ## Support For
 
-- [x] Clickhouse
-- [x] Subgraph
+- [x] Subgraph `graph_out`
+- [x] Clickhouse `ch_out`
 - [ ] ~~Postgres~~
 
 ```mermaid

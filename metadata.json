@@ -1,0 +1,10 @@
+{
+    "description": "WAX Transactions, Decoded Actions & Database Operations",
+    "image": "ipfs://QmPnzfU9C7WPzQZUZT6VuxSNyt1fCfd2EVW5bC7h9rwqwn",
+    "subgraphImage": "https://api.thegraph.com/ipfs/api/v0/cat?arg=QmPnzfU9C7WPzQZUZT6VuxSNyt1fCfd2EVW5bC7h9rwqwn",
+    "displayName": "WAX Transactions",
+    "name": "WAX Transactions",
+    "codeRepository": "https://github.com/pinax-network/antelope-transactions-subgraph",
+    "website": "https://pinax.network",
+    "categories": null
+}

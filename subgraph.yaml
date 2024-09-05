@@ -1,5 +1,5 @@
 specVersion: 1.2.0
-description: EOS Transactions, Decoded Actions & Database Operations
+description: WAX Transactions, Decoded Actions & Database Operations
 repository: https://github.com/pinax-network/antelope-transactions-subgraph
 schema:
   file: schema.graphql
@@ -7,10 +7,10 @@ indexerHints:
   prune: 2419200 # 14 days (2 blocks per second)
 dataSources:
   - kind: substreams
-    name: eos_transactions
-    network: eos
+    name: wax_transactions
+    network: wax
     source:
-      startBlock: 392558352
+      startBlock: 328132936
       package:
         moduleName: graph_out
         file: antelope-transactions-v0.3.3.spkg
