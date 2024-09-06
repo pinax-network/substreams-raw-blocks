@@ -9,20 +9,23 @@ pub fn insert_authorization(params: &String, tables: &mut Tables, action: &Actio
     let tx_hash = &transaction.id;
 
     // action
-    let action_ordinal = &action.action_ordinal;
+    let action_index = &action.execution_index;
 
     // authorization
     let actor = &authorization.actor;
     let permission = &authorization.permission;
 
     // TABLE::PermissionLevel
-    let action_key = action_key(tx_hash, action_ordinal);
+    let action_key = action_key(tx_hash, action_index);
     let key = authorization_key(&action_key, actor, permission);
     if is_match("table:Authorization", params) {
         tables
             .create_row("Authorization", key)
+            // pointers
             .set("transaction", tx_hash)
             .set("action", action_key)
+
+            // authorization
             .set("actor", actor.to_string())
             .set("permission", permission.to_string())
         ;

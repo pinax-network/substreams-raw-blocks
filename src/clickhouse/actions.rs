@@ -43,7 +43,7 @@ pub fn insert_action(params: &String, tables: &mut DatabaseChanges, clock: &Cloc
     let tx_hash = &transaction.id;
 
     if is_match("table:actions", params) {
-        let keys = actions_keys(&tx_hash, &action_ordinal);
+        let keys = actions_keys(&tx_hash, &index);
         let row = tables
             .push_change_composite("actions", keys, 0, table_change::Operation::Create)
 

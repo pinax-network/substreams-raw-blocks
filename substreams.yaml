@@ -1,7 +1,7 @@
 specVersion: v0.1.0
 package:
   name: antelope_transactions
-  version: v0.3.3
+  version: v0.3.4
   url: https://github.com/pinax-network/antelope-transactions-substreams
   image: ./images/wax.jpg
 
@@ -48,10 +48,10 @@ network: wax
 networks:
   wax:
     initialBlock:
-      graph_out: 328132936
+      graph_out: 328220834
   eos:
     initialBlock:
-      graph_out: 392634565
+      graph_out: 392723005
 
 # params:
 #   graph_out: "table:Block&table:Transaction&table:Action&table:DbOp&table:Receiver&table:Authorization"

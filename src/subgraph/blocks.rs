@@ -26,7 +26,6 @@ pub fn insert_blocks_subgraph(params: &String, tables: &mut Tables, clock: &Cloc
     // TABLE::Block
     if is_match("table:Block", params) {
         tables.create_row("Block", &block_hash)
-            .set("hash", block_hash)
             .set("previous", previous)
             .set("producer", producer)
             .set("date", block_date)

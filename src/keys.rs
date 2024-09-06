@@ -27,41 +27,37 @@ pub fn transactions_keys(hash: &String) -> HashMap<String, String> {
     keys
 }
 
-pub fn actions_keys(tx_hash: &String, action_ordinal: &u32) -> HashMap<String, String> {
+pub fn actions_keys(tx_hash: &String, index: &u32) -> HashMap<String, String> {
     let mut keys = HashMap::new();
     keys.insert("tx_hash".to_string(), tx_hash.to_string());
-    keys.insert("action_ordinal".to_string(), action_ordinal.to_string());
+    keys.insert("index".to_string(), index.to_string());
     keys
 }
 
-pub fn db_ops_keys(tx_hash: &String, db_op_index: &u32) -> HashMap<String, String> {
+pub fn db_ops_keys(tx_hash: &String, index: &u32) -> HashMap<String, String> {
     let mut keys = HashMap::new();
     keys.insert("tx_hash".to_string(), tx_hash.to_string());
-    keys.insert("db_op_index".to_string(), db_op_index.to_string());
+    keys.insert("index".to_string(), index.to_string());
     keys
 }
 
-pub fn authorizations_keys(tx_hash: &String, action_ordinal: &u32, actor: &String, permission: &String) -> HashMap<String, String> {
+pub fn authorizations_keys(tx_hash: &String, action_index: &u32, actor: &String, permission: &String) -> HashMap<String, String> {
     let mut keys = HashMap::new();
+    keys.insert("tx_hash".to_string(), tx_hash.to_string());
+    keys.insert("action_index".to_string(), action_index.to_string());
     keys.insert("actor".to_string(), actor.to_string());
     keys.insert("permission".to_string(), permission.to_string());
-    keys.insert("tx_hash".to_string(), tx_hash.to_string());
-    keys.insert("action_ordinal".to_string(), action_ordinal.to_string());
     keys
 }
 
-pub fn action_key(tx_hash: &String, action_ordinal: &u32) -> String {
-    format!("{}:{}", tx_hash, action_ordinal)
-}
-
-pub fn receiver_key(tx_hash: &String, receiver: &String) -> String {
-    format!("{}:{}", tx_hash, receiver)
+pub fn action_key(tx_hash: &String, index: &u32) -> String {
+    format!("{}:{}", tx_hash, index)
 }
 
 pub fn authorization_key(action_key: &String, actor: &String, permission: &String) -> String {
     format!("{}:{}:{}", action_key, actor, permission)
 }
 
-pub fn db_ops_key(tx_hash: &String, action_ordinal: &u32, db_op_index: &u32) -> String {
-    format!("{}:{}:{}", tx_hash, action_ordinal, db_op_index)
+pub fn db_ops_key(tx_hash: &String, execution_index: &u32, db_op_index: &u32) -> String {
+    format!("{}:{}:{}", tx_hash, execution_index, db_op_index)
 }

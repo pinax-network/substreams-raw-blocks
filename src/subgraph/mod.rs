@@ -1,6 +1,5 @@
 pub mod blocks;
 mod actions;
-mod authorization;
-mod receivers;
+mod authorizations;
 mod transactions;
 mod db_ops;

@@ -1,34 +1,22 @@
-type Block @entity {
-  id:                                   ID!
-  date:                                 String!
-  time:                                 BigInt! #Timestamp issue: https://github.com/pinax-network/antelope-transactions-subgraph/issues/2
-  number:                               BigInt!
-  hash:                                 String!
-  previous:                             String!
-  producer:                             String!
-  transactions: [Transaction!]! @derivedFrom(field: "block")
-}
-
 type Transaction @entity {
   id:                     ID!
   block:                  Block!
   index:                  BigInt!
-  hash:                   String!
   elapsed:                BigInt!
   netUsage:               BigInt!
   actions:                [Action!]! @derivedFrom(field: "transaction")
   dbOps:                  [DbOp!]! @derivedFrom(field: "transaction")
-  receivers:              [Receiver!]! @derivedFrom(field: "transaction")
-  authorizations:         [Authorization!]! @derivedFrom(field: "transaction")
 }
 
 type Action @entity {
   id:                       ID!
-  ordinal:                  BigInt!
+  index:                    BigInt!
+  receiver:                 String!
   account:                  String!
   name:                     String!
   jsonData:                 String!
   rawData:                  String!
+  isNotify:                 Boolean!
   transaction:              Transaction!
   block:                    Block!
   dbOps:                    [DbOp!]! @derivedFrom(field: "action")
@@ -39,7 +27,7 @@ type DbOp @entity {
   id:                       ID!
   index:                    BigInt!
   operation:                String!
-  actionOrdinal:            BigInt!
+  actionIndex:              BigInt!
   code:                     String!
   scope:                    String!
   tableName:                String!
@@ -52,16 +40,20 @@ type DbOp @entity {
   action:                   Action!
 }
 
-type Receiver @entity {
-  id:                 ID!
-  receiver:           String!
-  transaction:        Transaction!
-}
-
 type Authorization @entity {
   id:                 ID!
   actor:              String!
   permission:         String!
   action:             Action!
   transaction:        Transaction!
+}
+
+type Block @entity {
+  id:                                   ID!
+  date:                                 String!
+  time:                                 BigInt! #Timestamp issue: https://github.com/pinax-network/antelope-transactions-subgraph/issues/2
+  number:                               BigInt!
+  previous:                             String!
+  producer:                             String!
+  transactions: [Transaction!]! @derivedFrom(field: "block")
 }
