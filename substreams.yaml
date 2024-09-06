@@ -19,7 +19,6 @@ modules:
   - name: ch_out
     kind: map
     inputs:
-      - params: string
       - source: sf.substreams.v1.Clock
       - source: sf.antelope.type.v1.Block
     output:
@@ -55,4 +54,3 @@ network: wax
 
 # params:
 #   graph_out: "table:Block&table:Transaction&table:Action&table:DbOp&table:Receiver&table:Authorization"
-#   ch_out: "table:blocks&table:transactions&table:actions&table:db_ops&table:receivers&table:authorizations"

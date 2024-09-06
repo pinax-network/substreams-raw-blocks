@@ -49,11 +49,11 @@ type Authorization @entity {
 }
 
 type Block @entity {
-  id:                                   ID!
-  date:                                 String!
-  time:                                 BigInt! #Timestamp issue: https://github.com/pinax-network/antelope-transactions-subgraph/issues/2
-  number:                               BigInt!
-  previous:                             String!
-  producer:                             String!
-  transactions: [Transaction!]! @derivedFrom(field: "block")
+  id:                 ID!
+  date:               String!
+  time:               BigInt! #Convert as Timestamp: https://github.com/pinax-network/antelope-transactions-subgraph/issues/2
+  number:             BigInt!
+  previous:           String!
+  producer:           String!
+  transactions:       Transaction!]! @derivedFrom(field: "block")
 }

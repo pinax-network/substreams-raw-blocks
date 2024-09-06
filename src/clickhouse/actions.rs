@@ -2,12 +2,12 @@ use substreams::{pb::substreams::Clock, Hex};
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_antelope::pb::{ActionTrace, BlockHeader, TransactionTrace};
 
-use crate::{keys::actions_keys, utils::is_match};
+use crate::keys::actions_keys;
 
 use super::{authorizations::insert_authorization, blocks::insert_timestamp, transactions::insert_transaction_metadata};
 
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L525
-pub fn insert_action(params: &String, tables: &mut DatabaseChanges, clock: &Clock, trace: &ActionTrace, transaction: &TransactionTrace, block_header: &BlockHeader) {
+pub fn insert_action(tables: &mut DatabaseChanges, clock: &Clock, trace: &ActionTrace, transaction: &TransactionTrace, block_header: &BlockHeader) {
     // action
 	let action = trace.action.clone().unwrap_or_default();
     let account = action.account;
@@ -42,46 +42,44 @@ pub fn insert_action(params: &String, tables: &mut DatabaseChanges, clock: &Cloc
     // transaction
     let tx_hash = &transaction.id;
 
-    if is_match(Vec::from(["table:actions"]), params) {
-        let keys = actions_keys(&tx_hash, &index);
-        let row = tables
-            .push_change_composite("actions", keys, 0, table_change::Operation::Create)
+    let keys = actions_keys(&tx_hash, &index);
+    let row = tables
+        .push_change_composite("actions", keys, 0, table_change::Operation::Create)
 
-            // receipt
-            .change("abi_sequence", ("", abi_sequence.to_string().as_str()))
-            .change("code_sequence", ("", code_sequence.to_string().as_str()))
-            .change("digest", ("", digest.to_string().as_str()))
-            .change("global_sequence", ("", global_sequence.to_string().as_str()))
-            .change("receipt_receiver", ("", receipt_receiver.to_string().as_str()))
-            .change("recv_sequence", ("", recv_sequence.to_string().as_str()))
+        // receipt
+        .change("abi_sequence", ("", abi_sequence.to_string().as_str()))
+        .change("code_sequence", ("", code_sequence.to_string().as_str()))
+        .change("digest", ("", digest.to_string().as_str()))
+        .change("global_sequence", ("", global_sequence.to_string().as_str()))
+        .change("receipt_receiver", ("", receipt_receiver.to_string().as_str()))
+        .change("recv_sequence", ("", recv_sequence.to_string().as_str()))
 
-            // action
-            .change("account", ("", account.to_string().as_str()))
-            .change("name", ("", name.to_string().as_str()))
-            .change("json_data", ("", json_data.to_string().as_str()))
-            .change("raw_data", ("", raw_data.to_string().as_str()))
+        // action
+        .change("account", ("", account.to_string().as_str()))
+        .change("name", ("", name.to_string().as_str()))
+        .change("json_data", ("", json_data.to_string().as_str()))
+        .change("raw_data", ("", raw_data.to_string().as_str()))
 
-            // trace
-            .change("index", ("", index.to_string().as_str()))
-            .change("action_ordinal", ("", action_ordinal.to_string().as_str()))
-            .change("receiver", ("", receiver.to_string().as_str()))
-            .change("context_free", ("", context_free.to_string().as_str()))
-            .change("elapsed", ("", elapsed.to_string().as_str()))
-            .change("console", ("", console.to_string().as_str()))
-            .change("raw_return_value", ("", raw_return_value.to_string().as_str()))
-            .change("json_return_value", ("", json_return_value.to_string().as_str()))
-            .change("creator_action_ordinal", ("", creator_action_ordinal.to_string().as_str()))
-            .change("closest_unnotified_ancestor_action_ordinal", ("", closest_unnotified_ancestor_action_ordinal.to_string().as_str()))
+        // trace
+        .change("index", ("", index.to_string().as_str()))
+        .change("action_ordinal", ("", action_ordinal.to_string().as_str()))
+        .change("receiver", ("", receiver.to_string().as_str()))
+        .change("context_free", ("", context_free.to_string().as_str()))
+        .change("elapsed", ("", elapsed.to_string().as_str()))
+        .change("console", ("", console.to_string().as_str()))
+        .change("raw_return_value", ("", raw_return_value.to_string().as_str()))
+        .change("json_return_value", ("", json_return_value.to_string().as_str()))
+        .change("creator_action_ordinal", ("", creator_action_ordinal.to_string().as_str()))
+        .change("closest_unnotified_ancestor_action_ordinal", ("", closest_unnotified_ancestor_action_ordinal.to_string().as_str()))
 
-            // block roots
-            .change("action_mroot", ("", action_mroot.as_str()))
-            ;
-        insert_transaction_metadata(row, transaction);
-        insert_timestamp(row, clock);
-    }
+        // block roots
+        .change("action_mroot", ("", action_mroot.as_str()))
+        ;
+    insert_transaction_metadata(row, transaction);
+    insert_timestamp(row, clock);
 
     // TABLE::authorizations
     for authorization in action.authorization.iter() {
-        insert_authorization(params, tables, clock, trace, transaction, authorization);
+        insert_authorization(tables, clock, trace, transaction, authorization);
     };
 }

@@ -5,7 +5,6 @@ use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_antelope::pb::{BlockHeader, TransactionTrace};
 
 use crate::keys::transactions_keys;
-use crate::utils::is_match;
 
 use super::actions::insert_action;
 use super::blocks::insert_timestamp;
@@ -30,7 +29,7 @@ pub fn is_transaction_success(status: i32) -> bool {
 }
 
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L525
-pub fn insert_transaction(params: &String, tables: &mut DatabaseChanges, clock: &Clock, transaction: &TransactionTrace, block_header: &BlockHeader) {
+pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transaction: &TransactionTrace, block_header: &BlockHeader) {
     let hash = &transaction.id;
     let index = transaction.index;
     let elapsed = transaction.elapsed;
@@ -49,38 +48,36 @@ pub fn insert_transaction(params: &String, tables: &mut DatabaseChanges, clock: 
     let transaction_mroot = Hex::encode(&block_header.transaction_mroot.to_vec());
 
     // TABLE::transactions
-    if is_match(Vec::from(["table:transactions"]), params) {
-        let keys = transactions_keys(hash);
-        let row = tables
-            .push_change_composite("transactions", keys, 0, table_change::Operation::Create)
-            .change("index", ("", index.to_string().as_str()))
-            .change("hash", ("", hash.as_str()))
-            .change("elapsed", ("", elapsed.to_string().as_str()))
-            .change("net_usage", ("", net_usage.to_string().as_str()))
-            .change("scheduled", ("", scheduled.to_string().as_str()))
+    let keys = transactions_keys(hash);
+    let row = tables
+        .push_change_composite("transactions", keys, 0, table_change::Operation::Create)
+        .change("index", ("", index.to_string().as_str()))
+        .change("hash", ("", hash.as_str()))
+        .change("elapsed", ("", elapsed.to_string().as_str()))
+        .change("net_usage", ("", net_usage.to_string().as_str()))
+        .change("scheduled", ("", scheduled.to_string().as_str()))
 
-            // header
-            .change("cpu_usage_micro_seconds", ("", cpu_usage_micro_seconds.to_string().as_str()))
-            .change("net_usage_words", ("", net_usage_words.to_string().as_str()))
-            .change("status", ("", status.as_str()))
-            .change("status_code", ("", status_code.to_string().as_str()))
-            .change("success", ("", success.to_string().as_str()))
+        // header
+        .change("cpu_usage_micro_seconds", ("", cpu_usage_micro_seconds.to_string().as_str()))
+        .change("net_usage_words", ("", net_usage_words.to_string().as_str()))
+        .change("status", ("", status.as_str()))
+        .change("status_code", ("", status_code.to_string().as_str()))
+        .change("success", ("", success.to_string().as_str()))
 
-            // block roots
-            .change("transaction_mroot", ("", transaction_mroot.as_str()))
-            ;
-        insert_timestamp(row, clock);
-    }
+        // block roots
+        .change("transaction_mroot", ("", transaction_mroot.as_str()))
+        ;
+    insert_timestamp(row, clock);
 
     // TABLE::actions
     for trace in transaction.action_traces.iter() {
-        insert_action(params, tables, clock, trace, transaction, block_header);
+        insert_action(tables, clock, trace, transaction, block_header);
     }
 
     // TABLE::db_ops
     let mut db_op_index = 0;
     for db_op in transaction.db_ops.iter() {
-        insert_db_op(params, tables, clock, db_op, transaction, db_op_index);
+        insert_db_op(tables, clock, db_op, transaction, db_op_index);
         db_op_index += 1;
     }
 }

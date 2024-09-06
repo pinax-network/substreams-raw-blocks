@@ -2,7 +2,7 @@ use substreams::pb::substreams::Clock;
 use substreams_antelope::pb::Block;
 use substreams_entity_change::tables::Tables;
 
-use crate::utils::{block_time_to_date, is_match};
+use crate::utils::block_time_to_date;
 
 use super::transactions::insert_transaction;
 
@@ -15,6 +15,8 @@ pub fn insert_blocks_subgraph(params: &String, tables: &mut Tables, clock: &Cloc
 
     // timestamp
     let timestamp = clock.clone().timestamp.unwrap();
+    // TO-DO: Convert as Subgraph Timestamp type
+    // https://github.com/pinax-network/antelope-transactions-subgraph/issues/2
     // let nanos = timestamp.nanos;
     // let microseconds = seconds * 1_000_000 + i64::from(nanos) / 1_000;
     let block_date = block_time_to_date(timestamp.to_string().as_str());
@@ -23,8 +25,14 @@ pub fn insert_blocks_subgraph(params: &String, tables: &mut Tables, clock: &Cloc
     let block_number = clock.number.to_string();
     let block_hash = &clock.id;
 
+    // TABLE::Transaction
+    let mut is_match = false;
+    for transaction in block.transaction_traces() {
+        if insert_transaction(&params, tables, clock, &transaction) { is_match = true;}
+    }
+
     // TABLE::Block
-    if is_match(Vec::from(["table:Block"]), params) {
+    if is_match {
         tables.create_row("Block", &block_hash)
             .set("previous", previous)
             .set("producer", producer)
@@ -34,8 +42,4 @@ pub fn insert_blocks_subgraph(params: &String, tables: &mut Tables, clock: &Cloc
         ;
     }
 
-    // TABLE::Transaction
-    for transaction in block.transaction_traces() {
-        insert_transaction(&params, tables, clock, &transaction);
-    }
 }

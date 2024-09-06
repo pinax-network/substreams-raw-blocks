@@ -9,7 +9,7 @@ pub fn block_time_to_date(block_time: &str) -> String {
     }
 }
 
-pub fn is_match(query: Vec<&str>, params: &String) -> bool {
+pub fn is_match(query: Vec<String>, params: &String) -> bool {
     // match all if no params provided
     if params.len() == 0 {
         return true;

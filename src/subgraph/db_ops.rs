@@ -2,7 +2,7 @@ use substreams::Hex;
 use substreams_antelope::pb::{DbOp, TransactionTrace};
 use substreams_entity_change::tables::Tables;
 
-use crate::{keys::{action_key, db_ops_key}, utils::is_match};
+use crate::{index::collect_db_op_keys, keys::{action_key, db_ops_key}, utils::is_match};
 
 pub fn operation_to_string(operation: i32) -> String {
     match operation {
@@ -15,7 +15,7 @@ pub fn operation_to_string(operation: i32) -> String {
 }
 
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L647
-pub fn insert_db_op(params: &String, tables: &mut Tables, db_op: &DbOp, transaction: &TransactionTrace, index: u32) {
+pub fn insert_db_op(params: &String, tables: &mut Tables, db_op: &DbOp, transaction: &TransactionTrace, index: u32) -> bool {
 	let operation = operation_to_string(db_op.operation);
 	let action_index = db_op.action_index;
 	let code = &db_op.code;
@@ -33,7 +33,7 @@ pub fn insert_db_op(params: &String, tables: &mut Tables, db_op: &DbOp, transact
     // TABLE::DbOps
     let action_key = action_key(tx_hash, &action_index);
     let key = db_ops_key(&tx_hash, &action_index, &index);
-    if is_match(Vec::from(["table:DbOp"]), params) {
+    if is_match(collect_db_op_keys(db_op), params) {
         tables
             .create_row("DbOp", key)
             // pointers
@@ -53,5 +53,7 @@ pub fn insert_db_op(params: &String, tables: &mut Tables, db_op: &DbOp, transact
             .set("oldDataJson", old_data_json.to_string())
             .set("newDataJson", new_data_json.to_string())
             ;
+        return true
     }
+    return false
 }

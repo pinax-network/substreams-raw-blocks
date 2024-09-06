@@ -2,12 +2,10 @@ use substreams::pb::substreams::Clock;
 use substreams_antelope::pb::TransactionTrace;
 use substreams_entity_change::tables::Tables;
 
-use crate::utils::is_match;
-
 use super::{actions::insert_action, db_ops::insert_db_op};
 
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L525
-pub fn insert_transaction(params: &String, tables: &mut Tables, clock: &Clock, transaction: &TransactionTrace) {
+pub fn insert_transaction(params: &String, tables: &mut Tables, clock: &Clock, transaction: &TransactionTrace) -> bool {
     let hash = &transaction.id;
     let index = transaction.index;
     let elapsed = transaction.elapsed;
@@ -15,10 +13,23 @@ pub fn insert_transaction(params: &String, tables: &mut Tables, clock: &Clock, t
 
     // only include successful transactions
     let header = transaction.receipt.clone().unwrap_or_default();
-    if header.status != 1 { return; }
+    if header.status != 1 { return false; }
+
+    // TABLE::Action
+    let mut is_match = false;
+    for trace in transaction.action_traces.iter() {
+        if insert_action(params, tables, clock, trace, transaction) { is_match = true; }
+    }
+
+    // TABLE::DbOps
+    let mut db_op_index = 0;
+    for db_op in transaction.db_ops.iter() {
+        if insert_db_op(params, tables, db_op, transaction, db_op_index) { is_match = true;}
+        db_op_index += 1;
+    }
 
     // TABLE::Transaction
-    if is_match(Vec::from(["table:Transaction"]), params) {
+    if is_match {
         tables
             .create_row("Transaction", hash)
 
@@ -27,17 +38,7 @@ pub fn insert_transaction(params: &String, tables: &mut Tables, clock: &Clock, t
             .set_bigint("elapsed", &elapsed.to_string())
             .set_bigint("netUsage", &net_usage.to_string())
         ;
+        return true;
     }
-
-    // TABLE::Action
-    for trace in transaction.action_traces.iter() {
-        insert_action(params, tables, clock, trace, transaction);
-    }
-
-    // TABLE::DbOps
-    let mut db_op_index = 0;
-    for db_op in transaction.db_ops.iter() {
-        insert_db_op(params, tables, db_op, transaction, db_op_index);
-        db_op_index += 1;
-    }
+    return false;
 }

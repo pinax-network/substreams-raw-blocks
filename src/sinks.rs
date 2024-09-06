@@ -18,11 +18,11 @@ pub fn graph_out(params: String, clock: Clock, block: Block) -> Result<EntityCha
 }
 
 #[substreams::handlers::map]
-pub fn ch_out(params: String, clock: Clock, block: Block) -> Result<DatabaseChanges, Error> {
+pub fn ch_out(clock: Clock, block: Block) -> Result<DatabaseChanges, Error> {
     let mut tables: DatabaseChanges = DatabaseChanges::default();
 
     // TABLE::Block
-    insert_blocks_clickhouse(&params, &mut tables, &clock, &block);
+    insert_blocks_clickhouse(&mut tables, &clock, &block);
 
     Ok(tables)
 }

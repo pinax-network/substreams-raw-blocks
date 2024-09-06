@@ -2,7 +2,7 @@ use substreams::{pb::substreams::Clock, Hex};
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_antelope::pb::Block;
 
-use crate::{keys::blocks_keys, utils::is_match};
+use crate::keys::blocks_keys;
 use substreams_database_change::pb::database::TableChange;
 
 use crate::utils::block_time_to_date;
@@ -25,7 +25,7 @@ pub fn insert_timestamp(row: &mut TableChange, clock: &Clock) {
 }
 
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L21
-pub fn insert_blocks_clickhouse(params: &String, tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
+pub fn insert_blocks_clickhouse(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
     // header
     let header = block.header.clone().unwrap_or_default();
     let previous = &header.previous;
@@ -58,35 +58,33 @@ pub fn insert_blocks_clickhouse(params: &String, tables: &mut DatabaseChanges, c
 
     // blocks
     let keys = blocks_keys(&clock);
-    if is_match(Vec::from(["table:blocks"]), params) {
-        let row = tables
-            .push_change_composite("blocks", keys, 0, table_change::Operation::Create)
-            // header
-            .change("previous", ("", previous.as_str()))
-            .change("producer", ("", producer.to_string().as_str()))
-            .change("confirmed", ("", confirmed.to_string().as_str()))
-            .change("schedule_version", ("", schedule_version.to_string().as_str()))
+    let row = tables
+        .push_change_composite("blocks", keys, 0, table_change::Operation::Create)
+        // header
+        .change("previous", ("", previous.as_str()))
+        .change("producer", ("", producer.to_string().as_str()))
+        .change("confirmed", ("", confirmed.to_string().as_str()))
+        .change("schedule_version", ("", schedule_version.to_string().as_str()))
 
-            // block
-            .change("version", ("", version.to_string().as_str()))
-            .change("producer_signature", ("", producer_signature.to_string().as_str()))
-            .change("dpos_proposed_irreversible_blocknum", ("", dpos_proposed_irreversible_blocknum.to_string().as_str()))
-            .change("dpos_irreversible_blocknum", ("", dpos_irreversible_blocknum.to_string().as_str()))
+        // block
+        .change("version", ("", version.to_string().as_str()))
+        .change("producer_signature", ("", producer_signature.to_string().as_str()))
+        .change("dpos_proposed_irreversible_blocknum", ("", dpos_proposed_irreversible_blocknum.to_string().as_str()))
+        .change("dpos_irreversible_blocknum", ("", dpos_irreversible_blocknum.to_string().as_str()))
 
-            // block roots
-            .change("transaction_mroot", ("", transaction_mroot.to_string().as_str()))
-            .change("action_mroot", ("", action_mroot.to_string().as_str()))
-            // .change("blockroot_merkle_active_nodes", ("", format!("['{}']", blockroot_merkle_active_nodes.join("','") ).as_str()))
-            .change("blockroot_merkle_node_count", ("", blockroot_merkle_node_count.to_string().as_str()))
-            ;
+        // block roots
+        .change("transaction_mroot", ("", transaction_mroot.to_string().as_str()))
+        .change("action_mroot", ("", action_mroot.to_string().as_str()))
+        // .change("blockroot_merkle_active_nodes", ("", format!("['{}']", blockroot_merkle_active_nodes.join("','") ).as_str()))
+        .change("blockroot_merkle_node_count", ("", blockroot_merkle_node_count.to_string().as_str()))
+        ;
 
-        // transaction status counts
-        insert_size(row, block);
-        insert_timestamp(row, clock);
-    }
+    // transaction status counts
+    insert_size(row, block);
+    insert_timestamp(row, clock);
 
     // TABLE::transactions
     for transaction in block.transaction_traces() {
-        insert_transaction(params, tables, clock, &transaction, &header);
+        insert_transaction(tables, clock, &transaction, &header);
     }
 }

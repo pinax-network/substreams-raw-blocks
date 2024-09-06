@@ -2,12 +2,12 @@ use substreams::{pb::substreams::Clock, Hex};
 use substreams_antelope::pb::{ActionTrace, TransactionTrace};
 use substreams_entity_change::tables::Tables;
 
-use crate::{keys::action_key, utils::is_match};
+use crate::{index::collect_action_keys, keys::action_key, utils::is_match};
 
 use super::authorizations::insert_authorization;
 
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L525
-pub fn insert_action(params: &String, tables: &mut Tables, clock: &Clock, trace: &ActionTrace, transaction: &TransactionTrace) {
+pub fn insert_action(params: &String, tables: &mut Tables, clock: &Clock, trace: &ActionTrace, transaction: &TransactionTrace) -> bool {
     // trace
     let index = trace.execution_index;
 	let action = trace.action.clone().unwrap_or_default();
@@ -24,9 +24,8 @@ pub fn insert_action(params: &String, tables: &mut Tables, clock: &Clock, trace:
     let tx_hash = &transaction.id;
 
     // TABLE::Action
-    let key = action_key(tx_hash, &index);
-
-    if is_match(Vec::from(["table:Action"]), params) {
+    if is_match(collect_action_keys(trace), params) {
+        let key = action_key(tx_hash, &index);
         tables
             .create_row("Action", key)
             // pointers
@@ -44,10 +43,12 @@ pub fn insert_action(params: &String, tables: &mut Tables, clock: &Clock, trace:
             .set("jsonData", json_data)
             .set("rawData", raw_data)
             ;
+        // TABLE::authorizations
+        for authorization in action.authorization.iter() {
+            insert_authorization(tables, trace, transaction, authorization);
+        };
+        return true;
     }
+    return false;
 
-    // TABLE::authorizations
-    for authorization in action.authorization.iter() {
-        insert_authorization(params, tables, trace, transaction, authorization);
-    };
 }
