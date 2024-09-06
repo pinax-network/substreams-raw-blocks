@@ -10,10 +10,10 @@ dataSources:
     name: wax_transactions
     network: wax
     source:
-      startBlock: 328220834
+      startBlock: 328310476
       package:
         moduleName: graph_out
-        file: antelope-transactions-v0.3.4.spkg
+        file: antelope-transactions-v0.3.5.spkg
     mapping:
       kind: substreams/graph-entities
       apiVersion: 0.0.5
