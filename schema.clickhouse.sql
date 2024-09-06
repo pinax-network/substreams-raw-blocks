@@ -111,6 +111,7 @@ CREATE TABLE IF NOT EXISTS actions
     raw_data                    String COMMENT 'Hex',
 
     -- trace --
+    `index`                                         UInt32,
     action_ordinal                                  UInt32 COMMENT 'Action Ordinal',
     receiver                                        String,
     context_free                                    Bool,
@@ -120,14 +121,13 @@ CREATE TABLE IF NOT EXISTS actions
     json_return_value                               String,
     creator_action_ordinal                          UInt32,
     closest_unnotified_ancestor_action_ordinal      UInt32,
-    execution_index                                 UInt32,
 
     -- block roots --
     action_mroot                                    String,
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (tx_hash, action_ordinal)
-        ORDER BY (tx_hash, action_ordinal)
+        PRIMARY KEY (tx_hash, `index`)
+        ORDER BY (tx_hash, `index`)
         COMMENT 'Antelope actions';
 
 CREATE TABLE IF NOT EXISTS db_ops
@@ -175,18 +175,18 @@ CREATE TABLE IF NOT EXISTS authorizations
     block_date                  Date,
 
     -- transaction --
-    tx_hash                 String,
+    tx_hash                     String,
 
     -- action --
-    action_ordinal          UInt32,
+    action_index                UInt32,
 
     -- authorization --
-    actor                   String,
-    permission              LowCardinality(String)
+    actor                       String,
+    permission                  LowCardinality(String)
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (tx_hash, action_ordinal, actor, permission)
-        ORDER BY (tx_hash, action_ordinal, actor, permission)
+        PRIMARY KEY (tx_hash, action_index, actor, permission)
+        ORDER BY (tx_hash, action_index, actor, permission)
         COMMENT 'Antelope action authorizations';
 
 -- MV TABLE::actions_by_receiver (by tx_hash) --
