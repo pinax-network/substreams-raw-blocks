@@ -58,7 +58,7 @@ pub fn insert_blocks_clickhouse(params: &String, tables: &mut DatabaseChanges, c
 
     // blocks
     let keys = blocks_keys(&clock);
-    if is_match("table:blocks", params) {
+    if is_match(Vec::from(["table:blocks"]), params) {
         let row = tables
             .push_change_composite("blocks", keys, 0, table_change::Operation::Create)
             // header

@@ -26,7 +26,7 @@ pub fn insert_action(params: &String, tables: &mut Tables, clock: &Clock, trace:
     // TABLE::Action
     let key = action_key(tx_hash, &index);
 
-    if is_match("table:Action", params) {
+    if is_match(Vec::from(["table:Action"]), params) {
         tables
             .create_row("Action", key)
             // pointers

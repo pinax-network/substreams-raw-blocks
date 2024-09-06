@@ -49,7 +49,7 @@ pub fn insert_transaction(params: &String, tables: &mut DatabaseChanges, clock: 
     let transaction_mroot = Hex::encode(&block_header.transaction_mroot.to_vec());
 
     // TABLE::transactions
-    if is_match("table:transactions", params) {
+    if is_match(Vec::from(["table:transactions"]), params) {
         let keys = transactions_keys(hash);
         let row = tables
             .push_change_composite("transactions", keys, 0, table_change::Operation::Create)

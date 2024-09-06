@@ -33,7 +33,7 @@ pub fn insert_db_op(params: &String, tables: &mut Tables, db_op: &DbOp, transact
     // TABLE::DbOps
     let action_key = action_key(tx_hash, &action_index);
     let key = db_ops_key(&tx_hash, &action_index, &index);
-    if is_match("table:DbOp", params) {
+    if is_match(Vec::from(["table:DbOp"]), params) {
         tables
             .create_row("DbOp", key)
             // pointers

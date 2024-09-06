@@ -18,7 +18,7 @@ pub fn insert_authorization(params: &String, tables: &mut Tables, action: &Actio
     // TABLE::PermissionLevel
     let action_key = action_key(tx_hash, action_index);
     let key = authorization_key(&action_key, actor, permission);
-    if is_match("table:Authorization", params) {
+    if is_match(Vec::from(["table:Authorization"]), params) {
         tables
             .create_row("Authorization", key)
             // pointers

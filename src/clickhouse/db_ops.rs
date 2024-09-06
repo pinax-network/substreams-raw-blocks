@@ -35,7 +35,7 @@ pub fn insert_db_op(params: &String, tables: &mut DatabaseChanges, clock: &Clock
     // transaction
     let tx_hash = &transaction.id;
 
-    if is_match("table:db_ops", params) {
+    if is_match(Vec::from(["table:db_ops"]), params) {
         let keys = db_ops_keys(&tx_hash, &index);
         let row = tables
             .push_change_composite("db_ops", keys, 0, table_change::Operation::Create)

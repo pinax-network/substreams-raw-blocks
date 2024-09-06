@@ -18,7 +18,7 @@ pub fn insert_transaction(params: &String, tables: &mut Tables, clock: &Clock, t
     if header.status != 1 { return; }
 
     // TABLE::Transaction
-    if is_match("table:Transaction", params) {
+    if is_match(Vec::from(["table:Transaction"]), params) {
         tables
             .create_row("Transaction", hash)
 

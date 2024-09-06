@@ -18,7 +18,7 @@ pub fn insert_authorization(params: &String, tables: &mut DatabaseChanges, clock
     let actor = &authorization.actor;
     let permission = &authorization.permission;
 
-    if is_match("table:authorizations", params) {
+    if is_match(Vec::from(["table:authorizations"]), params) {
         let keys = authorizations_keys(&tx_hash, &action_index, actor, permission);
         let row = tables
             .push_change_composite("authorizations", keys, 0, table_change::Operation::Create)
