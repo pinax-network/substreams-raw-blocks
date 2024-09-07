@@ -7,7 +7,7 @@ use crate::utils::block_time_to_date;
 use super::transactions::insert_transaction;
 
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L21
-pub fn insert_blocks_subgraph(params: &String, tables: &mut Tables, clock: &Clock, block: &Block) {
+pub fn insert_blocks(params: &String, tables: &mut Tables, clock: &Clock, block: &Block) {
     // header
     let header = block.header.clone().unwrap_or_default();
     let previous = &header.previous;
