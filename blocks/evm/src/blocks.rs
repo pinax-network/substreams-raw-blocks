@@ -22,8 +22,8 @@ pub fn block_detail_to_string(detail_level: i32) -> String {
 
 // https://github.com/streamingfast/firehose-ethereum/blob/develop/proto/sf/ethereum/type/v2/type.proto
 // DetailLevel: BASE
-pub fn insert_blocks(params: &String, tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
-    let header = block.header.clone().unwrap_or_default();
+pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
+    let header: substreams_ethereum::pb::eth::v2::BlockHeader = block.header.clone().unwrap_or_default();
     let parent_hash = bytes_to_hex(&header.parent_hash);
     let nonce = header.nonce;
     let ommers_hash = bytes_to_hex(&header.uncle_hash);
@@ -87,12 +87,6 @@ pub fn insert_blocks(params: &String, tables: &mut DatabaseChanges, clock: &Cloc
 
     insert_timestamp(row, clock, true, true);
     insert_size(row, &block);
-
-    // skip the rest if blocks is the only requested table
-    // designed for high throughput to calculate total block size of the entire chain
-    if params == "blocks" {
-        return;
-    }
 
     // TABLE::code_changes
     for code_change in block.code_changes.iter() {

@@ -75,7 +75,7 @@ graph TD;
   - [ ] **Creation Tree**
   - [ ] ~~**Deferred Transactions**~~
 - [x] **Actions**
-  - [ ] **Authorization**
+  - [x] **Authorization**
   - [ ] **Auth Sequence**
   - [ ] **Account RAM Deltas**
 - [x] **Database Operations**
