@@ -53,4 +53,4 @@ network: wax
 #       graph_out: 392723005
 
 # params:
-#   graph_out: "table:Block&table:Transaction&table:Action&table:DbOp&table:Receiver&table:Authorization"
+#   graph_out: "code:eosio.token"

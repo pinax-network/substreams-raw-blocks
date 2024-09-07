@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use substreams::pb::substreams::Clock;
 use substreams_antelope::pb::TransactionTrace;
 use substreams_entity_change::tables::Tables;
@@ -17,14 +19,21 @@ pub fn insert_transaction(params: &String, tables: &mut Tables, clock: &Clock, t
 
     // TABLE::Action
     let mut is_match = false;
+    let mut action_keys = HashSet::new();
     for trace in transaction.action_traces.iter() {
-        if insert_action(params, tables, clock, trace, transaction) { is_match = true; }
+        match insert_action(params, tables, clock, trace, transaction) {
+            Some(action_key) => {
+                action_keys.insert(action_key);
+                is_match = true;
+            },
+            None => {}
+        }
     }
 
     // TABLE::DbOps
     let mut db_op_index = 0;
     for db_op in transaction.db_ops.iter() {
-        if insert_db_op(params, tables, db_op, transaction, db_op_index) { is_match = true;}
+        if insert_db_op(params, tables, db_op, transaction, db_op_index, &action_keys) { is_match = true;}
         db_op_index += 1;
     }
 
@@ -32,7 +41,6 @@ pub fn insert_transaction(params: &String, tables: &mut Tables, clock: &Clock, t
     if is_match {
         tables
             .create_row("Transaction", hash)
-
             .set("block", &clock.id) // pointer to Block
             .set_bigint("index", &index.to_string())
             .set_bigint("elapsed", &elapsed.to_string())

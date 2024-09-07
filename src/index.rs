@@ -14,11 +14,11 @@ pub fn collect_action_keys(trace: &ActionTrace) -> Vec<String> {
     };
 
     // action: is the name of the action executed
-    // account: matches the account called on the action. Not to be mixed up with receiver. This will match notifications sent from a contract to another account.
+    // code: matches the account called on the action. Not to be mixed up with receiver. This will match notifications sent from a contract to another account.
     // receiver: means the account with code that has executed the action. This is unambiguous.
     keys.extend(vec![
         format!("action:{}", action.name),
-        format!("account:{}", action.account),
+        format!("code:{}", action.account),
         format!("receiver:{}", trace.receiver),
     ]);
 
