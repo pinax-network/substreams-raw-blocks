@@ -17,6 +17,7 @@ type Action @entity {
   jsonData:                 String!
   rawData:                  String!
   isNotify:                 Boolean!
+  isInput:                  Boolean!
   transaction:              Transaction!
   block:                    Block!
   dbOps:                    [DbOp!]! @derivedFrom(field: "action")
@@ -55,5 +56,5 @@ type Block @entity {
   number:             BigInt!
   previous:           String!
   producer:           String!
-  transactions:       Transaction!]! @derivedFrom(field: "block")
+  transactions:       [Transaction!]! @derivedFrom(field: "block")
 }

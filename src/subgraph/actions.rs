@@ -7,7 +7,7 @@ use crate::{index::collect_action_keys, keys::action_key, utils::is_match};
 use super::authorizations::insert_authorization;
 
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L525
-pub fn insert_action(params: &String, tables: &mut Tables, clock: &Clock, trace: &ActionTrace, transaction: &TransactionTrace) -> bool {
+pub fn insert_action(params: &String, tables: &mut Tables, clock: &Clock, trace: &ActionTrace, transaction: &TransactionTrace) -> Option<String> {
     // trace
     let index = trace.execution_index;
 	let action = trace.action.clone().unwrap_or_default();
@@ -19,6 +19,7 @@ pub fn insert_action(params: &String, tables: &mut Tables, clock: &Clock, trace:
     let json_data = action.json_data;
     let raw_data = Hex::encode(&action.raw_data.to_vec());
     let is_notify = account.ne(receiver);
+    let is_input = trace.creator_action_ordinal == 0;
 
     // transaction
     let tx_hash = &transaction.id;
@@ -27,7 +28,7 @@ pub fn insert_action(params: &String, tables: &mut Tables, clock: &Clock, trace:
     if is_match(collect_action_keys(trace), params) {
         let key = action_key(tx_hash, &index);
         tables
-            .create_row("Action", key)
+            .create_row("Action", &key)
             // pointers
             .set("transaction", tx_hash)
             .set("block", &clock.id)
@@ -36,6 +37,7 @@ pub fn insert_action(params: &String, tables: &mut Tables, clock: &Clock, trace:
             .set_bigint("index", &index.to_string())
             .set("receiver", receiver)
             .set("isNotify", is_notify)
+            .set("isInput", is_input)
 
             // action
             .set("account", account)
@@ -47,8 +49,8 @@ pub fn insert_action(params: &String, tables: &mut Tables, clock: &Clock, trace:
         for authorization in action.authorization.iter() {
             insert_authorization(tables, trace, transaction, authorization);
         };
-        return true;
+        return Some(key)
     }
-    return false;
+    return None
 
 }
