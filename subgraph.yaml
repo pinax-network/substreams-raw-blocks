@@ -13,6 +13,7 @@ dataSources:
       startBlock: 328310476
       package:
         moduleName: graph_out
+        # params: "code:eosio.token"
         file: antelope-transactions-v0.3.5.spkg
     mapping:
       kind: substreams/graph-entities

@@ -1,0 +1,24 @@
+{
+  actions(
+    where: {isNotify: false, account: "eosio.token"}
+    orderBy: block__number
+    orderDirection: desc
+  ) {
+    block{
+      number
+      time
+    }
+    transaction {
+      id
+    }
+    account
+    name
+    jsonData
+    dbOps {
+      code
+      tableName
+      primaryKey
+      newDataJson
+    }
+  }
+}
