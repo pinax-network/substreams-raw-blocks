@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS blocks
 
 CREATE TABLE IF NOT EXISTS transactions
 (
-    -- block --
+    -- clock --
     block_time                  DateTime64(3, 'UTC'),
     block_number                UInt64,
     block_hash                  String COMMENT 'Hash',
@@ -78,12 +78,12 @@ CREATE TABLE IF NOT EXISTS transactions
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_number)
-        ORDER BY (block_date, block_number, block_hash, hash)
+        ORDER BY (block_date, block_number, hash)
         COMMENT 'Antelope transactions';
 
 CREATE TABLE IF NOT EXISTS actions
 (
-    -- block --
+    -- clock --
     block_time                  DateTime64(3, 'UTC'),
     block_number                UInt64,
     block_hash                  String COMMENT 'Hash',
@@ -111,7 +111,8 @@ CREATE TABLE IF NOT EXISTS actions
     raw_data                    String COMMENT 'Hex',
 
     -- trace --
-    `index`                                         UInt32 COMMENT 'Action Ordinal',
+    `index`                                         UInt32 COMMENT 'Execution Index',
+    action_ordinal                                  UInt32 COMMENT 'Action Ordinal',
     receiver                                        String,
     context_free                                    Bool,
     elapsed                                         Int64,
@@ -120,32 +121,31 @@ CREATE TABLE IF NOT EXISTS actions
     json_return_value                               String,
     creator_action_ordinal                          UInt32,
     closest_unnotified_ancestor_action_ordinal      UInt32,
-    execution_index                                 UInt32,
 
     -- block roots --
-    action_mroot                                    String COMMENT 'Hash',
+    action_mroot                                    String,
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_number)
-        ORDER BY (block_date, block_number, block_hash, tx_hash, tx_index, `index`)
+        ORDER BY (block_date, block_number, tx_hash, `index`)
         COMMENT 'Antelope actions';
 
 CREATE TABLE IF NOT EXISTS db_ops
 (
-    -- block --
+    -- clock --
     block_time                  DateTime64(3, 'UTC'),
     block_number                UInt64,
-    block_hash                  String COMMENT 'EVM Hash',
+    block_hash                  String,
     block_date                  Date,
 
     -- transaction --
-    tx_hash                     String COMMENT 'Hash',
+    tx_hash                     String,
     tx_index                    UInt64,
     tx_status                   LowCardinality(String),
     tx_status_code              UInt8,
     tx_success                  Bool,
 
-    -- storage change --
+    -- database operation --
     `index`                     UInt32,
     operation                   LowCardinality(String) COMMENT 'Operation',
     operation_code              UInt8,
@@ -163,5 +163,28 @@ CREATE TABLE IF NOT EXISTS db_ops
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_date, block_number)
-        ORDER BY (block_date, block_number, block_hash, tx_hash, `index`)
+        ORDER BY (block_date, block_number, tx_hash, `index`)
         COMMENT 'Antelope database operations';
+
+CREATE TABLE IF NOT EXISTS authorizations
+(
+    -- clock --
+    block_time                  DateTime64(3, 'UTC'),
+    block_number                UInt64,
+    block_hash                  String,
+    block_date                  Date,
+
+    -- transaction --
+    tx_hash                     String,
+
+    -- action --
+    action_index                UInt32,
+
+    -- authorization --
+    actor                       String,
+    permission                  LowCardinality(String)
+)
+    ENGINE = ReplacingMergeTree()
+        PRIMARY KEY (block_date, block_number)
+        ORDER BY (block_date, block_number, tx_hash, action_index, actor, permission)
+        COMMENT 'Antelope action authorizations';
