@@ -1,8 +1,9 @@
 use common::blocks::insert_timestamp;
-use common::keys::block_ordinal_keys;
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_ethereum::pb::eth::v2::GasChange;
+
+use crate::keys::block_ordinal_keys;
 
 pub fn gas_change_reason_to_string(reason: i32) -> String {
     match reason {
@@ -54,5 +55,5 @@ pub fn insert_gas_change(tables: &mut DatabaseChanges, clock: &Clock, gas_change
         .change("new_value", ("", new_value.to_string().as_str()))
         .change("ordinal", ("", ordinal.to_string().as_str()));
 
-    insert_timestamp(row, clock, false);
+    insert_timestamp(row, clock, false, true);
 }

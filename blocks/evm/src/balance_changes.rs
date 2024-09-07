@@ -1,9 +1,11 @@
 use common::blocks::insert_timestamp;
 use common::utils::{bytes_to_hex, optional_bigint_to_decimal};
-use common::{keys::block_ordinal_keys, utils::optional_bigint_to_string};
+use common::utils::optional_bigint_to_string;
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges, TableChange};
 use substreams_ethereum::pb::eth::v2::BalanceChange;
+
+use crate::keys::block_ordinal_keys;
 
 pub fn balance_change_reason_to_string(reason: i32) -> String {
     match reason {
@@ -59,5 +61,5 @@ pub fn insert_balance_change(tables: &mut DatabaseChanges, clock: &Clock, balanc
     let row = tables.push_change_composite("balance_changes", keys, 0, table_change::Operation::Create);
 
     insert_balance_change_row(row, balance_change);
-    insert_timestamp(row, clock, false);
+    insert_timestamp(row, clock, false, true);
 }

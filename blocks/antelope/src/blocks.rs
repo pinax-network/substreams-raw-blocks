@@ -1,18 +1,17 @@
 use common::blocks::insert_timestamp;
-use common::utils::bytes_to_hex;
-use common::keys::blocks_keys;
-use substreams::pb::substreams::Clock;
+use substreams::{pb::substreams::Clock, Hex};
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_antelope::pb::Block;
 
-use crate::size::insert_size;
-use crate::transactions::insert_transaction;
+use crate::keys::blocks_keys;
+
+use super::{size::insert_size, transactions::insert_transaction};
 
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L21
-pub fn insert_blocks(params: String, tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
+pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
     // header
     let header = block.header.clone().unwrap_or_default();
-    let parent_hash = &header.previous;
+    let parent_hash = &header.previous; // renamed to follow EVM block schema
     let producer = &header.producer;
     let confirmed = &header.confirmed;
     let schedule_version = &header.schedule_version;
@@ -33,15 +32,15 @@ pub fn insert_blocks(params: String, tables: &mut DatabaseChanges, clock: &Clock
     let blockroot_merkle_node_count = blockroot_merkle.node_count;
 
     // block roots
-    let transaction_mroot = bytes_to_hex(&header.transaction_mroot.to_vec());
-    let action_mroot = bytes_to_hex(&header.action_mroot.to_vec());
+    let transaction_mroot = Hex::encode(&header.transaction_mroot.to_vec());
+    let action_mroot = Hex::encode(&header.action_mroot.to_vec());
 
     // TO-DO
     // to be used during Legacy to Savanna transition where action_mroot needs to be converted from Legacy merkle to Savanna merkle
     // let action_mroot_savanna = block.action_mroot_savanna;
 
     // blocks
-    let keys = blocks_keys(&clock, true);
+    let keys = blocks_keys(&clock);
     let row = tables
         .push_change_composite("blocks", keys, 0, table_change::Operation::Create)
         // header
@@ -65,11 +64,7 @@ pub fn insert_blocks(params: String, tables: &mut DatabaseChanges, clock: &Clock
 
     // transaction status counts
     insert_size(row, block);
-    insert_timestamp(row, clock, true);
-
-    // skip the rest if blocks is the only requested table
-    // designed for high throughput to calculate total block size of the entire chain
-    if params == "blocks" { return; }
+    insert_timestamp(row, clock, true, false);
 
     // TABLE::transactions
     for transaction in block.transaction_traces() {

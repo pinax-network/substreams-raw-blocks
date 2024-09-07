@@ -1,9 +1,10 @@
 use common::blocks::insert_timestamp;
-use common::keys::block_ordinal_keys;
 use common::utils::bytes_to_hex;
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges, TableChange};
 use substreams_ethereum::pb::eth::v2::CodeChange;
+
+use crate::keys::block_ordinal_keys;
 
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L744
 // DetailLevel: EXTENDED
@@ -29,5 +30,5 @@ pub fn insert_code_change(tables: &mut DatabaseChanges, clock: &Clock, code_chan
     let row = tables.push_change_composite("code_changes", keys, 0, table_change::Operation::Create);
 
     insert_code_change_rows(row, code_change);
-    insert_timestamp(row, clock, false);
+    insert_timestamp(row, clock, false, true);
 }

@@ -1,10 +1,10 @@
 use common::blocks::insert_timestamp;
-use common::keys::logs_keys;
 use common::utils::{bytes_to_hex, extract_topic};
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_ethereum::pb::eth::v2::{Log, TransactionTrace};
 
+use crate::keys::logs_keys;
 use crate::transactions::insert_transaction_metadata;
 
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L512
@@ -38,6 +38,6 @@ pub fn insert_log(tables: &mut DatabaseChanges, clock: &Clock, log: &Log, transa
         .change("topic3", ("", topic3.as_str()))
         .change("data", ("", data.as_str()));
 
-    insert_timestamp(row, clock, false);
+    insert_timestamp(row, clock, false, true);
     insert_transaction_metadata(row, transaction, false);
 }

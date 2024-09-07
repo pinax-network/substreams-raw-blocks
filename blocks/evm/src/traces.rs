@@ -1,6 +1,5 @@
 use common::{
     blocks::insert_timestamp,
-    keys::traces_keys,
     utils::{bytes_to_hex, optional_bigint_to_string},
 };
 use substreams::pb::substreams::Clock;
@@ -8,8 +7,7 @@ use substreams_database_change::pb::database::{table_change, DatabaseChanges, Ta
 use substreams_ethereum::pb::eth::v2::{Call, TransactionTrace};
 
 use crate::{
-    account_creations::insert_account_creation, balance_changes::insert_balance_change, code_changes::insert_code_change, gas_changes::insert_gas_change, logs::insert_log,
-    nonce_changes::insert_nonce_change, storage_changes::insert_storage_change, transactions::{insert_empty_transaction_metadata, insert_transaction_metadata},
+    account_creations::insert_account_creation, balance_changes::insert_balance_change, code_changes::insert_code_change, gas_changes::insert_gas_change, keys::traces_keys, logs::insert_log, nonce_changes::insert_nonce_change, storage_changes::insert_storage_change, transactions::{insert_empty_transaction_metadata, insert_transaction_metadata}
 };
 
 pub fn call_types_to_string(call_type: i32) -> String {
@@ -33,7 +31,7 @@ pub fn insert_trace(tables: &mut DatabaseChanges, clock: &Clock, call: &Call, tr
     let keys = traces_keys(&clock, &tx_hash, &tx_index.into(), &call.index);
     let row = tables.push_change_composite("traces", keys, 0, table_change::Operation::Create);
     insert_trace_row(row, call);
-    insert_timestamp(row, clock, false);
+    insert_timestamp(row, clock, false, true);
     insert_transaction_metadata(row, transaction, true);
 
     // TABLE::logs
@@ -74,7 +72,7 @@ pub fn insert_system_trace(tables: &mut DatabaseChanges, clock: &Clock, call: &C
     let keys = traces_keys(&clock, &"".to_string(), &0, &call.index);
     let row = tables.push_change_composite("traces", keys, 0, table_change::Operation::Create);
     insert_trace_row(row, call);
-    insert_timestamp(row, clock, false);
+    insert_timestamp(row, clock, false, true);
     insert_empty_transaction_metadata(row, true);
 }
 

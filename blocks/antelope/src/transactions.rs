@@ -1,13 +1,14 @@
 use common::blocks::insert_timestamp;
-use common::keys::transaction_keys;
-use common::utils::{add_prefix_to_hex, bytes_to_hex};
 use substreams::pb::substreams::Clock;
+use substreams::Hex;
 use substreams_database_change::pb::database::TableChange;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_antelope::pb::{BlockHeader, TransactionTrace};
 
-use crate::db_ops::insert_db_op;
-use crate::actions::insert_action;
+use crate::keys::transactions_keys;
+
+use super::actions::insert_action;
+use super::db_ops::insert_db_op;
 
 pub fn transaction_status_to_string(status: i32) -> String {
     match status {
@@ -29,7 +30,7 @@ pub fn is_transaction_success(status: i32) -> bool {
 
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L525
 pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transaction: &TransactionTrace, block_header: &BlockHeader) {
-    let hash = add_prefix_to_hex(&transaction.id);
+    let hash = &transaction.id;
     let index = transaction.index;
     let elapsed = transaction.elapsed;
     let net_usage = transaction.net_usage;
@@ -44,9 +45,10 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
     let success = is_transaction_success(header.status);
 
     // block roots
-    let transaction_mroot = bytes_to_hex(&block_header.transaction_mroot.to_vec());
+    let transaction_mroot = Hex::encode(&block_header.transaction_mroot.to_vec());
 
-    let keys = transaction_keys(&clock, &hash);
+    // TABLE::transactions
+    let keys = transactions_keys(clock, hash);
     let row = tables
         .push_change_composite("transactions", keys, 0, table_change::Operation::Create)
         .change("index", ("", index.to_string().as_str()))
@@ -65,15 +67,14 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
         // block roots
         .change("transaction_mroot", ("", transaction_mroot.as_str()))
         ;
+    insert_timestamp(row, clock, false, false);
 
-    insert_timestamp(row, clock, false);
-
-    // Traces of each action within the transaction, including all notified and nested actions.
+    // TABLE::actions
     for trace in transaction.action_traces.iter() {
         insert_action(tables, clock, trace, transaction, block_header);
     }
 
-    // List of database operations this transaction entailed
+    // TABLE::db_ops
     let mut db_op_index = 0;
     for db_op in transaction.db_ops.iter() {
         insert_db_op(tables, clock, db_op, transaction, db_op_index);
@@ -152,7 +153,7 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
 }
 
 pub fn insert_transaction_metadata(row: &mut TableChange, transaction: &TransactionTrace) {
-    let tx_hash = add_prefix_to_hex(&transaction.id);
+    let tx_hash = &transaction.id;
     let tx_index = transaction.index;
     let header = transaction.receipt.clone().unwrap_or_default();
     let tx_status = transaction_status_to_string(header.status);

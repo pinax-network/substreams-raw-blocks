@@ -85,7 +85,7 @@ pub fn insert_blocks(params: &String, tables: &mut DatabaseChanges, clock: &Cloc
         .change("detail_level_code", ("", detail_level_code.to_string().as_str()))
         ;
 
-    insert_timestamp(row, clock, true);
+    insert_timestamp(row, clock, true, true);
     insert_size(row, &block);
 
     // skip the rest if blocks is the only requested table

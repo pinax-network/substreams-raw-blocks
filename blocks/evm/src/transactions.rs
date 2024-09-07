@@ -1,5 +1,4 @@
 use common::blocks::insert_timestamp;
-use common::keys::transaction_keys;
 use common::utils::bytes_to_hex;
 use common::utils::optional_bigint_to_string;
 use substreams::pb::substreams::Clock;
@@ -8,6 +7,7 @@ use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_ethereum::pb::eth::v2::BlockHeader;
 use substreams_ethereum::pb::eth::v2::TransactionTrace;
 
+use crate::keys::transaction_keys;
 use crate::logs::insert_log;
 use crate::traces::insert_trace;
 
@@ -120,7 +120,7 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
         .change("receipts_root", ("", receipts_root.as_str()))
         ;
 
-    insert_timestamp(row, clock, false);
+    insert_timestamp(row, clock, false, true);
 
     // TABLE::traces
     for call in transaction.calls() {
