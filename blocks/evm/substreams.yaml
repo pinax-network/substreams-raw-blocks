@@ -1,9 +1,9 @@
 specVersion: v0.1.0
 package:
   name: raw_blocks_evm
-  version: v0.2.2
+  version: v0.2.3
   url: https://github.com/pinax-network/substreams-raw-blocks
-  image: ../../logo.png
+  image: ../../images/logo.png
   doc: EVM Raw Blockchain Data
 
 imports:
@@ -34,6 +34,3 @@ sink:
     engine: clickhouse
     postgraphile_frontend:
       enabled: false
-
-params:
-  ch_out: '*'
