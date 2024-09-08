@@ -1,0 +1,19 @@
+specVersion: 1.2.0
+description: WAX Transactions, Decoded Actions & Database Operations
+repository: https://github.com/pinax-network/antelope-transactions-subgraph
+schema:
+  file: ../../schema.graphql
+indexerHints:
+  prune: 2419200 # 14 days (2 blocks per second)
+dataSources:
+  - kind: substreams
+    name: wax_transactions
+    network: wax
+    source:
+      startBlock: 326292294
+      package:
+        moduleName: graph_out
+        file: wax-transactions-v0.3.8.spkg
+    mapping:
+      kind: substreams/graph-entities
+      apiVersion: 0.0.5

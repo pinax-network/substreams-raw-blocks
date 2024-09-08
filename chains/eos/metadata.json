@@ -1,0 +1,10 @@
+{
+    "name": "EOS Transactions",
+    "displayName": "EOS Transactions",
+    "description": "EOS Transactions, Decoded Actions & Database Operations",
+    "image": "ipfs://QmVj1qaLJKysWm2Yz9hh6Z2V1Pv9DuAoJ4rMhCWRtbMwD1",
+    "subgraphImage": "https://api.thegraph.com/ipfs/api/v0/cat?arg=QmVj1qaLJKysWm2Yz9hh6Z2V1Pv9DuAoJ4rMhCWRtbMwD1",
+    "codeRepository": "https://github.com/pinax-network/subgraph-antelope-transactions",
+    "website": "https://pinax.network",
+    "categories": null
+}

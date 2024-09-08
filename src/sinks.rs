@@ -3,7 +3,7 @@ use substreams::pb::substreams::Clock;
 use substreams_antelope::pb::Block;
 use substreams_entity_change::pb::entity::EntityChanges;
 
-use crate::subgraph::blocks::insert_blocks;
+use crate::blocks::insert_blocks;
 
 #[substreams::handlers::map]
 pub fn graph_out(params: String, clock: Clock, block: Block) -> Result<EntityChanges, Error> {

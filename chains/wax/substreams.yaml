@@ -1,9 +1,9 @@
 specVersion: v0.1.0
 package:
-  name: antelope_transactions
-  version: v0.3.7
+  name: wax_transactions
+  version: v0.3.8
   url: https://github.com/pinax-network/antelope-transactions-substreams
-  image: ./images/wax.jpg
+  image: ./logo.jpg
 
 imports:
   entity_change: https://github.com/streamingfast/substreams-sink-entity-changes/releases/download/v1.3.2/substreams-sink-entity-changes-v1.3.2.spkg
@@ -12,7 +12,7 @@ imports:
 binaries:
   default:
     type: wasm/rust-v1
-    file: ./target/wasm32-unknown-unknown/release/antelope_transactions.wasm
+    file: ../../target/wasm32-unknown-unknown/release/antelope_transactions.wasm
 
 modules:
   - name: index_blocks
@@ -36,6 +36,11 @@ modules:
       type: proto:sf.substreams.sink.entity.v1.EntityChanges
 
 network: wax
+
+networks:
+  wax:
+    initialBlock:
+      graph_out: 326292294
 
 params:
   graph_out: "*"
