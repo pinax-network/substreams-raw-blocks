@@ -127,6 +127,7 @@ pub fn collect_db_op_keys(db_op: &DbOp) -> Vec<String> {
 
     // db.table:accounts/swap.defi account:eosio.token
     keys.extend(vec![
+        format!("code:{}", db_op.code),
         format!("db.table:{}", db_op.table_name),
         format!("db.table:{}/{}", db_op.table_name, db_op.scope),
     ]);
