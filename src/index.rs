@@ -104,11 +104,15 @@ pub fn collect_action_keys(trace: &ActionTrace) -> Vec<String> {
     // input:true will match only the top-level actions (those present in the original transactions, and not as a side effect of contract execution).
     if trace.creator_action_ordinal == 0 {
         keys.push("input:true".to_string());
+    } else {
+        keys.push("input:false".to_string());
     }
 
     // notif:true will match only notifications, excluding input action or other inline actions.
     if action.account.ne(&trace.receiver) {
         keys.push("notif:true".to_string());
+    } else {
+        keys.push("notif:false".to_string());
     }
 
     keys
