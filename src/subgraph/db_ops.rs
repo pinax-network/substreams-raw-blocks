@@ -4,7 +4,7 @@ use substreams::Hex;
 use substreams_antelope::pb::{DbOp, TransactionTrace};
 use substreams_entity_change::tables::Tables;
 
-use crate::{index::collect_db_op_keys, keys::{action_key, db_ops_key}, utils::is_match};
+use crate::{index::{collect_db_op_keys, is_match}, keys::{action_key, db_ops_key}};
 
 pub fn operation_to_string(operation: i32) -> String {
     match operation {

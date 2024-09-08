@@ -2,7 +2,7 @@ use substreams::{pb::substreams::Clock, Hex};
 use substreams_antelope::pb::{ActionTrace, TransactionTrace};
 use substreams_entity_change::tables::Tables;
 
-use crate::{index::collect_action_keys, keys::action_key, utils::is_match};
+use crate::{index::{collect_action_keys, is_match}, keys::action_key};
 
 use super::authorizations::insert_authorization;
 

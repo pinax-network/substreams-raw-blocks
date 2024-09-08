@@ -27,7 +27,7 @@ run:
 
 .PHONY: gui
 gui:
-	substreams gui -e eos.substreams.pinax.network:443 graph_out -s 392479516
+	substreams gui -e eos.substreams.pinax.network:443 graph_out -s 392479516 --production-mode
 
 .PHONY: sql-setup
 sql-setup:

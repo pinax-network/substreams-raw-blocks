@@ -1,7 +1,7 @@
 specVersion: v0.1.0
 package:
   name: antelope_transactions
-  version: v0.3.6
+  version: v0.3.7
   url: https://github.com/pinax-network/antelope-transactions-substreams
   image: ./images/wax.jpg
 
@@ -15,24 +15,27 @@ binaries:
     file: ./target/wasm32-unknown-unknown/release/antelope_transactions.wasm
 
 modules:
+  - name: index_blocks
+    kind: blockIndex
+    inputs:
+      - source: sf.antelope.type.v1.Block
+    output:
+      type: proto:sf.substreams.index.v1.Keys
+
   - name: graph_out
     kind: map
     inputs:
       - params: string
       - source: sf.substreams.v1.Clock
       - source: sf.antelope.type.v1.Block
+    blockFilter:
+      module: index_blocks
+      query:
+        params: true
     output:
       type: proto:sf.substreams.sink.entity.v1.EntityChanges
 
 network: wax
 
-# networks:
-#   wax:
-#     initialBlock:
-#       graph_out: 328220834
-#   eos:
-#     initialBlock:
-#       graph_out: 392723005
-
-# params:
-#   graph_out: "code:eosio.token"
+params:
+  graph_out: "*"
