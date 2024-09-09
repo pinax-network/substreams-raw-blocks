@@ -1,8 +1,9 @@
-mod blocks;
-mod sinks;
-mod transactions;
 mod actions;
-mod db_ops;
-mod size;
+mod auth_sequences;
 mod authorizations;
+mod blocks;
+mod db_ops;
 mod keys;
+mod sinks;
+mod size;
+mod transactions;

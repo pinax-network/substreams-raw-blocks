@@ -10,7 +10,7 @@ pub fn blocks_keys(clock: &Clock) -> HashMap<String, String> {
     keys
 }
 
-pub fn clock_keys(clock: &Clock ) -> HashMap<String, String> {
+pub fn clock_keys(clock: &Clock) -> HashMap<String, String> {
     let mut keys = HashMap::new();
     let timestamp = clock.clone().timestamp.unwrap();
     let block_date = block_time_to_date(&timestamp.to_string()).to_string();
@@ -46,5 +46,14 @@ pub fn authorizations_keys(clock: &Clock, tx_hash: &String, action_index: &u32, 
     keys.insert("action_index".to_string(), action_index.to_string());
     keys.insert("actor".to_string(), actor.to_string());
     keys.insert("permission".to_string(), permission.to_string());
+    keys
+}
+
+pub fn auth_sequence_keys(clock: &Clock, tx_hash: &String, action_index: &u32, account_name: &String, sequence: &u64) -> HashMap<String, String> {
+    let mut keys = clock_keys(clock);
+    keys.insert("tx_hash".to_string(), tx_hash.to_string());
+    keys.insert("action_index".to_string(), action_index.to_string());
+    keys.insert("account_name".to_string(), account_name.to_string());
+    keys.insert("sequence".to_string(), sequence.to_string());
     keys
 }
