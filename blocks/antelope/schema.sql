@@ -188,3 +188,26 @@ CREATE TABLE IF NOT EXISTS authorizations
         PRIMARY KEY (block_date, block_number)
         ORDER BY (block_date, block_number, tx_hash, action_index, actor, permission)
         COMMENT 'Antelope action authorizations';
+
+CREATE TABLE IF NOT EXISTS auth_sequences
+(
+    -- clock --
+    block_time                  DateTime64(3, 'UTC'),
+    block_number                UInt64,
+    block_hash                  String,
+    block_date                  Date,
+
+    -- transaction --
+    tx_hash                     String,
+
+    -- action --
+    action_index                UInt32,
+
+    -- auth_sequence --
+    account_name                String,
+    sequence                    UInt64
+)
+    ENGINE = ReplacingMergeTree()
+        PRIMARY KEY (block_date, block_number)
+        ORDER BY (block_date, block_number, tx_hash, action_index, account_name, sequence)
+        COMMENT 'Antelope action authorization sequences';
