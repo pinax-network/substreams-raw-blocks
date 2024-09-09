@@ -13,7 +13,7 @@ dataSources:
       startBlock: 326292294
       package:
         moduleName: graph_out
-        file: ../../antelope-transactions-v0.3.9.spkg
+        file: ./wax-transactions-v0.3.9.spkg
     mapping:
       kind: substreams/graph-entities
       apiVersion: 0.0.5

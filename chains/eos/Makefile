@@ -1,11 +1,13 @@
 .PHONY: all
 all:
 	make build
-	make deploy
 
 .PHONY: build
 build:
+	cargo build --target wasm32-unknown-unknown --release
+	substreams pack
 	graph build
+	substreams info
 
 .PHONY: deploy
 deploy:
