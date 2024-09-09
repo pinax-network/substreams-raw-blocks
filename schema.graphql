@@ -1,44 +1,53 @@
-type Transaction @entity {
-  id:                     ID!
-  block:                  Block!
-  index:                  BigInt!
-  elapsed:                BigInt!
-  netUsage:               BigInt!
-  actions:                [Action!]! @derivedFrom(field: "transaction")
-  dbOps:                  [DbOp!]! @derivedFrom(field: "transaction")
-}
-
 type Action @entity {
   id:                       ID!
-  index:                    BigInt!
-  receiver:                 String!
   account:                  String!
   name:                     String!
   jsonData:                 String!
   rawData:                  String!
+  receiver:                 String!
+  index:                    BigInt!
   isNotify:                 Boolean!
   isInput:                  Boolean!
-  transaction:              Transaction!
+
+  # derived fields
   block:                    Block!
+  transaction:              Transaction!
   dbOps:                    [DbOp!]! @derivedFrom(field: "action")
   authorizations:           [Authorization!]! @derivedFrom(field: "action")
 }
 
 type DbOp @entity {
   id:                       ID!
+  code:                     String!
+  tableName:                String!
+  scope:                    String!
+  primaryKey:               String!
   index:                    BigInt!
   operation:                String!
   actionIndex:              BigInt!
-  code:                     String!
-  scope:                    String!
-  tableName:                String!
-  primaryKey:               String!
-  oldData:                  String!
+
+  # data
+  newDataJson:              String!
   newData:                  String!
   oldDataJson:              String!
-  newDataJson:              String!
+  oldData:                  String!
+
+  # derived fields
+  block:                    Block!
   transaction:              Transaction!
   action:                   Action!
+}
+
+type Transaction @entity {
+  id:                     ID!
+  index:                  BigInt!
+  elapsed:                BigInt!
+  netUsage:               BigInt!
+
+  # derived fields
+  block:                  Block!
+  actions:                [Action!]! @derivedFrom(field: "transaction")
+  dbOps:                  [DbOp!]! @derivedFrom(field: "transaction")
 }
 
 type Authorization @entity {
@@ -52,6 +61,8 @@ type Authorization @entity {
 type Block @entity {
   id:                 ID!
   date:               String!
+  month:              String!
+  year:               String!
   time:               BigInt! #Convert as Timestamp: https://github.com/pinax-network/antelope-transactions-subgraph/issues/2
   number:             BigInt!
   previous:           String!

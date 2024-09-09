@@ -2,7 +2,7 @@ use substreams::pb::substreams::Clock;
 use substreams_antelope::pb::Block;
 use substreams_entity_change::tables::Tables;
 
-use crate::utils::block_time_to_date;
+use crate::utils::{block_date_to_month, block_date_to_year, block_time_to_date};
 
 use super::transactions::insert_transaction;
 
@@ -19,7 +19,9 @@ pub fn insert_blocks(params: &String, tables: &mut Tables, clock: &Clock, block:
     // https://github.com/pinax-network/antelope-transactions-subgraph/issues/2
     // let nanos = timestamp.nanos;
     // let microseconds = seconds * 1_000_000 + i64::from(nanos) / 1_000;
-    let block_date = block_time_to_date(timestamp.to_string().as_str());
+    let date = block_time_to_date(timestamp.to_string().as_str());
+    let month = block_date_to_month(&date);
+    let year = block_date_to_year(&date);
     let seconds = timestamp.seconds;
     let block_time = seconds;
     let block_number = clock.number.to_string();
@@ -36,7 +38,9 @@ pub fn insert_blocks(params: &String, tables: &mut Tables, clock: &Clock, block:
         tables.create_row("Block", &block_hash)
             .set("previous", previous)
             .set("producer", producer)
-            .set("date", block_date)
+            .set("date", date)
+            .set("month", month)
+            .set("year", year)
             .set_bigint("time", &block_time.to_string())
             .set_bigint("number", &block_number.to_string())
         ;
