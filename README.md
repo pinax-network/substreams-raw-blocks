@@ -59,3 +59,18 @@ graph TD;
   graph_out[map: graph_out];
   sf.antelope.type.v1.Block[source: sf.antelope.type.v1.Block] --> graph_out;
 ```
+
+## Operator Instructions
+
+To improve Graph Node syncing performance, operators can drop the following Postgres indexes which reference `*_data` fields:
+
+```sql
+DROP INDEX IF EXISTS sgd1.attr_0_3_action_json_data;
+DROP INDEX IF EXISTS sgd1.attr_0_4_action_raw_data;
+DROP INDEX IF EXISTS sgd1.attr_1_8_db_op_new_data_json;
+DROP INDEX IF EXISTS sgd1.attr_1_9_db_op_new_data;
+DROP INDEX IF EXISTS sgd1.attr_1_10_db_op_old_data_json;
+DROP INDEX IF EXISTS sgd1.attr_1_11_db_op_old_data;
+```
+
+> Note: For multiple Subgraphs, replace `sgd1` with the appropriate Subgraph table name.
