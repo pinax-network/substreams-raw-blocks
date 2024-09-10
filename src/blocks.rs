@@ -15,15 +15,10 @@ pub fn insert_blocks(params: &str, tables: &mut Tables, clock: &Clock, block: &B
 
     // timestamp
     let timestamp = clock.timestamp.as_ref().expect("missing timestamp");
-    // TO-DO: Convert as Subgraph Timestamp type
-    // https://github.com/pinax-network/antelope-transactions-subgraph/issues/2
-    // let nanos = timestamp.nanos;
-    // let microseconds = seconds * 1_000_000 + i64::from(nanos) / 1_000;
+
     let date = block_time_to_date(timestamp.to_string().as_str());
     let month = block_date_to_month(date.as_str());
     let year = block_date_to_year(date.as_str());
-    let seconds = timestamp.seconds;
-    let block_time = seconds;
     let block_number = clock.number.to_string();
     let block_hash = clock.id.as_str();
 
@@ -44,7 +39,7 @@ pub fn insert_blocks(params: &str, tables: &mut Tables, clock: &Clock, block: &B
             .set("date", date)
             .set("month", month)
             .set("year", year)
-            .set_bigint("time", &block_time.to_string())
+            .set("timestamp", timestamp)
             .set_bigint("number", &block_number.to_string());
     }
 }

@@ -63,7 +63,7 @@ type Block @entity {
   date:               String!
   month:              String!
   year:               String!
-  time:               BigInt! #Convert as Timestamp: https://github.com/pinax-network/antelope-transactions-subgraph/issues/2
+  timestamp:          Timestamp!
   number:             BigInt!
   previous:           String!
   producer:           String!

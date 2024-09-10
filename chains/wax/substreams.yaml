@@ -1,12 +1,12 @@
 specVersion: v0.1.0
 package:
   name: wax_transactions
-  version: v0.3.9
+  version: v0.4.0
   url: https://github.com/pinax-network/subgraph-antelope-transactions
   image: ./logo.jpg
 
 imports:
-  entity_change: https://github.com/streamingfast/substreams-sink-entity-changes/releases/download/v1.3.2/substreams-sink-entity-changes-v1.3.2.spkg
+  entity_change: ../../substreams-sink-entity-changes-v1.3.3.spkg
 
 binaries:
   default:
