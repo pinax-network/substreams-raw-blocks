@@ -4,7 +4,10 @@ use std::collections::HashSet;
 
 use serde_json::Value;
 use substreams::{matches_keys_in_parsed_expr, pb::sf::substreams::index::v1::Keys};
-use substreams_antelope::{pb::{ActionTrace, DbOp, PermissionLevel}, Block};
+use substreams_antelope::{
+    pb::{ActionTrace, DbOp, PermissionLevel},
+    Block,
+};
 
 // filter blocks that DO NOT match any filtering patterns
 // https://substreams.streamingfast.io/documentation/develop/indexes
@@ -20,10 +23,10 @@ fn index_blocks(block: Block) -> Result<Keys, substreams::errors::Error> {
             keys.extend(collect_db_op_keys(db_op));
         }
     }
-    Ok(Keys{keys: keys.into_iter().collect()})
+    Ok(Keys { keys: keys.into_iter().collect() })
 }
 
-pub fn is_match(query: Vec<String>, params: &String) -> bool {
+pub fn is_match(query: Vec<String>, params: &str) -> bool {
     // match all if wildcard is used
     // `eosio:onblock` actions are excluded from wildcard
     if query.len() > 0 && params == "*" {
@@ -72,18 +75,12 @@ pub fn collect_action_keys(trace: &ActionTrace) -> Vec<String> {
     // Ex: data.from and data.to (present in transfer operations).
     // lists are flattened, and terms matched when the query is present in the list.
     // nested documents fields are separated by ., so data.user.id:hello will match the action data: {"data": {"user": {"id": "hello"}}}
-    keys.extend(
-        json_data
-            .as_object()
-            .expect("json_data must be an object")
-            .iter()
-            .filter_map(|(key, value)| match value {
-                Value::String(value) => Some(format!("data.{}:{}", key, value)),
-                Value::Number(value) => Some(format!("data.{}:{}", key, value)),
-                Value::Bool(value) => Some(format!("data.{}:{}", key, value)),
-                _ => None,
-            }),
-    );
+    keys.extend(json_data.as_object().expect("json_data must be an object").iter().filter_map(|(key, value)| match value {
+        Value::String(value) => Some(format!("data.{}:{}", key, value)),
+        Value::Number(value) => Some(format!("data.{}:{}", key, value)),
+        Value::Bool(value) => Some(format!("data.{}:{}", key, value)),
+        _ => None,
+    }));
 
     // auth: means the action was signed with the authority of a given account.
     // The field has two formats:
@@ -93,12 +90,7 @@ pub fn collect_action_keys(trace: &ActionTrace) -> Vec<String> {
         action
             .authorization
             .iter()
-            .flat_map(|PermissionLevel { actor, permission }| {
-                vec![
-                    format!("auth:{actor}@{permission}"),
-                    format!("auth:{actor}"),
-                ]
-            }),
+            .flat_map(|PermissionLevel { actor, permission }| vec![format!("auth:{actor}@{permission}"), format!("auth:{actor}")]),
     );
 
     // input:true will match only the top-level actions (those present in the original transactions, and not as a side effect of contract execution).

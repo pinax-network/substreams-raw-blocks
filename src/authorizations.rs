@@ -6,14 +6,14 @@ use crate::keys::{action_key, authorization_key};
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L616
 pub fn insert_authorization(tables: &mut Tables, action: &ActionTrace, transaction: &TransactionTrace, authorization: &PermissionLevel) {
     // transaction
-    let tx_hash = &transaction.id;
+    let tx_hash = transaction.id.as_str();
 
     // action
-    let action_index = &action.execution_index;
+    let action_index = action.execution_index;
 
     // authorization
-    let actor = &authorization.actor;
-    let permission = &authorization.permission;
+    let actor = authorization.actor.as_str();
+    let permission = authorization.permission.as_str();
 
     // TABLE::PermissionLevel
     let action_key = action_key(tx_hash, action_index);
@@ -23,9 +23,7 @@ pub fn insert_authorization(tables: &mut Tables, action: &ActionTrace, transacti
         // pointers
         .set("transaction", tx_hash)
         .set("action", action_key)
-
         // authorization
-        .set("actor", actor.to_string())
-        .set("permission", permission.to_string())
-    ;
+        .set("actor", actor)
+        .set("permission", permission);
 }
