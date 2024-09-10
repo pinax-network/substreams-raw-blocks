@@ -16,6 +16,12 @@
 
 - **API Key**: https://thegraph.com/studio/apikeys/
 - **Base URL**: https://gateway.thegraph.com/api
+- **Subgraph ID**:
+  - `4bAe7NA8b6J14ZfZr3TXfzzjjSoGECTFuqv7CwnK1zzg`
+  - `2RNdhL5p62dGN5UqKtsSEhYZiTJbFcuuhzk9qRJj8QeU`
+- **Subgraph NFT**:
+  - `24120480333211569189943591992759279596987552413186298385524741791011616341845`
+  - `9544660660697512970420034067948120535763746642726326018982449681191462590993`
 - **Query URL format**: `{base_url}`/api/`{api-key}`/subgraphs/id/`{subgraph_id}`
 
 | Chain | Subgraph ID |
