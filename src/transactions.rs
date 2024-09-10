@@ -33,7 +33,7 @@ pub fn insert_transaction(params: &String, tables: &mut Tables, clock: &Clock, t
     // TABLE::DbOps
     let mut db_op_index = 0;
     for db_op in transaction.db_ops.iter() {
-        if insert_db_op(params, tables, db_op, transaction, db_op_index, &action_keys) { is_match = true;}
+        if insert_db_op(params, tables, clock, db_op, transaction, db_op_index, &action_keys) { is_match = true;}
         db_op_index += 1;
     }
 
@@ -41,7 +41,10 @@ pub fn insert_transaction(params: &String, tables: &mut Tables, clock: &Clock, t
     if is_match {
         tables
             .create_row("Transaction", hash)
-            .set("block", &clock.id) // pointer to Block
+            // pointers
+            .set("block", &clock.id)
+
+            // block
             .set_bigint("index", &index.to_string())
             .set_bigint("elapsed", &elapsed.to_string())
             .set_bigint("netUsage", &net_usage.to_string())

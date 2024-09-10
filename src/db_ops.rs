@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use substreams::Hex;
+use substreams::{pb::substreams::Clock, Hex};
 use substreams_antelope::pb::{DbOp, TransactionTrace};
 use substreams_entity_change::tables::Tables;
 
@@ -17,7 +17,7 @@ pub fn operation_to_string(operation: i32) -> String {
 }
 
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L647
-pub fn insert_db_op(params: &String, tables: &mut Tables, db_op: &DbOp, transaction: &TransactionTrace, index: u32, action_keys: &HashSet<String>) -> bool {
+pub fn insert_db_op(params: &String, tables: &mut Tables, clock: &Clock, db_op: &DbOp, transaction: &TransactionTrace, index: u32, action_keys: &HashSet<String>) -> bool {
 	let operation = operation_to_string(db_op.operation);
 	let action_index = db_op.action_index;
 	let code = &db_op.code;
@@ -41,8 +41,9 @@ pub fn insert_db_op(params: &String, tables: &mut Tables, db_op: &DbOp, transact
             // pointers
             .set("transaction", tx_hash)
             .set("action", action_key)
+            .set("block", &clock.id)
 
-            // dbOp
+            // DbOp
             .set_bigint("index", &index.to_string())
             .set("operation", operation.to_string())
             .set_bigint("actionIndex", &action_index.to_string())
