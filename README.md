@@ -76,8 +76,8 @@ graph TD;
   - [ ] ~~**Deferred Transactions**~~
 - [x] **Actions**
   - [x] **Authorization**
-  - [ ] **Auth Sequence**
-  - [ ] **Account RAM Deltas**
+  - [x] **Auth Sequence**
+  - [x] **Account RAM Deltas**
 - [x] **Database Operations**
 
 ## Substreams Graph

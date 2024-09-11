@@ -57,3 +57,12 @@ pub fn auth_sequence_keys(clock: &Clock, tx_hash: &String, action_index: &u32, a
     keys.insert("sequence".to_string(), sequence.to_string());
     keys
 }
+
+pub fn account_ram_delta_keys(clock: &Clock, tx_hash: &String, action_index: &u32, account: &String, delta: &i64) -> HashMap<String, String> {
+    let mut keys = clock_keys(clock);
+    keys.insert("tx_hash".to_string(), tx_hash.to_string());
+    keys.insert("action_index".to_string(), action_index.to_string());
+    keys.insert("account".to_string(), account.to_string());
+    keys.insert("delta".to_string(), delta.to_string());
+    keys
+}
