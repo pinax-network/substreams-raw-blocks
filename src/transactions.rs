@@ -40,7 +40,7 @@ pub fn insert_transaction(params: &str, tables: &mut Tables, clock: &Clock, tran
 
     // TABLE::DbOps
     let mut db_op_index = 0;
-    for db_op in collapsed_db_ops.values() {
+    for db_op in collapsed_db_ops.iter() {
         if insert_db_op(params, tables, clock, db_op, transaction, db_op_index, &action_keys) {
             is_matched = true;
         }
