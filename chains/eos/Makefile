@@ -17,3 +17,7 @@ deploy:
 .PHONY: publish
 publish:
 	graph publish --subgraph-id 2RNdhL5p62dGN5UqKtsSEhYZiTJbFcuuhzk9qRJj8QeU
+
+.PHONY: gui
+gui:
+	substreams gui -e eos.substreams.pinax.network:443 graph_out -s -1

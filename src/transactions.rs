@@ -32,13 +32,16 @@ pub fn insert_transaction(params: &str, tables: &mut Tables, clock: &Clock, tran
         }
     }
 
-    // TABLE::DbOps
-    let mut db_op_index = 0;
-    for db_op in transaction.db_ops.iter() {
-        if insert_db_op(params, tables, clock, db_op, transaction, db_op_index, &action_keys) {
-            is_match = true;
+    // ignore large db_ops per transactions (usually spam related contracts)
+    if transaction.db_ops.len() <= 500 {
+        // TABLE::DbOps
+        let mut db_op_index = 0;
+        for db_op in transaction.db_ops.iter() {
+            if insert_db_op(params, tables, clock, db_op, transaction, db_op_index, &action_keys) {
+                is_match = true;
+            }
+            db_op_index += 1;
         }
-        db_op_index += 1;
     }
 
     // TABLE::Transaction
