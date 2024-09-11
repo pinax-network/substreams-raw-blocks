@@ -211,3 +211,26 @@ CREATE TABLE IF NOT EXISTS auth_sequences
         PRIMARY KEY (block_date, block_number)
         ORDER BY (block_date, block_number, tx_hash, action_index, account_name, sequence)
         COMMENT 'Antelope action authorization sequences';
+
+CREATE TABLE IF NOT EXISTS account_ram_deltas
+(
+    -- clock --
+    block_time                  DateTime64(3, 'UTC'),
+    block_number                UInt64,
+    block_hash                  String,
+    block_date                  Date,
+
+    -- transaction --
+    tx_hash                     String,
+
+    -- action --
+    action_index                UInt32,
+
+    -- account_ram_delta --
+    account                     String,
+    delta                       Int64
+)
+    ENGINE = ReplacingMergeTree()
+        PRIMARY KEY (block_date, block_number)
+        ORDER BY (block_date, block_number, tx_hash, action_index, account)
+        COMMENT 'Antelope account RAM deltas';

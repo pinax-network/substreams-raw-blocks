@@ -4,6 +4,7 @@ use substreams::Hex;
 use substreams_antelope::pb::{ActionTrace, BlockHeader, TransactionTrace};
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 
+use crate::account_ram_deltas::insert_account_ram_delta;
 use crate::auth_sequences::insert_auth_sequence;
 use crate::authorizations::insert_authorization;
 use crate::keys::actions_keys;
@@ -86,6 +87,10 @@ pub fn insert_action(tables: &mut DatabaseChanges, clock: &Clock, trace: &Action
         insert_auth_sequence(tables, clock, trace, transaction, auth_sequence);
     }
 
+    // TABLE::account_ram_deltas
+    for account_ram_delta in trace.account_ram_deltas.iter() {
+        insert_account_ram_delta(tables, clock, trace, transaction, account_ram_delta);
+    }
     // TO-DO
     // Need Array(String) support
     // https://github.com/pinax-network/substreams-sink-sql/issues/18
