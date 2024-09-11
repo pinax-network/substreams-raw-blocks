@@ -1,8 +1,10 @@
 use std::collections::HashSet;
 
-use substreams::pb::substreams::Clock;
+use substreams::{log, pb::substreams::Clock};
 use substreams_antelope::pb::TransactionTrace;
 use substreams_entity_change::tables::Tables;
+
+use crate::db_ops::collapse_db_ops;
 
 use super::{actions::insert_action, db_ops::insert_db_op};
 
@@ -12,6 +14,7 @@ pub fn insert_transaction(params: &str, tables: &mut Tables, clock: &Clock, tran
     let index = transaction.index;
     let elapsed = transaction.elapsed;
     let net_usage = transaction.net_usage;
+    let scheduled = transaction.scheduled;
 
     // only include successful transactions
     let header = transaction.receipt.as_ref().expect("receipt missing");
@@ -20,32 +23,32 @@ pub fn insert_transaction(params: &str, tables: &mut Tables, clock: &Clock, tran
     }
 
     // TABLE::Action
-    let mut is_match = false;
+    let mut is_matched = false;
     let mut action_keys = HashSet::new();
     for trace in transaction.action_traces.iter() {
         match insert_action(params, tables, clock, trace, transaction) {
             Some(action_key) => {
                 action_keys.insert(action_key);
-                is_match = true;
+                is_matched = true;
             }
             None => {}
         }
     }
 
-    // ignore large db_ops per transactions (usually spam related contracts)
-    if transaction.db_ops.len() <= 500 {
-        // TABLE::DbOps
-        let mut db_op_index = 0;
-        for db_op in transaction.db_ops.iter() {
-            if insert_db_op(params, tables, clock, db_op, transaction, db_op_index, &action_keys) {
-                is_match = true;
-            }
-            db_op_index += 1;
+    // collapse overlapping db_ops per transactions (usually spam related contracts)
+    let collapsed_db_ops = collapse_db_ops(transaction);
+
+    // TABLE::DbOps
+    let mut db_op_index = 0;
+    for db_op in collapsed_db_ops.values() {
+        if insert_db_op(params, tables, clock, db_op, transaction, db_op_index, &action_keys) {
+            is_matched = true;
         }
+        db_op_index += 1;
     }
 
     // TABLE::Transaction
-    if is_match {
+    if is_matched {
         tables
             .create_row("Transaction", hash)
             // pointers
@@ -53,7 +56,9 @@ pub fn insert_transaction(params: &str, tables: &mut Tables, clock: &Clock, tran
             // block
             .set_bigint("index", &index.to_string())
             .set_bigint("elapsed", &elapsed.to_string())
-            .set_bigint("netUsage", &net_usage.to_string());
+            .set_bigint("netUsage", &net_usage.to_string())
+            .set("scheduled", scheduled);
+
         return true;
     }
     return false;

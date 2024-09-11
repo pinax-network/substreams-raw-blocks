@@ -43,6 +43,7 @@ type Transaction @entity {
   index:                  BigInt!
   elapsed:                BigInt!
   netUsage:               BigInt!
+  scheduled:              Boolean!
 
   # derived fields
   block:                  Block!
