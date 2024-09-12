@@ -4,6 +4,7 @@ mod auth_sequences;
 mod authorizations;
 mod blocks;
 mod db_ops;
+mod feature_ops;
 mod keys;
 mod sinks;
 mod size;

@@ -66,3 +66,11 @@ pub fn account_ram_delta_keys(clock: &Clock, tx_hash: &String, action_index: &u3
     keys.insert("delta".to_string(), delta.to_string());
     keys
 }
+
+pub fn feature_ops_keys(clock: &Clock, tx_hash: &String, kind: &String, feature_digest: &String) -> HashMap<String, String> {
+    let mut keys = clock_keys(clock);
+    keys.insert("tx_hash".to_string(), tx_hash.to_string());
+    keys.insert("kind".to_string(), kind.to_string());
+    keys.insert("feature_digest".to_string(), feature_digest.to_string());
+    keys
+}

@@ -1,10 +1,11 @@
 use common::blocks::insert_timestamp;
 use substreams::pb::substreams::Clock;
 use substreams::Hex;
+use substreams_antelope::pb::{BlockHeader, TransactionTrace};
 use substreams_database_change::pb::database::TableChange;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
-use substreams_antelope::pb::{BlockHeader, TransactionTrace};
 
+use crate::feature_ops::insert_feature_op;
 use crate::keys::transactions_keys;
 
 use super::actions::insert_action;
@@ -56,17 +57,14 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
         .change("elapsed", ("", elapsed.to_string().as_str()))
         .change("net_usage", ("", net_usage.to_string().as_str()))
         .change("scheduled", ("", scheduled.to_string().as_str()))
-
         // header
         .change("cpu_usage_micro_seconds", ("", cpu_usage_micro_seconds.to_string().as_str()))
         .change("net_usage_words", ("", net_usage_words.to_string().as_str()))
         .change("status", ("", status.as_str()))
         .change("status_code", ("", status_code.to_string().as_str()))
         .change("success", ("", success.to_string().as_str()))
-
         // block roots
-        .change("transaction_mroot", ("", transaction_mroot.as_str()))
-        ;
+        .change("transaction_mroot", ("", transaction_mroot.as_str()));
     insert_timestamp(row, clock, false, false);
 
     // TABLE::actions
@@ -98,9 +96,9 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
 
     // TO-DO
     // List of feature switching operations (changes to feature switches in nodeos) this transaction entailed
-    // for feature_op in transaction.feature_ops.iter() {
-    //     insert_feature_op(tables, clock, feature_op, &block);
-    // }
+    for feature_op in transaction.feature_ops.iter() {
+        insert_feature_op(tables, clock, feature_op, transaction);
+    }
 
     // TO-DO
     // List of permission changes operations
