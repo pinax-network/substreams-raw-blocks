@@ -68,7 +68,7 @@ graph TD;
 - [x] **Blocks**
   - [ ] **Savanna Merkle Roots**
 - [x] **Transactions**
-  - [ ] **Feature Operations**
+  - [x] **Feature Operations**
   - [ ] **Permission Operations**
   - [ ] **RAM Operations**
   - [ ] **Table Operations**
