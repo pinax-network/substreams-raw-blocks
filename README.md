@@ -69,7 +69,7 @@ graph TD;
   - [ ] **Savanna Merkle Roots**
 - [x] **Transactions**
   - [ ] **Feature Operations**
-  - [ ] **Permission Operations**
+  - [x] **Permission Operations**
   - [ ] **RAM Operations**
   - [ ] **Table Operations**
   - [ ] **Creation Tree**
