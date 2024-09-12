@@ -5,6 +5,7 @@ mod authorizations;
 mod blocks;
 mod db_ops;
 mod keys;
+mod perm_ops;
 mod sinks;
 mod size;
 mod transactions;

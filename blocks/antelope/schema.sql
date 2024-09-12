@@ -81,6 +81,42 @@ CREATE TABLE IF NOT EXISTS transactions
         ORDER BY (block_date, block_number, hash)
         COMMENT 'Antelope transactions';
 
+CREATE TABLE IF NOT EXISTS perm_ops
+(
+    -- clock --
+    block_time                  DateTime64(3, 'UTC'),
+    block_number                UInt64,
+    block_hash                  String COMMENT 'Hash',
+    block_date                  Date,
+
+    -- transaction --
+    tx_hash                     String COMMENT 'Hash',
+    tx_index                    UInt64,
+    tx_status                   LowCardinality(String),
+    tx_status_code              UInt8,
+    tx_success                  Bool,
+    
+    -- perm_op --
+    operation                   LowCardinality(String),
+    action_index                UInt32,
+    old_perm_id           UInt64,
+    old_perm_parent_id    UInt64,
+    old_perm_owner        String,
+    old_perm_name         String,
+    -- old_perm_last_updated    DateTime64(3, 'UTC'),
+    new_perm_id           UInt64,
+    new_perm_parent_id    UInt64,
+    new_perm_owner        String,
+    new_perm_name         String,
+    -- new_perm_last_updated    DateTime64(3, 'UTC'),
+    -- PermissionObject 'authority' missing
+)
+    ENGINE = ReplacingMergeTree()
+        PRIMARY KEY (block_date, block_number)
+        ORDER BY (block_date, block_number, tx_hash, action_index)
+        COMMENT 'Antelope permission operations';
+
+
 CREATE TABLE IF NOT EXISTS actions
 (
     -- clock --

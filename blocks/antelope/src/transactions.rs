@@ -1,11 +1,12 @@
 use common::blocks::insert_timestamp;
 use substreams::pb::substreams::Clock;
 use substreams::Hex;
+use substreams_antelope::pb::{BlockHeader, TransactionTrace};
 use substreams_database_change::pb::database::TableChange;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
-use substreams_antelope::pb::{BlockHeader, TransactionTrace};
 
 use crate::keys::transactions_keys;
+use crate::perm_ops::insert_perm_op;
 
 use super::actions::insert_action;
 use super::db_ops::insert_db_op;
@@ -56,17 +57,14 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
         .change("elapsed", ("", elapsed.to_string().as_str()))
         .change("net_usage", ("", net_usage.to_string().as_str()))
         .change("scheduled", ("", scheduled.to_string().as_str()))
-
         // header
         .change("cpu_usage_micro_seconds", ("", cpu_usage_micro_seconds.to_string().as_str()))
         .change("net_usage_words", ("", net_usage_words.to_string().as_str()))
         .change("status", ("", status.as_str()))
         .change("status_code", ("", status_code.to_string().as_str()))
         .change("success", ("", success.to_string().as_str()))
-
         // block roots
-        .change("transaction_mroot", ("", transaction_mroot.as_str()))
-        ;
+        .change("transaction_mroot", ("", transaction_mroot.as_str()));
     insert_timestamp(row, clock, false, false);
 
     // TABLE::actions
@@ -104,9 +102,9 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
 
     // TO-DO
     // List of permission changes operations
-    // for perm_op in transaction.perm_ops.iter() {
-    //     insert_perm_op(tables, clock, perm_op, &block);
-    // }
+    for perm_op in transaction.perm_ops.iter() {
+        insert_perm_op(tables, clock, transaction, perm_op);
+    }
 
     // TO-DO
     // List of RAM consumption/redemption
