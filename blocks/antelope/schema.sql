@@ -81,6 +81,35 @@ CREATE TABLE IF NOT EXISTS transactions
         ORDER BY (block_date, block_number, hash)
         COMMENT 'Antelope transactions';
 
+CREATE TABLE IF NOT EXISTS feature_ops
+(
+    -- block --
+    block_time                  DateTime64(3, 'UTC'),
+    block_number                UInt64,
+    block_hash                  String COMMENT 'Hash',
+    block_date                  Date,
+
+    -- transaction --
+    tx_hash                     String COMMENT 'Hash',
+    tx_index                    UInt64,
+    tx_status                   LowCardinality(String),
+    tx_status_code              UInt8,
+    tx_success                  Bool,
+
+    -- feature op --
+    kind                        LowCardinality(String),
+    action_index                UInt32,
+    feature_digest              String,
+    -- feature --    
+    description_digest          String,
+    --dependencies              Array(String),
+    protocol_feature_type       LowCardinality(String),
+)
+    ENGINE = ReplacingMergeTree()
+        PRIMARY KEY (block_date, block_number)
+        ORDER BY (block_date, block_number, tx_hash, action_index)
+        COMMENT 'Antelope feature operations';
+
 CREATE TABLE IF NOT EXISTS perm_ops
 (
     -- clock --
@@ -95,7 +124,7 @@ CREATE TABLE IF NOT EXISTS perm_ops
     tx_status                   LowCardinality(String),
     tx_status_code              UInt8,
     tx_success                  Bool,
-    
+
     -- perm_op --
     operation                   LowCardinality(String),
     action_index                UInt32,
@@ -115,7 +144,6 @@ CREATE TABLE IF NOT EXISTS perm_ops
         PRIMARY KEY (block_date, block_number)
         ORDER BY (block_date, block_number, tx_hash, action_index)
         COMMENT 'Antelope permission operations';
-
 
 CREATE TABLE IF NOT EXISTS actions
 (

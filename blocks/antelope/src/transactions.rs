@@ -5,6 +5,7 @@ use substreams_antelope::pb::{BlockHeader, TransactionTrace};
 use substreams_database_change::pb::database::TableChange;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 
+use crate::feature_ops::insert_feature_op;
 use crate::keys::transactions_keys;
 use crate::perm_ops::insert_perm_op;
 
@@ -96,9 +97,9 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
 
     // TO-DO
     // List of feature switching operations (changes to feature switches in nodeos) this transaction entailed
-    // for feature_op in transaction.feature_ops.iter() {
-    //     insert_feature_op(tables, clock, feature_op, &block);
-    // }
+    for feature_op in transaction.feature_ops.iter() {
+        insert_feature_op(tables, clock, feature_op, transaction);
+    }
 
     // TO-DO
     // List of permission changes operations
