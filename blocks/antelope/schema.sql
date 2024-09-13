@@ -139,6 +139,7 @@ CREATE TABLE IF NOT EXISTS ram_ops
     tx_success      Bool,
 
     -- RAM operation --
+    operation       LowCardinality(String),
     action_index    UInt32,
     payer           String,
     delta           Int64,

@@ -35,7 +35,40 @@ pub fn action_to_string(action: i32) -> String {
     }
 }
 
+pub fn operation_to_string(operation: i32) -> String {
+    match operation {
+        0 => "Unknown".to_string(),
+        1 => "CreateTable".to_string(),
+        2 => "DeferredTrxAdd".to_string(),
+        3 => "DeferredTrxCancel".to_string(),
+        4 => "DeferredTrxPushed".to_string(),
+        5 => "DeferredTrxRamCorrection".to_string(),
+        6 => "DeferredTrxRemoved".to_string(),
+        7 => "DeleteAuth".to_string(),
+        8 => "LinkAuth".to_string(),
+        9 => "NewAccount".to_string(),
+        10 => "PrimaryIndexAdd".to_string(),
+        11 => "PrimaryIndexRemove".to_string(),
+        12 => "PrimaryIndexUpdate".to_string(),
+        13 => "PrimaryIndexUpdateAddNewPayer".to_string(),
+        14 => "PrimaryIndexUpdateRemoveOldPayer".to_string(),
+        15 => "RemoveTable".to_string(),
+        16 => "SecondaryIndexAdd".to_string(),
+        17 => "SecondaryIndexRemove".to_string(),
+        18 => "SecondaryIndexUpdateAddNewPayer".to_string(),
+        19 => "SecondaryIndexUpdateRemoveOldPayer".to_string(),
+        20 => "SetAbi".to_string(),
+        21 => "SetCode".to_string(),
+        22 => "UnlinkAuth".to_string(),
+        23 => "UpdateAuthCreate".to_string(),
+        24 => "UpdateAuthUpdate".to_string(),
+        25 => "Deprecated".to_string(),
+        _ => "Unknown".to_string(),
+    }
+}
+
 pub fn insert_ram_op(tables: &mut DatabaseChanges, clock: &Clock, ram_op: &RamOp, transaction: &TransactionTrace) {
+    let operation = operation_to_string(ram_op.operation);
     let action_index = ram_op.action_index;
     let payer = &ram_op.payer;
     let delta = ram_op.delta;
@@ -49,6 +82,7 @@ pub fn insert_ram_op(tables: &mut DatabaseChanges, clock: &Clock, ram_op: &RamOp
     let keys = ram_op_keys(clock, &transaction.id, unique_key);
     let row = tables
         .push_change_composite("ram_ops", keys, 0, table_change::Operation::Create)
+        .change("operation", ("", operation.as_str()))
         .change("action_index", ("", action_index.to_string().as_str()))
         .change("payer", ("", payer.as_str()))
         .change("delta", ("", delta.to_string().as_str()))
