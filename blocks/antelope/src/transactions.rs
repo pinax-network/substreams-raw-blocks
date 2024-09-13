@@ -7,6 +7,7 @@ use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 
 use crate::feature_ops::insert_feature_op;
 use crate::keys::transactions_keys;
+use crate::ram_ops::insert_ram_op;
 
 use super::actions::insert_action;
 use super::db_ops::insert_db_op;
@@ -108,9 +109,9 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
 
     // TO-DO
     // List of RAM consumption/redemption
-    // for ram_op in transaction.ram_ops.iter() {
-    //     insert_ram_op(tables, clock, ram_op, &block);
-    // }
+    for ram_op in transaction.ram_ops.iter() {
+        insert_ram_op(tables, clock, ram_op, transaction);
+    }
 
     // TO-DO
     // List of RAM correction operations (happens only once upon feature activation)
