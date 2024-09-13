@@ -128,16 +128,16 @@ CREATE TABLE IF NOT EXISTS perm_ops
     -- perm_op --
     operation                   LowCardinality(String),
     action_index                UInt32,
-    old_perm_id           UInt64,
-    old_perm_parent_id    UInt64,
-    old_perm_owner        String,
-    old_perm_name         String,
-    -- old_perm_last_updated    DateTime64(3, 'UTC'),
-    new_perm_id           UInt64,
-    new_perm_parent_id    UInt64,
-    new_perm_owner        String,
-    new_perm_name         String,
-    -- new_perm_last_updated    DateTime64(3, 'UTC'),
+    old_perm_id                 UInt64,
+    old_perm_parent_id          UInt64,
+    old_perm_owner              String,
+    old_perm_name               String,
+    old_perm_last_updated       DateTime64(3, 'UTC'),
+    new_perm_id                 UInt64,
+    new_perm_parent_id          UInt64,
+    new_perm_owner              String,
+    new_perm_name               String,
+    new_perm_last_updated    DateTime64(3, 'UTC'),
     -- PermissionObject 'authority' missing
 )
     ENGINE = ReplacingMergeTree()
