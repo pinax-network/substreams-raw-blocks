@@ -3,6 +3,7 @@ mod actions;
 mod auth_sequences;
 mod authorizations;
 mod blocks;
+mod creation_flat_nodes;
 mod db_ops;
 mod feature_ops;
 mod keys;
