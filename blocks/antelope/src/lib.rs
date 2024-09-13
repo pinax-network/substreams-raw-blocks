@@ -8,4 +8,5 @@ mod feature_ops;
 mod keys;
 mod sinks;
 mod size;
+mod table_ops;
 mod transactions;

@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS transactions
 
 CREATE TABLE IF NOT EXISTS feature_ops
 (
-    -- block --
+    -- clock --
     block_time                  DateTime64(3, 'UTC'),
     block_number                UInt64,
     block_hash                  String COMMENT 'Hash',
@@ -110,6 +110,34 @@ CREATE TABLE IF NOT EXISTS feature_ops
         ORDER BY (block_date, block_number, tx_hash, action_index)
         COMMENT 'Antelope feature operations';
 
+
+CREATE TABLE IF NOT EXISTS table_ops
+(
+    -- clock --
+    block_time                  DateTime64(3, 'UTC'),
+    block_number                UInt64,
+    block_hash                  String COMMENT 'Hash',
+    block_date                  Date,
+
+    -- transaction --
+    tx_hash                     String COMMENT 'Hash',
+    tx_index                    UInt64,
+    tx_status                   LowCardinality(String),
+    tx_status_code              UInt8,
+    tx_success                  Bool,
+
+    -- table op --
+    operation                   LowCardinality(String),
+    action_index                UInt32,
+    payer                       String, 
+    code                        String, 
+    scope                       String,
+    table_name                  String,
+)
+    ENGINE = ReplacingMergeTree()
+        PRIMARY KEY (block_date, block_number)
+        ORDER BY (block_date, block_number, tx_hash, code, scope, table_name)
+        COMMENT 'Antelope table operations';
 
 
 CREATE TABLE IF NOT EXISTS actions
