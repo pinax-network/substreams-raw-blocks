@@ -71,7 +71,7 @@ graph TD;
   - [x] **Feature Operations**
   - [ ] **Permission Operations**
   - [ ] **RAM Operations**
-  - [ ] **Table Operations**
+  - [x] **Table Operations**
   - [ ] **Creation Tree**
   - [ ] ~~**Deferred Transactions**~~
 - [x] **Actions**
