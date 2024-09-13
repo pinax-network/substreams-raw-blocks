@@ -72,7 +72,7 @@ graph TD;
   - [ ] **Permission Operations**
   - [ ] **RAM Operations**
   - [ ] **Table Operations**
-  - [ ] **Creation Tree**
+  - [x] **Creation Tree**
   - [ ] ~~**Deferred Transactions**~~
 - [x] **Actions**
   - [x] **Authorization**
