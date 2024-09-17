@@ -219,6 +219,50 @@ CREATE TABLE IF NOT EXISTS waits
         ORDER BY (tx_hash, action_index, `index`)
         COMMENT 'Antelope authority waits';
 
+
+
+
+
+
+
+
+
+
+
+
+CREATE TABLE IF NOT EXISTS ram_ops
+(
+    -- clock --
+    block_time    DateTime64(3, 'UTC'),
+    block_number  UInt64,
+    block_hash    String COMMENT 'Hash',
+    block_date    Date,
+
+    -- transaction --
+    tx_hash         String COMMENT 'Hash',
+    tx_index        UInt64,
+    tx_status       LowCardinality(String),
+    tx_status_code  UInt8,
+    tx_success      Bool,
+
+    -- RAM operation --
+    operation       LowCardinality(String),
+    operation_code  UInt8,
+    action_index    UInt32,
+    payer           String,
+    delta           Int64,
+    usage           UInt64,
+    namespace       LowCardinality(String),
+    namespace_code  UInt8,
+    action          LowCardinality(String),
+    action_code     UInt8,
+    unique_key      String
+)
+    ENGINE = ReplacingMergeTree()
+    PRIMARY KEY (tx_hash, action_index, unique_key)
+    ORDER BY (tx_hash, action_index, unique_key)
+    COMMENT 'Antelope RAM operations';
+
 CREATE TABLE IF NOT EXISTS actions
 (
     -- clock --

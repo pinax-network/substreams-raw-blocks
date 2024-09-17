@@ -7,6 +7,7 @@ mod blocks;
 mod db_ops;
 mod feature_ops;
 mod keys;
+mod ram_ops;
 mod perm_ops;
 mod sinks;
 mod size;
