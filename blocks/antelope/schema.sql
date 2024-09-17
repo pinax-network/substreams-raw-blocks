@@ -129,6 +129,7 @@ CREATE TABLE IF NOT EXISTS table_ops
     -- table op --
     `index`                     UInt32,
     operation                   LowCardinality(String),
+    operation_code              UInt8,
     action_index                UInt32,
     payer                       String,
     code                        String,
