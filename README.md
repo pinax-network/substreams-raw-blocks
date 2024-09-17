@@ -1,6 +1,7 @@
 # Substreams Raw Blocks
 
 ## `EVM` Raw Blockchain Data
+>
 > Ethereum, Base, Arbitrum One, Polygon, BNB...
 > [`sf.ethereum.type.v2.Block`](https://buf.build/streamingfast/firehose-ethereum/docs/main:sf.ethereum.type.v2)
 
@@ -70,6 +71,9 @@ graph TD;
 - [x] **Transactions**
   - [x] **Feature Operations**
   - [x] **Permission Operations**
+    - [x] **Authority.Accounts**
+    - [x] **Authority.Keys**
+    - [x] **Authority.Waits**
   - [ ] **RAM Operations**
   - [ ] **Table Operations**
   - [ ] **Creation Tree**

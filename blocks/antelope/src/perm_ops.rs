@@ -1,4 +1,4 @@
-use crate::{keys::perm_ops_keys, transactions::insert_transaction_metadata};
+use crate::{authority::insert_authority, keys::perm_ops_keys, transactions::insert_transaction_metadata};
 use common::blocks::insert_timestamp;
 use substreams::pb::substreams::Clock;
 use substreams_antelope::pb::{PermOp, TransactionTrace};
@@ -25,7 +25,7 @@ pub fn insert_perm_op(tables: &mut DatabaseChanges, clock: &Clock, transaction: 
     let operation = perm_op_operation_to_string(perm_op.operation);
     match &perm_op.new_perm {
         Some(new_perm) => {
-            let keys = perm_ops_keys(clock, tx_hash, &action_index);
+            let keys = perm_ops_keys(tx_hash, &action_index);
             let threshold = new_perm.authority.as_ref().map_or(0, |authority| authority.threshold);
             let row = tables
                 .push_change_composite("perm_ops", keys, 0, table_change::Operation::Create)
@@ -40,26 +40,9 @@ pub fn insert_perm_op(tables: &mut DatabaseChanges, clock: &Clock, transaction: 
             insert_transaction_metadata(row, transaction);
             insert_timestamp(row, clock, false, false);
 
-            // TO-DO: implement Authority
             match &new_perm.authority {
                 Some(authority) => {
-                    for account in &authority.accounts {
-                        // TO-DO: INSERT implement Authority Accounts
-                        let permission_level = account.permission.as_ref().expect("account.permission is missing");
-                        let actor = permission_level.actor.as_str();
-                        let permission = permission_level.permission.as_str();
-                        let weight = account.weight;
-                    }
-                    for key in &authority.keys {
-                        // TO-DO: INSERT implement Authority Keys
-                        let permission = key.public_key.as_str();
-                        let weight = key.weight;
-                    }
-                    for wait in &authority.waits {
-                        // TO-DO: INSERT implement Authority waits
-                        let wait_sec = wait.wait_sec;
-                        let weight = wait.weight;
-                    }
+                    insert_authority(tables, clock, transaction, action_index, authority);
                 }
                 None => {}
             }
