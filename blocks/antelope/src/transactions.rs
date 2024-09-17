@@ -8,6 +8,9 @@ use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use crate::creation_tree::insert_creation_tree;
 use crate::feature_ops::insert_feature_op;
 use crate::keys::transactions_keys;
+use crate::table_ops::insert_table_op;
+use crate::ram_ops::insert_ram_op;
+use crate::perm_ops::insert_perm_op;
 
 use super::actions::insert_action;
 use super::db_ops::insert_db_op;
@@ -103,15 +106,15 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
 
     // TO-DO
     // List of permission changes operations
-    // for perm_op in transaction.perm_ops.iter() {
-    //     insert_perm_op(tables, clock, perm_op, &block);
-    // }
+    for perm_op in transaction.perm_ops.iter() {
+        insert_perm_op(tables, clock, transaction, perm_op);
+    }
 
     // TO-DO
     // List of RAM consumption/redemption
-    // for ram_op in transaction.ram_ops.iter() {
-    //     insert_ram_op(tables, clock, ram_op, &block);
-    // }
+    for ram_op in transaction.ram_ops.iter() {
+        insert_ram_op(tables, clock, ram_op, transaction);
+    }
 
     // TO-DO
     // List of RAM correction operations (happens only once upon feature activation)
@@ -125,11 +128,12 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
     //     insert_rlimit_op(tables, clock, rlimit_op, &block);
     // }
 
-    // TO-DO
     // List of table creations/deletions
-    // for table_op in transaction.table_ops.iter() {
-    //     insert_table_op(tables, clock, table_op, &block);
-    // }
+    let mut table_op_index = 0;
+    for table_op in transaction.table_ops.iter() {
+        insert_table_op(tables, clock, transaction, table_op, &table_op_index);
+        table_op_index += 1;
+    }
 
     // Tree of creation, rather than execution
     for creation_flat_node in transaction.creation_tree.iter() {

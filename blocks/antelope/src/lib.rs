@@ -1,12 +1,16 @@
 mod account_ram_deltas;
 mod actions;
 mod auth_sequences;
+mod authority;
 mod authorizations;
 mod blocks;
 mod creation_tree;
 mod db_ops;
 mod feature_ops;
 mod keys;
+mod ram_ops;
+mod perm_ops;
 mod sinks;
 mod size;
+mod table_ops;
 mod transactions;

@@ -67,6 +67,21 @@ pub fn account_ram_delta_keys(clock: &Clock, tx_hash: &String, action_index: &u3
     keys
 }
 
+pub fn perm_ops_keys(tx_hash: &String, action_index: &u32) -> HashMap<String, String> {
+    let mut keys = HashMap::new();
+    keys.insert("tx_hash".to_string(), tx_hash.to_string());
+    keys.insert("action_index".to_string(), action_index.to_string());
+    keys
+}
+
+pub fn authority_keys(tx_hash: &str, action_index: &u32, index: &u32) -> HashMap<String, String> {
+    let mut keys = HashMap::new();
+    keys.insert("tx_hash".to_string(), tx_hash.to_string());
+    keys.insert("action_index".to_string(), action_index.to_string());
+    keys.insert("index".to_string(), index.to_string());
+    keys
+}
+
 pub fn feature_ops_keys(clock: &Clock, tx_hash: &String, kind: &String, feature_digest: &String) -> HashMap<String, String> {
     let mut keys = clock_keys(clock);
     keys.insert("tx_hash".to_string(), tx_hash.to_string());
@@ -75,10 +90,22 @@ pub fn feature_ops_keys(clock: &Clock, tx_hash: &String, kind: &String, feature_
     keys
 }
 
+
 pub fn creation_tree_keys(tx_hash: &String, creator_action_index: &i32, execution_action_index: &u32) -> HashMap<String, String> {
     let mut keys = HashMap::new();
     keys.insert("tx_hash".to_string(), tx_hash.to_string());
     keys.insert("creator_action_index".to_string(), creator_action_index.to_string());
     keys.insert("execution_action_index".to_string(), execution_action_index.to_string());
+
+pub fn table_ops_keys(tx_hash: &String, index: &u32) -> HashMap<String, String> {
+    let mut keys = HashMap::new();
+    keys.insert("tx_hash".to_string(), tx_hash.to_string());
+    keys.insert("index".to_string(), index.to_string());
+
+pub fn ram_op_keys(tx_id: &str, action_index: &u32, unique_key: &str) -> HashMap<String, String> {
+    let mut keys = HashMap::new();
+    keys.insert("tx_hash".to_string(), tx_id.to_string());
+    keys.insert("action_index".to_string(), action_index.to_string());
+    keys.insert("unique_key".to_string(), unique_key.to_string());
     keys
 }
