@@ -76,7 +76,7 @@ graph TD;
     - [x] **Authority.Waits**
   - [x] **RAM Operations**
   - [x] **Table Operations**
-  - [ ] **Creation Tree**
+  - [x] **Creation Tree**
   - [ ] ~~**Deferred Transactions**~~
 - [x] **Actions**
   - [x] **Authorization**

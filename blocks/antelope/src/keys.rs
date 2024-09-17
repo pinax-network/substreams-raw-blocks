@@ -90,6 +90,13 @@ pub fn feature_ops_keys(clock: &Clock, tx_hash: &String, kind: &String, feature_
     keys
 }
 
+
+pub fn creation_tree_keys(tx_hash: &String, creator_action_index: &i32, execution_action_index: &u32) -> HashMap<String, String> {
+    let mut keys = HashMap::new();
+    keys.insert("tx_hash".to_string(), tx_hash.to_string());
+    keys.insert("creator_action_index".to_string(), creator_action_index.to_string());
+    keys.insert("execution_action_index".to_string(), execution_action_index.to_string());
+
 pub fn table_ops_keys(tx_hash: &String, index: &u32) -> HashMap<String, String> {
     let mut keys = HashMap::new();
     keys.insert("tx_hash".to_string(), tx_hash.to_string());

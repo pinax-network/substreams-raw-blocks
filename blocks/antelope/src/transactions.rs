@@ -5,6 +5,7 @@ use substreams_antelope::pb::{BlockHeader, TransactionTrace};
 use substreams_database_change::pb::database::TableChange;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 
+use crate::creation_tree::insert_creation_tree;
 use crate::feature_ops::insert_feature_op;
 use crate::keys::transactions_keys;
 use crate::table_ops::insert_table_op;
@@ -134,11 +135,10 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
         table_op_index += 1;
     }
 
-    // TO-DO
     // Tree of creation, rather than execution
-    // for creation_tree in transaction.creation_tree.iter() {
-    //     insert_creation_tree(tables, clock, creation_tree, &block);
-    // }
+    for creation_flat_node in transaction.creation_tree.iter() {
+        insert_creation_tree(tables, clock, transaction, creation_flat_node);
+    }
 
     // TO-DO??
     // Exception leading to the failed dtrx trace.
