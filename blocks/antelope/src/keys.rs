@@ -67,11 +67,10 @@ pub fn account_ram_delta_keys(clock: &Clock, tx_hash: &String, action_index: &u3
     keys
 }
 
-pub fn perm_ops_keys(clock: &Clock, tx_hash: &String, action_index: &u32, operation: &String) -> HashMap<String, String> {
+pub fn perm_ops_keys(clock: &Clock, tx_hash: &String, action_index: &u32) -> HashMap<String, String> {
     let mut keys = clock_keys(clock);
     keys.insert("tx_hash".to_string(), tx_hash.to_string());
     keys.insert("action_index".to_string(), action_index.to_string());
-    keys.insert("operation".to_string(), operation.to_string());
     keys
 }
 

@@ -21,35 +21,49 @@ pub fn insert_perm_op(tables: &mut DatabaseChanges, clock: &Clock, transaction: 
     // action
     let action_index = perm_op.action_index;
 
-    let old_perm = perm_op.old_perm.clone().unwrap_or_default();
-    let new_perm = perm_op.new_perm.clone().unwrap_or_default();
-    let old_nanos = old_perm.last_updated.as_ref().map_or(0, |t| t.nanos);
-    let old_seconds = old_perm.last_updated.as_ref().map_or(0, |t| t.seconds);
-    let new_nanos = new_perm.last_updated.as_ref().map_or(0, |t| t.nanos);
-    let new_seconds = new_perm.last_updated.as_ref().map_or(0, |t| t.seconds);
-
-    let old_perm_last_updated_ms = old_seconds * 1000 + i64::from(old_nanos) / 1_000_000;
-    let new_perm_last_updated_ms = new_seconds * 1000 + i64::from(new_nanos) / 1_000_000;
-
+    // perm_op
     let operation = perm_op_operation_to_string(perm_op.operation);
+    match &perm_op.new_perm {
+        Some(new_perm) => {
+            let keys = perm_ops_keys(clock, tx_hash, &action_index);
+            let threshold = new_perm.authority.as_ref().map_or(0, |authority| authority.threshold);
+            let row = tables
+                .push_change_composite("perm_ops", keys, 0, table_change::Operation::Create)
+                .change("operation", ("", operation.as_str()))
+                .change("operation_code", ("", perm_op.operation.to_string().as_str()))
+                .change("action_index", ("", action_index.to_string().as_str()))
+                .change("id", ("", new_perm.id.to_string().as_str()))
+                .change("parent_id", ("", new_perm.parent_id.to_string().as_str()))
+                .change("owner", ("", new_perm.owner.to_string().as_str()))
+                .change("name", ("", new_perm.name.to_string().as_str()))
+                .change("threshold", ("", threshold.to_string().as_str()));
+            insert_transaction_metadata(row, transaction);
+            insert_timestamp(row, clock, false, false);
 
-    let keys = perm_ops_keys(clock, tx_hash, &action_index, &operation);
-    let row = tables
-        .push_change_composite("perm_ops", keys, 0, table_change::Operation::Create)
-        .change("tx_hash", ("", tx_hash.as_str()))
-        .change("operation", ("", operation.as_str()))
-        .change("action_index", ("", action_index.to_string().as_str()))
-        .change("old_perm_id", ("", old_perm.id.to_string().as_str()))
-        .change("old_perm_parent_id", ("", old_perm.parent_id.to_string().as_str()))
-        .change("old_perm_owner", ("", old_perm.owner.to_string().as_str()))
-        .change("old_perm_name", ("", old_perm.name.to_string().as_str()))
-        .change("old_perm_last_updated", ("", old_perm_last_updated_ms.to_string().as_str()))
-        .change("new_perm_id", ("", new_perm.id.to_string().as_str()))
-        .change("new_perm_parent_id", ("", new_perm.parent_id.to_string().as_str()))
-        .change("new_perm_owner", ("", new_perm.owner.to_string().as_str()))
-        .change("new_perm_last_updated", ("", new_perm_last_updated_ms.to_string().as_str()))
-        .change("new_perm_name", ("", new_perm.name.to_string().as_str()));
-
-    insert_transaction_metadata(row, transaction);
-    insert_timestamp(row, clock, false, false);
+            // TO-DO: implement Authority
+            match &new_perm.authority {
+                Some(authority) => {
+                    for account in &authority.accounts {
+                        // TO-DO: INSERT implement Authority Accounts
+                        let permission_level = account.permission.as_ref().expect("account.permission is missing");
+                        let actor = permission_level.actor.as_str();
+                        let permission = permission_level.permission.as_str();
+                        let weight = account.weight;
+                    }
+                    for key in &authority.keys {
+                        // TO-DO: INSERT implement Authority Keys
+                        let permission = key.public_key.as_str();
+                        let weight = key.weight;
+                    }
+                    for wait in &authority.waits {
+                        // TO-DO: INSERT implement Authority waits
+                        let wait_sec = wait.wait_sec;
+                        let weight = wait.weight;
+                    }
+                }
+                None => {}
+            }
+        }
+        None => {}
+    }
 }

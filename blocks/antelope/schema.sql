@@ -127,22 +127,17 @@ CREATE TABLE IF NOT EXISTS perm_ops
 
     -- perm_op --
     operation                   LowCardinality(String),
+    operation_code              UInt8,
     action_index                UInt32,
-    old_perm_id                 UInt64,
-    old_perm_parent_id          UInt64,
-    old_perm_owner              String,
-    old_perm_name               String,
-    old_perm_last_updated       DateTime64(3, 'UTC'),
-    new_perm_id                 UInt64,
-    new_perm_parent_id          UInt64,
-    new_perm_owner              String,
-    new_perm_name               String,
-    new_perm_last_updated    DateTime64(3, 'UTC'),
+    id                          UInt64,
+    parent_id                   UInt64,
+    owner                       String,
+    name                        String,
     -- PermissionObject 'authority' missing
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, block_number)
-        ORDER BY (block_date, block_number, tx_hash, action_index)
+        PRIMARY KEY (tx_hash, action_index)
+        ORDER BY (tx_hash, action_index)
         COMMENT 'Antelope permission operations';
 
 CREATE TABLE IF NOT EXISTS actions
