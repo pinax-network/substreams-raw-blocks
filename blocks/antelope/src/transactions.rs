@@ -8,6 +8,7 @@ use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use crate::feature_ops::insert_feature_op;
 use crate::keys::transactions_keys;
 use crate::ram_ops::insert_ram_op;
+use crate::perm_ops::insert_perm_op;
 
 use super::actions::insert_action;
 use super::db_ops::insert_db_op;
@@ -103,9 +104,9 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
 
     // TO-DO
     // List of permission changes operations
-    // for perm_op in transaction.perm_ops.iter() {
-    //     insert_perm_op(tables, clock, perm_op, &block);
-    // }
+    for perm_op in transaction.perm_ops.iter() {
+        insert_perm_op(tables, clock, transaction, perm_op);
+    }
 
     // TO-DO
     // List of RAM consumption/redemption
