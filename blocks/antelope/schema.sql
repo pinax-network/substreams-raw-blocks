@@ -110,7 +110,114 @@ CREATE TABLE IF NOT EXISTS feature_ops
         ORDER BY (block_date, block_number, tx_hash, action_index)
         COMMENT 'Antelope feature operations';
 
+CREATE TABLE IF NOT EXISTS perm_ops
+(
+    -- clock --
+    block_time                  DateTime64(3, 'UTC'),
+    block_number                UInt64,
+    block_hash                  String COMMENT 'Hash',
+    block_date                  Date,
 
+    -- transaction --
+    tx_hash                     String COMMENT 'Hash',
+    tx_index                    UInt64,
+    tx_status                   LowCardinality(String),
+    tx_status_code              UInt8,
+    tx_success                  Bool,
+
+    -- perm_op --
+    operation                   LowCardinality(String),
+    operation_code              UInt8,
+    action_index                UInt32,
+    id                          UInt64,
+    parent_id                   UInt64,
+    owner                       String,
+    name                        String,
+    threshold                   UInt32,
+)
+    ENGINE = ReplacingMergeTree()
+        PRIMARY KEY (tx_hash, action_index)
+        ORDER BY (tx_hash, action_index)
+        COMMENT 'Antelope permission operations';
+
+CREATE TABLE IF NOT EXISTS accounts
+(
+    -- clock --
+    block_time                  DateTime64(3, 'UTC'),
+    block_number                UInt64,
+    block_hash                  String COMMENT 'Hash',
+    block_date                  Date,
+
+    -- transaction --
+    tx_hash                     String COMMENT 'Hash',
+    tx_index                    UInt64,
+    tx_status                   LowCardinality(String),
+    tx_status_code              UInt8,
+    tx_success                  Bool,
+
+    -- authority.accounts --
+    `index`                     UInt32,
+    action_index                UInt32,
+    actor                       String,
+    permission                  LowCardinality(String),
+    weight                      UInt32,
+)
+    ENGINE = ReplacingMergeTree()
+        PRIMARY KEY (tx_hash, action_index)
+        ORDER BY (tx_hash, action_index, `index`)
+        COMMENT 'Antelope authority accounts';
+
+CREATE TABLE IF NOT EXISTS keys
+(
+    -- clock --
+    block_time                  DateTime64(3, 'UTC'),
+    block_number                UInt64,
+    block_hash                  String COMMENT 'Hash',
+    block_date                  Date,
+
+    -- transaction --
+    tx_hash                     String COMMENT 'Hash',
+    tx_index                    UInt64,
+    tx_status                   LowCardinality(String),
+    tx_status_code              UInt8,
+    tx_success                  Bool,
+
+    -- authority.keys --
+    `index`                     UInt32,
+    action_index                UInt32,
+    public_key                  String,
+    weight                      UInt32,
+)
+    ENGINE = ReplacingMergeTree()
+        PRIMARY KEY (tx_hash, action_index)
+        ORDER BY (tx_hash, action_index, `index`)
+        COMMENT 'Antelope authority keys';
+
+CREATE TABLE IF NOT EXISTS waits
+(
+    -- clock --
+    block_time                  DateTime64(3, 'UTC'),
+    block_number                UInt64,
+    block_hash                  String COMMENT 'Hash',
+    block_date                  Date,
+
+    -- transaction --
+    tx_hash                     String COMMENT 'Hash',
+    tx_index                    UInt64,
+    tx_status                   LowCardinality(String),
+    tx_status_code              UInt8,
+    tx_success                  Bool,
+
+    -- authority.waits --
+    `index`                     UInt32,
+    action_index                UInt32,
+    wait_sec                    UInt32,
+    weight                      UInt32,
+)
+    ENGINE = ReplacingMergeTree()
+        PRIMARY KEY (tx_hash, action_index)
+        ORDER BY (tx_hash, action_index, `index`)
+        COMMENT 'Antelope authority waits';
 
 CREATE TABLE IF NOT EXISTS actions
 (
