@@ -125,10 +125,11 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
     //     insert_rlimit_op(tables, clock, rlimit_op, &block);
     // }
 
-    // TO-DO
     // List of table creations/deletions
+    let mut table_op_index = 0;
     for table_op in transaction.table_ops.iter() {
-        insert_table_op(tables, clock, transaction, table_op);
+        insert_table_op(tables, clock, transaction, table_op, &table_op_index);
+        table_op_index += 1;
     }
 
     // TO-DO

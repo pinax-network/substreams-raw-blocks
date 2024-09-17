@@ -75,14 +75,9 @@ pub fn feature_ops_keys(clock: &Clock, tx_hash: &String, kind: &String, feature_
     keys
 }
 
-pub fn table_ops_keys(clock: &Clock, tx_hash: &String, action_index: &u32, operation: &String, payer: &String, code: &String, scope: &String, table_name: &String) -> HashMap<String, String> {
-    let mut keys = clock_keys(clock);
+pub fn table_ops_keys(tx_hash: &String, index: &u32) -> HashMap<String, String> {
+    let mut keys = HashMap::new();
     keys.insert("tx_hash".to_string(), tx_hash.to_string());
-    keys.insert("action_index".to_string(), action_index.to_string());
-    keys.insert("operation".to_string(), operation.to_string());
-    keys.insert("payer".to_string(), payer.to_string());
-    keys.insert("code".to_string(), code.to_string());
-    keys.insert("scope".to_string(), scope.to_string());
-    keys.insert("table_name".to_string(), table_name.to_string());
+    keys.insert("index".to_string(), index.to_string());
     keys
 }

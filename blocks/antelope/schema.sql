@@ -127,16 +127,17 @@ CREATE TABLE IF NOT EXISTS table_ops
     tx_success                  Bool,
 
     -- table op --
+    `index`                     UInt32,
     operation                   LowCardinality(String),
     action_index                UInt32,
-    payer                       String, 
-    code                        String, 
+    payer                       String,
+    code                        String,
     scope                       String,
     table_name                  String,
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, block_number)
-        ORDER BY (block_date, block_number, tx_hash, code, scope, table_name)
+        PRIMARY KEY (tx_hash, `index`)
+        ORDER BY (tx_hash, `index`)
         COMMENT 'Antelope table operations';
 
 
