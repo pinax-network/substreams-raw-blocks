@@ -266,7 +266,7 @@ CREATE TABLE IF NOT EXISTS account_ram_deltas
         ORDER BY (block_date, block_number, tx_hash, action_index, account)
         COMMENT 'Antelope account RAM deltas';
 
-CREATE TABLE IF NOT EXISTS creation_flat_nodes
+CREATE TABLE IF NOT EXISTS creation_tree
 (
     -- clock --
     block_time                  DateTime64(3, 'UTC'),
@@ -281,12 +281,12 @@ CREATE TABLE IF NOT EXISTS creation_flat_nodes
     tx_status_code              UInt8,
     tx_success                  Bool,
 
-    -- creation_flat_node --
+    -- transaction.creation_tree --
     creator_action_index        Int32,
     execution_action_index      UInt32
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, block_number)
-        ORDER BY (block_date, block_number, tx_hash, creator_action_index, execution_action_index)
-        COMMENT 'Antelope creation flat nodes';
+        PRIMARY KEY (tx_hash, creator_action_index, execution_action_index)
+        ORDER BY (tx_hash, creator_action_index, execution_action_index)
+        COMMENT 'Antelope creation tree';
 
