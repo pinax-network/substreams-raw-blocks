@@ -133,6 +133,7 @@ CREATE TABLE IF NOT EXISTS perm_ops
     parent_id                   UInt64,
     owner                       String,
     name                        String,
+    threshold                   UInt32,
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (tx_hash, action_index)

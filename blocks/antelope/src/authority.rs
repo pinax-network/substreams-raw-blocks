@@ -34,7 +34,7 @@ pub fn insert_authority(tables: &mut DatabaseChanges, clock: &Clock, transaction
 
         let keys = authority_keys(tx_hash, &action_index, &index);
         let row = tables
-            .push_change_composite("accounts", keys, 0, table_change::Operation::Create)
+            .push_change_composite("keys", keys, 0, table_change::Operation::Create)
             .change("index", ("", index.to_string().as_str()))
             .change("action_index", ("", action_index.to_string().as_str()))
             .change("public_key", ("", public_key))
@@ -50,7 +50,7 @@ pub fn insert_authority(tables: &mut DatabaseChanges, clock: &Clock, transaction
 
         let keys = authority_keys(tx_hash, &action_index, &index);
         let row = tables
-            .push_change_composite("accounts", keys, 0, table_change::Operation::Create)
+            .push_change_composite("waits", keys, 0, table_change::Operation::Create)
             .change("index", ("", index.to_string().as_str()))
             .change("action_index", ("", action_index.to_string().as_str()))
             .change("wait_sec", ("", wait_sec.to_string().as_str()))
