@@ -140,17 +140,20 @@ CREATE TABLE IF NOT EXISTS ram_ops
 
     -- RAM operation --
     operation       LowCardinality(String),
+    operation_code  UInt8,
     action_index    UInt32,
     payer           String,
     delta           Int64,
     usage           UInt64,
     namespace       LowCardinality(String),
+    namespace_code  UInt8,
     action          LowCardinality(String),
+    action_code     UInt8,
     unique_key      String
 )
     ENGINE = ReplacingMergeTree()
-    PRIMARY KEY (block_date, block_number)
-    ORDER BY (block_date, block_number, tx_hash, action_index, unique_key)
+    PRIMARY KEY (tx_hash, action_index, unique_key)
+    ORDER BY (tx_hash, action_index, unique_key)
     COMMENT 'Antelope RAM operations';
 
 CREATE TABLE IF NOT EXISTS actions

@@ -74,21 +74,22 @@ pub fn insert_ram_op(tables: &mut DatabaseChanges, clock: &Clock, ram_op: &RamOp
     let delta = ram_op.delta;
     let usage = ram_op.usage;
     let namespace = namespace_to_string(ram_op.namespace);
-
     let action = action_to_string(ram_op.action);
-
     let unique_key = &ram_op.unique_key;
 
-    let keys = ram_op_keys(clock, &transaction.id, unique_key);
+    let keys = ram_op_keys(&transaction.id, &action_index, unique_key);
     let row = tables
         .push_change_composite("ram_ops", keys, 0, table_change::Operation::Create)
         .change("operation", ("", operation.as_str()))
+        .change("operation_code", ("", ram_op.operation.to_string().as_str()))
         .change("action_index", ("", action_index.to_string().as_str()))
         .change("payer", ("", payer.as_str()))
         .change("delta", ("", delta.to_string().as_str()))
         .change("usage", ("", usage.to_string().as_str()))
         .change("namespace", ("", namespace.as_str()))
+        .change("namespace_code", ("", ram_op.namespace.to_string().as_str()))
         .change("action", ("", action.as_str()))
+        .change("action_code", ("", ram_op.action.to_string().as_str()))
         .change("unique_key", ("", unique_key.as_str()));
 
     insert_transaction_metadata(row, transaction);
