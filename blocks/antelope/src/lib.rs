@@ -11,4 +11,5 @@ mod ram_ops;
 mod perm_ops;
 mod sinks;
 mod size;
+mod table_ops;
 mod transactions;

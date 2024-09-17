@@ -90,6 +90,11 @@ pub fn feature_ops_keys(clock: &Clock, tx_hash: &String, kind: &String, feature_
     keys
 }
 
+pub fn table_ops_keys(tx_hash: &String, index: &u32) -> HashMap<String, String> {
+    let mut keys = HashMap::new();
+    keys.insert("tx_hash".to_string(), tx_hash.to_string());
+    keys.insert("index".to_string(), index.to_string());
+
 pub fn ram_op_keys(tx_id: &str, action_index: &u32, unique_key: &str) -> HashMap<String, String> {
     let mut keys = HashMap::new();
     keys.insert("tx_hash".to_string(), tx_id.to_string());

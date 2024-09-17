@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS transactions
 
 CREATE TABLE IF NOT EXISTS feature_ops
 (
-    -- block --
+    -- clock --
     block_time                  DateTime64(3, 'UTC'),
     block_number                UInt64,
     block_hash                  String COMMENT 'Hash',
@@ -139,6 +139,36 @@ CREATE TABLE IF NOT EXISTS perm_ops
         PRIMARY KEY (tx_hash, action_index)
         ORDER BY (tx_hash, action_index)
         COMMENT 'Antelope permission operations';
+
+CREATE TABLE IF NOT EXISTS table_ops
+(
+    -- clock --
+    block_time                  DateTime64(3, 'UTC'),
+    block_number                UInt64,
+    block_hash                  String COMMENT 'Hash',
+    block_date                  Date,
+
+    -- transaction --
+    tx_hash                     String COMMENT 'Hash',
+    tx_index                    UInt64,
+    tx_status                   LowCardinality(String),
+    tx_status_code              UInt8,
+    tx_success                  Bool,
+
+    -- table op --
+    `index`                     UInt32,
+    operation                   LowCardinality(String),
+    operation_code              UInt8,
+    action_index                UInt32,
+    payer                       String,
+    code                        String,
+    scope                       String,
+    table_name                  String,
+)
+    ENGINE = ReplacingMergeTree()
+        PRIMARY KEY (tx_hash, `index`)
+        ORDER BY (tx_hash, `index`)
+        COMMENT 'Antelope table operations';
 
 CREATE TABLE IF NOT EXISTS accounts
 (
@@ -218,17 +248,6 @@ CREATE TABLE IF NOT EXISTS waits
         PRIMARY KEY (tx_hash, action_index)
         ORDER BY (tx_hash, action_index, `index`)
         COMMENT 'Antelope authority waits';
-
-
-
-
-
-
-
-
-
-
-
 
 CREATE TABLE IF NOT EXISTS ram_ops
 (

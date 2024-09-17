@@ -7,6 +7,7 @@ use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 
 use crate::feature_ops::insert_feature_op;
 use crate::keys::transactions_keys;
+use crate::table_ops::insert_table_op;
 use crate::ram_ops::insert_ram_op;
 use crate::perm_ops::insert_perm_op;
 
@@ -126,11 +127,12 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
     //     insert_rlimit_op(tables, clock, rlimit_op, &block);
     // }
 
-    // TO-DO
     // List of table creations/deletions
-    // for table_op in transaction.table_ops.iter() {
-    //     insert_table_op(tables, clock, table_op, &block);
-    // }
+    let mut table_op_index = 0;
+    for table_op in transaction.table_ops.iter() {
+        insert_table_op(tables, clock, transaction, table_op, &table_op_index);
+        table_op_index += 1;
+    }
 
     // TO-DO
     // Tree of creation, rather than execution
