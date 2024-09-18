@@ -8,9 +8,9 @@ use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use crate::creation_tree::insert_creation_tree;
 use crate::feature_ops::insert_feature_op;
 use crate::keys::transactions_keys;
-use crate::table_ops::insert_table_op;
-use crate::ram_ops::insert_ram_op;
 use crate::perm_ops::insert_perm_op;
+use crate::ram_ops::insert_ram_op;
+use crate::table_ops::insert_table_op;
 
 use super::actions::insert_action;
 use super::db_ops::insert_db_op;
@@ -53,7 +53,7 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
     let transaction_mroot = Hex::encode(&block_header.transaction_mroot.to_vec());
 
     // TABLE::transactions
-    let keys = transactions_keys(clock, hash);
+    let keys = transactions_keys(hash);
     let row = tables
         .push_change_composite("transactions", keys, 0, table_change::Operation::Create)
         .change("index", ("", index.to_string().as_str()))
@@ -101,7 +101,7 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
     // TO-DO
     // List of feature switching operations (changes to feature switches in nodeos) this transaction entailed
     for feature_op in transaction.feature_ops.iter() {
-        insert_feature_op(tables, clock, feature_op, transaction);
+        insert_feature_op(tables, clock, transaction, feature_op);
     }
 
     // TO-DO
@@ -156,15 +156,8 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
 
 pub fn insert_transaction_metadata(row: &mut TableChange, transaction: &TransactionTrace) {
     let tx_hash = &transaction.id;
-    let tx_index = transaction.index;
     let header = transaction.receipt.clone().unwrap_or_default();
-    let tx_status = transaction_status_to_string(header.status);
-    let tx_status_code = header.status;
     let tx_success = is_transaction_success(header.status);
 
-    row.change("tx_hash", ("", tx_hash.as_str()))
-        .change("tx_index", ("", tx_index.to_string().as_str()))
-        .change("tx_status", ("", tx_status.as_str()))
-        .change("tx_status_code", ("", tx_status_code.to_string().as_str()))
-        .change("tx_success", ("", tx_success.to_string().as_str()));
+    row.change("tx_hash", ("", tx_hash.as_str())).change("tx_success", ("", tx_success.to_string().as_str()));
 }

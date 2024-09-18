@@ -47,8 +47,8 @@ CREATE TABLE IF NOT EXISTS blocks
     total_db_ops                            UInt64,
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (date, number)
-        ORDER BY (date, number, hash)
+        PRIMARY KEY (hash)
+        ORDER BY (hash)
         COMMENT 'Antelope block header';
 
 CREATE TABLE IF NOT EXISTS transactions
@@ -77,8 +77,8 @@ CREATE TABLE IF NOT EXISTS transactions
     transaction_mroot           String COMMENT 'Hash',
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, block_number)
-        ORDER BY (block_date, block_number, hash)
+        PRIMARY KEY (hash)
+        ORDER BY (hash)
         COMMENT 'Antelope transactions';
 
 CREATE TABLE IF NOT EXISTS feature_ops
@@ -91,23 +91,20 @@ CREATE TABLE IF NOT EXISTS feature_ops
 
     -- transaction --
     tx_hash                     String COMMENT 'Hash',
-    tx_index                    UInt64,
-    tx_status                   LowCardinality(String),
-    tx_status_code              UInt8,
     tx_success                  Bool,
 
-    -- feature op --
-    kind                        LowCardinality(String),
+    -- action --
     action_index                UInt32,
+
+    -- feature op --
     feature_digest              String,
-    -- feature --    
+    kind                        LowCardinality(String),
     description_digest          String,
-    --dependencies              Array(String),
     protocol_feature_type       LowCardinality(String),
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, block_number)
-        ORDER BY (block_date, block_number, tx_hash, action_index)
+        PRIMARY KEY (feature_digest)
+        ORDER BY (feature_digest)
         COMMENT 'Antelope feature operations';
 
 CREATE TABLE IF NOT EXISTS perm_ops
@@ -120,15 +117,14 @@ CREATE TABLE IF NOT EXISTS perm_ops
 
     -- transaction --
     tx_hash                     String COMMENT 'Hash',
-    tx_index                    UInt64,
-    tx_status                   LowCardinality(String),
-    tx_status_code              UInt8,
     tx_success                  Bool,
+
+    -- action --
+    action_index                UInt32,
 
     -- perm_op --
     operation                   LowCardinality(String),
     operation_code              UInt8,
-    action_index                UInt32,
     id                          UInt64,
     parent_id                   UInt64,
     owner                       String,
@@ -150,16 +146,15 @@ CREATE TABLE IF NOT EXISTS table_ops
 
     -- transaction --
     tx_hash                     String COMMENT 'Hash',
-    tx_index                    UInt64,
-    tx_status                   LowCardinality(String),
-    tx_status_code              UInt8,
     tx_success                  Bool,
+
+    -- action --
+    action_index                UInt32,
 
     -- table op --
     `index`                     UInt32,
     operation                   LowCardinality(String),
     operation_code              UInt8,
-    action_index                UInt32,
     payer                       String,
     code                        String,
     scope                       String,
@@ -180,20 +175,19 @@ CREATE TABLE IF NOT EXISTS accounts
 
     -- transaction --
     tx_hash                     String COMMENT 'Hash',
-    tx_index                    UInt64,
-    tx_status                   LowCardinality(String),
-    tx_status_code              UInt8,
     tx_success                  Bool,
+
+    -- action --
+    action_index                UInt32,
 
     -- authority.accounts --
     `index`                     UInt32,
-    action_index                UInt32,
     actor                       String,
     permission                  LowCardinality(String),
     weight                      UInt32,
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (tx_hash, action_index)
+        PRIMARY KEY (tx_hash, action_index, `index`)
         ORDER BY (tx_hash, action_index, `index`)
         COMMENT 'Antelope authority accounts';
 
@@ -207,19 +201,18 @@ CREATE TABLE IF NOT EXISTS keys
 
     -- transaction --
     tx_hash                     String COMMENT 'Hash',
-    tx_index                    UInt64,
-    tx_status                   LowCardinality(String),
-    tx_status_code              UInt8,
     tx_success                  Bool,
+
+    -- action --
+    action_index                UInt32,
 
     -- authority.keys --
     `index`                     UInt32,
-    action_index                UInt32,
     public_key                  String,
     weight                      UInt32,
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (tx_hash, action_index)
+        PRIMARY KEY (tx_hash, action_index, `index`)
         ORDER BY (tx_hash, action_index, `index`)
         COMMENT 'Antelope authority keys';
 
@@ -233,19 +226,18 @@ CREATE TABLE IF NOT EXISTS waits
 
     -- transaction --
     tx_hash                     String COMMENT 'Hash',
-    tx_index                    UInt64,
-    tx_status                   LowCardinality(String),
-    tx_status_code              UInt8,
     tx_success                  Bool,
+
+    -- action --
+    action_index                UInt32,
 
     -- authority.waits --
     `index`                     UInt32,
-    action_index                UInt32,
     wait_sec                    UInt32,
     weight                      UInt32,
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (tx_hash, action_index)
+        PRIMARY KEY (tx_hash, action_index, `index`)
         ORDER BY (tx_hash, action_index, `index`)
         COMMENT 'Antelope authority waits';
 
@@ -259,15 +251,14 @@ CREATE TABLE IF NOT EXISTS ram_ops
 
     -- transaction --
     tx_hash         String COMMENT 'Hash',
-    tx_index        UInt64,
-    tx_status       LowCardinality(String),
-    tx_status_code  UInt8,
     tx_success      Bool,
+
+    -- action --
+    action_index    UInt32,
 
     -- RAM operation --
     operation       LowCardinality(String),
     operation_code  UInt8,
-    action_index    UInt32,
     payer           String,
     delta           Int64,
     usage           UInt64,
@@ -292,9 +283,6 @@ CREATE TABLE IF NOT EXISTS actions
 
     -- transaction --
     tx_hash                     String COMMENT 'Hash',
-    tx_index                    UInt64,
-    tx_status                   LowCardinality(String),
-    tx_status_code              UInt8,
     tx_success                  Bool,
 
     -- receipt --
@@ -327,8 +315,8 @@ CREATE TABLE IF NOT EXISTS actions
     action_mroot                                    String,
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, block_number)
-        ORDER BY (block_date, block_number, tx_hash, `index`)
+        PRIMARY KEY (tx_hash, `index`)
+        ORDER BY (tx_hash, `index`)
         COMMENT 'Antelope actions';
 
 CREATE TABLE IF NOT EXISTS db_ops
@@ -341,16 +329,15 @@ CREATE TABLE IF NOT EXISTS db_ops
 
     -- transaction --
     tx_hash                     String,
-    tx_index                    UInt64,
-    tx_status                   LowCardinality(String),
-    tx_status_code              UInt8,
     tx_success                  Bool,
+
+    -- action --
+    action_index                UInt32,
 
     -- database operation --
     `index`                     UInt32,
     operation                   LowCardinality(String) COMMENT 'Operation',
     operation_code              UInt8,
-    action_index                UInt32,
     code                        String,
     scope                       String,
     table_name                  String,
@@ -363,8 +350,8 @@ CREATE TABLE IF NOT EXISTS db_ops
     new_data_json               String,
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, block_number)
-        ORDER BY (block_date, block_number, tx_hash, `index`)
+        PRIMARY KEY (tx_hash, `index`)
+        ORDER BY (tx_hash, `index`)
         COMMENT 'Antelope database operations';
 
 CREATE TABLE IF NOT EXISTS authorizations
@@ -377,17 +364,19 @@ CREATE TABLE IF NOT EXISTS authorizations
 
     -- transaction --
     tx_hash                     String,
+    tx_success                  Bool,
 
     -- action --
     action_index                UInt32,
 
     -- authorization --
+    `index`                     UInt32,
     actor                       String,
     permission                  LowCardinality(String)
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, block_number)
-        ORDER BY (block_date, block_number, tx_hash, action_index, actor, permission)
+        PRIMARY KEY (tx_hash, action_index, `index`)
+        ORDER BY (tx_hash, action_index, `index`)
         COMMENT 'Antelope action authorizations';
 
 CREATE TABLE IF NOT EXISTS auth_sequences
@@ -400,17 +389,19 @@ CREATE TABLE IF NOT EXISTS auth_sequences
 
     -- transaction --
     tx_hash                     String,
+    tx_success                  Bool,
 
     -- action --
     action_index                UInt32,
 
     -- auth_sequence --
+    `index`                     UInt32,
     account_name                String,
     sequence                    UInt64
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, block_number)
-        ORDER BY (block_date, block_number, tx_hash, action_index, account_name, sequence)
+        PRIMARY KEY (tx_hash, action_index, `index`)
+        ORDER BY (tx_hash, action_index, `index`)
         COMMENT 'Antelope action authorization sequences';
 
 CREATE TABLE IF NOT EXISTS account_ram_deltas
@@ -423,17 +414,19 @@ CREATE TABLE IF NOT EXISTS account_ram_deltas
 
     -- transaction --
     tx_hash                     String,
+    tx_success                  Bool,
 
     -- action --
     action_index                UInt32,
 
     -- account_ram_delta --
+    `index`                     UInt32,
     account                     String,
     delta                       Int64
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (block_date, block_number)
-        ORDER BY (block_date, block_number, tx_hash, action_index, account)
+        PRIMARY KEY (tx_hash, action_index, `index`)
+        ORDER BY (tx_hash, action_index, `index`)
         COMMENT 'Antelope account RAM deltas';
 
 CREATE TABLE IF NOT EXISTS creation_tree
@@ -446,9 +439,6 @@ CREATE TABLE IF NOT EXISTS creation_tree
 
     -- transaction --
     tx_hash                     String COMMENT 'Hash',
-    tx_index                    UInt64,
-    tx_status                   LowCardinality(String),
-    tx_status_code              UInt8,
     tx_success                  Bool,
 
     -- transaction.creation_tree --

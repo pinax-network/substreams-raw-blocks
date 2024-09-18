@@ -46,7 +46,7 @@ pub fn insert_action(tables: &mut DatabaseChanges, clock: &Clock, trace: &Action
     // transaction
     let tx_hash = &transaction.id;
 
-    let keys = actions_keys(clock, &tx_hash, &index);
+    let keys = actions_keys(&tx_hash, &index);
     let row = tables
         .push_change_composite("actions", keys, 0, table_change::Operation::Create)
         // receipt
@@ -78,18 +78,24 @@ pub fn insert_action(tables: &mut DatabaseChanges, clock: &Clock, trace: &Action
     insert_timestamp(row, clock, false, false);
 
     // TABLE::authorizations
+    let mut index_authorization = 0;
     for authorization in action.authorization.iter() {
-        insert_authorization(tables, clock, trace, transaction, authorization);
+        insert_authorization(tables, clock, trace, transaction, authorization, &index_authorization);
+        index_authorization += 1;
     }
 
     // TABLE::auth_sequences
+    let mut index_auth_sequence = 0;
     for auth_sequence in receipt.auth_sequence.iter() {
-        insert_auth_sequence(tables, clock, trace, transaction, auth_sequence);
+        insert_auth_sequence(tables, clock, trace, transaction, auth_sequence, &index_auth_sequence);
+        index_auth_sequence += 1;
     }
 
     // TABLE::account_ram_deltas
+    let mut index_insert_account_ram_delta = 0;
     for account_ram_delta in trace.account_ram_deltas.iter() {
-        insert_account_ram_delta(tables, clock, trace, transaction, account_ram_delta);
+        insert_account_ram_delta(tables, clock, trace, transaction, account_ram_delta, &index_insert_account_ram_delta);
+        index_insert_account_ram_delta += 1;
     }
     // TO-DO
     // Need Array(String) support

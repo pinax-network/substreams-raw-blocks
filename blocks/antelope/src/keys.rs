@@ -20,46 +20,44 @@ pub fn clock_keys(clock: &Clock) -> HashMap<String, String> {
     keys
 }
 
-pub fn transactions_keys(clock: &Clock, hash: &String) -> HashMap<String, String> {
-    let mut keys = clock_keys(clock);
+pub fn transactions_keys(hash: &String) -> HashMap<String, String> {
+    let mut keys = HashMap::new();
     keys.insert("hash".to_string(), hash.to_string());
     keys
 }
 
-pub fn actions_keys(clock: &Clock, tx_hash: &String, index: &u32) -> HashMap<String, String> {
-    let mut keys = clock_keys(clock);
+pub fn actions_keys(tx_hash: &String, index: &u32) -> HashMap<String, String> {
+    let mut keys = HashMap::new();
     keys.insert("tx_hash".to_string(), tx_hash.to_string());
     keys.insert("index".to_string(), index.to_string());
     keys
 }
 
-pub fn db_ops_keys(clock: &Clock, tx_hash: &String, index: &u32) -> HashMap<String, String> {
-    let mut keys = clock_keys(clock);
+pub fn db_ops_keys(tx_hash: &String, index: &u32) -> HashMap<String, String> {
+    let mut keys = HashMap::new();
     keys.insert("tx_hash".to_string(), tx_hash.to_string());
     keys.insert("index".to_string(), index.to_string());
     keys
 }
 
-pub fn authorizations_keys(clock: &Clock, tx_hash: &String, action_index: &u32, actor: &String, permission: &String) -> HashMap<String, String> {
-    let mut keys = clock_keys(clock);
+pub fn authorizations_keys(tx_hash: &String, action_index: &u32, index: &u32) -> HashMap<String, String> {
+    let mut keys = HashMap::new();
     keys.insert("tx_hash".to_string(), tx_hash.to_string());
     keys.insert("action_index".to_string(), action_index.to_string());
-    keys.insert("actor".to_string(), actor.to_string());
-    keys.insert("permission".to_string(), permission.to_string());
+    keys.insert("index".to_string(), index.to_string());
     keys
 }
 
-pub fn auth_sequence_keys(clock: &Clock, tx_hash: &String, action_index: &u32, account_name: &String, sequence: &u64) -> HashMap<String, String> {
-    let mut keys = clock_keys(clock);
+pub fn auth_sequence_keys(tx_hash: &String, action_index: &u32, index: &u32) -> HashMap<String, String> {
+    let mut keys = HashMap::new();
     keys.insert("tx_hash".to_string(), tx_hash.to_string());
     keys.insert("action_index".to_string(), action_index.to_string());
-    keys.insert("account_name".to_string(), account_name.to_string());
-    keys.insert("sequence".to_string(), sequence.to_string());
+    keys.insert("index".to_string(), index.to_string());
     keys
 }
 
-pub fn account_ram_delta_keys(clock: &Clock, tx_hash: &String, action_index: &u32, account: &String, delta: &i64) -> HashMap<String, String> {
-    let mut keys = clock_keys(clock);
+pub fn account_ram_delta_keys(tx_hash: &String, action_index: &u32, account: &String, delta: &i64) -> HashMap<String, String> {
+    let mut keys = HashMap::new();
     keys.insert("tx_hash".to_string(), tx_hash.to_string());
     keys.insert("action_index".to_string(), action_index.to_string());
     keys.insert("account".to_string(), account.to_string());
@@ -82,10 +80,8 @@ pub fn authority_keys(tx_hash: &str, action_index: &u32, index: &u32) -> HashMap
     keys
 }
 
-pub fn feature_ops_keys(clock: &Clock, tx_hash: &String, kind: &String, feature_digest: &String) -> HashMap<String, String> {
-    let mut keys = clock_keys(clock);
-    keys.insert("tx_hash".to_string(), tx_hash.to_string());
-    keys.insert("kind".to_string(), kind.to_string());
+pub fn feature_ops_keys(feature_digest: &str) -> HashMap<String, String> {
+    let mut keys = HashMap::new();
     keys.insert("feature_digest".to_string(), feature_digest.to_string());
     keys
 }
