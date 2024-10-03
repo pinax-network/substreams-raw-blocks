@@ -66,6 +66,108 @@ CREATE TABLE IF NOT EXISTS rewards
         ORDER BY (block_hash, pubkey, reward_type)
         COMMENT 'Solana rewards';
 
+CREATE TABLE IF NOT EXISTS transactions
+(
+    -- clock --
+    block_time                  DateTime64(3, 'UTC'),
+    block_number                UInt64,
+    block_hash                  String,
+    block_date                  Date,
+
+     -- block --
+    block_slot                  UInt64,
+    block_parent_hash           String,
+    block_parent_slot           UInt64,
+
+    -- transaction --
+    id                          String,
+    `index`                     UInt32,
+    fee                         UInt64,
+    required_signatures         UInt32,
+    required_signed_accounts    UInt32,
+    required_unsigned_accounts  UInt32,
+    `signature`                 String,
+    success                     Bool,
+    error                       String,
+    recent_block_hash           String,
+    account_keys                String,
+    log_messages                String,
+    pre_balances                String,
+    post_balances                String,
+)
+
+CREATE TABLE IF NOT EXISTS transaction_instructions
+(
+    -- clock --
+    block_time                DateTime64(3, 'UTC'),
+    block_number              UInt64,
+    block_hash                String,
+    block_date                Date,
+
+    -- block --
+    block_slot                UInt64,
+    block_parent_hash         String,
+    block_parent_slot         UInt64,
+
+    -- transaction --
+    transaction_id            String,
+    transaction_index         UInt32,
+
+    -- instruction --
+    instruction_index         UInt32,
+    `data`                    String,
+    executing_account         String,
+    account_arguments         String
+)
+
+CREATE TABLE IF NOT EXISTS transaction_inner_instructions
+(
+    -- clock --
+    block_time                DateTime64(3, 'UTC'),
+    block_number              UInt64,
+    block_hash                String,
+    block_date                Date,
+
+    -- block --
+    block_slot                UInt64,
+    block_parent_hash         String,
+    block_parent_slot         UInt64,
+    -- reference to transaction --
+    transaction_id            String,
+    instruction_index         UInt32, -- links to transaction_instructions
+
+    -- inner instruction details --
+    inner_instruction_index   UInt32,
+    inner_data                String,
+    inner_executing_account   String,
+    inner_account_arguments   String
+)
+
+CREATE TABLE IF NOT EXISTS token_balances
+(
+    -- clock --
+    block_time                DateTime64(3, 'UTC'),
+    block_number              UInt64,
+    block_hash                String,
+    block_date                Date,
+    
+    -- block --
+    block_slot                UInt64,
+    block_parent_hash         String,
+    block_parent_slot         UInt64,
+
+    -- transaction --
+    transaction_id            String,
+    transaction_index         UInt32,
+
+    -- token balance --
+    program_id                String,
+    account                   String,
+    mint                      String,
+    `owner`                   String,
+    pre_amount                Decimal(38,18),
+    post_amount               Decimal(38,18),
+)
 
 -- Projections --
 -- https://clickhouse.com/docs/en/sql-reference/statements/alter/projection --
