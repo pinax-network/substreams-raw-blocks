@@ -1,9 +1,8 @@
-use common::blocks::insert_timestamp;
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_solana::pb::sf::solana::r#type::v1::Block;
 
-use crate::{blocks::insert_blockinfo, keys::reward_keys};
+use crate::{blocks::insert_blockinfo, keys::reward_keys, utils::insert_timestamp_without_number};
 
 pub fn insert_rewards(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
     block.rewards.iter().for_each(|reward| {
@@ -19,7 +18,7 @@ pub fn insert_rewards(tables: &mut DatabaseChanges, clock: &Clock, block: &Block
             .change("commission", ("", reward.commission.as_str()));
 
         insert_blockinfo(row, block, true);
-        insert_timestamp(row, clock, false, false);
+        insert_timestamp_without_number(row, clock, false, false);
     });
 }
 

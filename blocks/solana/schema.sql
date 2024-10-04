@@ -18,40 +18,43 @@ CREATE TABLE IF NOT EXISTS cursors
 CREATE TABLE IF NOT EXISTS blocks
 (
     -- clock --
-    time                    DateTime64(3, 'UTC'),
-    number                  UInt64,
-    date                    Date,
-    hash                    String COMMENT 'Hash',
+    time                            DateTime64(3, 'UTC'),
+    date                            Date,
+    hash                            String COMMENT 'Hash',
 
     -- block --
-    slot                    UInt64,
-    parent_hash             String COMMENT 'Hash',
-    parent_slot             UInt64,
+    slot                            UInt64,
+    height                          UInt64,
+    previous_block_hash             String COMMENT 'Hash',
+    parent_slot                     UInt64,
 
     -- counters --
-    -- size                    UInt64,
-    total_transactions      UInt64,
-    successful_transactions UInt64,
-    failed_transactions     UInt64,
-    total_instructions      UInt64,
-    total_rewards           UInt64,
+    total_transactions              UInt64,
+    successful_transactions         UInt64,
+    failed_transactions             UInt64,
+    total_vote_transactions         UInt64,
+    total_non_vote_transactions     UInt64,
+    successful_vote_transactions    UInt64,
+    successful_non_vote_transactions UInt64,
+    failed_vote_transactions        UInt64,
+    failed_non_vote_transactions    UInt64
 )
     ENGINE = ReplacingMergeTree()
-        PRIMARY KEY (hash)
-        ORDER BY (hash)
-        COMMENT 'Solana block header';
+    PRIMARY KEY (hash)
+    ORDER BY (hash)
+    COMMENT 'Solana block header';
 
 CREATE TABLE IF NOT EXISTS rewards
 (
     -- clock --
     block_time                  DateTime64(3, 'UTC'),
-    block_number                UInt64,
-    block_hash                  String,
     block_date                  Date,
+    block_hash                  String,
 
     -- block --
     block_slot                  UInt64,
-    block_parent_hash           String,
+    block_height                UInt64,
+    block_previous_block_hash   String,
     block_parent_slot           UInt64,
 
     -- reward --
@@ -70,13 +73,13 @@ CREATE TABLE IF NOT EXISTS transactions
 (
     -- clock --
     block_time                  DateTime64(3, 'UTC'),
-    block_number                UInt64,
     block_hash                  String,
     block_date                  Date,
 
      -- block --
     block_slot                  UInt64,
-    block_parent_hash           String,
+    block_height                UInt64,
+    block_previous_block_hash   String,
     block_parent_slot           UInt64,
 
     -- transaction --
@@ -96,17 +99,22 @@ CREATE TABLE IF NOT EXISTS transactions
     post_balances                String,
 )
 
+    ENGINE = ReplacingMergeTree()
+    PRIMARY KEY (block_hash, id)
+    ORDER BY (block_hash, id)
+    COMMENT 'Solana transactions';
+
 CREATE TABLE IF NOT EXISTS transaction_instructions
 (
     -- clock --
     block_time                DateTime64(3, 'UTC'),
-    block_number              UInt64,
     block_hash                String,
     block_date                Date,
 
     -- block --
     block_slot                UInt64,
-    block_parent_hash         String,
+    block_height              UInt64,
+    block_previous_block_hash String,
     block_parent_slot         UInt64,
 
     -- transaction --
@@ -120,18 +128,24 @@ CREATE TABLE IF NOT EXISTS transaction_instructions
     account_arguments         String
 )
 
+    ENGINE = ReplacingMergeTree()
+    PRIMARY KEY (block_hash, transaction_id, instruction_index)
+    ORDER BY (block_hash, transaction_id, instruction_index)
+    COMMENT 'Solana transaction instructions';
+
 CREATE TABLE IF NOT EXISTS transaction_inner_instructions
 (
     -- clock --
     block_time                DateTime64(3, 'UTC'),
-    block_number              UInt64,
+    block_height              UInt64,
     block_hash                String,
     block_date                Date,
 
     -- block --
     block_slot                UInt64,
-    block_parent_hash         String,
+    block_previous_block_hash String,
     block_parent_slot         UInt64,
+
     -- reference to transaction --
     transaction_id            String,
     instruction_index         UInt32, -- links to transaction_instructions
@@ -143,17 +157,22 @@ CREATE TABLE IF NOT EXISTS transaction_inner_instructions
     inner_account_arguments   String
 )
 
+    ENGINE = ReplacingMergeTree()
+    PRIMARY KEY (block_hash, transaction_id, instruction_index, inner_instruction_index)
+    ORDER BY (block_hash, transaction_id, instruction_index, inner_instruction_index)
+    COMMENT 'Solana transaction inner instructions';
+
 CREATE TABLE IF NOT EXISTS token_balances
 (
     -- clock --
     block_time                DateTime64(3, 'UTC'),
-    block_number              UInt64,
+    block_height              UInt64,
     block_hash                String,
     block_date                Date,
     
     -- block --
     block_slot                UInt64,
-    block_parent_hash         String,
+    block_previous_block_hash String,
     block_parent_slot         UInt64,
 
     -- transaction --
@@ -169,17 +188,46 @@ CREATE TABLE IF NOT EXISTS token_balances
     post_amount               Decimal(38,18),
 )
 
+    ENGINE = ReplacingMergeTree()
+    PRIMARY KEY (block_hash, transaction_id, program_id, account)
+    ORDER BY (block_hash, transaction_id, program_id, account)
+    COMMENT 'Solana token balances';
+
 -- Projections --
 -- https://clickhouse.com/docs/en/sql-reference/statements/alter/projection --
-ALTER TABLE blocks ADD PROJECTION IF NOT EXISTS blocks_by_block_number (
-    SELECT * ORDER BY date, number
+ALTER TABLE blocks ADD PROJECTION IF NOT EXISTS blocks_by_block_height (
+    SELECT * ORDER BY date, height
 );
 
-ALTER TABLE rewards ADD PROJECTION IF NOT EXISTS rewards_by_block_number (
-    SELECT * ORDER BY block_date, block_number
+ALTER TABLE rewards ADD PROJECTION IF NOT EXISTS rewards_by_block_height (
+    SELECT * ORDER BY block_date, block_height
+);
+
+ALTER TABLE transactions ADD PROJECTION IF NOT EXISTS transactions_by_block_height (
+    SELECT * ORDER BY block_date, block_height
+);
+
+ALTER TABLE transaction_instructions ADD PROJECTION IF NOT EXISTS transaction_instructions_by_block_height (
+    SELECT * ORDER BY block_date, block_height
+);
+
+ALTER TABLE transaction_inner_instructions ADD PROJECTION IF NOT EXISTS transaction_inner_instructions_by_block_height (
+    SELECT * ORDER BY block_date, block_height
+);
+
+ALTER TABLE token_balances ADD PROJECTION IF NOT EXISTS token_balances_by_block_height (
+    SELECT * ORDER BY block_date, block_height
 );
 
 
-ALTER TABLE blocks MATERIALIZE PROJECTION blocks_by_block_number;
+ALTER TABLE blocks MATERIALIZE PROJECTION blocks_by_block_height;
 
-ALTER TABLE rewards MATERIALIZE PROJECTION rewards_by_block_number;
+ALTER TABLE rewards MATERIALIZE PROJECTION rewards_by_block_height;
+
+ALTER TABLE transactions MATERIALIZE PROJECTION transactions_by_block_height;
+
+ALTER TABLE transaction_instructions MATERIALIZE PROJECTION transaction_instructions_by_block_height;
+
+ALTER TABLE transaction_inner_instructions MATERIALIZE PROJECTION transaction_inner_instructions_by_block_height;
+
+ALTER TABLE token_balances MATERIALIZE PROJECTION token_balances_by_block_height;
