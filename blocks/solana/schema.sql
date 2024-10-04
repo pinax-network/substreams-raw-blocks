@@ -60,6 +60,7 @@ CREATE TABLE IF NOT EXISTS rewards
     -- reward --
     pubkey                      String COMMENT 'Reward destination',
     lamports                    Int64,
+    pre_balance                 UInt64,
     post_balance                UInt64,
     reward_type                 LowCardinality(String),
     commission                  String,
