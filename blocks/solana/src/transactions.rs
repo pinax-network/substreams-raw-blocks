@@ -27,9 +27,9 @@ pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &
             None => String::new(),
         };
 
-        let signatures: String = trx.signatures.iter().map(|sig| base58::encode(sig)).collect::<Vec<String>>().join(",");
+        let signatures: String = trx.signatures.iter().map(base58::encode).collect::<Vec<String>>().join(",");
 
-        let first_signature = signatures.split(",").next().unwrap_or("");
+        let first_signature = trx.signatures.first().map(|sig| base58::encode(sig)).unwrap_or_default();
 
         let account_keys = decode_and_build_csv_string(&message.account_keys);
         let recent_block_hash = base58::encode(&message.recent_blockhash);
@@ -43,13 +43,13 @@ pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &
 
         let row = tables
             .push_change("transactions", first_signature, 0, table_change::Operation::Create)
-            .change("id", ("", first_signature))
+            .change("id", ("", first_signature.as_str()))
             .change("index", ("", index_str.as_str()))
             .change("fee", ("", meta.fee.to_string().as_str()))
             .change("required_signatures", ("", header.num_required_signatures.to_string().as_str()))
             .change("required_signed_accounts", ("", header.num_readonly_signed_accounts.to_string().as_str()))
             .change("required_unsigned_accounts", ("", header.num_readonly_unsigned_accounts.to_string().as_str()))
-            .change("signature", ("", first_signature))
+            .change("signature", ("", first_signature.as_str()))
             .change("success", ("", success.to_string().as_str()))
             .change("error", ("", err.as_str()))
             .change("recent_block_hash", ("", recent_block_hash.as_str()))
