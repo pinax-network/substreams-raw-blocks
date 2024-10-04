@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS transactions
     ORDER BY (id)
     COMMENT 'Solana transactions';
 
-CREATE TABLE IF NOT EXISTS transaction_instructions
+CREATE TABLE IF NOT EXISTS instructions
 (
     -- clock --
     block_time                DateTime64(3, 'UTC'),
@@ -133,37 +133,38 @@ CREATE TABLE IF NOT EXISTS transaction_instructions
 )
 
     ENGINE = ReplacingMergeTree()
-    PRIMARY KEY (block_hash, transaction_id, instruction_index)
-    ORDER BY (block_hash, transaction_id, instruction_index)
+    PRIMARY KEY (transaction_id, instruction_index)
+    ORDER BY (transaction_id, instruction_index)
     COMMENT 'Solana transaction instructions';
 
-CREATE TABLE IF NOT EXISTS transaction_inner_instructions
+CREATE TABLE IF NOT EXISTS inner_instructions
 (
     -- clock --
     block_time                DateTime64(3, 'UTC'),
-    block_height              UInt64,
     block_hash                String,
     block_date                Date,
 
     -- block --
     block_slot                UInt64,
+    block_height              UInt64,
     block_previous_block_hash String,
     block_parent_slot         UInt64,
 
     -- reference to transaction --
     transaction_id            String,
-    instruction_index         UInt32, -- links to transaction_instructions
+    transaction_index         UInt32, -- links to transaction_instructions
+    instruction_index         UInt32,
 
     -- inner instruction details --
     inner_instruction_index   UInt32,
-    inner_data                String,
-    inner_executing_account   String,
-    inner_account_arguments   String
+    `data`                String,
+    executing_account   String,
+    account_arguments   String
 )
 
     ENGINE = ReplacingMergeTree()
-    PRIMARY KEY (block_hash, transaction_id, instruction_index, inner_instruction_index)
-    ORDER BY (block_hash, transaction_id, instruction_index, inner_instruction_index)
+    PRIMARY KEY (transaction_id, instruction_index, inner_instruction_index)
+    ORDER BY (transaction_id, instruction_index, inner_instruction_index)
     COMMENT 'Solana transaction inner instructions';
 
 CREATE TABLE IF NOT EXISTS token_balances
@@ -211,11 +212,11 @@ ALTER TABLE transactions ADD PROJECTION IF NOT EXISTS transactions_by_block_heig
     SELECT * ORDER BY block_date, block_height
 );
 
-ALTER TABLE transaction_instructions ADD PROJECTION IF NOT EXISTS transaction_instructions_by_block_height (
+ALTER TABLE instructions ADD PROJECTION IF NOT EXISTS transaction_instructions_by_block_height (
     SELECT * ORDER BY block_date, block_height
 );
 
-ALTER TABLE transaction_inner_instructions ADD PROJECTION IF NOT EXISTS transaction_inner_instructions_by_block_height (
+ALTER TABLE inner_instructions ADD PROJECTION IF NOT EXISTS transaction_inner_instructions_by_block_height (
     SELECT * ORDER BY block_date, block_height
 );
 
@@ -230,8 +231,8 @@ ALTER TABLE rewards MATERIALIZE PROJECTION rewards_by_block_height;
 
 ALTER TABLE transactions MATERIALIZE PROJECTION transactions_by_block_height;
 
-ALTER TABLE transaction_instructions MATERIALIZE PROJECTION transaction_instructions_by_block_height;
+ALTER TABLE instructions MATERIALIZE PROJECTION transaction_instructions_by_block_height;
 
-ALTER TABLE transaction_inner_instructions MATERIALIZE PROJECTION transaction_inner_instructions_by_block_height;
+ALTER TABLE inner_instructions MATERIALIZE PROJECTION transaction_inner_instructions_by_block_height;
 
 ALTER TABLE token_balances MATERIALIZE PROJECTION token_balances_by_block_height;
