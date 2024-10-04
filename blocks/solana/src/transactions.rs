@@ -1,4 +1,5 @@
-use substreams::pb::substreams::Clock;
+use common::utils::bytes_to_hex;
+use substreams::{pb::substreams::Clock, Hex};
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_solana::{
     base58,
@@ -78,7 +79,7 @@ fn insert_instructions(tables: &mut DatabaseChanges, clock: &Clock, block: &Bloc
 fn insert_single_instruction(tables: &mut DatabaseChanges, clock: &Clock, block: &Block, signature: &str, trx_index: &str, instruction_index: usize, instruction_view: &InstructionView) {
     let executing_account = base58::encode(instruction_view.program_id());
     let account_arguments = build_csv_string(&instruction_view.accounts());
-    let data = base58::encode(instruction_view.data());
+    let data = bytes_to_hex(&instruction_view.data());
 
     let keys = instruction_keys(signature, instruction_index.to_string().as_str());
 
