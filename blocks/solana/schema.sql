@@ -97,12 +97,15 @@ CREATE TABLE IF NOT EXISTS transactions
     account_keys                String,
     log_messages                String,
     pre_balances                String,
-    post_balances                String,
+    post_balances               String,
+    signatures                  String,
+    signer                      String,
+    signers                     String,
 )
 
     ENGINE = ReplacingMergeTree()
-    PRIMARY KEY (block_hash, id)
-    ORDER BY (block_hash, id)
+    PRIMARY KEY (id)
+    ORDER BY (id)
     COMMENT 'Solana transactions';
 
 CREATE TABLE IF NOT EXISTS transaction_instructions

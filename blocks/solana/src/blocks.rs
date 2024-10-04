@@ -2,7 +2,7 @@ use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges, TableChange};
 use substreams_solana::pb::sf::solana::r#type::v1::Block;
 
-use crate::{counters::insert_block_counters, rewards::insert_rewards, utils::insert_timestamp_without_number};
+use crate::{counters::insert_block_counters, rewards::insert_rewards, transactions::insert_transactions, utils::insert_timestamp_without_number};
 
 pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
     let row = tables.push_change("blocks", block.blockhash.as_str(), 0, table_change::Operation::Create);
@@ -13,6 +13,9 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
 
     // TABLE::rewards
     insert_rewards(tables, clock, block);
+
+    // TABLE::transactions
+    insert_transactions(tables, clock, block);
 }
 
 pub fn insert_blockinfo(row: &mut TableChange, block: &Block, with_prefix: bool) {

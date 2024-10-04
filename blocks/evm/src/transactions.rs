@@ -107,18 +107,15 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
         .change("success", ("", success.to_string().as_str()))
         .change("status", ("", status.as_str()))
         .change("status_code", ("", status_code.to_string().as_str()))
-
         // transaction receipt
         .change("blob_gas_price", ("", blob_gas_price.as_str()))
         .change("blob_gas_used", ("", blob_gas_used.to_string().as_str()))
         .change("cumulative_gas_used", ("", cumulative_gas_used.to_string().as_str()))
         .change("logs_bloom", ("", logs_bloom.as_str()))
         .change("state_root", ("", state_root.as_str()))
-
         // block roots
         .change("transactions_root", ("", transactions_root.as_str()))
-        .change("receipts_root", ("", receipts_root.as_str()))
-        ;
+        .change("receipts_root", ("", receipts_root.as_str()));
 
     insert_timestamp(row, clock, false, true);
 
