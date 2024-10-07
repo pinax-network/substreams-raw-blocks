@@ -11,12 +11,20 @@ use crate::{
     utils::{b58decode_and_build_csv_string, build_csv_string, insert_timestamp_without_number},
 };
 
+static VOTE_ACCOUNT_KEY: &str = "Vote111111111111111111111111111111111111111";
+
 pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
-    block.transactions.iter().enumerate().for_each(|(index, transaction)| {
+    for (index, transaction) in block.transactions.iter().enumerate() {
         let meta = transaction.meta.as_ref().expect("Transaction meta is missing");
         let trx = transaction.transaction.as_ref().expect("Transaction is missing");
         let message = trx.message.as_ref().expect("Transaction message is missing");
         let header = message.header.as_ref().expect("Transaction header is missing");
+
+        // If vote transaction, skip it
+        if message.account_keys.iter().any(|key| base58::encode(key) == VOTE_ACCOUNT_KEY) {
+            continue;
+        }
+        let account_keys = b58decode_and_build_csv_string(&message.account_keys);
 
         let success = meta.err.is_none();
 
@@ -30,7 +38,6 @@ pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &
 
         let first_signature = &trx.signatures.first().map(|sig| base58::encode(sig)).unwrap_or_default();
 
-        let account_keys = b58decode_and_build_csv_string(&message.account_keys);
         let recent_block_hash = base58::encode(&message.recent_blockhash);
         let log_messages = build_csv_string(&meta.log_messages);
         let pre_balances = build_csv_string(&meta.pre_balances);
@@ -64,7 +71,7 @@ pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &
         insert_blockinfo(row, block, true);
 
         insert_instructions(tables, clock, block, transaction, index_str.as_str(), first_signature.as_str());
-    })
+    }
 }
 
 // TODO: decode transaction error
