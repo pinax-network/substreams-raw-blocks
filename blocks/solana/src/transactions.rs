@@ -8,7 +8,6 @@ use substreams_solana::{
 use crate::{
     blocks::insert_blockinfo,
     instructions::insert_instructions,
-    token_balances::insert_token_balances,
     utils::{b58decode_and_build_csv_string, build_csv_string, insert_timestamp_without_number},
 };
 

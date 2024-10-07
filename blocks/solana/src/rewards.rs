@@ -1,6 +1,6 @@
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
-use substreams_solana::pb::sf::solana::r#type::v1::{Block, Rewards};
+use substreams_solana::pb::sf::solana::r#type::v1::Block;
 
 use crate::{blocks::insert_blockinfo, keys::reward_keys, utils::insert_timestamp_without_number};
 
