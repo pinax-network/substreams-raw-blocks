@@ -22,3 +22,11 @@ pub fn inner_instruction_keys(transaction_id: &str, instruction_index: &str, inn
     keys.insert("inner_instruction_index".to_string(), inner_index.to_string());
     keys
 }
+
+pub fn token_balance_keys(transaction_id: &str, program_id: &str, account: &str) -> HashMap<String, String> {
+    let mut keys = HashMap::new();
+    keys.insert("transaction_id".to_string(), transaction_id.to_string());
+    keys.insert("program_id".to_string(), program_id.to_string());
+    keys.insert("account".to_string(), account.to_string());
+    keys
+}

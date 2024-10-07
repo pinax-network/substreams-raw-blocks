@@ -189,8 +189,8 @@ CREATE TABLE IF NOT EXISTS token_balances
     account                   String,
     mint                      String,
     `owner`                   String,
-    pre_amount                Decimal(38,18),
-    post_amount               Decimal(38,18),
+    pre_amount                String, -- Decimal(38,18) when sink will support it
+    post_amount               String  -- Decimal(38,18) when sink will support it
 )
 
     ENGINE = ReplacingMergeTree()

@@ -8,6 +8,7 @@ use substreams_solana::{
 use crate::{
     blocks::insert_blockinfo,
     instructions::insert_instructions,
+    token_balances::insert_token_balances,
     utils::{b58decode_and_build_csv_string, build_csv_string, insert_timestamp_without_number},
 };
 
@@ -36,7 +37,8 @@ pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &
 
         let signatures: String = trx.signatures.iter().map(base58::encode).collect::<Vec<String>>().join(",");
 
-        let first_signature = &trx.signatures.first().map(|sig| base58::encode(sig)).unwrap_or_default();
+        // let first_signature = &trx.signatures.first().map(|sig| base58::encode(sig)).unwrap_or_default();
+        let first_signature = transaction.id();
 
         let recent_block_hash = base58::encode(&message.recent_blockhash);
         let log_messages = build_csv_string(&meta.log_messages);
@@ -48,7 +50,7 @@ pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &
         let index_str = index.to_string();
 
         let row = tables
-            .push_change("transactions", first_signature, 0, table_change::Operation::Create)
+            .push_change("transactions", &first_signature, 0, table_change::Operation::Create)
             .change("id", ("", first_signature.as_str()))
             .change("index", ("", index_str.as_str()))
             .change("fee", ("", meta.fee.to_string().as_str()))
@@ -70,7 +72,7 @@ pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &
         insert_timestamp_without_number(row, clock, false, true);
         insert_blockinfo(row, block, true);
 
-        insert_instructions(tables, clock, block, transaction, index_str.as_str(), first_signature.as_str());
+        insert_instructions(tables, clock, block, transaction, index_str.as_str(), &first_signature);
     }
 }
 

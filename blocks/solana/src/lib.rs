@@ -4,5 +4,6 @@ mod instructions;
 mod keys;
 mod rewards;
 mod sinks;
+mod token_balances;
 mod transactions;
 mod utils;
