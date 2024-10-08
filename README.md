@@ -41,12 +41,12 @@ graph TD;
 > Solana
 > [`sf.solana.type.v1.Block`](https://buf.build/streamingfast/firehose-solana/docs/main:sf.solana.type.v1)
 
-- [ ] **Blocks**
+- [x] **Blocks**
 - [ ] **Transactions**
 - [ ] **Instruction Calls**
 - [ ] **Account Activity**
 - [ ] **Discriminators**
-- [ ] **Rewards**
+- [x] **Rewards**
 - [ ] **Vote Transactions**
 
 ```mermaid
