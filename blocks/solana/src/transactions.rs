@@ -2,7 +2,7 @@ use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_solana::{
     base58,
-    pb::sf::solana::r#type::v1::{Block, TransactionError},
+    pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction, TransactionError},
 };
 
 use crate::{
@@ -13,8 +13,8 @@ use crate::{
 
 static VOTE_ACCOUNT_KEY: &str = "Vote111111111111111111111111111111111111111";
 
-pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
-    for (index, transaction) in block.transactions.iter().enumerate() {
+pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &Block, transactions: &Vec<(&ConfirmedTransaction, usize)>) {
+    for (transaction, index) in transactions {
         let meta = transaction.meta.as_ref().expect("Transaction meta is missing");
         let trx = transaction.transaction.as_ref().expect("Transaction is missing");
         let message = trx.message.as_ref().expect("Transaction message is missing");
@@ -24,6 +24,7 @@ pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &
         if message.account_keys.iter().any(|key| base58::encode(key) == VOTE_ACCOUNT_KEY) {
             continue;
         }
+
         let account_keys = b58decode_and_build_csv_string(&message.account_keys);
 
         let success = meta.err.is_none();
