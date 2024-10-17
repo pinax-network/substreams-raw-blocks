@@ -2,10 +2,14 @@ use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_solana::{
     base58,
-    pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction},
+    pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction, Message, TransactionStatusMeta},
 };
 
-use crate::{blocks::insert_blockinfo, keys::account_activity_keys, utils::insert_timestamp_without_number};
+use crate::{
+    blocks::insert_blockinfo,
+    keys::account_activity_keys,
+    utils::{get_account_keys_extended, insert_timestamp_without_number},
+};
 
 pub fn insert_account_activity(tables: &mut DatabaseChanges, clock: &Clock, block: &Block, transactions: &Vec<(&ConfirmedTransaction, usize)>) {
     for (transaction, index) in transactions {
@@ -16,6 +20,10 @@ pub fn insert_account_activity(tables: &mut DatabaseChanges, clock: &Clock, bloc
 
         let pre_token_balances = &meta.pre_token_balances;
         let post_token_balances = &meta.post_token_balances;
+
+        let trx = transaction.transaction.as_ref().unwrap();
+
+        let account_keys_extended = get_account_keys_extended(transaction);
 
         for (balance_index, (pre_balance, post_balance)) in meta.pre_balances.iter().zip(meta.post_balances.iter()).enumerate() {
             let pre_token_balance_index = pre_token_balances.iter().position(|balance| balance.account_index == balance_index as u32).unwrap_or(usize::MAX);
@@ -49,16 +57,13 @@ pub fn insert_account_activity(tables: &mut DatabaseChanges, clock: &Clock, bloc
             }
             let balance_change = *post_balance as i128 - *pre_balance as i128;
 
-            let trx = transaction.transaction.as_ref().unwrap();
-            let message = trx.message.as_ref().unwrap();
-
-            let address = base58::encode(message.account_keys.get(balance_index).unwrap_or(&Vec::new()));
+            let address = account_keys_extended.get(balance_index).unwrap();
 
             let nb_signatures = trx.signatures.len();
             let signed = balance_index < nb_signatures;
 
             // TODO: Find out why this is not working
-            let writable = meta.loaded_writable_addresses.iter().any(|addr| base58::encode(addr) == address);
+            let writable = meta.loaded_writable_addresses.iter().any(|addr| &base58::encode(addr) == address);
 
             let keys = account_activity_keys(&transaction_id, address.as_str());
 

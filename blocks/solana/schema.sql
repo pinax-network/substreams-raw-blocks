@@ -194,7 +194,7 @@ CREATE TABLE IF NOT EXISTS account_activity
     pre_token_balance         String, -- Decimal(38,18) when sink will support it
     post_token_balance        String, -- Decimal(38,18) when sink will support it
     token_balance_change      String, -- Decimal(38,17) when sink will support it
-    token_balance_owner       String
+    token_balance_owner       String,
 )
 
     ENGINE = ReplacingMergeTree()

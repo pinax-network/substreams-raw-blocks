@@ -8,10 +8,8 @@ use substreams_solana::{
 use crate::{
     blocks::insert_blockinfo,
     instructions::insert_instructions,
-    utils::{b58decode_and_build_csv_string, build_csv_string, insert_timestamp_without_number},
+    utils::{build_csv_string, get_account_keys_extended, insert_timestamp_without_number},
 };
-
-static VOTE_ACCOUNT_KEY: &str = "Vote111111111111111111111111111111111111111";
 
 pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &Block, transactions: &Vec<(&ConfirmedTransaction, usize)>) {
     for (transaction, index) in transactions {
@@ -20,12 +18,7 @@ pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &
         let message = trx.message.as_ref().expect("Transaction message is missing");
         let header = message.header.as_ref().expect("Transaction header is missing");
 
-        // If vote transaction, skip it
-        if message.account_keys.iter().any(|key| base58::encode(key) == VOTE_ACCOUNT_KEY) {
-            continue;
-        }
-
-        let account_keys = b58decode_and_build_csv_string(&message.account_keys);
+        let account_keys = build_csv_string(&get_account_keys_extended(transaction));
 
         let success = meta.err.is_none();
 
@@ -36,8 +29,6 @@ pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &
         };
 
         let signatures: String = trx.signatures.iter().map(base58::encode).collect::<Vec<String>>().join(",");
-
-        // let first_signature = &trx.signatures.first().map(|sig| base58::encode(sig)).unwrap_or_default();
         let first_signature = transaction.id();
 
         let recent_block_hash = base58::encode(&message.recent_blockhash);
