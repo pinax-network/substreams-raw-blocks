@@ -47,6 +47,16 @@ pub fn insert_account_activity(tables: &mut DatabaseChanges, clock: &Clock, bloc
         };
 
         for (balance_index, (pre_balance, post_balance)) in meta.pre_balances.iter().zip(meta.post_balances.iter()).enumerate() {
+            let address = match account_keys_extended.get(balance_index) {
+                Some(addr) => addr,
+                None => continue, // Skip if address is missing
+            };
+
+            // Skip if address is a program derived address
+            if address.contains("111111111111") {
+                continue;
+            }
+
             // Efficiently retrieve the pre_token_balance_index using the precomputed map
             let pre_token_balance_index = account_to_token_balance_map.get(balance_index).copied().flatten().unwrap_or(usize::MAX);
 
@@ -57,11 +67,6 @@ pub fn insert_account_activity(tables: &mut DatabaseChanges, clock: &Clock, bloc
             };
 
             let balance_change = *post_balance as i128 - *pre_balance as i128;
-
-            let address = match account_keys_extended.get(balance_index) {
-                Some(addr) => addr,
-                None => continue, // Skip if address is missing
-            };
 
             let signed = is_signed(trx, balance_index);
             let writable = writable_addresses.contains(address);
