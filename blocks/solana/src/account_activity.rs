@@ -47,13 +47,10 @@ pub fn insert_account_activity(tables: &mut DatabaseChanges, clock: &Clock, bloc
         };
 
         for (balance_index, (pre_balance, post_balance)) in meta.pre_balances.iter().zip(meta.post_balances.iter()).enumerate() {
-            let address = match account_keys_extended.get(balance_index) {
-                Some(addr) => addr,
-                None => continue, // Skip if address is missing
-            };
+            let address = account_keys_extended.get(balance_index).unwrap();
 
             // Skip if address is a program derived address
-            if address.contains("111111111111") {
+            if address.contains("1111") {
                 continue;
             }
 
@@ -115,8 +112,8 @@ fn extract_token_balance_changes(
     let token_balance_change = match (pre_balance, post_balance) {
         (Some(pre), Some(post)) => {
             // Use a more precise calculation method to avoid floating-point precision issues
-            let pre_scaled = (pre * 1_000_000_000.0).round() as i64;
-            let post_scaled = (post * 1_000_000_000.0).round() as i64;
+            let pre_scaled = (pre * 1_000_000_000.0).round() as i128;
+            let post_scaled = (post * 1_000_000_000.0).round() as i128;
             Some((post_scaled - pre_scaled) as f64 / 1_000_000_000.0)
         }
         _ => None,
