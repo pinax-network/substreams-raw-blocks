@@ -29,6 +29,10 @@ run:
 cache:
 	substreams gui ./raw-blocks-solana-v0.1.0.spkg -e solana.substreams.pinax.network:443 ch_out -s 203100000 -t 203200000 --production-mode
 
+.PHONY: cache-foundational
+cache-foundational:
+	substreams gui https://github.com/streamingfast/substreams-foundational-modules/releases/download/solana-common-v0.3.0/solana-common-v0.3.0.spkg -e solana.substreams.pinax.network:443 blocks_without_votes -s 203100000 -t 203200000 --production-mode
+
 .PHONY: gui
 gui:
 	substreams gui -e solana.substreams.pinax.network:443 ch_out -s 203100000
