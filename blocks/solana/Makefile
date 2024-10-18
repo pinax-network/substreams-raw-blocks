@@ -35,7 +35,7 @@ cache-foundational:
 
 .PHONY: gui
 gui:
-	substreams gui -e solana.substreams.pinax.network:443 ch_out -s 203100000
+	substreams gui ./substreams.yaml -e solana.substreams.pinax.network:443 ch_out -s 203100000
 
 .PHONY: sql-setup
 sql-setup:
