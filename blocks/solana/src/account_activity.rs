@@ -4,7 +4,7 @@ use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_solana::{
     base58,
-    pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction},
+    pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction, MessageHeader},
 };
 
 use crate::{
@@ -31,7 +31,8 @@ pub fn insert_account_activity(tables: &mut DatabaseChanges, clock: &Clock, bloc
         let account_keys_extended = get_account_keys_extended(transaction);
 
         // Precompute a HashSet of Base58-encoded writable addresses for efficient lookup
-        let writable_addresses: HashSet<String> = meta.loaded_writable_addresses.iter().map(|addr| base58::encode(addr)).collect();
+
+        let message = transaction.transaction.as_ref().unwrap().message.as_ref().unwrap();
 
         // Precompute a mapping from account_index to pre_token_balance_index
         let account_to_token_balance_map: Vec<Option<usize>> = {
@@ -46,11 +47,20 @@ pub fn insert_account_activity(tables: &mut DatabaseChanges, clock: &Clock, bloc
             map
         };
 
+        let header = transaction
+            .transaction
+            .as_ref()
+            .and_then(|tx| tx.message.as_ref())
+            .and_then(|msg| msg.header.as_ref())
+            .expect("Transaction message header is missing");
+
+        let writability = determine_writability(header, account_keys_extended.len());
+
         for (balance_index, (pre_balance, post_balance)) in meta.pre_balances.iter().zip(meta.post_balances.iter()).enumerate() {
             let address = account_keys_extended.get(balance_index).unwrap();
 
             // Skip if address is a program derived address
-            if address.contains("1111") {
+            if address.ends_with("1111") {
                 continue;
             }
 
@@ -66,7 +76,8 @@ pub fn insert_account_activity(tables: &mut DatabaseChanges, clock: &Clock, bloc
             let balance_change = *post_balance as i128 - *pre_balance as i128;
 
             let signed = is_signed(trx, balance_index);
-            let writable = writable_addresses.contains(address);
+
+            let writable = writability.get(balance_index).unwrap_or(&false);
 
             let keys = account_activity_keys(&transaction_id, address.as_str());
 
@@ -120,6 +131,33 @@ fn extract_token_balance_changes(
     };
 
     (pre_balance, post_balance, token_balance_change, mint, owner)
+}
+
+fn determine_writability(header: &MessageHeader, total_accounts: usize) -> Vec<bool> {
+    let mut writability = vec![false; total_accounts];
+
+    let num_required_signatures = header.num_required_signatures as usize;
+    let num_readonly_signed_accounts = header.num_readonly_signed_accounts as usize;
+    let num_readonly_unsigned_accounts = header.num_readonly_unsigned_accounts as usize;
+
+    for index in 0..total_accounts {
+        if index < num_required_signatures {
+            // Signed accounts
+            if index >= num_readonly_signed_accounts {
+                writability[index] = true; // Writable
+            } else {
+                writability[index] = false; // Read-Only
+            }
+        } else if index < total_accounts - num_readonly_unsigned_accounts {
+            // Unsigned Read-Only accounts
+            writability[index] = true;
+        } else {
+            // Unsigned Writable accounts
+            writability[index] = false;
+        }
+    }
+
+    writability
 }
 
 fn is_signed(trx: &substreams_solana::pb::sf::solana::r#type::v1::Transaction, index: usize) -> bool {
