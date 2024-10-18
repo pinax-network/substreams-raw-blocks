@@ -23,15 +23,15 @@ info:
 
 .PHONY: run
 run:
-	substreams run -e solana.substreams.pinax.network:443 ch_out -s 203096780 -o json
+	substreams run -e solana.substreams.pinax.network:443 ch_out -s 203100000 -o json
 
 .PHONY: cache
 cache:
-	substreams gui ./raw-blocks-solana-v0.1.0.spkg -e solana.substreams.pinax.network:443 ch_out -s 203096780 -t 203196780 --production-mode
+	substreams gui ./raw-blocks-solana-v0.1.0.spkg -e solana.substreams.pinax.network:443 ch_out -s 203100000 -t 203200000 --production-mode
 
 .PHONY: gui
 gui:
-	substreams gui -e solana.substreams.pinax.network:443 ch_out -s 203096780
+	substreams gui -e solana.substreams.pinax.network:443 ch_out -s 203100000
 
 .PHONY: sql-setup
 sql-setup:
@@ -40,7 +40,7 @@ sql-setup:
 
 .PHONY: sql-run-solana
 sql-run-solana:
-	substreams-sink-sql run clickhouse://default:default@localhost:9000/solana ./raw-blocks-solana-v0.1.0.spkg -e solana.substreams.pinax.network:443 203096780:203196780 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 1
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/solana ./raw-blocks-solana-v0.1.0.spkg -e solana.substreams.pinax.network:443 203100000:203200000 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 1
 
 .PHONY: sql-run-solana-blocks
 sql-run-solana-blocks:
