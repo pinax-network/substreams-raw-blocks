@@ -108,65 +108,6 @@ CREATE TABLE IF NOT EXISTS transactions
     ORDER BY (id)
     COMMENT 'Solana transactions';
 
-CREATE TABLE IF NOT EXISTS instructions
-(
-    -- clock --
-    block_time                DateTime64(3, 'UTC'),
-    block_hash                String,
-    block_date                Date,
-
-    -- block --
-    block_slot                UInt64,
-    block_height              UInt64,
-    block_previous_block_hash String,
-    block_parent_slot         UInt64,
-
-    -- transaction --
-    transaction_id            String,
-    transaction_index         UInt32,
-
-    -- instruction --
-    instruction_index         UInt32,
-    `data`                    String,
-    executing_account         String,
-    account_arguments         String
-)
-
-    ENGINE = ReplacingMergeTree()
-    PRIMARY KEY (transaction_id, instruction_index)
-    ORDER BY (transaction_id, instruction_index)
-    COMMENT 'Solana transaction instructions';
-
-CREATE TABLE IF NOT EXISTS inner_instructions
-(
-    -- clock --
-    block_time                DateTime64(3, 'UTC'),
-    block_hash                String,
-    block_date                Date,
-
-    -- block --
-    block_slot                UInt64,
-    block_height              UInt64,
-    block_previous_block_hash String,
-    block_parent_slot         UInt64,
-
-    -- reference to transaction --
-    transaction_id            String,
-    transaction_index         UInt32, -- links to transaction_instructions
-    instruction_index         UInt32,
-
-    -- inner instruction details --
-    inner_instruction_index   UInt32,
-    `data`                String,
-    executing_account   String,
-    account_arguments   String
-)
-
-    ENGINE = ReplacingMergeTree()
-    PRIMARY KEY (transaction_id, instruction_index, inner_instruction_index)
-    ORDER BY (transaction_id, instruction_index, inner_instruction_index)
-    COMMENT 'Solana transaction inner instructions';
-
 
 CREATE TABLE IF NOT EXISTS instruction_calls
 (
