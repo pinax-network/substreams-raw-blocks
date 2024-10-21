@@ -44,7 +44,7 @@ sql-setup:
 
 .PHONY: sql-run-solana
 sql-run-solana:
-	substreams-sink-sql run clickhouse://default:default@localhost:9000/solana substreams.yaml -e solana.substreams.pinax.network:443 203100000:203100400 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 1
+	substreams-sink-sql run clickhouse://default:default@localhost:9000/solana substreams.yaml -e solana.substreams.pinax.network:443 203100000:203100100 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 1
 
 .PHONY: sql-run-solana-blocks
 sql-run-solana-blocks:

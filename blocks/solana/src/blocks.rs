@@ -1,15 +1,15 @@
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges, TableChange};
 use substreams_solana::{
-    base58,
+    b58, base58,
     pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction},
 };
 
 use crate::{account_activity::insert_account_activity, counters::insert_block_counters, rewards::insert_rewards, transactions::insert_transactions, utils::insert_timestamp_without_number};
 
-static VOTE_ACCOUNT_KEY: &str = "Vote111111111111111111111111111111111111111";
+static VOTE_INSTRUCTION: [u8; 32] = b58!("Vote111111111111111111111111111111111111111");
 
-pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block, table_prefix: &str) {
+pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
     let row = tables.push_change("blocks", block.blockhash.as_str(), 0, table_change::Operation::Create);
 
     insert_blockinfo(row, block, false);
@@ -19,24 +19,24 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block,
     // TABLE::rewards
     insert_rewards(tables, clock, block);
 
-    // Filter out vote transactions
-    // Original index before filter is preserved
-    let non_vote_trx: Vec<(&ConfirmedTransaction, usize)> = block
-        .transactions
-        .iter()
-        .enumerate()
-        .filter(|(_, trx)| {
-            let message = trx.transaction.as_ref().unwrap().message.as_ref().unwrap();
-            !message.account_keys.iter().any(|key| base58::encode(key) == VOTE_ACCOUNT_KEY)
-        })
-        .map(|(index, trx)| (trx, index))
-        .collect();
+    // Separate transactions into vote and non-vote arrays
+    // Original index before separation is preserved
+    let (non_vote_trx, vote_trx): (Vec<(usize, &ConfirmedTransaction)>, Vec<(usize, &ConfirmedTransaction)>) = block.transactions.iter().enumerate().partition(|(_index, trx)| {
+        let message = trx.transaction.as_ref().unwrap().message.as_ref().unwrap();
+        !message.account_keys.iter().any(|key| key == &VOTE_INSTRUCTION)
+    });
 
     // TABLE::transactions
-    insert_transactions(tables, clock, block, &non_vote_trx, table_prefix);
+    insert_transactions(tables, clock, block, &non_vote_trx, "");
+
+    // TABLE::vote_transactions
+    insert_transactions(tables, clock, block, &vote_trx, "vote_");
 
     // TABLE::account_activity
-    insert_account_activity(tables, clock, block, &non_vote_trx);
+    insert_account_activity(tables, clock, block, &vote_trx, "");
+
+    // TABLE::vote_account_activity
+    insert_account_activity(tables, clock, block, &vote_trx, "vote_");
 }
 
 pub fn insert_blockinfo(row: &mut TableChange, block: &Block, with_prefix: bool) {

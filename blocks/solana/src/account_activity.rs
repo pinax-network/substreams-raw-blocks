@@ -8,8 +8,8 @@ use crate::{
     utils::{get_account_keys_extended, insert_timestamp_without_number},
 };
 
-pub fn insert_account_activity(tables: &mut DatabaseChanges, clock: &Clock, block: &Block, transactions: &[(&ConfirmedTransaction, usize)]) {
-    for (transaction, index) in transactions {
+pub fn insert_account_activity(tables: &mut DatabaseChanges, clock: &Clock, block: &Block, transactions: &Vec<(usize, &ConfirmedTransaction)>, table_prefix: &str) {
+    for (index, transaction) in transactions {
         let meta = match transaction.meta.as_ref() {
             Some(m) => m,
             None => continue, // Skip if metadata is missing
@@ -73,7 +73,7 @@ pub fn insert_account_activity(tables: &mut DatabaseChanges, clock: &Clock, bloc
             let keys = account_activity_keys(&transaction_id, address.as_str());
 
             let row = tables
-                .push_change_composite("account_activity", keys, 0, table_change::Operation::Create)
+                .push_change_composite(format!("{}account_activity", table_prefix), keys, 0, table_change::Operation::Create)
                 .change("address", ("", address.as_str()))
                 .change("tx_index", ("", transaction_index.as_str()))
                 .change("tx_id", ("", transaction_id.as_str()))

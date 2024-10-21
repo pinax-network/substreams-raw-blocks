@@ -11,8 +11,8 @@ use crate::{
     utils::{build_csv_string, get_account_keys_extended, insert_timestamp_without_number},
 };
 
-pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &Block, transactions: &Vec<(&ConfirmedTransaction, usize)>, table_prefix: &str) {
-    for (transaction, index) in transactions {
+pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &Block, transactions: &Vec<(usize, &ConfirmedTransaction)>, table_prefix: &str) {
+    for (index, transaction) in transactions {
         let meta = transaction.meta.as_ref().expect("Transaction meta is missing");
         let trx = transaction.transaction.as_ref().expect("Transaction is missing");
         let message = trx.message.as_ref().expect("Transaction message is missing");
@@ -41,7 +41,7 @@ pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &
         let index_str = index.to_string();
 
         let row = tables
-            .push_change("transactions", &first_signature, 0, table_change::Operation::Create)
+            .push_change(format!("{}transactions", table_prefix), &first_signature, 0, table_change::Operation::Create)
             .change("id", ("", first_signature.as_str()))
             .change("index", ("", index_str.as_str()))
             .change("fee", ("", meta.fee.to_string().as_str()))
