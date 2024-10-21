@@ -8,7 +8,6 @@ use substreams_solana::{
 use crate::{
     blocks::insert_blockinfo,
     instruction_calls::{insert_instruction_calls, TxInfo},
-    instructions::insert_instructions,
     utils::{build_csv_string, get_account_keys_extended, insert_timestamp_without_number},
 };
 
