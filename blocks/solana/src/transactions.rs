@@ -7,6 +7,7 @@ use substreams_solana::{
 
 use crate::{
     blocks::insert_blockinfo,
+    instruction_calls::{insert_instruction_calls, TxInfo},
     instructions::insert_instructions,
     utils::{build_csv_string, get_account_keys_extended, insert_timestamp_without_number},
 };
@@ -63,7 +64,17 @@ pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &
         insert_timestamp_without_number(row, clock, false, true);
         insert_blockinfo(row, block, true);
 
-        insert_instructions(tables, clock, block, transaction, index_str.as_str(), &first_signature);
+        // insert_instructions(tables, clock, block, transaction, index_str.as_str(), &first_signature);
+
+        let tx_info = TxInfo {
+            tx_id: &first_signature,
+            tx_index: &index_str,
+            tx_signer: &signer,
+            tx_success: &success.to_string(),
+            log_messages: &log_messages,
+        };
+
+        insert_instruction_calls(tables, clock, block, transaction, &tx_info);
     }
 }
 

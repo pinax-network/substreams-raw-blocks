@@ -1,6 +1,7 @@
 mod account_activity;
 mod blocks;
 mod counters;
+mod instruction_calls;
 mod instructions;
 mod keys;
 mod rewards;
