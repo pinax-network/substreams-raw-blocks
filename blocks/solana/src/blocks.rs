@@ -33,7 +33,7 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
     insert_transactions(tables, clock, block, &vote_trx, "vote_");
 
     // TABLE::account_activity
-    insert_account_activity(tables, clock, block, &vote_trx, "");
+    insert_account_activity(tables, clock, block, &non_vote_trx, "");
 
     // TABLE::vote_account_activity
     insert_account_activity(tables, clock, block, &vote_trx, "vote_");
