@@ -329,7 +329,6 @@ ALTER TABLE vote_account_activity ADD PROJECTION IF NOT EXISTS vote_account_acti
 );
 
 
-
 ALTER TABLE blocks MATERIALIZE PROJECTION blocks_by_block_height;
 
 ALTER TABLE rewards MATERIALIZE PROJECTION rewards_by_block_height;
@@ -339,3 +338,9 @@ ALTER TABLE transactions MATERIALIZE PROJECTION transactions_by_block_height;
 ALTER TABLE instruction_calls MATERIALIZE PROJECTION instruction_calls_by_block_height;
 
 ALTER TABLE account_activity MATERIALIZE PROJECTION account_activity_by_block_height;
+
+ALTER TABLE vote_transactions MATERIALIZE PROJECTION vote_transactions_by_block_height;
+
+ALTER TABLE vote_instruction_calls MATERIALIZE PROJECTION vote_instruction_calls_by_block_height;
+
+ALTER TABLE vote_account_activity MATERIALIZE PROJECTION vote_account_activity_by_block_height;
