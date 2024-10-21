@@ -4,9 +4,9 @@
 > [`sf.solana.type.v1.Block`](https://buf.build/streamingfast/firehose-solana/docs/main:sf.solana.type.v1)
 
 - [x] **Blocks**
-- [ ] **Transactions**
+- [x] **Transactions**
 - [ ] **Instruction Calls**
-- [ ] **Account Activity**
+- [x] **Account Activity**
 - [ ] **Discriminators**
 - [x] **Rewards**
 - [ ] **Vote Transactions**

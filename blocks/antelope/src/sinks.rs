@@ -1,7 +1,7 @@
 use substreams::errors::Error;
 use substreams::pb::substreams::Clock;
-use substreams_database_change::pb::database::DatabaseChanges;
 use substreams_antelope::pb::Block;
+use substreams_database_change::pb::database::DatabaseChanges;
 
 use crate::blocks::insert_blocks;
 

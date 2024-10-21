@@ -167,36 +167,40 @@ CREATE TABLE IF NOT EXISTS inner_instructions
     ORDER BY (transaction_id, instruction_index, inner_instruction_index)
     COMMENT 'Solana transaction inner instructions';
 
-CREATE TABLE IF NOT EXISTS token_balances
+CREATE TABLE IF NOT EXISTS account_activity 
 (
     -- clock --
     block_time                DateTime64(3, 'UTC'),
-    block_height              UInt64,
     block_hash                String,
     block_date                Date,
-    
+
     -- block --
-    block_slot                UInt64,
-    block_previous_block_hash String,
-    block_parent_slot         UInt64,
+    block_slot                  UInt64,
+    block_height                UInt64,
+    block_previous_block_hash   String,
+    block_parent_slot           UInt64,
 
-    -- transaction --
-    transaction_id            String,
-    transaction_index         UInt32,
+    `address`                 String,
+    tx_index                  UInt32,
+    tx_id                     String,
+    tx_success                Bool,
+    signed                    Bool,
+    writable                  Bool,
+    token_mint_address        String,
 
-    -- token balance --
-    program_id                String,
-    account                   String,
-    mint                      String,
-    `owner`                   String,
-    pre_amount                String, -- Decimal(38,18) when sink will support it
-    post_amount               String  -- Decimal(38,18) when sink will support it
+    pre_balance               UInt64,
+    post_balance              UInt64,
+    balance_change            Int128,
+    pre_token_balance         String, -- Decimal(38,18) when sink will support it
+    post_token_balance        String, -- Decimal(38,18) when sink will support it
+    token_balance_change      String, -- Decimal(38,17) when sink will support it
+    token_balance_owner       String,
 )
 
     ENGINE = ReplacingMergeTree()
-    PRIMARY KEY (block_hash, transaction_id, program_id, account)
-    ORDER BY (block_hash, transaction_id, program_id, account)
-    COMMENT 'Solana token balances';
+    PRIMARY KEY (tx_id, `address`)
+    ORDER BY (tx_id, `address`)
+    COMMENT 'Solana account activity';
 
 -- Projections --
 -- https://clickhouse.com/docs/en/sql-reference/statements/alter/projection --
@@ -220,7 +224,7 @@ ALTER TABLE inner_instructions ADD PROJECTION IF NOT EXISTS transaction_inner_in
     SELECT * ORDER BY block_date, block_height
 );
 
-ALTER TABLE token_balances ADD PROJECTION IF NOT EXISTS token_balances_by_block_height (
+ALTER TABLE account_activity ADD PROJECTION IF NOT EXISTS account_activity_by_block_height (
     SELECT * ORDER BY block_date, block_height
 );
 
@@ -235,4 +239,4 @@ ALTER TABLE instructions MATERIALIZE PROJECTION transaction_instructions_by_bloc
 
 ALTER TABLE inner_instructions MATERIALIZE PROJECTION transaction_inner_instructions_by_block_height;
 
-ALTER TABLE token_balances MATERIALIZE PROJECTION token_balances_by_block_height;
+ALTER TABLE account_activity MATERIALIZE PROJECTION account_activity_by_block_height;

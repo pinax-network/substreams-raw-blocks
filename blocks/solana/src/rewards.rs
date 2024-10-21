@@ -7,7 +7,7 @@ use crate::{blocks::insert_blockinfo, keys::reward_keys, utils::insert_timestamp
 pub fn insert_rewards(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
     block.rewards.iter().for_each(|reward| {
         let reward_type = reward_type(reward.reward_type);
-        let pre_balance = reward.post_balance as i64 - reward.lamports;
+        let pre_balance = reward.post_balance as i128 - reward.lamports as i128;
 
         let keys = reward_keys(&block.blockhash, &reward.pubkey, &reward_type);
         let row = tables

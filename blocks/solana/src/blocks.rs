@@ -1,8 +1,13 @@
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges, TableChange};
-use substreams_solana::pb::sf::solana::r#type::v1::Block;
+use substreams_solana::{
+    base58,
+    pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction},
+};
 
-use crate::{counters::insert_block_counters, rewards::insert_rewards, token_balances::insert_token_balances, transactions::insert_transactions, utils::insert_timestamp_without_number};
+use crate::{account_activity::insert_account_activity, counters::insert_block_counters, rewards::insert_rewards, transactions::insert_transactions, utils::insert_timestamp_without_number};
+
+static VOTE_ACCOUNT_KEY: &str = "Vote111111111111111111111111111111111111111";
 
 pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
     let row = tables.push_change("blocks", block.blockhash.as_str(), 0, table_change::Operation::Create);
@@ -14,11 +19,24 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
     // TABLE::rewards
     insert_rewards(tables, clock, block);
 
-    // TABLE::transactions
-    insert_transactions(tables, clock, block);
+    // Filter out vote transactions
+    // Original index before filter is preserved
+    let non_vote_trx: Vec<(&ConfirmedTransaction, usize)> = block
+        .transactions
+        .iter()
+        .enumerate()
+        .filter(|(_, trx)| {
+            let message = trx.transaction.as_ref().unwrap().message.as_ref().unwrap();
+            !message.account_keys.iter().any(|key| base58::encode(key) == VOTE_ACCOUNT_KEY)
+        })
+        .map(|(index, trx)| (trx, index))
+        .collect();
 
-    // TABLE::token_balances
-    insert_token_balances(tables, clock, block);
+    // TABLE::transactions
+    insert_transactions(tables, clock, block, &non_vote_trx);
+
+    // TABLE::account_activity
+    insert_account_activity(tables, clock, block, &non_vote_trx);
 }
 
 pub fn insert_blockinfo(row: &mut TableChange, block: &Block, with_prefix: bool) {

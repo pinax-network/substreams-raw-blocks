@@ -1,9 +1,9 @@
+mod account_activity;
 mod blocks;
 mod counters;
 mod instructions;
 mod keys;
 mod rewards;
 mod sinks;
-mod token_balances;
 mod transactions;
 mod utils;
