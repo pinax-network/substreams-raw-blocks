@@ -9,7 +9,7 @@ use crate::{account_activity::insert_account_activity, counters::insert_block_co
 
 static VOTE_ACCOUNT_KEY: &str = "Vote111111111111111111111111111111111111111";
 
-pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
+pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block, table_prefix: &str) {
     let row = tables.push_change("blocks", block.blockhash.as_str(), 0, table_change::Operation::Create);
 
     insert_blockinfo(row, block, false);
@@ -33,7 +33,7 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
         .collect();
 
     // TABLE::transactions
-    insert_transactions(tables, clock, block, &non_vote_trx);
+    insert_transactions(tables, clock, block, &non_vote_trx, table_prefix);
 
     // TABLE::account_activity
     insert_account_activity(tables, clock, block, &non_vote_trx);

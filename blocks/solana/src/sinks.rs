@@ -10,7 +10,7 @@ pub fn ch_out(clock: Clock, block: Block) -> Result<DatabaseChanges, Error> {
     let mut tables: DatabaseChanges = DatabaseChanges::default();
 
     // TABLE::blocks
-    insert_blocks(&mut tables, &clock, &block);
+    insert_blocks(&mut tables, &clock, &block, "");
 
     Ok(tables)
 }

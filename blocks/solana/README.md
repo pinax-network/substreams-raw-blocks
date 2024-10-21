@@ -5,11 +5,14 @@
 
 - [x] **Blocks**
 - [x] **Transactions**
-- [ ] **Instruction Calls**
+- [x] **Instruction Calls**
 - [x] **Account Activity**
-- [ ] **Discriminators**
 - [x] **Rewards**
-- [ ] **Vote Transactions**
+- [x] **Vote Transactions**
+- [x] **Vote Instruction Calls**
+- [x] **Vote Account Activity**
+- ~~[ ] **Discriminators**~~
+
 
 ```mermaid
 graph TD;

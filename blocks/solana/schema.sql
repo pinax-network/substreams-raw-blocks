@@ -182,6 +182,118 @@ CREATE TABLE IF NOT EXISTS account_activity
     ORDER BY (tx_id, `address`)
     COMMENT 'Solana account activity';
 
+CREATE TABLE IF NOT EXISTS vote_transactions
+(
+    -- clock --
+    block_time                  DateTime64(3, 'UTC'),
+    block_hash                  String,
+    block_date                  Date,
+
+     -- block --
+    block_slot                  UInt64,
+    block_height                UInt64,
+    block_previous_block_hash   String,
+    block_parent_slot           UInt64,
+
+    -- transaction --
+    id                          String,
+    `index`                     UInt32,
+    fee                         UInt64,
+    required_signatures         UInt32,
+    required_signed_accounts    UInt32,
+    required_unsigned_accounts  UInt32,
+    `signature`                 String,
+    success                     Bool,
+    error                       String,
+    recent_block_hash           String,
+    account_keys                String,
+    log_messages                String,
+    pre_balances                String,
+    post_balances               String,
+    signatures                  String,
+    signer                      String,
+    signers                     String,
+)
+
+    ENGINE = ReplacingMergeTree()
+    PRIMARY KEY (id)
+    ORDER BY (id)
+    COMMENT 'Solana vote transactions';
+
+
+CREATE TABLE IF NOT EXISTS vote_instruction_calls
+(
+    -- clock --
+    block_time                DateTime64(3, 'UTC'),
+    block_hash                String,
+    block_date                Date,
+
+    -- block --
+    block_slot                UInt64,
+    block_height              UInt64,
+    block_previous_block_hash String,
+    block_parent_slot         UInt64,
+
+    -- transaction --
+    tx_id                     String,
+    tx_index                  UInt32,
+    tx_signer                 String,
+    tx_success                Bool,
+    log_messages              String,
+
+    -- instruction --
+    outer_instruction_index   UInt32,
+    inner_instruction_index   Int32,
+    inner_executing_account   String,
+    outer_executing_account   String,
+    executing_account         String,
+    is_inner                  Bool,
+    `data`                    String,
+    account_arguments         String,
+    inner_instructions        String,
+)
+
+    ENGINE = ReplacingMergeTree()
+    PRIMARY KEY (tx_id, outer_instruction_index, inner_instruction_index)
+    ORDER BY (tx_id, outer_instruction_index, inner_instruction_index)
+    SETTINGS allow_nullable_key = 1
+    COMMENT 'Solana vote instruction calls';
+
+CREATE TABLE IF NOT EXISTS vote_account_activity 
+(
+    -- clock --
+    block_time                DateTime64(3, 'UTC'),
+    block_hash                String,
+    block_date                Date,
+
+    -- block --
+    block_slot                  UInt64,
+    block_height                UInt64,
+    block_previous_block_hash   String,
+    block_parent_slot           UInt64,
+
+    `address`                 String,
+    tx_index                  UInt32,
+    tx_id                     String,
+    tx_success                Bool,
+    signed                    Bool,
+    writable                  Bool,
+    token_mint_address        String,
+
+    pre_balance               UInt64,
+    post_balance              UInt64,
+    balance_change            Int128,
+    pre_token_balance         String, -- Decimal(38,18) when sink will support it
+    post_token_balance        String, -- Decimal(38,18) when sink will support it
+    token_balance_change      String, -- Decimal(38,17) when sink will support it
+    token_balance_owner       String,
+)
+
+    ENGINE = ReplacingMergeTree()
+    PRIMARY KEY (tx_id, `address`)
+    ORDER BY (tx_id, `address`)
+    COMMENT 'Solana vote account activity';
+
 -- Projections --
 -- https://clickhouse.com/docs/en/sql-reference/statements/alter/projection --
 ALTER TABLE blocks ADD PROJECTION IF NOT EXISTS blocks_by_block_height (
@@ -196,14 +308,6 @@ ALTER TABLE transactions ADD PROJECTION IF NOT EXISTS transactions_by_block_heig
     SELECT * ORDER BY block_date, block_height
 );
 
-ALTER TABLE instructions ADD PROJECTION IF NOT EXISTS transaction_instructions_by_block_height (
-    SELECT * ORDER BY block_date, block_height
-);
-
-ALTER TABLE inner_instructions ADD PROJECTION IF NOT EXISTS transaction_inner_instructions_by_block_height (
-    SELECT * ORDER BY block_date, block_height
-);
-
 ALTER TABLE instruction_calls ADD PROJECTION IF NOT EXISTS instruction_calls_by_block_height (
     SELECT * ORDER BY block_date, block_height
 );
@@ -212,16 +316,25 @@ ALTER TABLE account_activity ADD PROJECTION IF NOT EXISTS account_activity_by_bl
     SELECT * ORDER BY block_date, block_height
 );
 
+ALTER TABLE vote_transactions ADD PROJECTION IF NOT EXISTS vote_transactions_by_block_height (
+    SELECT * ORDER BY block_date, block_height
+);
+
+ALTER TABLE vote_instruction_calls ADD PROJECTION IF NOT EXISTS vote_instruction_calls_by_block_height (
+    SELECT * ORDER BY block_date, block_height
+);
+
+ALTER TABLE vote_account_activity ADD PROJECTION IF NOT EXISTS vote_account_activity_by_block_height (
+    SELECT * ORDER BY block_date, block_height
+);
+
+
 
 ALTER TABLE blocks MATERIALIZE PROJECTION blocks_by_block_height;
 
 ALTER TABLE rewards MATERIALIZE PROJECTION rewards_by_block_height;
 
 ALTER TABLE transactions MATERIALIZE PROJECTION transactions_by_block_height;
-
-ALTER TABLE instructions MATERIALIZE PROJECTION transaction_instructions_by_block_height;
-
-ALTER TABLE inner_instructions MATERIALIZE PROJECTION transaction_inner_instructions_by_block_height;
 
 ALTER TABLE instruction_calls MATERIALIZE PROJECTION instruction_calls_by_block_height;
 

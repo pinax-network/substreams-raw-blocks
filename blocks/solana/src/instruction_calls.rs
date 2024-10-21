@@ -13,14 +13,14 @@ use crate::{
     utils::{build_csv_string, insert_timestamp_without_number},
 };
 
-pub fn insert_instruction_calls(tables: &mut DatabaseChanges, clock: &Clock, block: &Block, transaction: &ConfirmedTransaction, tx_info: &TxInfo) {
+pub fn insert_instruction_calls(tables: &mut DatabaseChanges, clock: &Clock, block: &Block, transaction: &ConfirmedTransaction, tx_info: &TxInfo, table_prefix: &str) {
     transaction.walk_instructions().enumerate().for_each(|(instruction_index, instruction_view)| {
-        insert_outer_instruction(tables, clock, block, tx_info, instruction_index, &instruction_view);
-        insert_inner_instructions(tables, clock, block, tx_info, instruction_index, &instruction_view);
+        insert_outer_instruction(tables, clock, block, tx_info, instruction_index, &instruction_view, table_prefix);
+        insert_inner_instructions(tables, clock, block, tx_info, instruction_index, &instruction_view, table_prefix);
     });
 }
 
-fn insert_outer_instruction(tables: &mut DatabaseChanges, clock: &Clock, block: &Block, tx_info: &TxInfo, instruction_index: usize, instruction_view: &InstructionView) {
+fn insert_outer_instruction(tables: &mut DatabaseChanges, clock: &Clock, block: &Block, tx_info: &TxInfo, instruction_index: usize, instruction_view: &InstructionView, table_prefix: &str) {
     let executing_account = base58::encode(instruction_view.program_id());
     let account_arguments = build_csv_string(&instruction_view.accounts());
     let data = bytes_to_hex(&instruction_view.data());
@@ -30,7 +30,7 @@ fn insert_outer_instruction(tables: &mut DatabaseChanges, clock: &Clock, block: 
     let inner_instructions_str = build_inner_instructions_str(instruction_view);
 
     let row = tables
-        .push_change_composite("instruction_calls", keys, 0, table_change::Operation::Create)
+        .push_change_composite(format!("{}instruction_calls", table_prefix), keys, 0, table_change::Operation::Create)
         .change("outer_instruction_index", ("", instruction_index.to_string().as_str()))
         .change("outer_executing_account", ("", executing_account.as_str()))
         .change("inner_instruction_index", ("", "-1"))
@@ -46,7 +46,7 @@ fn insert_outer_instruction(tables: &mut DatabaseChanges, clock: &Clock, block: 
     insert_tx_info(row, tx_info);
 }
 
-fn insert_inner_instructions(tables: &mut DatabaseChanges, clock: &Clock, block: &Block, tx_info: &TxInfo, instruction_index: usize, instruction_view: &InstructionView) {
+fn insert_inner_instructions(tables: &mut DatabaseChanges, clock: &Clock, block: &Block, tx_info: &TxInfo, instruction_index: usize, instruction_view: &InstructionView, table_prefix: &str) {
     for (inner_index, inner_instruction) in instruction_view.inner_instructions().enumerate() {
         let inner_data = bytes_to_hex(inner_instruction.data());
         let executing_account = inner_instruction.program_id().to_string();
@@ -55,7 +55,7 @@ fn insert_inner_instructions(tables: &mut DatabaseChanges, clock: &Clock, block:
         let keys = inner_instruction_keys(tx_info.tx_id, instruction_index.to_string().as_str(), inner_index.to_string().as_str());
 
         let row = tables
-            .push_change_composite("instruction_calls", keys, 0, table_change::Operation::Create)
+            .push_change_composite(format!("{}instruction_calls", table_prefix), keys, 0, table_change::Operation::Create)
             .change("outer_instruction_index", ("", instruction_index.to_string().as_str()))
             .change("inner_instruction_index", ("", inner_index.to_string().as_str()))
             .change("inner_executing_account", ("", executing_account.as_str()))
