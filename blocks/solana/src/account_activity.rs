@@ -1,11 +1,6 @@
-use std::collections::HashSet;
-
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
-use substreams_solana::{
-    base58,
-    pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction, MessageHeader},
-};
+use substreams_solana::pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction, MessageHeader, TokenBalance, Transaction};
 
 use crate::{
     blocks::insert_blockinfo,
@@ -29,10 +24,6 @@ pub fn insert_account_activity(tables: &mut DatabaseChanges, clock: &Clock, bloc
         };
 
         let account_keys_extended = get_account_keys_extended(transaction);
-
-        // Precompute a HashSet of Base58-encoded writable addresses for efficient lookup
-
-        let message = transaction.transaction.as_ref().unwrap().message.as_ref().unwrap();
 
         // Precompute a mapping from account_index to pre_token_balance_index
         let account_to_token_balance_map: Vec<Option<usize>> = {
@@ -104,11 +95,8 @@ pub fn insert_account_activity(tables: &mut DatabaseChanges, clock: &Clock, bloc
     }
 }
 
-fn extract_token_balance_changes(
-    pre_balances: &[substreams_solana::pb::sf::solana::r#type::v1::TokenBalance],
-    post_balances: &[substreams_solana::pb::sf::solana::r#type::v1::TokenBalance],
-    index: usize,
-) -> (Option<f64>, Option<f64>, Option<f64>, Option<String>, Option<String>) {
+// Extracts the token balance changes for a given account index
+fn extract_token_balance_changes(pre_balances: &[TokenBalance], post_balances: &[TokenBalance], index: usize) -> (Option<f64>, Option<f64>, Option<f64>, Option<String>, Option<String>) {
     let pre_balance = pre_balances.get(index).and_then(|pre_balance_entry| pre_balance_entry.ui_token_amount.as_ref().map(|ui| ui.ui_amount));
     let post_balance = post_balances
         .get(index)
@@ -133,6 +121,7 @@ fn extract_token_balance_changes(
     (pre_balance, post_balance, token_balance_change, mint, owner)
 }
 
+// Returns a vector of writability for each account based on index in the transaction
 fn determine_writability(header: &MessageHeader, total_accounts: usize) -> Vec<bool> {
     let mut writability = vec![false; total_accounts];
 
@@ -156,10 +145,9 @@ fn determine_writability(header: &MessageHeader, total_accounts: usize) -> Vec<b
             writability[index] = false;
         }
     }
-
     writability
 }
 
-fn is_signed(trx: &substreams_solana::pb::sf::solana::r#type::v1::Transaction, index: usize) -> bool {
+fn is_signed(trx: &Transaction, index: usize) -> bool {
     trx.signatures.len() > index
 }
