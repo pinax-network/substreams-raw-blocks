@@ -42,12 +42,14 @@ graph TD;
 > [`sf.solana.type.v1.Block`](https://buf.build/streamingfast/firehose-solana/docs/main:sf.solana.type.v1)
 
 - [x] **Blocks**
-- [ ] **Transactions**
-- [ ] **Instruction Calls**
-- [ ] **Account Activity**
-- [ ] **Discriminators**
+- [x] **Transactions**
+- [x] **Instruction Calls**
+- [x] **Account Activity**
 - [x] **Rewards**
-- [ ] **Vote Transactions**
+- [x] **Vote Transactions**
+- [x] **Vote Instruction Calls**
+- [x] **Vote Account Activity**
+- ~~[ ] **Discriminators**~~
 
 ```mermaid
 graph TD;
@@ -56,9 +58,11 @@ graph TD;
   raw --> transactions;
   raw --> instruction_calls;
   raw --> account_activity;
-  raw --> discriminators;
   raw --> rewards;
   raw --> vote_transactions;
+  raw --> vote_instruction_calls;
+  raw --> vote_account_activity;
+  raw --> discriminators;
 ```
 
 ## `Antelope` Raw Blockchain Data

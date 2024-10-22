@@ -21,7 +21,9 @@ graph TD;
   raw --> transactions;
   raw --> instruction_calls;
   raw --> account_activity;
-  raw --> discriminators;
   raw --> rewards;
   raw --> vote_transactions;
+  raw --> vote_instruction_calls;
+  raw --> vote_account_activity;
+  raw --> discriminators;
 ```
