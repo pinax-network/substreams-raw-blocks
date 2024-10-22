@@ -38,7 +38,7 @@ pub enum TransactionError {
     InvalidRentPayingAccount,
     WouldExceedMaxVoteCostLimit,
     WouldExceedAccountDataTotalLimit,
-    DuplicateInstruction(u8),
+    DuplicateInstruction { instruction_index: u32 },
     InsufficientFundsForRent { account_index: u32 },
     MaxLoadedAccountsDataSizeExceeded,
     InvalidLoadedAccountsDataSizeLimit,
@@ -211,12 +211,9 @@ impl TransactionErrorDecoder {
             27 => Ok(TransactionError::InvalidRentPayingAccount),
             28 => Ok(TransactionError::WouldExceedMaxVoteCostLimit),
             29 => Ok(TransactionError::WouldExceedAccountDataTotalLimit),
-            30 => {
-                if error_data.len() < 2 {
-                    return Err(TransactionErrorDecodeError::BufferTooShort);
-                }
-                Ok(TransactionError::DuplicateInstruction(error_data[1]))
-            }
+            30 => Ok(TransactionError::DuplicateInstruction {
+                instruction_index: Self::extract_index(error_data)?,
+            }),
             31 => Ok(TransactionError::InsufficientFundsForRent {
                 account_index: Self::extract_index(error_data)?,
             }),
@@ -238,11 +235,23 @@ impl TransactionErrorDecoder {
         Ok(u32::from_be_bytes(error_data[1..5].try_into().unwrap()))
     }
 
-    /// Format the error into a human-readable string
+    /// Format the error into a JSON-like string
     pub fn format_error(error: &TransactionError) -> String {
         match error {
-            TransactionError::InstructionError(idx, instruction_error) => {
-                format!("Instruction error at index {}: {:?}", idx, instruction_error)
+            TransactionError::InstructionError(idx, instruction_error) => match instruction_error {
+                InstructionError::Custom(code) => {
+                    format!("{{\"InstructionError\":[{},{{\"Custom\":{}}}]}}", idx, code)
+                }
+                _ => format!("{{\"InstructionError\":[{},\"{:?}\"]}}", idx, instruction_error),
+            },
+            TransactionError::DuplicateInstruction { instruction_index } => {
+                format!("{{\"DuplicateInstruction\":{}}}", instruction_index)
+            }
+            TransactionError::InsufficientFundsForRent { account_index } => {
+                format!("{{\"InsufficientFundsForRent\":{{\"account_index\":{}}}}}", account_index)
+            }
+            TransactionError::ProgramExecutionTemporarilyRestricted { account_index } => {
+                format!("{{\"ProgramExecutionTemporarilyRestricted\":{{\"account_index\":{}}}}}", account_index)
             }
             _ => format!("{:?}", error),
         }
