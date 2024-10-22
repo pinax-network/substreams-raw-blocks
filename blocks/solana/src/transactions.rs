@@ -8,6 +8,7 @@ use substreams_solana::{
 use crate::{
     blocks::insert_blockinfo,
     instruction_calls::{insert_instruction_calls, TxInfo},
+    tx_errors::TransactionErrorDecoder,
     utils::{build_csv_string, get_account_keys_extended, insert_timestamp_without_number},
 };
 
@@ -22,9 +23,8 @@ pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &
 
         let success = meta.err.is_none();
 
-        // TODO: decode transaction error
         let err = match &meta.err {
-            Some(err) => base58::encode(&err.err),
+            Some(err) => decode_transaction_error(&err.err),
             None => String::new(),
         };
 
@@ -75,5 +75,9 @@ pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &
     }
 }
 
-// TODO: decode transaction error
-pub fn decode_transaction_error(err: TransactionError) {}
+pub fn decode_transaction_error(err: &Vec<u8>) -> String {
+    match TransactionErrorDecoder::decode_error(err) {
+        Ok(decoded_error) => TransactionErrorDecoder::format_error(&decoded_error),
+        Err(decode_error) => format!("Error decoding transaction error: {:?}", decode_error),
+    }
+}

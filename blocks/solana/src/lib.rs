@@ -6,4 +6,5 @@ mod keys;
 mod rewards;
 mod sinks;
 mod transactions;
+mod tx_errors;
 mod utils;
