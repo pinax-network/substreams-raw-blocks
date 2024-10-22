@@ -22,20 +22,18 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
     // Separate transactions into vote and non-vote arrays
     // Original index before separation is preserved
     let (non_vote_trx, vote_trx): (Vec<(usize, &ConfirmedTransaction)>, Vec<(usize, &ConfirmedTransaction)>) = block.transactions.iter().enumerate().partition(|(_index, trx)| {
-        let message = trx.transaction.as_ref().unwrap().message.as_ref().unwrap();
-        !message.account_keys.iter().any(|key| key == &VOTE_INSTRUCTION)
+        !trx.transaction
+            .as_ref()
+            .and_then(|t| t.message.as_ref())
+            .map_or(false, |message| message.account_keys.iter().any(|key| key == &VOTE_INSTRUCTION))
     });
 
-    // TABLE::transactions
+    // Process non-vote transactions
     insert_transactions(tables, clock, block, &non_vote_trx, "");
-
-    // TABLE::vote_transactions
-    insert_transactions(tables, clock, block, &vote_trx, "vote_");
-
-    // TABLE::account_activity
     insert_account_activity(tables, clock, block, &non_vote_trx, "");
 
-    // TABLE::vote_account_activity
+    // Process vote transactions
+    insert_transactions(tables, clock, block, &vote_trx, "vote_");
     insert_account_activity(tables, clock, block, &vote_trx, "vote_");
 }
 
