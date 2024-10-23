@@ -1,7 +1,7 @@
 use substreams_database_change::pb::database::TableChange;
-use substreams_solana::{b58, pb::sf::solana::r#type::v1::Block};
+use substreams_solana::pb::sf::solana::r#type::v1::Block;
 
-static VOTE_INSTRUCTION: [u8; 32] = b58!("Vote111111111111111111111111111111111111111");
+use crate::utils::VOTE_INSTRUCTION;
 
 pub fn insert_block_counters(row: &mut TableChange, block: &Block) {
     // Counters

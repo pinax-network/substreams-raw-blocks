@@ -1,7 +1,9 @@
 use common::utils::{add_prefix_to_hex, block_time_to_date};
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::TableChange;
-use substreams_solana::{base58, pb::sf::solana::r#type::v1::ConfirmedTransaction};
+use substreams_solana::{b58, base58, pb::sf::solana::r#type::v1::ConfirmedTransaction};
+
+pub static VOTE_INSTRUCTION: [u8; 32] = b58!("Vote111111111111111111111111111111111111111");
 
 pub fn insert_timestamp_without_number(row: &mut TableChange, clock: &Clock, is_block: bool, with_prefix: bool) {
     let timestamp = clock.clone().timestamp.unwrap();

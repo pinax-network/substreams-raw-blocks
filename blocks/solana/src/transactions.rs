@@ -2,7 +2,7 @@ use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_solana::{
     base58,
-    pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction, TransactionError},
+    pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction},
 };
 
 use crate::{
