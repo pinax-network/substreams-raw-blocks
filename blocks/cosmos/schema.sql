@@ -66,6 +66,41 @@ CREATE TABLE IF NOT EXISTS transactions (
         ORDER BY (hash)
         COMMENT 'Cosmos transaction';
 
+CREATE TABLE IF NOT EXISTS tx_events (
+    -- clock --
+    block_time                       DateTime64(3, 'UTC'),
+    block_number                     UInt64,
+    block_date                       Date,
+    block_hash                       String COMMENT 'Cosmos Hash',
+
+    -- event --
+    tx_hash                          String COMMENT 'Transaction hash',
+    `index`                          UInt32 COMMENT 'Event index in transaction',
+    `type`                           String,
+    attributes                       String
+)
+    ENGINE = ReplacingMergeTree()
+        PRIMARY KEY (tx_hash, `index`)
+        ORDER BY (tx_hash, `index`)
+        COMMENT 'Cosmos transaction event';
+
+CREATE TABLE IF NOT EXISTS block_events (
+    -- clock --
+    block_time                       DateTime64(3, 'UTC'),
+    block_number                     UInt64,
+    block_date                       Date,
+    block_hash                       String COMMENT 'Cosmos Hash',
+
+    -- event --
+    `index`                          UInt32 COMMENT 'Event index in block',
+    `type`                           String,
+    attributes                       String
+)
+    ENGINE = ReplacingMergeTree()
+        PRIMARY KEY (block_number, `index`)
+        ORDER BY (block_number, `index`)
+        COMMENT 'Cosmos block event';
+
 ALTER TABLE blocks ADD PROJECTION IF NOT EXISTS blocks_by_block_height (
     SELECT * ORDER BY date, number
 );
@@ -74,4 +109,18 @@ ALTER TABLE transactions ADD PROJECTION IF NOT EXISTS transactions_by_hash (
     SELECT * ORDER BY block_date, block_number
 );
 
+ALTER TABLE tx_events ADD PROJECTION IF NOT EXISTS tx_events_by_tx_hash (
+    SELECT * ORDER BY block_date, block_number, tx_hash
+);
+
+ALTER TABLE block_events ADD PROJECTION IF NOT EXISTS block_events_by_block_number (
+    SELECT * ORDER BY block_date, block_number
+);
+
 ALTER TABLE blocks MATERIALIZE PROJECTION blocks_by_block_height;
+
+ALTER TABLE transactions MATERIALIZE PROJECTION transactions_by_hash;
+
+ALTER TABLE tx_events MATERIALIZE PROJECTION tx_events_by_tx_hash;
+
+ALTER TABLE block_events MATERIALIZE PROJECTION block_events_by_block_number;

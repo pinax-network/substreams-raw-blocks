@@ -43,6 +43,5 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
         .change("proposer_address", ("", proposer_address.as_str()));
 
     insert_timestamp(row, clock, true, false);
-
     insert_size(row, block);
 }

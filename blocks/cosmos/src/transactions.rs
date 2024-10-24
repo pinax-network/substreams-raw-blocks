@@ -3,7 +3,7 @@ use substreams::{pb::substreams::Clock, Hex};
 use substreams_cosmos::Block;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 
-use crate::utils::compute_tx_hash;
+use crate::{events::insert_tx_events, utils::compute_tx_hash};
 
 pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
     let transactions = &block.tx_results;
@@ -31,5 +31,7 @@ pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &
             .change("codespace", ("", codespace.as_str()));
 
         insert_timestamp(row, clock, false, true);
+
+        insert_tx_events(tables, clock, transaction, &tx_hash);
     }
 }
