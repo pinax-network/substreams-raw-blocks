@@ -2,7 +2,7 @@ use substreams::{errors::Error, pb::substreams::Clock};
 use substreams_cosmos::Block;
 use substreams_database_change::pb::database::DatabaseChanges;
 
-use crate::{blocks::insert_blocks, events::insert_block_events, misbehaviors::insert_misbehaviors, transactions::insert_transactions};
+use crate::{blocks::insert_blocks, events::insert_block_events, misbehaviors::insert_misbehaviors, transactions::insert_transactions, validator_updates::insert_validator_updates};
 
 #[substreams::handlers::map]
 pub fn ch_out(clock: Clock, block: Block) -> Result<DatabaseChanges, Error> {
@@ -19,6 +19,9 @@ pub fn ch_out(clock: Clock, block: Block) -> Result<DatabaseChanges, Error> {
 
     // TABLE::misbehaviors
     insert_misbehaviors(&mut tables, &clock, &block);
+
+    // TABLE::validator_updates
+    insert_validator_updates(&mut tables, &clock, &block);
 
     Ok(tables)
 }

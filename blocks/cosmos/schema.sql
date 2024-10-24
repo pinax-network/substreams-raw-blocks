@@ -121,7 +121,22 @@ CREATE TABLE IF NOT EXISTS misbehaviors (
         ORDER BY (block_number, `index`)
         COMMENT 'Cosmos misbehavior';
 
+CREATE TABLE IF NOT EXISTS validator_updates (
+    -- clock --
+    block_time                       DateTime64(3, 'UTC'),
+    block_number                     UInt64,
+    block_date                       Date,
+    block_hash                       String COMMENT 'Cosmos Hash',
 
+    -- validator update --
+    `index`                          UInt32 COMMENT 'Validator update index in block',
+    public_key                       String,
+    power                            Int64
+)
+    ENGINE = ReplacingMergeTree()
+        PRIMARY KEY (block_number, `index`)
+        ORDER BY (block_number, `index`)
+        COMMENT 'Cosmos validator update';
 
 ALTER TABLE blocks ADD PROJECTION IF NOT EXISTS blocks_by_block_height (
     SELECT * ORDER BY date, number
@@ -139,9 +154,14 @@ ALTER TABLE block_events ADD PROJECTION IF NOT EXISTS block_events_by_block_numb
     SELECT * ORDER BY block_date, block_number
 );
 
+ALTER TABLE validator_updates ADD PROJECTION IF NOT EXISTS validator_updates_by_block_number (
+    SELECT * ORDER BY block_date, block_number
+);
+
 ALTER TABLE blocks MATERIALIZE PROJECTION blocks_by_block_height;
 
 ALTER TABLE transactions MATERIALIZE PROJECTION transactions_by_hash;
 
 ALTER TABLE tx_events MATERIALIZE PROJECTION tx_events_by_tx_hash;
 ALTER TABLE block_events MATERIALIZE PROJECTION block_events_by_block_number;
+ALTER TABLE validator_updates MATERIALIZE PROJECTION validator_updates_by_block_number;
