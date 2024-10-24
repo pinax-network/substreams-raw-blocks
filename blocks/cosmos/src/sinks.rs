@@ -17,7 +17,7 @@ pub fn ch_out(clock: Clock, block: Block) -> Result<DatabaseChanges, Error> {
     // TABLE::block_events
     insert_block_events(&mut tables, &clock, &block);
 
-    // TABLE::transactions + TABLE::tx_events
+    // TABLE::transactions + TABLE::tx_events + TABLE::transaction_messages
     insert_transactions(&mut tables, &clock, &block);
 
     // TABLE::misbehaviors

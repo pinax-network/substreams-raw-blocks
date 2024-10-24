@@ -5,6 +5,7 @@ mod keys;
 mod misbehaviors;
 mod sinks;
 mod size;
+mod transaction_messages;
 mod transactions;
 mod utils;
 mod validator_updates;

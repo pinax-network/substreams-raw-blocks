@@ -1,9 +1,9 @@
-use common::blocks::insert_timestamp;
+use common::{blocks::insert_timestamp, utils::bytes_to_hex};
 use substreams::{pb::substreams::Clock, Hex};
 use substreams_cosmos::Block;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 
-use crate::{events::insert_tx_events, utils::compute_tx_hash};
+use crate::{events::insert_tx_events, transaction_messages::insert_transaction_messages, utils::compute_tx_hash};
 
 pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
     let transactions = &block.tx_results;
@@ -12,7 +12,7 @@ pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &
         let tx_as_bytes = block.txs.get(i).unwrap();
         let tx_hash = compute_tx_hash(tx_as_bytes);
         let code = transaction.code;
-        let data = Hex::encode(&transaction.data);
+        let data = bytes_to_hex(&transaction.data);
         let log = &transaction.log;
         let info = &transaction.info;
         let gas_wanted = transaction.gas_wanted;
@@ -33,5 +33,7 @@ pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &
         insert_timestamp(row, clock, false, true);
 
         insert_tx_events(tables, clock, transaction, &tx_hash);
+
+        insert_transaction_messages(tables, clock, tx_as_bytes, &tx_hash);
     }
 }

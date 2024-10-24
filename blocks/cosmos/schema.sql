@@ -152,6 +152,24 @@ CREATE TABLE IF NOT EXISTS consensus_param_updates (
         ORDER BY (block_number)
         COMMENT 'Cosmos consensus parameter updates';
 
+CREATE TABLE IF NOT EXISTS transaction_messages (
+    -- clock --
+    block_time                       DateTime64(3, 'UTC'),
+    block_number                     UInt64,
+    block_date                       Date,
+    block_hash                       String COMMENT 'Cosmos Hash',
+
+    -- transaction message --
+    tx_hash                         String,
+    `index`                         UInt32 COMMENT 'Message index in transaction',
+    `type`                          String COMMENT 'Message type',
+    `value`                         String COMMENT 'Message value as hex'
+)
+    ENGINE = ReplacingMergeTree()
+        PRIMARY KEY (tx_hash, `index`) 
+        ORDER BY (tx_hash, `index`)
+        COMMENT 'Cosmos transaction messages';
+
 ALTER TABLE blocks ADD PROJECTION IF NOT EXISTS blocks_by_block_height (
     SELECT * ORDER BY date, number
 );
@@ -176,11 +194,14 @@ ALTER TABLE consensus_param_updates ADD PROJECTION IF NOT EXISTS consensus_param
     SELECT * ORDER BY block_date, block_number
 );
 
+ALTER TABLE transaction_messages ADD PROJECTION IF NOT EXISTS transaction_messages_by_tx_hash (
+    SELECT * ORDER BY block_date, block_number, tx_hash
+);
+
 ALTER TABLE blocks MATERIALIZE PROJECTION blocks_by_block_height;
-
 ALTER TABLE transactions MATERIALIZE PROJECTION transactions_by_hash;
-
 ALTER TABLE tx_events MATERIALIZE PROJECTION tx_events_by_tx_hash;
 ALTER TABLE block_events MATERIALIZE PROJECTION block_events_by_block_number;
 ALTER TABLE validator_updates MATERIALIZE PROJECTION validator_updates_by_block_number;
 ALTER TABLE consensus_param_updates MATERIALIZE PROJECTION consensus_param_updates_by_block_number;
+ALTER TABLE transaction_messages MATERIALIZE PROJECTION transaction_messages_by_tx_hash;

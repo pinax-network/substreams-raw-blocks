@@ -5,10 +5,10 @@
 
 - [x] **Blocks**
 - [x] **Transactions**
-- [ ] **Messages**
+- [x] **Transaction Messages**
 - [x] **Events**
   - [x] **Block Events**
   - [x] **Transaction Events**
 - [x] **Misbehaviors**
 - [x] **Validator Updates**
-- [ ] **Consensus Param Updates**
+- [x] **Consensus Param Updates**
