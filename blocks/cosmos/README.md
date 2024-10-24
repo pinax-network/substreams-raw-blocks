@@ -7,10 +7,8 @@
 - [x] **Transactions**
 - [ ] **Messages**
 - [x] **Events**
-  - [x] **Transaction Events**
   - [x] **Block Events**
-- [ ] **Misbehaviors**
+  - [x] **Transaction Events**
+- [x] **Misbehaviors**
 - [ ] **Validator Updates**
 - [ ] **Consensus Param Updates**
-
-

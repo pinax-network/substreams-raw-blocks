@@ -1,7 +1,9 @@
 mod blocks;
 mod events;
 mod keys;
+mod misbehaviors;
 mod sinks;
 mod size;
 mod transactions;
 mod utils;
+mod validator_updates;
