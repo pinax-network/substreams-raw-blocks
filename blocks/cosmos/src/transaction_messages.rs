@@ -8,7 +8,7 @@ pub fn insert_transaction_messages(tables: &mut DatabaseChanges, clock: &Clock, 
     if let Ok(tx) = <TxPartial as prost::Message>::decode(tx_as_bytes) {
         if let Some(body) = tx.body {
             for (index, message) in body.messages.iter().enumerate() {
-                let message_type = &message.type_url;
+                let message_type = &message.type_url[1..];
                 let message_value_hex = bytes_to_hex(&message.value);
 
                 let keys = transaction_message_keys(tx_hash, &index.to_string());
