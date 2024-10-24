@@ -10,5 +10,5 @@
   - [x] **Block Events**
   - [x] **Transaction Events**
 - [x] **Misbehaviors**
-- [ ] **Validator Updates**
+- [x] **Validator Updates**
 - [ ] **Consensus Param Updates**
