@@ -16,7 +16,7 @@ pub fn insert_transaction_messages(tables: &mut DatabaseChanges, clock: &Clock, 
                 let row = tables
                     .push_change_composite("transaction_messages", keys, 0, table_change::Operation::Create)
                     .change("index", ("", index.to_string().as_str()))
-                    .change("type", ("", message_type.as_str()))
+                    .change("type", ("", message_type))
                     .change("value", ("", message_value_hex.as_str()));
 
                 insert_timestamp(row, clock, false, true);
