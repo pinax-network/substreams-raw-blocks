@@ -1,0 +1,36 @@
+specVersion: v0.1.0
+package:
+  name: raw_blocks_cosmos
+  version: v0.2.3
+  url: https://github.com/pinax-network/substreams-raw-blocks
+  image: ../../images/logo.png
+  doc: Cosmos Raw Blockchain Data
+
+imports:
+  database_change: https://github.com/streamingfast/substreams-sink-database-changes/releases/download/v1.3.1/substreams-database-change-v1.3.1.spkg
+  sql: https://github.com/streamingfast/substreams-sink-sql/releases/download/protodefs-v1.0.7/substreams-sink-sql-protodefs-v1.0.7.spkg
+
+binaries:
+  default:
+    type: wasm/rust-v1
+    file: ../../target/wasm32-unknown-unknown/release/raw_blocks_cosmos.wasm
+
+modules:
+  - name: ch_out
+    kind: map
+    inputs:
+      - source: sf.substreams.v1.Clock
+      - source: sf.cosmos.type.v2.Block
+    output:
+      type: proto:sf.substreams.sink.database.v1.DatabaseChanges
+
+network: mainnet
+
+sink:
+  module: ch_out
+  type: sf.substreams.sink.sql.v1.Service
+  config:
+    schema: "./schema.sql"
+    engine: clickhouse
+    postgraphile_frontend:
+      enabled: false
