@@ -14,10 +14,14 @@ use crate::{
 };
 
 pub fn insert_instruction_calls(tables: &mut DatabaseChanges, clock: &Clock, block: &Block, transaction: &ConfirmedTransaction, tx_info: &TxInfo, table_prefix: &str) {
-    transaction.walk_instructions().enumerate().for_each(|(instruction_index, instruction_view)| {
+    for (instruction_index, instruction_view) in transaction.walk_instructions().enumerate() {
+        if !instruction_view.is_root() {
+            continue;
+        }
+
         insert_outer_instruction(tables, clock, block, tx_info, instruction_index, &instruction_view, table_prefix);
         insert_inner_instructions(tables, clock, block, tx_info, instruction_index, &instruction_view, table_prefix);
-    });
+    }
 }
 
 fn insert_outer_instruction(tables: &mut DatabaseChanges, clock: &Clock, block: &Block, tx_info: &TxInfo, instruction_index: usize, instruction_view: &InstructionView, table_prefix: &str) {
