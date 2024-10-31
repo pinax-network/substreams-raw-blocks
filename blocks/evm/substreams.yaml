@@ -3,8 +3,7 @@ package:
   name: raw_blocks_evm
   version: v0.2.3
   url: https://github.com/pinax-network/substreams-raw-blocks
-  image: ../../images/logo.png
-  doc: EVM Raw Blockchain Data
+  image: logo.png
 
 imports:
   database_change: https://github.com/streamingfast/substreams-sink-database-changes/releases/download/v1.3.1/substreams-database-change-v1.3.1.spkg

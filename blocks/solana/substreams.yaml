@@ -2,6 +2,7 @@ specVersion: v0.1.0
 package:
   name: raw_blocks_solana
   version: v0.1.0
+  image: logo.png
   url: https://github.com/pinax-network/substreams-raw-blocks
 
 imports:
