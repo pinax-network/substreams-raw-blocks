@@ -15,3 +15,5 @@
 | ⌛ | [`StartNet`](/blocks/startnet) | StartNet |
 | ⌛ | [`Arweave`](/blocks/arweave) | Arweave |
 | ⌛ | [`Near`](/blocks/near) | NEAR Protocol |
+
+> ✅ Supported, 🚧 In Progress, ⌛ Planned
