@@ -1,7 +1,7 @@
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges, TableChange};
 use substreams_solana::{
-    b58, base58,
+    b58,
     pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction},
 };
 

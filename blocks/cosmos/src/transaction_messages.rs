@@ -1,5 +1,5 @@
 use common::{blocks::insert_timestamp, utils::bytes_to_hex};
-use substreams::{pb::substreams::Clock, Hex};
+use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 
 use crate::keys::transaction_message_keys;
