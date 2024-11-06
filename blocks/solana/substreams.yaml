@@ -6,7 +6,7 @@ package:
   url: https://github.com/pinax-network/substreams-raw-blocks
 
 imports:
-  database_change: https://github.com/streamingfast/substreams-sink-database-changes/releases/download/v1.3.1/substreams-database-change-v1.3.1.spkg
+  database_change: https://github.com/streamingfast/substreams-sink-database-changes/releases/download/v2.0.0/substreams-database-change-v2.0.0.spkg
   sql: https://github.com/streamingfast/substreams-sink-sql/releases/download/protodefs-v1.0.7/substreams-sink-sql-protodefs-v1.0.7.spkg
   common: https://github.com/streamingfast/substreams-foundational-modules/releases/download/solana-common-v0.3.0/solana-common-v0.3.0.spkg
 
