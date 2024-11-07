@@ -11,7 +11,7 @@ imports:
 binaries:
   default:
     type: wasm/rust-v1
-    file: ../../target/wasm32-unknown-unknown/release/raw_blocks_evm_beacon.wasm
+    file: ../../target/wasm32-unknown-unknown/release/raw_blocks_beacon.wasm
 
 modules:
   - name: ch_out

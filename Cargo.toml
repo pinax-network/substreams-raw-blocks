@@ -4,7 +4,7 @@ members = [
   "blocks/antelope",
   "blocks/solana",
   "blocks/cosmos",
-  "blocks/evm-beacon",
+  "blocks/beacon",
   "common",
 ]
 resolver = "2"
