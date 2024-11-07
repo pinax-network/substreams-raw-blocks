@@ -113,6 +113,11 @@ pub fn extract_method_id(data: &Vec<u8>) -> String {
     }
 }
 
+pub fn hex_array_to_string(array: &Vec<Vec<u8>>) -> String {
+    let hex_strings: Vec<String> = array.iter().map(|bytes| format!("'{}'", substreams::Hex::encode(bytes))).collect();
+    format!("[{}]", hex_strings.join(","))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
