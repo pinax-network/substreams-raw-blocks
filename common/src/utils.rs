@@ -214,4 +214,23 @@ mod tests {
         assert_eq!(extract_topic(&topics, 0), "0xaabbcc");
         assert_eq!(extract_topic(&topics, 1), "0xdeadbeef");
     }
+
+    #[test]
+    fn test_hex_array_to_string() {
+        let array = vec![vec![0xaa, 0xbb, 0xcc], vec![0xde, 0xad, 0xbe, 0xef], vec![0x12, 0x34]];
+        let expected = "[\"aabbcc\",\"deadbeef\",\"1234\"]";
+        assert_eq!(hex_array_to_string(&array), expected);
+    }
+
+    #[test]
+    fn test_hex_array_to_string_empty() {
+        let array: Vec<Vec<u8>> = vec![];
+        assert_eq!(hex_array_to_string(&array), "[]");
+    }
+
+    #[test]
+    fn test_hex_array_to_string_single() {
+        let array = vec![vec![0xff, 0x00]];
+        assert_eq!(hex_array_to_string(&array), "[\"ff00\"]");
+    }
 }
