@@ -46,7 +46,6 @@ fn spec_to_string(spec: i32) -> String {
 }
 
 fn insert_deneb_body(tables: &mut DatabaseChanges, clock: &Clock, body: &DenebBody) {
-    // Table::blobs
     insert_blobs(tables, &clock, &body.embedded_blobs);
     insert_deposits(tables, clock, &body.deposits);
     let withdrawals = &body.execution_payload.as_ref().unwrap().withdrawals;

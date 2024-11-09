@@ -21,6 +21,6 @@ pub fn insert_bls_to_execution_changes(tables: &mut DatabaseChanges, clock: &Clo
             .change("to_execution_address", ("", to_execution_address.as_str()))
             .change("signature", ("", signature.as_str()));
 
-        insert_timestamp(row, clock, true, false);
+        insert_timestamp(row, clock, false, true);
     }
 }
