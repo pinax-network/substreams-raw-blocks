@@ -165,8 +165,39 @@ CREATE TABLE IF NOT EXISTS bls_to_execution_changes
     PRIMARY KEY (block_hash, index)
     ORDER BY (block_hash, index)
     COMMENT 'EVM Beacon block BLS to execution changes';
-
 -- Projections --
+
+CREATE TABLE IF NOT EXISTS proposer_slashings
+(
+    -- clock --
+    block_time                  DateTime64(3, 'UTC'),
+    block_number                UInt64,
+    block_date                  Date,
+    block_hash                  String COMMENT 'EVM Hash',
+
+    -- proposer slashing --
+    `index`                     UInt64 COMMENT 'Proposer slashing index within block',
+
+    -- signed header 1 --
+    signed_header_1_slot              UInt64,
+    signed_header_1_proposer_index    UInt64,
+    signed_header_1_parent_root       String,
+    signed_header_1_state_root        String,
+    signed_header_1_body_root         String,
+    signed_header_1_signature         String,
+
+    -- signed header 2 --
+    signed_header_2_slot              UInt64,
+    signed_header_2_proposer_index    UInt64,
+    signed_header_2_parent_root       String,
+    signed_header_2_state_root        String,
+    signed_header_2_body_root         String,
+    signed_header_2_signature         String
+)
+    ENGINE = ReplacingMergeTree()
+    PRIMARY KEY (block_hash, index)
+    ORDER BY (block_hash, index)
+    COMMENT 'EVM Beacon block proposer slashings';
 
 ALTER TABLE blocks ADD PROJECTION IF NOT EXISTS blocks_by_block_height (
     SELECT * ORDER BY date, number
@@ -196,6 +227,10 @@ ALTER TABLE bls_to_execution_changes ADD PROJECTION IF NOT EXISTS bls_to_executi
     SELECT * ORDER BY block_date, block_number
 );
 
+ALTER TABLE proposer_slashings ADD PROJECTION IF NOT EXISTS proposer_slashings_by_block_height (
+    SELECT * ORDER BY block_date, block_number
+);
+
 ALTER TABLE blocks MATERIALIZE PROJECTION blocks_by_block_height;
 
 ALTER TABLE blobs MATERIALIZE PROJECTION blobs_by_block_height;
@@ -209,3 +244,5 @@ ALTER TABLE attestations MATERIALIZE PROJECTION attestations_by_block_height;
 ALTER TABLE attester_slashings MATERIALIZE PROJECTION attester_slashings_by_block_height;
 
 ALTER TABLE bls_to_execution_changes MATERIALIZE PROJECTION bls_to_execution_changes_by_block_height;
+
+ALTER TABLE proposer_slashings MATERIALIZE PROJECTION proposer_slashings_by_block_height;

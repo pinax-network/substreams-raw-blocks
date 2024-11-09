@@ -7,6 +7,7 @@ use crate::{
     bls_to_execution_changes::insert_bls_to_execution_changes,
     deposits::insert_deposits,
     pb::sf::beacon::r#type::v1::{block::Body::*, AltairBody, BellatrixBody, Block as BeaconBlock, CapellaBody, DenebBody, Phase0Body},
+    proposer_slashings::insert_proposer_slashings,
     withdrawals::insert_withdrawals,
 };
 
@@ -53,6 +54,7 @@ fn insert_deneb_body(tables: &mut DatabaseChanges, clock: &Clock, body: &DenebBo
     insert_attestations(tables, clock, &body.attestations);
     insert_attester_slashings(tables, clock, &body.attester_slashings);
     insert_bls_to_execution_changes(tables, clock, &body.bls_to_execution_changes);
+    insert_proposer_slashings(tables, clock, &body.proposer_slashings);
 }
 
 fn insert_capella_body(tables: &mut DatabaseChanges, clock: &Clock, body: &CapellaBody) {
@@ -61,22 +63,26 @@ fn insert_capella_body(tables: &mut DatabaseChanges, clock: &Clock, body: &Capel
     insert_withdrawals(tables, clock, withdrawals);
     insert_attestations(tables, clock, &body.attestations);
     insert_attester_slashings(tables, clock, &body.attester_slashings);
+    insert_proposer_slashings(tables, clock, &body.proposer_slashings);
 }
 
 fn insert_bellatrix_body(tables: &mut DatabaseChanges, clock: &Clock, body: &BellatrixBody) {
     insert_deposits(tables, clock, &body.deposits);
     insert_attestations(tables, clock, &body.attestations);
     insert_attester_slashings(tables, clock, &body.attester_slashings);
+    insert_proposer_slashings(tables, clock, &body.proposer_slashings);
 }
 
 fn insert_altair_body(tables: &mut DatabaseChanges, clock: &Clock, body: &AltairBody) {
     insert_deposits(tables, clock, &body.deposits);
     insert_attestations(tables, clock, &body.attestations);
     insert_attester_slashings(tables, clock, &body.attester_slashings);
+    insert_proposer_slashings(tables, clock, &body.proposer_slashings);
 }
 
 fn insert_phase0_body(tables: &mut DatabaseChanges, clock: &Clock, body: &Phase0Body) {
     insert_deposits(tables, clock, &body.deposits);
     insert_attestations(tables, clock, &body.attestations);
     insert_attester_slashings(tables, clock, &body.attester_slashings);
+    insert_proposer_slashings(tables, clock, &body.proposer_slashings);
 }

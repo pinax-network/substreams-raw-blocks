@@ -6,5 +6,7 @@ mod bls_to_execution_changes;
 mod deposits;
 mod keys;
 mod pb;
+mod proposer_slashings;
 mod sink;
+mod voluntary_exits;
 mod withdrawals;

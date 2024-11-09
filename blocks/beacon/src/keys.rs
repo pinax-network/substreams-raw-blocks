@@ -23,3 +23,7 @@ pub fn attester_slashing_keys(block_hash: &str, index: u64) -> HashMap<String, S
 pub fn bls_to_execution_change_keys(block_hash: &str, index: u64) -> HashMap<String, String> {
     HashMap::from([("block_hash".to_string(), block_hash.to_string()), ("index".to_string(), index.to_string())])
 }
+
+pub fn proposer_slashing_keys(block_hash: &str, index: u64) -> HashMap<String, String> {
+    HashMap::from([("block_hash".to_string(), block_hash.to_string()), ("index".to_string(), index.to_string())])
+}
