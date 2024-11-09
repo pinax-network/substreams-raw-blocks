@@ -4,6 +4,7 @@ use substreams_database_change::pb::database::DatabaseChanges;
 use crate::{
     deposits::insert_deposits,
     pb::sf::beacon::r#type::v1::{block::Body::*, Block as BeaconBlock},
+    withdrawals::insert_withdrawals,
 };
 
 use crate::{blobs::insert_blobs, blocks::insert_blocks};
@@ -20,9 +21,13 @@ pub fn ch_out(clock: Clock, block: BeaconBlock) -> Result<DatabaseChanges, Error
             // Table::blobs
             insert_blobs(&mut tables, &clock, &body.embedded_blobs);
             insert_deposits(&mut tables, &clock, &body.deposits);
+            let withdrawals = &body.execution_payload.as_ref().unwrap().withdrawals;
+            insert_withdrawals(&mut tables, &clock, withdrawals);
         }
         Some(Capella(body)) => {
             insert_deposits(&mut tables, &clock, &body.deposits);
+            let withdrawals = &body.execution_payload.as_ref().unwrap().withdrawals;
+            insert_withdrawals(&mut tables, &clock, withdrawals);
         }
         Some(Bellatrix(body)) => {
             // Handle Bellatrix body
