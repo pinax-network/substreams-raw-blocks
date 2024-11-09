@@ -121,7 +121,7 @@ CREATE TABLE IF NOT EXISTS attester_slashings
 
     -- attestation 1 --
     attestation_1_attesting_indices String,
-    attestation_1_slot             UInt64,
+    attestation_1_slot              UInt64,
     attestation_1_committee_index   UInt64,
     attestation_1_beacon_block_root String,
     attestation_1_source_epoch      UInt64,
@@ -145,6 +145,26 @@ CREATE TABLE IF NOT EXISTS attester_slashings
     PRIMARY KEY (block_hash)
     ORDER BY (block_hash)
     COMMENT 'EVM Beacon block attester slashings';
+
+CREATE TABLE IF NOT EXISTS bls_to_execution_changes
+(
+    -- clock --
+    block_time                  DateTime64(3, 'UTC'),
+    block_number                UInt64,
+    block_date                  Date,
+    block_hash                  String COMMENT 'EVM Hash',
+
+    -- bls to execution change --
+    `index`                     UInt64 COMMENT 'BLS to execution change index within block',
+    validator_index             UInt64,
+    from_bls_pubkey             String,
+    to_execution_address        String,
+    signature                   String
+)
+    ENGINE = ReplacingMergeTree()
+    PRIMARY KEY (block_hash, index)
+    ORDER BY (block_hash, index)
+    COMMENT 'EVM Beacon block BLS to execution changes';
 
 -- Projections --
 
@@ -172,6 +192,10 @@ ALTER TABLE attester_slashings ADD PROJECTION IF NOT EXISTS attester_slashings_b
     SELECT * ORDER BY block_date, block_number
 );
 
+ALTER TABLE bls_to_execution_changes ADD PROJECTION IF NOT EXISTS bls_to_execution_changes_by_block_height (
+    SELECT * ORDER BY block_date, block_number
+);
+
 ALTER TABLE blocks MATERIALIZE PROJECTION blocks_by_block_height;
 
 ALTER TABLE blobs MATERIALIZE PROJECTION blobs_by_block_height;
@@ -183,3 +207,5 @@ ALTER TABLE withdrawals MATERIALIZE PROJECTION withdrawals_by_block_height;
 ALTER TABLE attestations MATERIALIZE PROJECTION attestations_by_block_height;
 
 ALTER TABLE attester_slashings MATERIALIZE PROJECTION attester_slashings_by_block_height;
+
+ALTER TABLE bls_to_execution_changes MATERIALIZE PROJECTION bls_to_execution_changes_by_block_height;

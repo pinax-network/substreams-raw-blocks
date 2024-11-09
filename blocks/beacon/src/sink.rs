@@ -4,6 +4,7 @@ use substreams_database_change::pb::database::DatabaseChanges;
 use crate::{
     attestations::insert_attestations,
     attester_slashings::insert_attester_slashings,
+    bls_to_execution_changes::insert_bls_to_execution_changes,
     deposits::insert_deposits,
     pb::sf::beacon::r#type::v1::{block::Body::*, AltairBody, BellatrixBody, Block as BeaconBlock, CapellaBody, DenebBody, Phase0Body},
     withdrawals::insert_withdrawals,
@@ -52,6 +53,7 @@ fn insert_deneb_body(tables: &mut DatabaseChanges, clock: &Clock, body: &DenebBo
     insert_withdrawals(tables, clock, withdrawals);
     insert_attestations(tables, clock, &body.attestations);
     insert_attester_slashings(tables, clock, &body.attester_slashings);
+    insert_bls_to_execution_changes(tables, clock, &body.bls_to_execution_changes);
 }
 
 fn insert_capella_body(tables: &mut DatabaseChanges, clock: &Clock, body: &CapellaBody) {
