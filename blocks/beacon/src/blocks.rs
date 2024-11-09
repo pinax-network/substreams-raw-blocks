@@ -4,9 +4,8 @@ use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 
 use crate::pb::sf::beacon::r#type::v1::Block as BeaconBlock;
 
-pub fn insert_blocks(tables: &mut DatabaseChanges, block: &BeaconBlock, clock: &Clock) {
+pub fn insert_blocks(tables: &mut DatabaseChanges, block: &BeaconBlock, spec: &str, clock: &Clock) {
     let version = block.version;
-    let spec = spec_to_string(block.spec);
     let slot = block.slot;
     let parent_slot = block.parent_slot;
     let root = bytes_to_hex(&block.root);
@@ -19,7 +18,7 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, block: &BeaconBlock, clock: &
     let row = tables
         .push_change("blocks", &clock.id, 0, table_change::Operation::Create)
         .change("version", ("", version.to_string().as_str()))
-        .change("spec", ("", spec.as_str()))
+        .change("spec", ("", spec))
         .change("slot", ("", slot.to_string().as_str()))
         .change("parent_slot", ("", parent_slot.to_string().as_str()))
         .change("root", ("", root.as_str()))
@@ -30,16 +29,4 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, block: &BeaconBlock, clock: &
         .change("signature", ("", signature.as_str()));
 
     insert_timestamp(row, clock, true, false);
-}
-
-fn spec_to_string(spec: i32) -> String {
-    match spec {
-        0 => "Unspecified".to_string(),
-        1 => "Phase0".to_string(),
-        2 => "Altair".to_string(),
-        3 => "Bellatrix".to_string(),
-        4 => "Capella".to_string(),
-        5 => "Deneb".to_string(),
-        _ => "Unknown".to_string(),
-    }
 }

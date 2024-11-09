@@ -63,6 +63,7 @@ CREATE TABLE IF NOT EXISTS deposits
     PRIMARY KEY (block_hash, index)
     ORDER BY (block_hash, index)
     COMMENT 'EVM Beacon block deposits';
+    
 CREATE TABLE IF NOT EXISTS withdrawals
 (
     -- clock --
@@ -78,9 +79,34 @@ CREATE TABLE IF NOT EXISTS withdrawals
     gwei                        UInt64
 )
     ENGINE = ReplacingMergeTree()
+    PRIMARY KEY (block_hash, withdrawal_index)
+    ORDER BY (block_hash, withdrawal_index)
+    COMMENT 'EVM Beacon block withdrawals';
+
+CREATE TABLE IF NOT EXISTS attestations
+(
+    -- clock --
+    block_time                  DateTime64(3, 'UTC'),
+    block_number                UInt64,
+    block_date                  Date,
+    block_hash                  String COMMENT 'EVM Hash',
+
+    -- attestation --
+    `index`                     UInt64 COMMENT 'Attestation index within block',
+    aggregation_bits            String,
+    slot                        UInt64,
+    committee_index             UInt64,
+    beacon_block_root           String,
+    source_epoch                UInt64,
+    source_root                 String,
+    target_epoch                UInt64,
+    target_root                 String,
+    signature                   String
+)
+    ENGINE = ReplacingMergeTree()
     PRIMARY KEY (block_hash, index)
     ORDER BY (block_hash, index)
-    COMMENT 'EVM Beacon block withdrawals';
+    COMMENT 'EVM Beacon block attestations';
 
 -- Projections --
 
@@ -100,6 +126,10 @@ ALTER TABLE withdrawals ADD PROJECTION IF NOT EXISTS withdrawals_by_block_height
     SELECT * ORDER BY block_date, block_number
 );
 
+ALTER TABLE attestations ADD PROJECTION IF NOT EXISTS attestations_by_block_height (
+    SELECT * ORDER BY block_date, block_number
+);
+
 ALTER TABLE blocks MATERIALIZE PROJECTION blocks_by_block_height;
 
 ALTER TABLE blobs MATERIALIZE PROJECTION blobs_by_block_height;
@@ -107,3 +137,5 @@ ALTER TABLE blobs MATERIALIZE PROJECTION blobs_by_block_height;
 ALTER TABLE deposits MATERIALIZE PROJECTION deposits_by_block_height;
 
 ALTER TABLE withdrawals MATERIALIZE PROJECTION withdrawals_by_block_height;
+
+ALTER TABLE attestations MATERIALIZE PROJECTION attestations_by_block_height;

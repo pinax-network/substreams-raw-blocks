@@ -1,3 +1,4 @@
+mod attestations;
 mod blobs;
 mod blocks;
 mod deposits;
