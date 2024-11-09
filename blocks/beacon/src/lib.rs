@@ -1,4 +1,5 @@
 mod attestations;
+mod attester_slashings;
 mod blobs;
 mod blocks;
 mod deposits;

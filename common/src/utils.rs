@@ -118,6 +118,10 @@ pub fn hex_array_to_string(array: &Vec<Vec<u8>>) -> String {
     format!("[{}]", hex_strings.join(","))
 }
 
+pub fn array_to_string<T: std::fmt::Display>(array: &Vec<T>) -> String {
+    format!("[{}]", array.iter().map(|x| x.to_string()).collect::<Vec<String>>().join(","))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

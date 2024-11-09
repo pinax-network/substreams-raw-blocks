@@ -3,6 +3,7 @@ use substreams_database_change::pb::database::DatabaseChanges;
 
 use crate::{
     attestations::insert_attestations,
+    attester_slashings::insert_attester_slashings,
     deposits::insert_deposits,
     pb::sf::beacon::r#type::v1::{block::Body::*, AltairBody, BellatrixBody, Block as BeaconBlock, CapellaBody, DenebBody, Phase0Body},
     withdrawals::insert_withdrawals,
@@ -50,6 +51,7 @@ fn insert_deneb_body(tables: &mut DatabaseChanges, clock: &Clock, body: &DenebBo
     let withdrawals = &body.execution_payload.as_ref().unwrap().withdrawals;
     insert_withdrawals(tables, clock, withdrawals);
     insert_attestations(tables, clock, &body.attestations);
+    insert_attester_slashings(tables, clock, &body.attester_slashings);
 }
 
 fn insert_capella_body(tables: &mut DatabaseChanges, clock: &Clock, body: &CapellaBody) {
@@ -57,19 +59,23 @@ fn insert_capella_body(tables: &mut DatabaseChanges, clock: &Clock, body: &Capel
     let withdrawals = &body.execution_payload.as_ref().unwrap().withdrawals;
     insert_withdrawals(tables, clock, withdrawals);
     insert_attestations(tables, clock, &body.attestations);
+    insert_attester_slashings(tables, clock, &body.attester_slashings);
 }
 
 fn insert_bellatrix_body(tables: &mut DatabaseChanges, clock: &Clock, body: &BellatrixBody) {
     insert_deposits(tables, clock, &body.deposits);
     insert_attestations(tables, clock, &body.attestations);
+    insert_attester_slashings(tables, clock, &body.attester_slashings);
 }
 
 fn insert_altair_body(tables: &mut DatabaseChanges, clock: &Clock, body: &AltairBody) {
     insert_deposits(tables, clock, &body.deposits);
     insert_attestations(tables, clock, &body.attestations);
+    insert_attester_slashings(tables, clock, &body.attester_slashings);
 }
 
 fn insert_phase0_body(tables: &mut DatabaseChanges, clock: &Clock, body: &Phase0Body) {
     insert_deposits(tables, clock, &body.deposits);
     insert_attestations(tables, clock, &body.attestations);
+    insert_attester_slashings(tables, clock, &body.attester_slashings);
 }
