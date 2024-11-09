@@ -114,7 +114,7 @@ pub fn extract_method_id(data: &Vec<u8>) -> String {
 }
 
 pub fn hex_array_to_string(array: &Vec<Vec<u8>>) -> String {
-    let hex_strings: Vec<String> = array.iter().map(|bytes| format!("\"{}\"", substreams::Hex::encode(bytes))).collect();
+    let hex_strings: Vec<String> = array.iter().map(|bytes| format!("\"{}\"", bytes_to_hex(bytes))).collect();
     format!("[{}]", hex_strings.join(","))
 }
 
@@ -218,7 +218,7 @@ mod tests {
     #[test]
     fn test_hex_array_to_string() {
         let array = vec![vec![0xaa, 0xbb, 0xcc], vec![0xde, 0xad, 0xbe, 0xef], vec![0x12, 0x34]];
-        let expected = "[\"aabbcc\",\"deadbeef\",\"1234\"]";
+        let expected = "[\"0xaabbcc\",\"0xdeadbeef\",\"0x1234\"]";
         assert_eq!(hex_array_to_string(&array), expected);
     }
 
@@ -231,6 +231,6 @@ mod tests {
     #[test]
     fn test_hex_array_to_string_single() {
         let array = vec![vec![0xff, 0x00]];
-        assert_eq!(hex_array_to_string(&array), "[\"ff00\"]");
+        assert_eq!(hex_array_to_string(&array), "[\"0xff00\"]");
     }
 }
