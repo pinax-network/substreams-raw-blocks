@@ -198,6 +198,24 @@ CREATE TABLE IF NOT EXISTS proposer_slashings
     PRIMARY KEY (block_hash, index)
     ORDER BY (block_hash, index)
     COMMENT 'EVM Beacon block proposer slashings';
+CREATE TABLE IF NOT EXISTS voluntary_exits
+(
+    -- clock --
+    block_time                  DateTime64(3, 'UTC'),
+    block_number                UInt64,
+    block_date                  Date,
+    block_hash                  String COMMENT 'EVM Hash',
+
+    -- voluntary exit --
+    `index`                     UInt64 COMMENT 'Voluntary exit index within block',
+    epoch                       UInt64,
+    validator_index             UInt64,
+    signature                   String
+)
+    ENGINE = ReplacingMergeTree()
+    PRIMARY KEY (block_hash, index)
+    ORDER BY (block_hash, index)
+    COMMENT 'EVM Beacon block voluntary exits';
 
 ALTER TABLE blocks ADD PROJECTION IF NOT EXISTS blocks_by_block_height (
     SELECT * ORDER BY date, number
@@ -231,6 +249,10 @@ ALTER TABLE proposer_slashings ADD PROJECTION IF NOT EXISTS proposer_slashings_b
     SELECT * ORDER BY block_date, block_number
 );
 
+ALTER TABLE voluntary_exits ADD PROJECTION IF NOT EXISTS voluntary_exits_by_block_height (
+    SELECT * ORDER BY block_date, block_number
+);
+
 ALTER TABLE blocks MATERIALIZE PROJECTION blocks_by_block_height;
 
 ALTER TABLE blobs MATERIALIZE PROJECTION blobs_by_block_height;
@@ -246,3 +268,5 @@ ALTER TABLE attester_slashings MATERIALIZE PROJECTION attester_slashings_by_bloc
 ALTER TABLE bls_to_execution_changes MATERIALIZE PROJECTION bls_to_execution_changes_by_block_height;
 
 ALTER TABLE proposer_slashings MATERIALIZE PROJECTION proposer_slashings_by_block_height;
+
+ALTER TABLE voluntary_exits MATERIALIZE PROJECTION voluntary_exits_by_block_height;
