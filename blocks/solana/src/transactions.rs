@@ -1,3 +1,4 @@
+use common::utils::{number_array_to_string, string_array_to_string, string_array_to_string_with_escapes};
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_solana::{
@@ -9,7 +10,7 @@ use crate::{
     blocks::insert_blockinfo,
     instruction_calls::{insert_instruction_calls, TxInfo},
     tx_errors::TransactionErrorDecoder,
-    utils::{build_csv_string, get_account_keys_extended, insert_timestamp_without_number},
+    utils::{build_csv_string, get_account_keys_extended, insert_timestamp_without_number, raw_signatures_to_base58_string_array},
 };
 
 pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &Block, transactions: &Vec<(usize, &ConfirmedTransaction)>, table_prefix: &str) {
@@ -19,7 +20,7 @@ pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &
         let message = trx.message.as_ref().expect("Transaction message is missing");
         let header = message.header.as_ref().expect("Transaction header is missing");
 
-        let account_keys = build_csv_string(&get_account_keys_extended(transaction));
+        let account_keys = string_array_to_string(&get_account_keys_extended(transaction));
 
         let success = meta.err.is_none();
 
@@ -28,15 +29,16 @@ pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &
             None => String::new(),
         };
 
-        let signatures: String = trx.signatures.iter().map(base58::encode).collect::<Vec<String>>().join(",");
+        let signatures = raw_signatures_to_base58_string_array(&trx.signatures);
         let first_signature = transaction.id();
 
         let recent_block_hash = base58::encode(&message.recent_blockhash);
+        // let log_messages = string_array_to_string_with_escapes(&meta.log_messages);
         let log_messages = build_csv_string(&meta.log_messages);
-        let pre_balances = build_csv_string(&meta.pre_balances);
-        let post_balances = build_csv_string(&meta.post_balances);
+        let pre_balances = number_array_to_string(&meta.pre_balances);
+        let post_balances = number_array_to_string(&meta.post_balances);
         let signers: Vec<String> = message.account_keys.iter().take(trx.signatures.len()).map(|key| base58::encode(key)).collect();
-        let signers_str = signers.join(",");
+        let signers_str = string_array_to_string(&signers);
         let signer = signers.first().unwrap();
         let index_str = index.to_string();
 

@@ -1,6 +1,6 @@
 use common::{
     blocks::insert_timestamp,
-    utils::{bytes_to_hex, u64_array_to_string},
+    utils::{bytes_to_hex, number_array_to_string},
 };
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
@@ -15,7 +15,7 @@ pub fn insert_attester_slashings(tables: &mut DatabaseChanges, clock: &Clock, at
         let attestation_data_2 = &attestation_2.data.as_ref().unwrap();
 
         // Attestation 1
-        let attestation_1_attesting_indices = u64_array_to_string(&attestation_1.attesting_indices);
+        let attestation_1_attesting_indices = number_array_to_string(&attestation_1.attesting_indices);
         let attestation_1_slot = attestation_data_1.slot;
         let attestation_1_committee_index = attestation_data_1.committee_index;
         let attestation_1_beacon_block_root = bytes_to_hex(&attestation_data_1.beacon_block_root);
@@ -28,7 +28,7 @@ pub fn insert_attester_slashings(tables: &mut DatabaseChanges, clock: &Clock, at
         let attestation_1_signature = bytes_to_hex(&attestation_1.signature);
 
         // Attestation 2
-        let attestation_2_attesting_indices = u64_array_to_string(&attestation_2.attesting_indices);
+        let attestation_2_attesting_indices = number_array_to_string(&attestation_2.attesting_indices);
         let attestation_2_slot = attestation_data_2.slot;
         let attestation_2_committee_index = attestation_data_2.committee_index;
         let attestation_2_beacon_block_root = bytes_to_hex(&attestation_data_2.beacon_block_root);

@@ -118,8 +118,40 @@ pub fn hex_array_to_string(array: &Vec<Vec<u8>>) -> String {
     format!("[{}]", hex_strings.join(","))
 }
 
-pub fn u64_array_to_string(array: &Vec<u64>) -> String {
-    format!("[{}]", array.iter().map(|x| x.to_string()).collect::<Vec<String>>().join(","))
+pub fn number_array_to_string<T: ToString>(array: &Vec<T>) -> String {
+    format!("[{}]", array.iter().map(|value| value.to_string()).collect::<Vec<String>>().join(","))
+}
+
+pub fn string_array_to_string(values: &[String]) -> String {
+    let mut result = String::with_capacity(values.len() * 4);
+    result.push('[');
+    for (i, s) in values.iter().enumerate() {
+        if i > 0 {
+            result.push(',');
+        }
+        result.push('"');
+        result.push_str(s);
+        result.push('"');
+    }
+    result.push(']');
+    result
+}
+
+pub fn string_array_to_string_with_escapes(values: &[String]) -> String {
+    let mut result = String::with_capacity(values.len() * 4);
+    result.push('[');
+    for (i, s) in values.iter().enumerate() {
+        if i > 0 {
+            result.push(',');
+        }
+        result.push('"');
+        // Escape quotes and backslashes
+        let escaped = s;
+        result.push_str(&escaped);
+        result.push('"');
+    }
+    result.push(']');
+    result
 }
 
 #[cfg(test)]
@@ -241,24 +273,43 @@ mod tests {
     #[test]
     fn test_u64_array_to_string() {
         let array = vec![1, 2, 3, 4, 5];
-        assert_eq!(u64_array_to_string(&array), "[1,2,3,4,5]");
+        assert_eq!(number_array_to_string(&array), "[1,2,3,4,5]");
     }
 
     #[test]
     fn test_u64_array_to_string_empty() {
         let array: Vec<u64> = vec![];
-        assert_eq!(u64_array_to_string(&array), "[]");
+        assert_eq!(number_array_to_string(&array), "[]");
     }
 
     #[test]
     fn test_u64_array_to_string_single() {
         let array = vec![42];
-        assert_eq!(u64_array_to_string(&array), "[42]");
+        assert_eq!(number_array_to_string(&array), "[42]");
     }
 
     #[test]
     fn test_u64_array_to_string_large_numbers() {
         let array = vec![u64::MAX, 0, u64::MIN];
-        assert_eq!(u64_array_to_string(&array), "[18446744073709551615,0,0]");
+        assert_eq!(number_array_to_string(&array), "[18446744073709551615,0,0]");
+    }
+
+    #[test]
+    fn test_string_array_to_string() {
+        let array = vec![String::from("hello"), String::from("world")];
+        let expected = "[\"hello\",\"world\"]";
+        assert_eq!(string_array_to_string(&array), expected);
+    }
+
+    #[test]
+    fn test_string_array_to_string_empty() {
+        let array: Vec<String> = vec![];
+        assert_eq!(string_array_to_string(&array), "[]");
+    }
+
+    #[test]
+    fn test_string_array_to_string_single() {
+        let array = vec![String::from("single")];
+        assert_eq!(string_array_to_string(&array), "[\"single\"]");
     }
 }

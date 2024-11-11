@@ -24,6 +24,11 @@ pub fn build_csv_string<T: ToString>(values: &[T]) -> String {
     values.iter().map(|value| value.to_string()).collect::<Vec<String>>().join(",")
 }
 
+pub fn raw_signatures_to_base58_string_array(values: &[Vec<u8>]) -> String {
+    let encoded_values: Vec<String> = values.iter().map(|value| format!("\"{}\"", base58::encode(value))).collect();
+    format!("[{}]", encoded_values.join(","))
+}
+
 // Get all encoded account keys including loaded writable and readonly addresses
 pub fn get_account_keys_extended(transaction: &ConfirmedTransaction) -> Vec<String> {
     let message = transaction.transaction.as_ref().unwrap().message.as_ref().unwrap();

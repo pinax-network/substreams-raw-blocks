@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS rewards
     pre_balance                 UInt64,
     post_balance                UInt64,
     reward_type                 LowCardinality(String),
-    commission                  String,
+    commission                  String
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_hash, pubkey, reward_type)
@@ -94,13 +94,13 @@ CREATE TABLE IF NOT EXISTS transactions
     success                     Bool,
     error                       String,
     recent_block_hash           String,
-    account_keys                String,
-    log_messages                String,
-    pre_balances                String,
-    post_balances               String,
-    signatures                  String,
+    account_keys                Array(String),
+    log_messages                String, -- Should be Array(String)
+    pre_balances                Array(UInt64),
+    post_balances               Array(UInt64),
+    signatures                  Array(String),
     signer                      String,
-    signers                     String,
+    signers                     Array(String)
 )
 
     ENGINE = ReplacingMergeTree()
@@ -138,13 +138,12 @@ CREATE TABLE IF NOT EXISTS instruction_calls
     is_inner                  Bool,
     `data`                    String,
     account_arguments         String,
-    inner_instructions        String,
+    inner_instructions        String
 )
 
     ENGINE = ReplacingMergeTree()
     PRIMARY KEY (tx_id, outer_instruction_index, inner_instruction_index)
     ORDER BY (tx_id, outer_instruction_index, inner_instruction_index)
-    SETTINGS allow_nullable_key = 1
     COMMENT 'Solana instruction calls';
 
 CREATE TABLE IF NOT EXISTS account_activity 
@@ -174,7 +173,7 @@ CREATE TABLE IF NOT EXISTS account_activity
     pre_token_balance         String, -- Decimal(38,18) when sink will support it
     post_token_balance        String, -- Decimal(38,18) when sink will support it
     token_balance_change      String, -- Decimal(38,17) when sink will support it
-    token_balance_owner       String,
+    token_balance_owner       String
 )
 
     ENGINE = ReplacingMergeTree()
@@ -212,7 +211,7 @@ CREATE TABLE IF NOT EXISTS vote_transactions
     post_balances               String,
     signatures                  String,
     signer                      String,
-    signers                     String,
+    signers                     String
 )
 
     ENGINE = ReplacingMergeTree()
@@ -250,13 +249,12 @@ CREATE TABLE IF NOT EXISTS vote_instruction_calls
     is_inner                  Bool,
     `data`                    String,
     account_arguments         String,
-    inner_instructions        String,
+    inner_instructions        String
 )
 
     ENGINE = ReplacingMergeTree()
     PRIMARY KEY (tx_id, outer_instruction_index, inner_instruction_index)
     ORDER BY (tx_id, outer_instruction_index, inner_instruction_index)
-    SETTINGS allow_nullable_key = 1
     COMMENT 'Solana vote instruction calls';
 
 CREATE TABLE IF NOT EXISTS vote_account_activity 
@@ -286,7 +284,7 @@ CREATE TABLE IF NOT EXISTS vote_account_activity
     pre_token_balance         String, -- Decimal(38,18) when sink will support it
     post_token_balance        String, -- Decimal(38,18) when sink will support it
     token_balance_change      String, -- Decimal(38,17) when sink will support it
-    token_balance_owner       String,
+    token_balance_owner       String
 )
 
     ENGINE = ReplacingMergeTree()
