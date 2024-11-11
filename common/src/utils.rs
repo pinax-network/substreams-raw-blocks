@@ -118,7 +118,7 @@ pub fn hex_array_to_string(array: &Vec<Vec<u8>>) -> String {
     format!("[{}]", hex_strings.join(","))
 }
 
-pub fn array_to_string<T: std::fmt::Display>(array: &Vec<T>) -> String {
+pub fn u64_array_to_string(array: &Vec<u64>) -> String {
     format!("[{}]", array.iter().map(|x| x.to_string()).collect::<Vec<String>>().join(","))
 }
 
@@ -236,5 +236,29 @@ mod tests {
     fn test_hex_array_to_string_single() {
         let array = vec![vec![0xff, 0x00]];
         assert_eq!(hex_array_to_string(&array), "[\"0xff00\"]");
+    }
+
+    #[test]
+    fn test_u64_array_to_string() {
+        let array = vec![1, 2, 3, 4, 5];
+        assert_eq!(u64_array_to_string(&array), "[1,2,3,4,5]");
+    }
+
+    #[test]
+    fn test_u64_array_to_string_empty() {
+        let array: Vec<u64> = vec![];
+        assert_eq!(u64_array_to_string(&array), "[]");
+    }
+
+    #[test]
+    fn test_u64_array_to_string_single() {
+        let array = vec![42];
+        assert_eq!(u64_array_to_string(&array), "[42]");
+    }
+
+    #[test]
+    fn test_u64_array_to_string_large_numbers() {
+        let array = vec![u64::MAX, 0, u64::MIN];
+        assert_eq!(u64_array_to_string(&array), "[18446744073709551615,0,0]");
     }
 }
