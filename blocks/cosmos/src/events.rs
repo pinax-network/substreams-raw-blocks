@@ -1,12 +1,12 @@
 use common::blocks::insert_timestamp;
 use substreams::pb::substreams::Clock;
 use substreams_cosmos::{
-    pb::{Event, EventAttribute, TxResults},
+    pb::{Event, TxResults},
     Block,
 };
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 
-use crate::keys::event_keys;
+use crate::{keys::event_keys, utils::build_attributes_array_string};
 
 pub fn insert_tx_events(tables: &mut DatabaseChanges, clock: &Clock, transaction: &TxResults, tx_hash: &str) {
     for (index, event) in transaction.events.iter().enumerate() {
@@ -37,10 +37,4 @@ fn insert_event(tables: &mut DatabaseChanges, clock: &Clock, hash: &str, index: 
         .change("attributes", ("", attributes_str.as_str()));
 
     insert_timestamp(row, clock, false, true);
-}
-
-// Builds a string in the format of an array of tuples (key, value)
-fn build_attributes_array_string(attributes: &[EventAttribute]) -> String {
-    let tuples: Vec<(&str, &str)> = attributes.iter().map(|attr| (attr.key.as_str(), attr.value.as_str())).collect();
-    serde_json::to_string(&tuples).unwrap_or_default()
 }

@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS block_events (
     -- event --
     `index`                          UInt32 COMMENT 'Event index in block',
     `type`                           String,
-    attributes                       String
+    attributes                       Array(Tuple(String, String)) -- Array of key-value pairs
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_number, `index`)
@@ -145,7 +145,7 @@ CREATE TABLE IF NOT EXISTS consensus_param_updates (
     block_hash                       String COMMENT 'Cosmos Hash',
 
     -- consensus params --
-    json                            String
+    `json`                           String
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (block_number)
