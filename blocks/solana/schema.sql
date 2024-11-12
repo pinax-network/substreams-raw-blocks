@@ -127,7 +127,7 @@ CREATE TABLE IF NOT EXISTS instruction_calls
     tx_index                  UInt32,
     tx_signer                 String,
     tx_success                Bool,
-    log_messages              String,
+    log_messages              String, -- Should be Array(String)
 
     -- instruction --
     outer_instruction_index   UInt32,
@@ -138,7 +138,8 @@ CREATE TABLE IF NOT EXISTS instruction_calls
     is_inner                  Bool,
     `data`                    String,
     account_arguments         Array(String),
-    inner_instructions        String
+    inner_instructions        Array(Tuple(String, String, Array(String))) -- (data String, executing_account String, account_arguments Array(String))
+    -- inner_instructions        String
 )
 
     ENGINE = ReplacingMergeTree()
@@ -206,7 +207,7 @@ CREATE TABLE IF NOT EXISTS vote_transactions
     error                       String,
     recent_block_hash           String,
     account_keys                String,
-    log_messages                String,
+    log_messages                String, -- Should be Array(String)
     pre_balances                String,
     post_balances               String,
     signatures                  String,
@@ -238,7 +239,7 @@ CREATE TABLE IF NOT EXISTS vote_instruction_calls
     tx_index                  UInt32,
     tx_signer                 String,
     tx_success                Bool,
-    log_messages              String,
+    log_messages              String, -- Should be Array(String)
 
     -- instruction --
     outer_instruction_index   UInt32,

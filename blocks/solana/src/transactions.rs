@@ -1,4 +1,4 @@
-use common::utils::{number_array_to_string, string_array_to_string};
+use common::utils::{number_array_to_string, string_array_to_string, string_array_to_string_with_escapes};
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_solana::{
@@ -33,8 +33,8 @@ pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &
         let first_signature = transaction.id();
 
         let recent_block_hash = base58::encode(&message.recent_blockhash);
-        // let log_messages = string_array_to_string_with_escapes(&meta.log_messages);
-        let log_messages = build_csv_string(&meta.log_messages);
+        let log_messages = string_array_to_string_with_escapes(&meta.log_messages);
+        // let log_messages = build_csv_string(&meta.log_messages);
         let pre_balances = number_array_to_string(&meta.pre_balances);
         let post_balances = number_array_to_string(&meta.post_balances);
         let signers: Vec<String> = message.account_keys.iter().take(trx.signatures.len()).map(|key| base58::encode(key)).collect();

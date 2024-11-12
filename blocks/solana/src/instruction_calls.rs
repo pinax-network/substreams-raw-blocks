@@ -1,4 +1,5 @@
 use common::utils::{bytes_to_hex, to_string_array_to_string};
+use serde_json::json;
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges, TableChange};
 use substreams_solana::{
@@ -68,7 +69,7 @@ fn insert_inner_instructions(tables: &mut DatabaseChanges, clock: &Clock, block:
             .change("is_inner", ("", "true"))
             .change("data", ("", inner_data.as_str()))
             .change("account_arguments", ("", account_arguments.as_str()))
-            .change("inner_instructions", ("", ""));
+            .change("inner_instructions", ("", "[]"));
 
         insert_timestamp_without_number(row, clock, false, true);
         insert_blockinfo(row, block, true);
@@ -77,29 +78,18 @@ fn insert_inner_instructions(tables: &mut DatabaseChanges, clock: &Clock, block:
 }
 
 fn build_inner_instructions_str(instruction_view: &InstructionView) -> String {
-    let mut inner_instructions_str = String::new();
+    let inner_instructions: Vec<(String, String, Vec<String>)> = instruction_view
+        .inner_instructions()
+        .map(|inner_instruction| {
+            (
+                base58::encode(inner_instruction.data()),
+                inner_instruction.program_id().to_string(),
+                inner_instruction.accounts().iter().map(|arg| arg.to_string()).collect(),
+            )
+        })
+        .collect();
 
-    let inner_instructions = instruction_view.inner_instructions().enumerate().collect::<Vec<_>>();
-    let last_index = inner_instructions.len().saturating_sub(1);
-
-    for (inner_index, inner_instruction) in inner_instructions {
-        // TODO: Check why Dune uses base58 encoding for data
-        let inner_data = base58::encode(inner_instruction.data());
-        let executing_account = inner_instruction.program_id().to_string();
-        let account_arguments = to_string_array_to_string(&inner_instruction.accounts());
-
-        inner_instructions_str.push_str(&format!(
-            "('{}','{}',{})",
-            inner_data.replace("'", "''"),        // Escape single quotes
-            executing_account.replace("'", "''"), // Escape single quotes
-            account_arguments
-        ));
-        if inner_index != last_index {
-            inner_instructions_str.push_str(",");
-        }
-    }
-
-    format!("[{}]", inner_instructions_str)
+    serde_json::to_string(&inner_instructions).expect("Failed to serialize inner instructions")
 }
 
 fn insert_tx_info(row: &mut TableChange, tx_info: &TxInfo) {

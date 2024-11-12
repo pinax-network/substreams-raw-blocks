@@ -1,3 +1,4 @@
+use serde_json;
 use substreams::{scalar::BigDecimal, Hex};
 use substreams_ethereum::pb::eth::v2::BigInt;
 
@@ -164,22 +165,9 @@ pub fn to_string_array_to_string<T: ToString>(values: &[T]) -> String {
     result
 }
 
-// pub fn string_array_to_string_with_escapes(values: &[String]) -> String {
-//     let mut result = String::with_capacity(values.len() * 4);
-//     result.push('[');
-//     for (i, s) in values.iter().enumerate() {
-//         if i > 0 {
-//             result.push(',');
-//         }
-//         result.push('"');
-//         // Escape quotes and backslashes
-//         let escaped = s;
-//         result.push_str(&escaped);
-//         result.push('"');
-//     }
-//     result.push(']');
-//     result
-// }
+pub fn string_array_to_string_with_escapes(values: &[String]) -> String {
+    serde_json::to_string(values).unwrap_or_else(|_| "[]".to_string())
+}
 
 #[cfg(test)]
 mod tests {
