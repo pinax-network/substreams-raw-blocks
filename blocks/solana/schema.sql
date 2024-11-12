@@ -206,13 +206,13 @@ CREATE TABLE IF NOT EXISTS vote_transactions
     success                     Bool,
     error                       String,
     recent_block_hash           String,
-    account_keys                String,
+    account_keys                Array(String),
     log_messages                String, -- Should be Array(String)
-    pre_balances                String,
-    post_balances               String,
-    signatures                  String,
+    pre_balances                Array(UInt64),
+    post_balances               Array(UInt64),
+    signatures                  Array(String),
     signer                      String,
-    signers                     String
+    signers                     Array(String)
 )
 
     ENGINE = ReplacingMergeTree()
@@ -249,7 +249,7 @@ CREATE TABLE IF NOT EXISTS vote_instruction_calls
     executing_account         String,
     is_inner                  Bool,
     `data`                    String,
-    account_arguments         String,
+    account_arguments         Array(String),
     inner_instructions        Array(Tuple(String, String, Array(String))) -- (data String, executing_account String, account_arguments Array(String))
 )
 
@@ -282,9 +282,9 @@ CREATE TABLE IF NOT EXISTS vote_account_activity
     pre_balance               UInt64,
     post_balance              UInt64,
     balance_change            Int128,
-    pre_token_balance         String, -- Decimal(38,18) when sink will support it
-    post_token_balance        String, -- Decimal(38,18) when sink will support it
-    token_balance_change      String, -- Decimal(38,17) when sink will support it
+    pre_token_balance         Float64, -- Decimal(38,18) when sink will support it
+    post_token_balance        Float64, -- Decimal(38,18) when sink will support it
+    token_balance_change      Float64, -- Decimal(38,17) when sink will support it
     token_balance_owner       String
 )
 
