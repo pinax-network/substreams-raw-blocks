@@ -171,9 +171,9 @@ CREATE TABLE IF NOT EXISTS account_activity
     pre_balance               UInt64,
     post_balance              UInt64,
     balance_change            Int128,
-    pre_token_balance         String, -- Decimal(38,18) when sink will support it
-    post_token_balance        String, -- Decimal(38,18) when sink will support it
-    token_balance_change      String, -- Decimal(38,17) when sink will support it
+    pre_token_balance         Nullable(Float64), -- Decimal(38,18) when sink will support it
+    post_token_balance        Nullable(Float64), -- Decimal(38,18) when sink will support it
+    token_balance_change      Nullable(Float64), -- Decimal(38,17) when sink will support it
     token_balance_owner       String
 )
 
@@ -282,9 +282,9 @@ CREATE TABLE IF NOT EXISTS vote_account_activity
     pre_balance               UInt64,
     post_balance              UInt64,
     balance_change            Int128,
-    pre_token_balance         Float64, -- Decimal(38,18) when sink will support it
-    post_token_balance        Float64, -- Decimal(38,18) when sink will support it
-    token_balance_change      Float64, -- Decimal(38,17) when sink will support it
+    pre_token_balance         Nullable(Float64), -- Decimal(38,18) when sink will support it
+    post_token_balance        Nullable(Float64), -- Decimal(38,18) when sink will support it
+    token_balance_change      Nullable(Float64), -- Decimal(38,17) when sink will support it
     token_balance_owner       String
 )
 

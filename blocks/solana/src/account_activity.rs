@@ -84,10 +84,17 @@ pub fn insert_account_activity(tables: &mut DatabaseChanges, clock: &Clock, bloc
                 .change("pre_balance", ("", pre_balance.to_string().as_str()))
                 .change("post_balance", ("", post_balance.to_string().as_str()))
                 .change("balance_change", ("", balance_change.to_string().as_str()))
-                .change("pre_token_balance", ("", pre_token_balance.as_ref().map(|v| v.to_string()).as_deref().unwrap_or("")))
-                .change("post_token_balance", ("", post_token_balance.as_ref().map(|v| v.to_string()).as_deref().unwrap_or("")))
-                .change("token_balance_change", ("", token_balance_change.as_ref().map(|v| v.to_string()).as_deref().unwrap_or("")))
+                .change("pre_token_balance", ("", pre_token_balance.as_ref().map(|v| v.to_string()).as_deref().unwrap_or("-1.0")))
+                .change("post_token_balance", ("", post_token_balance.as_ref().map(|v| v.to_string()).as_deref().unwrap_or("-1.0")))
+                .change("token_balance_change", ("", token_balance_change.as_ref().map(|v| v.to_string()).as_deref().unwrap_or("0")))
                 .change("token_balance_owner", ("", owner.as_deref().unwrap_or("")));
+
+            // TODO: Uncomment when sink supports nullable types
+            // if pre_token_balance.is_some() {
+            //     row.change("pre_token_balance", ("", pre_token_balance.as_ref().unwrap().to_string().as_str()))
+            //         .change("post_token_balance", ("", post_token_balance.as_ref().unwrap().to_string().as_str()))
+            //         .change("token_balance_change", ("", token_balance_change.as_ref().unwrap().to_string().as_str()));
+            // }
 
             insert_timestamp_without_number(row, clock, false, false);
             insert_blockinfo(row, block, true);
