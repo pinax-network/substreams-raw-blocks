@@ -1,4 +1,4 @@
-use common::utils::bytes_to_hex;
+use common::utils::{bytes_to_hex, to_string_array_to_string};
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges, TableChange};
 use substreams_solana::{
@@ -10,7 +10,7 @@ use substreams_solana::{
 use crate::{
     blocks::insert_blockinfo,
     keys::{inner_instruction_keys, instruction_keys},
-    utils::{build_csv_string, insert_timestamp_without_number},
+    utils::insert_timestamp_without_number,
 };
 
 pub fn insert_instruction_calls(tables: &mut DatabaseChanges, clock: &Clock, block: &Block, transaction: &ConfirmedTransaction, tx_info: &TxInfo, table_prefix: &str) {
@@ -26,7 +26,7 @@ pub fn insert_instruction_calls(tables: &mut DatabaseChanges, clock: &Clock, blo
 
 fn insert_outer_instruction(tables: &mut DatabaseChanges, clock: &Clock, block: &Block, tx_info: &TxInfo, instruction_index: usize, instruction_view: &InstructionView, table_prefix: &str) {
     let executing_account = base58::encode(instruction_view.program_id());
-    let account_arguments = build_csv_string(&instruction_view.accounts());
+    let account_arguments = to_string_array_to_string(&instruction_view.accounts());
     let data = bytes_to_hex(&instruction_view.data());
 
     let keys = instruction_keys(tx_info.tx_id, instruction_index.to_string().as_str());
@@ -54,7 +54,7 @@ fn insert_inner_instructions(tables: &mut DatabaseChanges, clock: &Clock, block:
     for (inner_index, inner_instruction) in instruction_view.inner_instructions().enumerate() {
         let inner_data = bytes_to_hex(inner_instruction.data());
         let executing_account = inner_instruction.program_id().to_string();
-        let account_arguments = build_csv_string(&inner_instruction.accounts());
+        let account_arguments = to_string_array_to_string(&inner_instruction.accounts());
 
         let keys = inner_instruction_keys(tx_info.tx_id, instruction_index.to_string().as_str(), inner_index.to_string().as_str());
 
@@ -83,19 +83,23 @@ fn build_inner_instructions_str(instruction_view: &InstructionView) -> String {
     let last_index = inner_instructions.len().saturating_sub(1);
 
     for (inner_index, inner_instruction) in inner_instructions {
-        // let inner_data = bytes_to_hex(inner_instruction.data());
         // TODO: Check why Dune uses base58 encoding for data
         let inner_data = base58::encode(inner_instruction.data());
         let executing_account = inner_instruction.program_id().to_string();
-        let account_arguments = build_csv_string(&inner_instruction.accounts());
+        let account_arguments = to_string_array_to_string(&inner_instruction.accounts());
 
-        inner_instructions_str.push_str(&format!("({},{},{})", inner_data, executing_account, account_arguments));
+        inner_instructions_str.push_str(&format!(
+            "('{}','{}',{})",
+            inner_data.replace("'", "''"),        // Escape single quotes
+            executing_account.replace("'", "''"), // Escape single quotes
+            account_arguments
+        ));
         if inner_index != last_index {
-            inner_instructions_str.push_str(", ");
+            inner_instructions_str.push_str(",");
         }
     }
 
-    inner_instructions_str
+    format!("[{}]", inner_instructions_str)
 }
 
 fn insert_tx_info(row: &mut TableChange, tx_info: &TxInfo) {

@@ -113,15 +113,24 @@ pub fn extract_method_id(data: &Vec<u8>) -> String {
     }
 }
 
+// Takes an array of bytes and returns a string representation of the array
+// Each element is wrapped in double quotes
+// Example : "[\"0xaabbcc\",\"0xdeadbeef\",\"0x1234\"]"
 pub fn hex_array_to_string(array: &Vec<Vec<u8>>) -> String {
     let hex_strings: Vec<String> = array.iter().map(|bytes| format!("\"{}\"", bytes_to_hex(bytes))).collect();
     format!("[{}]", hex_strings.join(","))
 }
 
+// Takes an array of any type that can be converted to a string and returns a string representation of the array
+// Example : "[1,2,3]"
 pub fn number_array_to_string<T: ToString>(array: &Vec<T>) -> String {
     format!("[{}]", array.iter().map(|value| value.to_string()).collect::<Vec<String>>().join(","))
 }
 
+// Takes an array of strings and returns a string representation of the array
+// Each element is wrapped in double quotes
+// Essentially the same as to_string_array_to_string but without the need of calling .to_string() on each element
+// Example : "[\"a\",\"b\", \"c\"]"
 pub fn string_array_to_string(values: &[String]) -> String {
     let mut result = String::with_capacity(values.len() * 4);
     result.push('[');
@@ -137,22 +146,40 @@ pub fn string_array_to_string(values: &[String]) -> String {
     result
 }
 
-pub fn string_array_to_string_with_escapes(values: &[String]) -> String {
+// Takes an array of any type that can be converted to a string and returns a string representation of the array
+// Each element is wrapped in double quotes
+// Example : "[\"a\",\"b\", \"c\"]"
+pub fn to_string_array_to_string<T: ToString>(values: &[T]) -> String {
     let mut result = String::with_capacity(values.len() * 4);
     result.push('[');
-    for (i, s) in values.iter().enumerate() {
+    for (i, value) in values.iter().enumerate() {
         if i > 0 {
             result.push(',');
         }
         result.push('"');
-        // Escape quotes and backslashes
-        let escaped = s;
-        result.push_str(&escaped);
+        result.push_str(&value.to_string());
         result.push('"');
     }
     result.push(']');
     result
 }
+
+// pub fn string_array_to_string_with_escapes(values: &[String]) -> String {
+//     let mut result = String::with_capacity(values.len() * 4);
+//     result.push('[');
+//     for (i, s) in values.iter().enumerate() {
+//         if i > 0 {
+//             result.push(',');
+//         }
+//         result.push('"');
+//         // Escape quotes and backslashes
+//         let escaped = s;
+//         result.push_str(&escaped);
+//         result.push('"');
+//     }
+//     result.push(']');
+//     result
+// }
 
 #[cfg(test)]
 mod tests {

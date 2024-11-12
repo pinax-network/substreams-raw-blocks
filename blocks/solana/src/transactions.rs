@@ -1,4 +1,4 @@
-use common::utils::{number_array_to_string, string_array_to_string, string_array_to_string_with_escapes};
+use common::utils::{number_array_to_string, string_array_to_string};
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_solana::{
@@ -10,7 +10,7 @@ use crate::{
     blocks::insert_blockinfo,
     instruction_calls::{insert_instruction_calls, TxInfo},
     tx_errors::TransactionErrorDecoder,
-    utils::{build_csv_string, get_account_keys_extended, insert_timestamp_without_number, raw_signatures_to_base58_string_array},
+    utils::{build_csv_string, encode_byte_vectors_to_base58_string, get_account_keys_extended, insert_timestamp_without_number},
 };
 
 pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &Block, transactions: &Vec<(usize, &ConfirmedTransaction)>, table_prefix: &str) {
@@ -29,7 +29,7 @@ pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &
             None => String::new(),
         };
 
-        let signatures = raw_signatures_to_base58_string_array(&trx.signatures);
+        let signatures = encode_byte_vectors_to_base58_string(&trx.signatures);
         let first_signature = transaction.id();
 
         let recent_block_hash = base58::encode(&message.recent_blockhash);

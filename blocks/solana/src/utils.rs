@@ -24,7 +24,7 @@ pub fn build_csv_string<T: ToString>(values: &[T]) -> String {
     values.iter().map(|value| value.to_string()).collect::<Vec<String>>().join(",")
 }
 
-pub fn raw_signatures_to_base58_string_array(values: &[Vec<u8>]) -> String {
+pub fn encode_byte_vectors_to_base58_string(values: &[Vec<u8>]) -> String {
     let encoded_values: Vec<String> = values.iter().map(|value| format!("\"{}\"", base58::encode(value))).collect();
     format!("[{}]", encoded_values.join(","))
 }
@@ -41,4 +41,57 @@ pub fn get_account_keys_extended(transaction: &ConfirmedTransaction) -> Vec<Stri
         .chain(&meta.loaded_readonly_addresses)
         .map(base58::encode)
         .collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_encode_byte_vectors_multiple() {
+        let input = vec![vec![1, 2, 3, 4], vec![5, 6, 7, 8], vec![9, 8, 7, 6]];
+        let expected = "[\"2VfUX\",\"8SxqM\",\"EPavZ\"]";
+        let output = encode_byte_vectors_to_base58_string(&input);
+        assert_eq!(output, expected);
+    }
+
+    #[test]
+    fn test_encode_0x1234() {
+        let input = vec![vec![0x12, 0x34]];
+        let expected = "[\"2PM\"]";
+        let output = encode_byte_vectors_to_base58_string(&input);
+        assert_eq!(output, expected);
+    }
+
+    #[test]
+    fn test_encode_mixed_vectors() {
+        let input = vec![vec![1, 2, 3, 4], vec![0x12, 0x34], vec![5, 6, 7, 8]];
+        let expected = "[\"2VfUX\",\"2PM\",\"8SxqM\"]";
+        let output = encode_byte_vectors_to_base58_string(&input);
+        assert_eq!(output, expected);
+    }
+
+    #[test]
+    fn test_encode_empty_vector() {
+        let input: Vec<Vec<u8>> = vec![];
+        let expected = "[]";
+        let output = encode_byte_vectors_to_base58_string(&input);
+        assert_eq!(output, expected);
+    }
+
+    #[test]
+    fn test_encode_single_zero_byte() {
+        let input = vec![vec![0]];
+        let expected = "[\"1\"]";
+        let output = encode_byte_vectors_to_base58_string(&input);
+        assert_eq!(output, expected);
+    }
+
+    #[test]
+    fn test_encode_leading_zeros() {
+        let input = vec![vec![0, 0, 1, 2, 3]];
+        let expected = "[\"11Ldp\"]"; // '11' represents the two leading zeros
+        let output = encode_byte_vectors_to_base58_string(&input);
+        assert_eq!(output, expected);
+    }
 }

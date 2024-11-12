@@ -137,7 +137,7 @@ CREATE TABLE IF NOT EXISTS instruction_calls
     executing_account         String,
     is_inner                  Bool,
     `data`                    String,
-    account_arguments         String,
+    account_arguments         Array(String),
     inner_instructions        String
 )
 
@@ -249,7 +249,7 @@ CREATE TABLE IF NOT EXISTS vote_instruction_calls
     is_inner                  Bool,
     `data`                    String,
     account_arguments         String,
-    inner_instructions        String
+    inner_instructions        Array(Tuple(String, String, Array(String))) -- (data String, executing_account String, account_arguments Array(String))
 )
 
     ENGINE = ReplacingMergeTree()
