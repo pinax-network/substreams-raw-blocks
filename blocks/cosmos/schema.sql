@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS tx_events (
     tx_hash                          String COMMENT 'Transaction hash',
     `index`                          UInt32 COMMENT 'Event index in transaction',
     `type`                           String,
-    attributes                       String
+    attributes                       Array(Tuple(String, String)) -- Array of key-value pairs
 )
     ENGINE = ReplacingMergeTree()
         PRIMARY KEY (tx_hash, `index`)

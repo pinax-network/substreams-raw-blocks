@@ -22,7 +22,7 @@ pub fn insert_block_events(tables: &mut DatabaseChanges, clock: &Clock, block: &
 
 fn insert_event(tables: &mut DatabaseChanges, clock: &Clock, hash: &str, index: usize, event: &Event, table_prefix: &str) {
     let event_type = &event.r#type;
-    let attributes_str = build_attributes_str(&event.attributes);
+    let attributes_str = build_attributes_array_string(&event.attributes);
 
     let index_str = index.to_string();
 
@@ -39,7 +39,8 @@ fn insert_event(tables: &mut DatabaseChanges, clock: &Clock, hash: &str, index: 
     insert_timestamp(row, clock, false, true);
 }
 
-fn build_attributes_str(attributes: &[EventAttribute]) -> String {
-    let json_attributes: Vec<String> = attributes.iter().map(|attribute| format!(r#""{}":{}"#, attribute.key, attribute.value)).collect();
-    format!(r#"{{{}}}"#, json_attributes.join(","))
+// Builds a string in the format of an array of tuples (key, value)
+fn build_attributes_array_string(attributes: &[EventAttribute]) -> String {
+    let tuples: Vec<(&str, &str)> = attributes.iter().map(|attr| (attr.key.as_str(), attr.value.as_str())).collect();
+    serde_json::to_string(&tuples).unwrap_or_default()
 }
