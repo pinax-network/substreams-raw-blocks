@@ -3,246 +3,246 @@
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Events {
-    #[prost(message, repeated, tag = "1")]
+    #[prost(message, repeated, tag="1")]
     pub blocks: ::prost::alloc::vec::Vec<Block>,
-    #[prost(message, repeated, tag = "2")]
+    #[prost(message, repeated, tag="2")]
     pub rewards: ::prost::alloc::vec::Vec<Reward>,
-    #[prost(message, repeated, tag = "3")]
+    #[prost(message, repeated, tag="3")]
     pub transactions: ::prost::alloc::vec::Vec<Transaction>,
-    #[prost(message, repeated, tag = "4")]
+    #[prost(message, repeated, tag="4")]
     pub instruction_calls: ::prost::alloc::vec::Vec<InstructionCall>,
-    #[prost(message, repeated, tag = "5")]
+    #[prost(message, repeated, tag="5")]
     pub account_activity: ::prost::alloc::vec::Vec<AccountActivity>,
-    #[prost(message, repeated, tag = "6")]
+    #[prost(message, repeated, tag="6")]
     pub vote_transactions: ::prost::alloc::vec::Vec<Transaction>,
-    #[prost(message, repeated, tag = "7")]
+    #[prost(message, repeated, tag="7")]
     pub vote_instruction_calls: ::prost::alloc::vec::Vec<InstructionCall>,
-    #[prost(message, repeated, tag = "8")]
+    #[prost(message, repeated, tag="8")]
     pub vote_account_activity: ::prost::alloc::vec::Vec<AccountActivity>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Block {
     /// clock
-    #[prost(message, optional, tag = "1")]
+    #[prost(message, optional, tag="1")]
     pub time: ::core::option::Option<::prost_types::Timestamp>,
-    #[prost(string, tag = "2")]
+    #[prost(string, tag="2")]
     pub date: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
+    #[prost(string, tag="3")]
     pub hash: ::prost::alloc::string::String,
     /// block
-    #[prost(uint64, tag = "4")]
+    #[prost(uint64, tag="4")]
     pub slot: u64,
-    #[prost(uint64, tag = "5")]
+    #[prost(uint64, tag="5")]
     pub height: u64,
-    #[prost(string, tag = "6")]
+    #[prost(string, tag="6")]
     pub previous_block_hash: ::prost::alloc::string::String,
-    #[prost(uint64, tag = "7")]
+    #[prost(uint64, tag="7")]
     pub parent_slot: u64,
     /// counters
-    #[prost(uint64, tag = "8")]
+    #[prost(uint64, tag="8")]
     pub total_transactions: u64,
-    #[prost(uint64, tag = "9")]
+    #[prost(uint64, tag="9")]
     pub successful_transactions: u64,
-    #[prost(uint64, tag = "10")]
+    #[prost(uint64, tag="10")]
     pub failed_transactions: u64,
-    #[prost(uint64, tag = "11")]
+    #[prost(uint64, tag="11")]
     pub total_vote_transactions: u64,
-    #[prost(uint64, tag = "12")]
+    #[prost(uint64, tag="12")]
     pub total_non_vote_transactions: u64,
-    #[prost(uint64, tag = "13")]
+    #[prost(uint64, tag="13")]
     pub successful_vote_transactions: u64,
-    #[prost(uint64, tag = "14")]
+    #[prost(uint64, tag="14")]
     pub successful_non_vote_transactions: u64,
-    #[prost(uint64, tag = "15")]
+    #[prost(uint64, tag="15")]
     pub failed_vote_transactions: u64,
-    #[prost(uint64, tag = "16")]
+    #[prost(uint64, tag="16")]
     pub failed_non_vote_transactions: u64,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Reward {
     /// clock
-    #[prost(message, optional, tag = "1")]
+    #[prost(message, optional, tag="1")]
     pub block_time: ::core::option::Option<::prost_types::Timestamp>,
-    #[prost(string, tag = "2")]
+    #[prost(string, tag="2")]
     pub block_date: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
+    #[prost(string, tag="3")]
     pub block_hash: ::prost::alloc::string::String,
     /// block
-    #[prost(uint64, tag = "4")]
+    #[prost(uint64, tag="4")]
     pub block_slot: u64,
-    #[prost(uint64, tag = "5")]
+    #[prost(uint64, tag="5")]
     pub block_height: u64,
-    #[prost(string, tag = "6")]
+    #[prost(string, tag="6")]
     pub block_previous_block_hash: ::prost::alloc::string::String,
-    #[prost(uint64, tag = "7")]
+    #[prost(uint64, tag="7")]
     pub block_parent_slot: u64,
     /// reward
-    #[prost(string, tag = "8")]
+    #[prost(string, tag="8")]
     pub pubkey: ::prost::alloc::string::String,
-    #[prost(int64, tag = "9")]
+    #[prost(int64, tag="9")]
     pub lamports: i64,
-    #[prost(uint64, tag = "10")]
+    #[prost(uint64, tag="10")]
     pub pre_balance: u64,
-    #[prost(uint64, tag = "11")]
+    #[prost(uint64, tag="11")]
     pub post_balance: u64,
-    #[prost(string, tag = "12")]
+    #[prost(string, tag="12")]
     pub reward_type: ::prost::alloc::string::String,
-    #[prost(string, tag = "13")]
+    #[prost(string, tag="13")]
     pub commission: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Transaction {
     /// clock
-    #[prost(message, optional, tag = "1")]
+    #[prost(message, optional, tag="1")]
     pub block_time: ::core::option::Option<::prost_types::Timestamp>,
-    #[prost(string, tag = "2")]
+    #[prost(string, tag="2")]
     pub block_hash: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
+    #[prost(string, tag="3")]
     pub block_date: ::prost::alloc::string::String,
     /// block
-    #[prost(uint64, tag = "4")]
+    #[prost(uint64, tag="4")]
     pub block_slot: u64,
-    #[prost(uint64, tag = "5")]
+    #[prost(uint64, tag="5")]
     pub block_height: u64,
-    #[prost(string, tag = "6")]
+    #[prost(string, tag="6")]
     pub block_previous_block_hash: ::prost::alloc::string::String,
-    #[prost(uint64, tag = "7")]
+    #[prost(uint64, tag="7")]
     pub block_parent_slot: u64,
     /// transaction
-    #[prost(string, tag = "8")]
+    #[prost(string, tag="8")]
     pub id: ::prost::alloc::string::String,
-    #[prost(uint32, tag = "9")]
+    #[prost(uint32, tag="9")]
     pub index: u32,
-    #[prost(uint64, tag = "10")]
+    #[prost(uint64, tag="10")]
     pub fee: u64,
-    #[prost(uint32, tag = "11")]
+    #[prost(uint32, tag="11")]
     pub required_signatures: u32,
-    #[prost(uint32, tag = "12")]
+    #[prost(uint32, tag="12")]
     pub required_signed_accounts: u32,
-    #[prost(uint32, tag = "13")]
+    #[prost(uint32, tag="13")]
     pub required_unsigned_accounts: u32,
-    #[prost(string, tag = "14")]
+    #[prost(string, tag="14")]
     pub signature: ::prost::alloc::string::String,
-    #[prost(bool, tag = "15")]
+    #[prost(bool, tag="15")]
     pub success: bool,
-    #[prost(string, tag = "16")]
+    #[prost(string, tag="16")]
     pub error: ::prost::alloc::string::String,
-    #[prost(string, tag = "17")]
+    #[prost(string, tag="17")]
     pub recent_block_hash: ::prost::alloc::string::String,
-    #[prost(string, repeated, tag = "18")]
+    #[prost(string, repeated, tag="18")]
     pub account_keys: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
-    #[prost(string, tag = "19")]
+    #[prost(string, tag="19")]
     pub log_messages: ::prost::alloc::string::String,
-    #[prost(uint64, repeated, tag = "20")]
-    pub pre_balances: ::prost::alloc::vec::Vec<u64>,
-    #[prost(uint64, repeated, tag = "21")]
-    pub post_balances: ::prost::alloc::vec::Vec<u64>,
-    #[prost(string, repeated, tag = "22")]
+    #[prost(string, repeated, tag="20")]
+    pub pre_balances: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(string, repeated, tag="21")]
+    pub post_balances: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(string, repeated, tag="22")]
     pub signatures: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
-    #[prost(string, tag = "23")]
+    #[prost(string, tag="23")]
     pub signer: ::prost::alloc::string::String,
-    #[prost(string, repeated, tag = "24")]
+    #[prost(string, repeated, tag="24")]
     pub signers: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct InstructionCall {
     /// clock
-    #[prost(message, optional, tag = "1")]
+    #[prost(message, optional, tag="1")]
     pub block_time: ::core::option::Option<::prost_types::Timestamp>,
-    #[prost(string, tag = "2")]
+    #[prost(string, tag="2")]
     pub block_hash: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
+    #[prost(string, tag="3")]
     pub block_date: ::prost::alloc::string::String,
     /// block
-    #[prost(uint64, tag = "4")]
+    #[prost(uint64, tag="4")]
     pub block_slot: u64,
-    #[prost(uint64, tag = "5")]
+    #[prost(uint64, tag="5")]
     pub block_height: u64,
-    #[prost(string, tag = "6")]
+    #[prost(string, tag="6")]
     pub block_previous_block_hash: ::prost::alloc::string::String,
-    #[prost(uint64, tag = "7")]
+    #[prost(uint64, tag="7")]
     pub block_parent_slot: u64,
     /// transaction
-    #[prost(string, tag = "8")]
+    #[prost(string, tag="8")]
     pub tx_id: ::prost::alloc::string::String,
-    #[prost(uint32, tag = "9")]
+    #[prost(uint32, tag="9")]
     pub tx_index: u32,
-    #[prost(string, tag = "10")]
+    #[prost(string, tag="10")]
     pub tx_signer: ::prost::alloc::string::String,
-    #[prost(bool, tag = "11")]
+    #[prost(bool, tag="11")]
     pub tx_success: bool,
-    #[prost(string, tag = "12")]
+    #[prost(string, tag="12")]
     pub log_messages: ::prost::alloc::string::String,
     /// instruction
-    #[prost(uint32, tag = "13")]
+    #[prost(uint32, tag="13")]
     pub outer_instruction_index: u32,
-    #[prost(int32, tag = "14")]
+    #[prost(int32, tag="14")]
     pub inner_instruction_index: i32,
-    #[prost(string, tag = "15")]
+    #[prost(string, tag="15")]
     pub inner_executing_account: ::prost::alloc::string::String,
-    #[prost(string, tag = "16")]
+    #[prost(string, tag="16")]
     pub outer_executing_account: ::prost::alloc::string::String,
-    #[prost(string, tag = "17")]
+    #[prost(string, tag="17")]
     pub executing_account: ::prost::alloc::string::String,
-    #[prost(bool, tag = "18")]
+    #[prost(bool, tag="18")]
     pub is_inner: bool,
-    #[prost(string, tag = "19")]
+    #[prost(string, tag="19")]
     pub data: ::prost::alloc::string::String,
-    #[prost(string, repeated, tag = "20")]
+    #[prost(string, repeated, tag="20")]
     pub account_arguments: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
-    #[prost(string, repeated, tag = "21")]
+    #[prost(string, repeated, tag="21")]
     pub inner_instructions: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AccountActivity {
     /// clock
-    #[prost(message, optional, tag = "1")]
+    #[prost(message, optional, tag="1")]
     pub block_time: ::core::option::Option<::prost_types::Timestamp>,
-    #[prost(string, tag = "2")]
+    #[prost(string, tag="2")]
     pub block_hash: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
+    #[prost(string, tag="3")]
     pub block_date: ::prost::alloc::string::String,
     /// block
-    #[prost(uint64, tag = "4")]
+    #[prost(uint64, tag="4")]
     pub block_slot: u64,
-    #[prost(uint64, tag = "5")]
+    #[prost(uint64, tag="5")]
     pub block_height: u64,
-    #[prost(string, tag = "6")]
+    #[prost(string, tag="6")]
     pub block_previous_block_hash: ::prost::alloc::string::String,
-    #[prost(uint64, tag = "7")]
+    #[prost(uint64, tag="7")]
     pub block_parent_slot: u64,
-    #[prost(string, tag = "8")]
+    #[prost(string, tag="8")]
     pub address: ::prost::alloc::string::String,
-    #[prost(uint32, tag = "9")]
+    #[prost(uint32, tag="9")]
     pub tx_index: u32,
-    #[prost(string, tag = "10")]
+    #[prost(string, tag="10")]
     pub tx_id: ::prost::alloc::string::String,
-    #[prost(bool, tag = "11")]
+    #[prost(bool, tag="11")]
     pub tx_success: bool,
-    #[prost(bool, tag = "12")]
+    #[prost(bool, tag="12")]
     pub signed: bool,
-    #[prost(bool, tag = "13")]
+    #[prost(bool, tag="13")]
     pub writable: bool,
-    #[prost(string, tag = "14")]
+    #[prost(string, tag="14")]
     pub token_mint_address: ::prost::alloc::string::String,
-    #[prost(uint64, tag = "15")]
+    #[prost(uint64, tag="15")]
     pub pre_balance: u64,
-    #[prost(uint64, tag = "16")]
+    #[prost(uint64, tag="16")]
     pub post_balance: u64,
-    #[prost(int64, tag = "17")]
+    #[prost(int64, tag="17")]
     pub balance_change: i64,
-    #[prost(double, tag = "18")]
+    #[prost(double, tag="18")]
     pub pre_token_balance: f64,
-    #[prost(double, tag = "19")]
+    #[prost(double, tag="19")]
     pub post_token_balance: f64,
-    #[prost(double, tag = "20")]
+    #[prost(double, tag="20")]
     pub token_balance_change: f64,
-    #[prost(string, tag = "21")]
+    #[prost(string, tag="21")]
     pub token_balance_owner: ::prost::alloc::string::String,
 }
 // @@protoc_insertion_point(module)

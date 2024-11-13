@@ -9,6 +9,8 @@ use substreams_solana::{
 use crate::{
     blocks::insert_blockinfo,
     instruction_calls::{insert_instruction_calls, TxInfo},
+    pb::solana::rawblocks::Transaction as RawTransaction,
+    structs::{BlockInfo, BlockTimestamp},
     tx_errors::TransactionErrorDecoder,
     utils::{build_csv_string, encode_byte_vectors_to_base58_string, get_account_keys_extended, insert_timestamp_without_number},
 };
@@ -75,6 +77,54 @@ pub fn insert_transactions(tables: &mut DatabaseChanges, clock: &Clock, block: &
 
         insert_instruction_calls(tables, clock, block, transaction, &tx_info, table_prefix);
     }
+}
+
+pub fn collect_transactions(transactions: &Vec<(usize, &ConfirmedTransaction)>, block_info: &BlockInfo, timestamp: &BlockTimestamp) -> Vec<RawTransaction> {
+    let mut trx_vec: Vec<RawTransaction> = Vec::new();
+
+    for (index, transaction) in transactions {
+        let meta = transaction.meta.as_ref().expect("Transaction meta is missing");
+        let trx = transaction.transaction.as_ref().expect("Transaction is missing");
+        let message = trx.message.as_ref().expect("Transaction message is missing");
+        let header = message.header.as_ref().expect("Transaction header is missing");
+
+        let account_keys = get_account_keys_extended(transaction);
+        let success = meta.err.is_none();
+        let err = match &meta.err {
+            Some(err) => decode_transaction_error(&err.err),
+            None => String::new(),
+        };
+
+        trx_vec.push(RawTransaction {
+            block_time: Some(timestamp.time),
+            block_hash: timestamp.hash.clone(),
+            block_date: timestamp.date.clone(),
+            block_slot: block_info.slot,
+            block_height: block_info.height,
+            block_previous_block_hash: block_info.previous_block_hash.clone(),
+            block_parent_slot: block_info.parent_slot,
+            id: transaction.id(),
+            index: *index as u32,
+            fee: meta.fee,
+            required_signatures: header.num_required_signatures,
+            required_signed_accounts: header.num_readonly_signed_accounts,
+            required_unsigned_accounts: header.num_readonly_unsigned_accounts,
+            signature: transaction.id(),
+            success,
+            error: err,
+            recent_block_hash: base58::encode(&message.recent_blockhash),
+            account_keys,
+            log_messages: string_array_to_string_with_escapes(&meta.log_messages),
+            // TODO: output as uint array when sink-files supports it
+            pre_balances: meta.pre_balances.iter().map(|balance| balance.to_string()).collect(),
+            post_balances: meta.post_balances.iter().map(|balance| balance.to_string()).collect(),
+            signatures: trx.signatures.iter().map(base58::encode).collect(),
+            signer: message.account_keys.iter().take(trx.signatures.len()).map(|key| base58::encode(key)).next().unwrap(),
+            signers: message.account_keys.iter().take(trx.signatures.len()).map(|key| base58::encode(key)).collect(),
+        });
+    }
+
+    trx_vec
 }
 
 pub fn decode_transaction_error(err: &Vec<u8>) -> String {
