@@ -63,8 +63,8 @@ pub struct Block {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Reward {
     /// clock
-    #[prost(string, tag = "1")]
-    pub block_time: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "1")]
+    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
     #[prost(string, tag = "2")]
     pub block_date: ::prost::alloc::string::String,
     #[prost(string, tag = "3")]
@@ -96,8 +96,8 @@ pub struct Reward {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Transaction {
     /// clock
-    #[prost(string, tag = "1")]
-    pub block_time: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "1")]
+    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
     #[prost(string, tag = "2")]
     pub block_hash: ::prost::alloc::string::String,
     #[prost(string, tag = "3")]
@@ -151,8 +151,8 @@ pub struct Transaction {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct InstructionCall {
     /// clock
-    #[prost(string, tag = "1")]
-    pub block_time: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "1")]
+    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
     #[prost(string, tag = "2")]
     pub block_hash: ::prost::alloc::string::String,
     #[prost(string, tag = "3")]
@@ -201,8 +201,8 @@ pub struct InstructionCall {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AccountActivity {
     /// clock
-    #[prost(string, tag = "1")]
-    pub block_time: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "1")]
+    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
     #[prost(string, tag = "2")]
     pub block_hash: ::prost::alloc::string::String,
     #[prost(string, tag = "3")]

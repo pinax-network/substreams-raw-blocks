@@ -2,6 +2,7 @@ use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::TableChange;
 use substreams_solana::{b58, pb::sf::solana::r#type::v1::Block};
 
+use crate::structs::BlockTimestamp;
 use crate::utils::get_timestamp_without_number;
 use crate::{pb::solana::rawblocks::Block as RawBlock, structs::BlockInfo};
 
@@ -28,18 +29,16 @@ pub fn insert_blockinfo(row: &mut TableChange, block: &Block, with_prefix: bool)
         .change(format!("{}parent_slot", prefix_str).as_str(), ("", block.parent_slot.to_string().as_str()));
 }
 
-pub fn collect_block(block: &Block, clock: &Clock) -> Option<RawBlock> {
+pub fn collect_block(block: &Block, timestamp: &BlockTimestamp, block_info: &BlockInfo) -> Option<RawBlock> {
     let counters = get_block_counters(block);
-    let block_info = get_block_info(block);
-    let timestamp = get_timestamp_without_number(clock);
 
     Some(RawBlock {
         time: Some(timestamp.time),
-        date: timestamp.date,
-        hash: timestamp.hash,
+        date: timestamp.date.clone(),
+        hash: timestamp.hash.clone(),
         slot: block.slot,
         height: block_info.height,
-        previous_block_hash: block_info.previous_block_hash,
+        previous_block_hash: block_info.previous_block_hash.clone(),
         parent_slot: block_info.parent_slot,
         total_transactions: counters.total_transactions,
         successful_transactions: counters.successful_transactions,

@@ -41,7 +41,7 @@ message Block {
 
 message Reward {
   // clock
-  string block_time = 1;
+  google.protobuf.Timestamp block_time = 1;
   string block_date = 2;
   string block_hash = 3;
 
@@ -62,7 +62,7 @@ message Reward {
 
 message Transaction {
   // clock
-  string block_time = 1;
+  google.protobuf.Timestamp block_time = 1;
   string block_hash = 2;
   string block_date = 3;
 
@@ -94,7 +94,7 @@ message Transaction {
 
 message InstructionCall {
   // clock
-  string block_time = 1;
+ google.protobuf.Timestamp block_time = 1;
   string block_hash = 2;
   string block_date = 3;
 
@@ -125,7 +125,7 @@ message InstructionCall {
 
 message AccountActivity {
   // clock
-  string block_time = 1;
+  google.protobuf.Timestamp block_time = 1;
   string block_hash = 2;
   string block_date = 3;
 
