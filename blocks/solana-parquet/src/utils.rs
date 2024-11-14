@@ -56,6 +56,9 @@ pub fn get_account_keys_extended(transaction: &ConfirmedTransaction) -> Vec<Stri
         .collect()
 }
 
+pub fn join_csv_strings_with_quotemarks(strings: &[String]) -> String {
+    strings.iter().map(|s| format!("\"{}\"", s)).collect::<Vec<String>>().join(",")
+}
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -5,7 +5,7 @@ use crate::{
     pb::solana::rawblocks::Transaction as RawTransaction,
     structs::{BlockInfo, BlockTimestamp},
     tx_errors::TransactionErrorDecoder,
-    utils::get_account_keys_extended,
+    utils::{build_csv_string, get_account_keys_extended},
 };
 
 pub fn collect_transactions(transactions: &Vec<(usize, &ConfirmedTransaction)>, block_info: &BlockInfo, timestamp: &BlockTimestamp) -> Vec<RawTransaction> {
@@ -23,6 +23,9 @@ pub fn collect_transactions(transactions: &Vec<(usize, &ConfirmedTransaction)>, 
             Some(err) => decode_transaction_error(&err.err),
             None => String::new(),
         };
+
+        let signers = message.account_keys.iter().take(trx.signatures.len()).map(|key| base58::encode(key)).collect::<Vec<String>>();
+        let signers_str = build_csv_string(&signers);
 
         trx_vec.push(RawTransaction {
             block_time: Some(timestamp.time),
@@ -42,14 +45,17 @@ pub fn collect_transactions(transactions: &Vec<(usize, &ConfirmedTransaction)>, 
             success,
             error: err,
             recent_block_hash: base58::encode(&message.recent_blockhash),
-            account_keys,
-            log_messages: string_array_to_string_with_escapes(&meta.log_messages),
+            account_keys: build_csv_string(&account_keys),
+            log_messages: build_csv_string(&meta.log_messages),
             // TODO: output as uint array when sink-files supports it
-            pre_balances: meta.pre_balances.iter().map(|balance| balance.to_string()).collect(),
-            post_balances: meta.post_balances.iter().map(|balance| balance.to_string()).collect(),
-            signatures: trx.signatures.iter().map(base58::encode).collect(),
+            pre_balances: build_csv_string(&meta.pre_balances.iter().map(|balance| balance.to_string()).collect::<Vec<String>>()),
+            // TODO: use Array(Text) once sink-files supports it
+            post_balances: build_csv_string(&meta.post_balances.iter().map(|balance| balance.to_string()).collect::<Vec<String>>()),
+            // TODO: use Array(Text) once sink-files supports it
+            signatures: build_csv_string(&trx.signatures.iter().map(|sig| base58::encode(sig)).collect::<Vec<String>>()),
             signer: message.account_keys.iter().take(trx.signatures.len()).map(|key| base58::encode(key)).next().unwrap(),
-            signers: message.account_keys.iter().take(trx.signatures.len()).map(|key| base58::encode(key)).collect(),
+            // TODO: use Array(Text) once sink-files supports it
+            signers: signers_str,
         });
     }
 

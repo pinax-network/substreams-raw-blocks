@@ -4,6 +4,7 @@ use substreams_solana::{base58, block_view::InstructionView, pb::sf::solana::r#t
 use crate::{
     pb::solana::rawblocks::InstructionCall,
     structs::{BlockInfo, BlockTimestamp},
+    utils::build_csv_string,
 };
 
 pub fn collect_instruction_calls(block: &Block, timestamp: &BlockTimestamp, block_info: &BlockInfo) -> Vec<InstructionCall> {
@@ -37,7 +38,7 @@ pub fn collect_instruction_calls(block: &Block, timestamp: &BlockTimestamp, bloc
 fn collect_outer_instruction(vec: &mut Vec<InstructionCall>, timestamp: &BlockTimestamp, block_info: &BlockInfo, tx_info: &TxInfo, instruction_index: usize, instruction_view: &InstructionView) {
     let executing_account = base58::encode(instruction_view.program_id());
     // let account_arguments = to_string_array_to_string(&instruction_view.accounts());
-    let account_arguments = instruction_view.accounts().iter().map(|arg| arg.to_string()).collect();
+    let account_arguments = instruction_view.accounts().iter().map(|arg| arg.to_string()).collect::<Vec<String>>();
     let data = bytes_to_hex(&instruction_view.data());
 
     let inner_instructions_str = build_inner_instructions_str(instruction_view);
@@ -54,7 +55,8 @@ fn collect_outer_instruction(vec: &mut Vec<InstructionCall>, timestamp: &BlockTi
         tx_index: tx_info.tx_index,
         tx_signer: tx_info.tx_signer.to_string(),
         tx_success: tx_info.tx_success,
-        log_messages: tx_info.log_messages.clone(),
+        // TODO: use Array(Text) once sink-files supports it
+        log_messages: build_csv_string(&tx_info.log_messages),
         outer_instruction_index: instruction_index as u32,
         inner_instruction_index: -1,
         inner_executing_account: "".to_string(),
@@ -62,7 +64,8 @@ fn collect_outer_instruction(vec: &mut Vec<InstructionCall>, timestamp: &BlockTi
         executing_account,
         is_inner: false,
         data,
-        account_arguments: account_arguments,
+        // TODO: use Array(Text) once sink-files supports it
+        account_arguments: build_csv_string(&account_arguments),
         inner_instructions: inner_instructions_str,
     });
 }
@@ -85,7 +88,7 @@ fn collect_inner_instructions(vec: &mut Vec<InstructionCall>, timestamp: &BlockT
             tx_index: tx_info.tx_index,
             tx_signer: tx_info.tx_signer.to_string(),
             tx_success: tx_info.tx_success,
-            log_messages: tx_info.log_messages.clone(),
+            log_messages: tx_info.log_messages.join(","),
             outer_instruction_index: instruction_index as u32,
             inner_instruction_index: inner_index as i32,
             inner_executing_account: executing_account.clone(),
