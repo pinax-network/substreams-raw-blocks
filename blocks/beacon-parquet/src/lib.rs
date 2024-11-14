@@ -1,0 +1,14 @@
+mod attestations;
+mod attester_slashings;
+mod blobs;
+mod blocks;
+mod bls_to_execution_changes;
+mod deposits;
+mod keys;
+mod pb;
+mod proposer_slashings;
+mod sink;
+mod structs;
+mod utils;
+mod voluntary_exits;
+mod withdrawals;

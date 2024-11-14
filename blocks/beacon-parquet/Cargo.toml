@@ -1,0 +1,15 @@
+[package]
+name = "raw_blocks_beacon_parquet"
+edition = { workspace = true }
+version = { workspace = true }
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+common = { path = "../../common" }
+substreams-ethereum = { workspace = true }
+substreams-database-change = { workspace = true }
+substreams = { workspace = true }
+prost = { workspace = true }
+prost-types = { workspace = true }
