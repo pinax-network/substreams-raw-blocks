@@ -1,19 +1,9 @@
-use common::utils::{bytes_to_hex, to_string_array_to_string};
-use serde_json::json;
-use substreams::pb::substreams::Clock;
-use substreams_database_change::pb::database::{table_change, DatabaseChanges, TableChange};
-use substreams_solana::{
-    base58,
-    block_view::InstructionView,
-    pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction},
-};
+use common::utils::bytes_to_hex;
+use substreams_solana::{base58, block_view::InstructionView, pb::sf::solana::r#type::v1::Block};
 
 use crate::{
-    blocks::insert_blockinfo,
-    keys::{inner_instruction_keys, instruction_keys},
     pb::solana::rawblocks::InstructionCall,
     structs::{BlockInfo, BlockTimestamp},
-    utils::insert_timestamp_without_number,
 };
 
 pub fn collect_instruction_calls(block: &Block, timestamp: &BlockTimestamp, block_info: &BlockInfo) -> Vec<InstructionCall> {

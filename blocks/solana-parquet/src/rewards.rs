@@ -1,34 +1,9 @@
-use substreams::pb::substreams::Clock;
-use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_solana::pb::sf::solana::r#type::v1::Block;
 
 use crate::{
-    blocks::insert_blockinfo,
-    keys::reward_keys,
     pb::solana::rawblocks::Reward,
     structs::{BlockInfo, BlockTimestamp},
-    utils::insert_timestamp_without_number,
 };
-
-pub fn insert_rewards(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
-    block.rewards.iter().for_each(|reward| {
-        let reward_type = reward_type(reward.reward_type);
-        let pre_balance = reward.post_balance as i128 - reward.lamports as i128;
-
-        let keys = reward_keys(&block.blockhash, &reward.pubkey, &reward_type);
-        let row = tables
-            .push_change_composite("rewards", keys, 0, table_change::Operation::Create)
-            .change("pubkey", ("", reward.pubkey.as_str()))
-            .change("lamports", ("", reward.lamports.to_string().as_str()))
-            .change("pre_balance", ("", pre_balance.to_string().as_str()))
-            .change("post_balance", ("", reward.post_balance.to_string().as_str()))
-            .change("reward_type", ("", reward_type.as_str()))
-            .change("commission", ("", reward.commission.as_str()));
-
-        insert_blockinfo(row, block, true);
-        insert_timestamp_without_number(row, clock, false, false);
-    });
-}
 
 pub fn collect_rewards(block: &Block, timestamp: &BlockTimestamp, block_info: &BlockInfo) -> Vec<Reward> {
     let mut rewards = Vec::new();

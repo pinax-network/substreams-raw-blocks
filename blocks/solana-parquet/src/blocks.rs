@@ -1,14 +1,9 @@
-use substreams::pb::substreams::Clock;
-use substreams_database_change::pb::database::TableChange;
-use substreams_solana::{b58, pb::sf::solana::r#type::v1::Block};
+use substreams_solana::pb::sf::solana::r#type::v1::Block;
 
 use crate::structs::BlockTimestamp;
-use crate::utils::get_timestamp_without_number;
 use crate::{pb::solana::rawblocks::Block as RawBlock, structs::BlockInfo};
 
 use crate::counters::get_block_counters;
-
-static VOTE_INSTRUCTION: [u8; 32] = b58!("Vote111111111111111111111111111111111111111");
 
 pub fn get_block_info(block: &Block) -> BlockInfo {
     BlockInfo {
@@ -17,16 +12,6 @@ pub fn get_block_info(block: &Block) -> BlockInfo {
         previous_block_hash: block.previous_blockhash.clone(),
         parent_slot: block.parent_slot,
     }
-}
-
-pub fn insert_blockinfo(row: &mut TableChange, block: &Block, with_prefix: bool) {
-    let height = block.block_height.as_ref().map_or_else(|| "0".to_string(), |bh| bh.block_height.to_string());
-
-    let prefix_str = if with_prefix { "block_" } else { "" };
-    row.change(format!("{}slot", prefix_str).as_str(), ("", block.slot.to_string().as_str()))
-        .change(format!("{}height", prefix_str).as_str(), ("", height.as_str()))
-        .change(format!("{}previous_block_hash", prefix_str).as_str(), ("", block.previous_blockhash.as_str()))
-        .change(format!("{}parent_slot", prefix_str).as_str(), ("", block.parent_slot.to_string().as_str()));
 }
 
 pub fn collect_block(block: &Block, timestamp: &BlockTimestamp, block_info: &BlockInfo) -> Option<RawBlock> {

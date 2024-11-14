@@ -3,7 +3,6 @@ mod blocks;
 mod blocks_without_votes_all;
 mod counters;
 mod instruction_calls;
-mod keys;
 mod pb;
 mod rewards;
 mod sinks;

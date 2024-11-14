@@ -1,10 +1,9 @@
 use substreams_solana::pb::sf::solana::r#type::v1::{ConfirmedTransaction, MessageHeader, TokenBalance, Transaction};
 
 use crate::{
-    blocks::insert_blockinfo,
     pb::solana::rawblocks::AccountActivity,
     structs::{BlockInfo, BlockTimestamp},
-    utils::{get_account_keys_extended, insert_timestamp_without_number},
+    utils::get_account_keys_extended,
 };
 
 pub fn collect_account_activities(block_info: &BlockInfo, timestamp: &BlockTimestamp, transactions: &Vec<(usize, &ConfirmedTransaction)>) -> Vec<AccountActivity> {
