@@ -88,7 +88,7 @@ fn collect_inner_instructions(vec: &mut Vec<InstructionCall>, timestamp: &BlockT
             tx_index: tx_info.tx_index,
             tx_signer: tx_info.tx_signer.to_string(),
             tx_success: tx_info.tx_success,
-            log_messages: tx_info.log_messages.join(","),
+            log_messages: build_csv_string(&tx_info.log_messages),
             outer_instruction_index: instruction_index as u32,
             inner_instruction_index: inner_index as i32,
             inner_executing_account: executing_account.clone(),
