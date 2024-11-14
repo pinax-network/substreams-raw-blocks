@@ -142,13 +142,13 @@ message AccountActivity {
   bool tx_success = 11;
   bool signed = 12;
   bool writable = 13;
-  string token_mint_address = 14;
+  optional string token_mint_address = 14;
 
   uint64 pre_balance = 15;
   uint64 post_balance = 16;
   int64 balance_change = 17;
-  double pre_token_balance = 18;
-  double post_token_balance = 19;
-  double token_balance_change = 20;
-  string token_balance_owner = 21;
+  optional double pre_token_balance = 18;
+  optional double post_token_balance = 19;
+  optional double token_balance_change = 20;
+  optional string token_balance_owner = 21;
 }

@@ -229,21 +229,21 @@ pub struct AccountActivity {
     pub signed: bool,
     #[prost(bool, tag="13")]
     pub writable: bool,
-    #[prost(string, tag="14")]
-    pub token_mint_address: ::prost::alloc::string::String,
+    #[prost(string, optional, tag="14")]
+    pub token_mint_address: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(uint64, tag="15")]
     pub pre_balance: u64,
     #[prost(uint64, tag="16")]
     pub post_balance: u64,
     #[prost(int64, tag="17")]
     pub balance_change: i64,
-    #[prost(double, tag="18")]
-    pub pre_token_balance: f64,
-    #[prost(double, tag="19")]
-    pub post_token_balance: f64,
-    #[prost(double, tag="20")]
-    pub token_balance_change: f64,
-    #[prost(string, tag="21")]
-    pub token_balance_owner: ::prost::alloc::string::String,
+    #[prost(double, optional, tag="18")]
+    pub pre_token_balance: ::core::option::Option<f64>,
+    #[prost(double, optional, tag="19")]
+    pub post_token_balance: ::core::option::Option<f64>,
+    #[prost(double, optional, tag="20")]
+    pub token_balance_change: ::core::option::Option<f64>,
+    #[prost(string, optional, tag="21")]
+    pub token_balance_owner: ::core::option::Option<::prost::alloc::string::String>,
 }
 // @@protoc_insertion_point(module)

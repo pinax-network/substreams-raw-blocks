@@ -3,6 +3,7 @@ use substreams::pb::substreams::Clock;
 use substreams_solana::b58;
 use substreams_solana::pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction};
 
+use crate::account_activity::collect_account_activities;
 use crate::blocks::{collect_block, get_block_info};
 use crate::instruction_calls::collect_instruction_calls;
 use crate::pb::solana::rawblocks::Events;
@@ -29,10 +30,10 @@ pub fn ch_out_without_votes(clock: Clock, block: Block) -> Result<Events, Error>
         rewards: collect_rewards(&block, &timestamp, &block_info),
         transactions: collect_transactions(&non_vote_trx, &block_info, &timestamp),
         instruction_calls: collect_instruction_calls(&block, &timestamp, &block_info),
-        account_activity: vec![],
+        account_activity: collect_account_activities(&block_info, &timestamp, &non_vote_trx),
         vote_transactions: collect_transactions(&vote_trx, &block_info, &timestamp),
         vote_instruction_calls: collect_instruction_calls(&block, &timestamp, &block_info),
-        vote_account_activity: vec![],
+        vote_account_activity: collect_account_activities(&block_info, &timestamp, &vote_trx),
     })
 }
 
