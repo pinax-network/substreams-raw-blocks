@@ -2,7 +2,11 @@ use common::{blocks::insert_timestamp, utils::bytes_to_hex};
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 
-use crate::{keys::attestation_keys, pb::sf::beacon::r#type::v1::Attestation};
+use crate::{
+    keys::attestation_keys,
+    pb::{beacon::rawblocks::Attestation as RawAttestation, sf::beacon::r#type::v1::Attestation},
+    structs::BlockTimestamp,
+};
 
 pub fn insert_attestations(tables: &mut DatabaseChanges, clock: &Clock, attestations: &Vec<Attestation>) {
     for (index, attestation) in attestations.iter().enumerate() {
@@ -35,4 +39,29 @@ pub fn insert_attestations(tables: &mut DatabaseChanges, clock: &Clock, attestat
 
         insert_timestamp(row, clock, false, true);
     }
+}
+
+pub fn collect_attestations(attestations: &Vec<Attestation>, timestamp: &BlockTimestamp) -> Vec<RawAttestation> {
+    let mut attestations_vec = Vec::<RawAttestation>::new();
+
+    for (index, attestation) in attestations.iter().enumerate() {
+        attestations_vec.push(RawAttestation {
+            block_time: Some(timestamp.time),
+            block_number: timestamp.number,
+            block_date: timestamp.date.clone(),
+            block_hash: timestamp.hash.clone(),
+            index: index as u64,
+            aggregation_bits: bytes_to_hex(&attestation.aggregation_bits),
+            slot: attestation.data.as_ref().unwrap().slot,
+            committee_index: attestation.data.as_ref().unwrap().committee_index,
+            beacon_block_root: bytes_to_hex(&attestation.data.as_ref().unwrap().beacon_block_root),
+            source_epoch: attestation.data.as_ref().unwrap().source.as_ref().unwrap().epoch,
+            source_root: bytes_to_hex(&attestation.data.as_ref().unwrap().source.as_ref().unwrap().root),
+            target_epoch: attestation.data.as_ref().unwrap().target.as_ref().unwrap().epoch,
+            target_root: bytes_to_hex(&attestation.data.as_ref().unwrap().target.as_ref().unwrap().root),
+            signature: bytes_to_hex(&attestation.signature),
+        });
+    }
+
+    attestations_vec
 }
