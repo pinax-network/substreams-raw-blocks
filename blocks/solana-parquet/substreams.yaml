@@ -1,0 +1,49 @@
+specVersion: v0.1.0
+package:
+  name: raw_blocks_solana_parquet
+  version: v0.1.0
+  image: logo.png
+  url: https://github.com/pinax-network/substreams-raw-blocks
+
+imports:
+  database_change: https://github.com/streamingfast/substreams-sink-database-changes/releases/download/v2.0.0/substreams-database-change-v2.0.0.spkg
+  sql: https://github.com/streamingfast/substreams-sink-sql/releases/download/protodefs-v1.0.7/substreams-sink-sql-protodefs-v1.0.7.spkg
+  common: https://github.com/streamingfast/substreams-foundational-modules/releases/download/solana-common-v0.3.0/solana-common-v0.3.0.spkg
+
+binaries:
+  default:
+    type: wasm/rust-v1
+    file: ../../target/wasm32-unknown-unknown/release/raw_blocks_solana_parquet.wasm
+
+protobuf:
+  files:
+    - solana.rawblocks.proto
+  importPaths:
+    - ./proto
+  excludePaths:
+    - sf/substreams
+    - google
+
+modules:
+  - name: blocks_without_votes_all
+    kind: map
+    inputs:
+      - source: sf.solana.type.v1.Block
+    output:
+      type: proto:sf.solana.type.v1.Block
+
+  - name: ch_out_without_votes
+    kind: map
+    inputs:
+      - source: sf.substreams.v1.Clock
+      - map: blocks_without_votes_all
+      # - map: common:blocks_without_votes
+    output:
+      type: proto:solana.rawblocks.Events
+  - name: ch_out
+    kind: map
+    inputs:
+      - source: sf.substreams.v1.Clock
+      - source: sf.solana.type.v1.Block
+    output:
+      type: proto:solana.rawblocks.Events
