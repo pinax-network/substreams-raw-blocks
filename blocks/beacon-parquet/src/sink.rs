@@ -1,4 +1,4 @@
-use crate::{blobs::collect_blobs, pb::sf::beacon::r#type::v1::block::Body::*, structs::BlockTimestamp};
+use crate::{blobs::collect_blobs, deposits::collect_deposits, pb::sf::beacon::r#type::v1::block::Body::*, structs::BlockTimestamp, withdrawals::collect_withdrawals};
 use substreams::{errors::Error, pb::substreams::Clock};
 
 use crate::{
@@ -55,8 +55,8 @@ pub fn output_deneb_body(block: &BeaconBlock, spec: &str, body: &DenebBody, time
     Events {
         blocks: collect_blocks(&block, &spec, &timestamp),
         blobs: collect_blobs(&body.embedded_blobs, &timestamp),
-        deposits: vec![],
-        withdrawals: vec![],
+        deposits: collect_deposits(&body.deposits, &timestamp),
+        withdrawals: collect_withdrawals(&body.execution_payload.as_ref().unwrap().withdrawals, &timestamp),
         attestations: vec![],
         attester_slashings: vec![],
         bls_to_execution_changes: vec![],
@@ -69,8 +69,8 @@ pub fn output_capella_body(block: &BeaconBlock, spec: &str, body: &CapellaBody, 
     Events {
         blocks: collect_blocks(&block, &spec, &timestamp),
         blobs: vec![],
-        deposits: vec![],
-        withdrawals: vec![],
+        deposits: collect_deposits(&body.deposits, &timestamp),
+        withdrawals: collect_withdrawals(&body.execution_payload.as_ref().unwrap().withdrawals, &timestamp),
         attestations: vec![],
         attester_slashings: vec![],
         bls_to_execution_changes: vec![],
@@ -83,7 +83,7 @@ pub fn output_bellatrix_body(block: &BeaconBlock, spec: &str, body: &BellatrixBo
     Events {
         blocks: collect_blocks(&block, &spec, &timestamp),
         blobs: vec![],
-        deposits: vec![],
+        deposits: collect_deposits(&body.deposits, &timestamp),
         withdrawals: vec![],
         attestations: vec![],
         attester_slashings: vec![],
@@ -97,7 +97,7 @@ pub fn output_altair_body(block: &BeaconBlock, spec: &str, body: &AltairBody, ti
     Events {
         blocks: collect_blocks(&block, &spec, &timestamp),
         blobs: vec![],
-        deposits: vec![],
+        deposits: collect_deposits(&body.deposits, &timestamp),
         withdrawals: vec![],
         attestations: vec![],
         attester_slashings: vec![],
@@ -111,7 +111,7 @@ pub fn output_phase0_body(block: &BeaconBlock, spec: &str, body: &Phase0Body, ti
     Events {
         blocks: collect_blocks(&block, &spec, &timestamp),
         blobs: vec![],
-        deposits: vec![],
+        deposits: collect_deposits(&body.deposits, &timestamp),
         withdrawals: vec![],
         attestations: vec![],
         attester_slashings: vec![],
