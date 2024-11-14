@@ -1,52 +1,30 @@
+use crate::{blobs::collect_blobs, pb::sf::beacon::r#type::v1::block::Body::*, structs::BlockTimestamp};
 use substreams::{errors::Error, pb::substreams::Clock};
 
 use crate::{
-    attestations::insert_attestations,
-    attester_slashings::insert_attester_slashings,
     blocks::collect_blocks,
-    bls_to_execution_changes::insert_bls_to_execution_changes,
-    deposits::insert_deposits,
     pb::{
         beacon::rawblocks::Events,
         sf::beacon::r#type::v1::{AltairBody, BellatrixBody, Block as BeaconBlock, CapellaBody, DenebBody, Phase0Body},
     },
-    proposer_slashings::insert_proposer_slashings,
     utils::build_timestamp,
-    voluntary_exits::insert_voluntary_exits,
-    withdrawals::insert_withdrawals,
 };
-
-use crate::blobs::insert_blobs;
 
 #[substreams::handlers::map]
 pub fn ch_out(clock: Clock, block: BeaconBlock) -> Result<Events, Error> {
     let spec = spec_to_string(block.spec);
 
-    // insert_blocks(&mut tables, &block, &spec, &clock);
-
     let body = block.body.as_ref().unwrap();
     let timestamp = build_timestamp(&clock);
 
-    Ok(Events {
-        blocks: collect_blocks(&block, &spec, &timestamp),
-        blobs: vec![],
-        deposits: vec![],
-        withdrawals: vec![],
-        attestations: vec![],
-        attester_slashings: vec![],
-        bls_to_execution_changes: vec![],
-        proposer_slashings: vec![],
-        voluntary_exits: vec![],
-    })
-
-    // match (spec.as_str(), body) {
-    //     ("Deneb", Deneb(body)) => insert_deneb_body(&mut tables, &clock, &body),
-    //     ("Capella", Capella(body)) => insert_capella_body(&mut tables, &clock, &body),
-    //     ("Bellatrix", Bellatrix(body)) => insert_bellatrix_body(&mut tables, &clock, &body),
-    //     ("Altair", Altair(body)) => insert_altair_body(&mut tables, &clock, &body),
-    //     ("Phase0", Phase0(body)) => insert_phase0_body(&mut tables, &clock, &body),
-    //     _ => {}
-    // }
+    match (spec.as_str(), body) {
+        ("Deneb", Deneb(body)) => Ok(output_deneb_body(&block, &spec, body, &timestamp)),
+        ("Capella", Capella(body)) => Ok(output_capella_body(&block, &spec, body, &timestamp)),
+        ("Bellatrix", Bellatrix(body)) => Ok(output_bellatrix_body(&block, &spec, body, &timestamp)),
+        ("Altair", Altair(body)) => Ok(output_altair_body(&block, &spec, body, &timestamp)),
+        ("Phase0", Phase0(body)) => Ok(output_phase0_body(&block, &spec, body, &timestamp)),
+        _ => Ok(Events::default()),
+    }
 }
 
 fn spec_to_string(spec: i32) -> String {
@@ -73,15 +51,75 @@ fn spec_to_string(spec: i32) -> String {
 //     insert_voluntary_exits(tables, clock, &body.voluntary_exits);
 // }
 
-pub fn collect_deneb_body(clock: &Clock, body: &DenebBody) {}
+pub fn output_deneb_body(block: &BeaconBlock, spec: &str, body: &DenebBody, timestamp: &BlockTimestamp) -> Events {
+    Events {
+        blocks: collect_blocks(&block, &spec, &timestamp),
+        blobs: collect_blobs(&body.embedded_blobs, &timestamp),
+        deposits: vec![],
+        withdrawals: vec![],
+        attestations: vec![],
+        attester_slashings: vec![],
+        bls_to_execution_changes: vec![],
+        proposer_slashings: vec![],
+        voluntary_exits: vec![],
+    }
+}
 
-pub fn collect_capella_body(clock: &Clock, body: &CapellaBody) {}
+pub fn output_capella_body(block: &BeaconBlock, spec: &str, body: &CapellaBody, timestamp: &BlockTimestamp) -> Events {
+    Events {
+        blocks: collect_blocks(&block, &spec, &timestamp),
+        blobs: vec![],
+        deposits: vec![],
+        withdrawals: vec![],
+        attestations: vec![],
+        attester_slashings: vec![],
+        bls_to_execution_changes: vec![],
+        proposer_slashings: vec![],
+        voluntary_exits: vec![],
+    }
+}
 
-pub fn collect_bellatrix_body(clock: &Clock, body: &BellatrixBody) {}
+pub fn output_bellatrix_body(block: &BeaconBlock, spec: &str, body: &BellatrixBody, timestamp: &BlockTimestamp) -> Events {
+    Events {
+        blocks: collect_blocks(&block, &spec, &timestamp),
+        blobs: vec![],
+        deposits: vec![],
+        withdrawals: vec![],
+        attestations: vec![],
+        attester_slashings: vec![],
+        bls_to_execution_changes: vec![],
+        proposer_slashings: vec![],
+        voluntary_exits: vec![],
+    }
+}
 
-pub fn collect_altair_body(clock: &Clock, body: &AltairBody) {}
+pub fn output_altair_body(block: &BeaconBlock, spec: &str, body: &AltairBody, timestamp: &BlockTimestamp) -> Events {
+    Events {
+        blocks: collect_blocks(&block, &spec, &timestamp),
+        blobs: vec![],
+        deposits: vec![],
+        withdrawals: vec![],
+        attestations: vec![],
+        attester_slashings: vec![],
+        bls_to_execution_changes: vec![],
+        proposer_slashings: vec![],
+        voluntary_exits: vec![],
+    }
+}
 
-pub fn collect_phase0_body(clock: &Clock, body: &Phase0Body) {}
+pub fn output_phase0_body(block: &BeaconBlock, spec: &str, body: &Phase0Body, timestamp: &BlockTimestamp) -> Events {
+    Events {
+        blocks: collect_blocks(&block, &spec, &timestamp),
+        blobs: vec![],
+        deposits: vec![],
+        withdrawals: vec![],
+        attestations: vec![],
+        attester_slashings: vec![],
+        bls_to_execution_changes: vec![],
+        proposer_slashings: vec![],
+        voluntary_exits: vec![],
+    }
+}
 
 // fn insert_capella_body(tables: &mut DatabaseChanges, clock: &Clock, body: &CapellaBody) {
 //     insert_deposits(tables, clock, &body.deposits);
