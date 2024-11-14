@@ -1,18 +1,15 @@
-use common::{blocks::insert_timestamp, utils::bytes_to_hex};
-use substreams::pb::substreams::Clock;
-use substreams_database_change::pb::database::{table_change, DatabaseChanges};
+use common::utils::bytes_to_hex;
 
 use crate::{
-    keys::withdrawals_keys,
     pb::{beacon::rawblocks::Withdrawal as RawWithdrawal, sf::beacon::r#type::v1::Withdrawal},
     structs::BlockTimestamp,
 };
 
 pub fn collect_withdrawals(withdrawals: &Vec<Withdrawal>, timestamp: &BlockTimestamp) -> Vec<RawWithdrawal> {
-    let mut withdrawals_vec = Vec::<RawWithdrawal>::new();
+    let mut vec = Vec::<RawWithdrawal>::new();
 
     for (index, w) in withdrawals.iter().enumerate() {
-        withdrawals_vec.push(RawWithdrawal {
+        vec.push(RawWithdrawal {
             block_time: Some(timestamp.time),
             block_number: timestamp.number,
             block_date: timestamp.date.clone(),
@@ -24,5 +21,5 @@ pub fn collect_withdrawals(withdrawals: &Vec<Withdrawal>, timestamp: &BlockTimes
         });
     }
 
-    withdrawals_vec
+    vec
 }

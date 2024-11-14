@@ -1,22 +1,16 @@
-use common::{
-    blocks::insert_timestamp,
-    utils::{bytes_to_hex, hex_array_to_string},
-};
-use substreams::pb::substreams::Clock;
-use substreams_database_change::pb::database::DatabaseChanges;
+use common::utils::bytes_to_hex;
 
 use crate::{
-    keys::deposit_keys,
     pb::{beacon::rawblocks::Deposit as RawDeposit, sf::beacon::r#type::v1::Deposit},
     structs::BlockTimestamp,
     utils::encode_hex_2d_array,
 };
 
 pub fn collect_deposits(deposits: &Vec<Deposit>, timestamp: &BlockTimestamp) -> Vec<RawDeposit> {
-    let mut deposits_vec = Vec::<RawDeposit>::new();
+    let mut vec = Vec::<RawDeposit>::new();
 
     for (index, d) in deposits.iter().enumerate() {
-        deposits_vec.push(RawDeposit {
+        vec.push(RawDeposit {
             block_time: Some(timestamp.time),
             block_number: timestamp.number,
             block_date: timestamp.date.clone(),
@@ -30,5 +24,5 @@ pub fn collect_deposits(deposits: &Vec<Deposit>, timestamp: &BlockTimestamp) -> 
         });
     }
 
-    deposits_vec
+    vec
 }

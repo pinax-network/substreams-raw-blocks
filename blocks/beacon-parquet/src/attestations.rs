@@ -42,10 +42,10 @@ pub fn insert_attestations(tables: &mut DatabaseChanges, clock: &Clock, attestat
 }
 
 pub fn collect_attestations(attestations: &Vec<Attestation>, timestamp: &BlockTimestamp) -> Vec<RawAttestation> {
-    let mut attestations_vec = Vec::<RawAttestation>::new();
+    let mut vec = Vec::<RawAttestation>::new();
 
     for (index, attestation) in attestations.iter().enumerate() {
-        attestations_vec.push(RawAttestation {
+        vec.push(RawAttestation {
             block_time: Some(timestamp.time),
             block_number: timestamp.number,
             block_date: timestamp.date.clone(),
@@ -63,5 +63,5 @@ pub fn collect_attestations(attestations: &Vec<Attestation>, timestamp: &BlockTi
         });
     }
 
-    attestations_vec
+    vec
 }

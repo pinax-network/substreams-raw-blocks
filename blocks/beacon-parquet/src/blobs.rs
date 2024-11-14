@@ -7,10 +7,10 @@ use crate::{
 };
 
 pub fn collect_blobs(blobs: &Vec<Blob>, timestamp: &BlockTimestamp) -> Vec<RawBlob> {
-    let mut blobs_vec = Vec::<RawBlob>::new();
+    let mut vec = Vec::<RawBlob>::new();
 
     for b in blobs {
-        blobs_vec.push(RawBlob {
+        vec.push(RawBlob {
             block_time: Some(timestamp.time),
             block_number: timestamp.number,
             block_date: timestamp.date.clone(),
@@ -23,5 +23,5 @@ pub fn collect_blobs(blobs: &Vec<Blob>, timestamp: &BlockTimestamp) -> Vec<RawBl
         });
     }
 
-    blobs_vec
+    vec
 }
