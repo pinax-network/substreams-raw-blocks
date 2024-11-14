@@ -74,7 +74,7 @@ fn collect_inner_instructions(vec: &mut Vec<InstructionCall>, timestamp: &BlockT
     for (inner_index, inner_instruction) in instruction_view.inner_instructions().enumerate() {
         let inner_data = bytes_to_hex(inner_instruction.data());
         let executing_account = inner_instruction.program_id().to_string();
-        let account_arguments = inner_instruction.accounts().iter().map(|arg| arg.to_string()).collect();
+        let account_arguments = inner_instruction.accounts().iter().map(|arg| arg.to_string()).collect::<Vec<String>>();
 
         vec.push(InstructionCall {
             block_time: Some(timestamp.time),
@@ -96,7 +96,7 @@ fn collect_inner_instructions(vec: &mut Vec<InstructionCall>, timestamp: &BlockT
             executing_account,
             is_inner: true,
             data: inner_data,
-            account_arguments,
+            account_arguments: build_csv_string(&account_arguments),
             inner_instructions: "".to_string(),
         });
     }
