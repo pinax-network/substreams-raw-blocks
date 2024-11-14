@@ -42,18 +42,6 @@ fn spec_to_string(spec: i32) -> String {
     }
 }
 
-// fn insert_deneb_body(tables: &mut DatabaseChanges, clock: &Clock, body: &DenebBody) {
-//     insert_blobs(tables, &clock, &body.embedded_blobs);
-//     insert_deposits(tables, clock, &body.deposits);
-//     let withdrawals = &body.execution_payload.as_ref().unwrap().withdrawals;
-//     insert_withdrawals(tables, clock, withdrawals);
-//     insert_attestations(tables, clock, &body.attestations);
-//     insert_attester_slashings(tables, clock, &body.attester_slashings);
-//     insert_bls_to_execution_changes(tables, clock, &body.bls_to_execution_changes);
-//     insert_proposer_slashings(tables, clock, &body.proposer_slashings);
-//     insert_voluntary_exits(tables, clock, &body.voluntary_exits);
-// }
-
 pub fn output_deneb_body(block: &BeaconBlock, spec: &str, body: &DenebBody, timestamp: &BlockTimestamp) -> Events {
     Events {
         blocks: collect_blocks(&block, &spec, &timestamp),
@@ -123,11 +111,3 @@ pub fn output_phase0_body(block: &BeaconBlock, spec: &str, body: &Phase0Body, ti
         voluntary_exits: collect_voluntary_exits(&body.voluntary_exits, &timestamp),
     }
 }
-
-// fn insert_phase0_body(tables: &mut DatabaseChanges, clock: &Clock, body: &Phase0Body) {
-//     insert_deposits(tables, clock, &body.deposits);
-//     insert_attestations(tables, clock, &body.attestations);
-//     insert_attester_slashings(tables, clock, &body.attester_slashings);
-//     insert_proposer_slashings(tables, clock, &body.proposer_slashings);
-//     insert_voluntary_exits(tables, clock, &body.voluntary_exits);
-// }
