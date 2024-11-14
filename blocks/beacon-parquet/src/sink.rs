@@ -1,6 +1,6 @@
 use crate::{
     attestations::collect_attestations, attester_slashings::collect_attester_slashings, blobs::collect_blobs, bls_to_execution_changes::collect_bls_to_execution_changes, deposits::collect_deposits,
-    pb::sf::beacon::r#type::v1::block::Body::*, structs::BlockTimestamp, withdrawals::collect_withdrawals,
+    pb::sf::beacon::r#type::v1::block::Body::*, proposer_slashings::collect_proposer_slashings, structs::BlockTimestamp, voluntary_exits::collect_voluntary_exits, withdrawals::collect_withdrawals,
 };
 use substreams::{errors::Error, pb::substreams::Clock};
 
@@ -63,8 +63,8 @@ pub fn output_deneb_body(block: &BeaconBlock, spec: &str, body: &DenebBody, time
         attestations: collect_attestations(&body.attestations, &timestamp),
         attester_slashings: collect_attester_slashings(&body.attester_slashings, &timestamp),
         bls_to_execution_changes: collect_bls_to_execution_changes(&body.bls_to_execution_changes, &timestamp),
-        proposer_slashings: vec![],
-        voluntary_exits: vec![],
+        proposer_slashings: collect_proposer_slashings(&body.proposer_slashings, &timestamp),
+        voluntary_exits: collect_voluntary_exits(&body.voluntary_exits, &timestamp),
     }
 }
 
@@ -77,8 +77,8 @@ pub fn output_capella_body(block: &BeaconBlock, spec: &str, body: &CapellaBody, 
         attestations: collect_attestations(&body.attestations, &timestamp),
         attester_slashings: collect_attester_slashings(&body.attester_slashings, &timestamp),
         bls_to_execution_changes: vec![],
-        proposer_slashings: vec![],
-        voluntary_exits: vec![],
+        proposer_slashings: collect_proposer_slashings(&body.proposer_slashings, &timestamp),
+        voluntary_exits: collect_voluntary_exits(&body.voluntary_exits, &timestamp),
     }
 }
 
@@ -91,8 +91,8 @@ pub fn output_bellatrix_body(block: &BeaconBlock, spec: &str, body: &BellatrixBo
         attestations: collect_attestations(&body.attestations, &timestamp),
         attester_slashings: collect_attester_slashings(&body.attester_slashings, &timestamp),
         bls_to_execution_changes: vec![],
-        proposer_slashings: vec![],
-        voluntary_exits: vec![],
+        proposer_slashings: collect_proposer_slashings(&body.proposer_slashings, &timestamp),
+        voluntary_exits: collect_voluntary_exits(&body.voluntary_exits, &timestamp),
     }
 }
 
@@ -105,8 +105,8 @@ pub fn output_altair_body(block: &BeaconBlock, spec: &str, body: &AltairBody, ti
         attestations: collect_attestations(&body.attestations, &timestamp),
         attester_slashings: collect_attester_slashings(&body.attester_slashings, &timestamp),
         bls_to_execution_changes: vec![],
-        proposer_slashings: vec![],
-        voluntary_exits: vec![],
+        proposer_slashings: collect_proposer_slashings(&body.proposer_slashings, &timestamp),
+        voluntary_exits: collect_voluntary_exits(&body.voluntary_exits, &timestamp),
     }
 }
 
@@ -119,36 +119,10 @@ pub fn output_phase0_body(block: &BeaconBlock, spec: &str, body: &Phase0Body, ti
         attestations: collect_attestations(&body.attestations, &timestamp),
         attester_slashings: collect_attester_slashings(&body.attester_slashings, &timestamp),
         bls_to_execution_changes: vec![],
-        proposer_slashings: vec![],
-        voluntary_exits: vec![],
+        proposer_slashings: collect_proposer_slashings(&body.proposer_slashings, &timestamp),
+        voluntary_exits: collect_voluntary_exits(&body.voluntary_exits, &timestamp),
     }
 }
-
-// fn insert_capella_body(tables: &mut DatabaseChanges, clock: &Clock, body: &CapellaBody) {
-//     insert_deposits(tables, clock, &body.deposits);
-//     let withdrawals = &body.execution_payload.as_ref().unwrap().withdrawals;
-//     insert_withdrawals(tables, clock, withdrawals);
-//     insert_attestations(tables, clock, &body.attestations);
-//     insert_attester_slashings(tables, clock, &body.attester_slashings);
-//     insert_proposer_slashings(tables, clock, &body.proposer_slashings);
-//     insert_voluntary_exits(tables, clock, &body.voluntary_exits);
-// }
-
-// fn insert_bellatrix_body(tables: &mut DatabaseChanges, clock: &Clock, body: &BellatrixBody) {
-//     insert_deposits(tables, clock, &body.deposits);
-//     insert_attestations(tables, clock, &body.attestations);
-//     insert_attester_slashings(tables, clock, &body.attester_slashings);
-//     insert_proposer_slashings(tables, clock, &body.proposer_slashings);
-//     insert_voluntary_exits(tables, clock, &body.voluntary_exits);
-// }
-
-// fn insert_altair_body(tables: &mut DatabaseChanges, clock: &Clock, body: &AltairBody) {
-//     insert_deposits(tables, clock, &body.deposits);
-//     insert_attestations(tables, clock, &body.attestations);
-//     insert_attester_slashings(tables, clock, &body.attester_slashings);
-//     insert_proposer_slashings(tables, clock, &body.proposer_slashings);
-//     insert_voluntary_exits(tables, clock, &body.voluntary_exits);
-// }
 
 // fn insert_phase0_body(tables: &mut DatabaseChanges, clock: &Clock, body: &Phase0Body) {
 //     insert_deposits(tables, clock, &body.deposits);

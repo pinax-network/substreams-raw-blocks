@@ -1,24 +1,27 @@
-use common::{blocks::insert_timestamp, utils::bytes_to_hex};
-use substreams::pb::substreams::Clock;
-use substreams_database_change::pb::database::{table_change, DatabaseChanges};
+use common::utils::bytes_to_hex;
 
-use crate::{keys::voluntary_exit_keys, pb::sf::beacon::r#type::v1::SignedVoluntaryExit};
+use crate::{
+    pb::{beacon::rawblocks::VoluntaryExit as RawVoluntaryExit, sf::beacon::r#type::v1::SignedVoluntaryExit},
+    structs::BlockTimestamp,
+};
 
-pub fn insert_voluntary_exits(tables: &mut DatabaseChanges, clock: &Clock, voluntary_exits: &[SignedVoluntaryExit]) {
+pub fn collect_voluntary_exits(voluntary_exits: &[SignedVoluntaryExit], timestamp: &BlockTimestamp) -> Vec<RawVoluntaryExit> {
+    let mut vec: Vec<RawVoluntaryExit> = Vec::new();
+
     for (index, voluntary_exit) in voluntary_exits.iter().enumerate() {
         let message = voluntary_exit.message.as_ref().unwrap();
-        let epoch = message.epoch;
-        let validator_index = message.validator_index;
-        let signature = bytes_to_hex(&voluntary_exit.signature);
 
-        let keys = voluntary_exit_keys(&clock.id, index as u64);
-
-        let row = tables
-            .push_change_composite("voluntary_exits", keys, 0, table_change::Operation::Create)
-            .change("epoch", ("", epoch.to_string().as_str()))
-            .change("validator_index", ("", validator_index.to_string().as_str()))
-            .change("signature", ("", signature.as_str()));
-
-        insert_timestamp(row, clock, false, true);
+        vec.push(RawVoluntaryExit {
+            block_time: Some(timestamp.time),
+            block_number: timestamp.number,
+            block_date: timestamp.date.clone(),
+            block_hash: timestamp.hash.clone(),
+            index: index as u64,
+            epoch: message.epoch,
+            validator_index: message.validator_index,
+            signature: bytes_to_hex(&voluntary_exit.signature),
+        });
     }
+
+    vec
 }
