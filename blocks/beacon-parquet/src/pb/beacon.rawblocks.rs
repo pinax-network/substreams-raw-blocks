@@ -77,8 +77,9 @@ pub struct Blob {
     pub kzg_commitment: ::prost::alloc::string::String,
     #[prost(string, tag="8")]
     pub kzg_proof: ::prost::alloc::string::String,
-    #[prost(string, repeated, tag="9")]
-    pub kzg_commitment_inclusion_proof: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    /// csv string for now but should be array(text) once supported
+    #[prost(string, tag="9")]
+    pub kzg_commitment_inclusion_proof: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -95,8 +96,9 @@ pub struct Deposit {
     /// deposit
     #[prost(uint64, tag="5")]
     pub index: u64,
-    #[prost(string, repeated, tag="6")]
-    pub proof: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    /// csv string for now but should be array(text) once supported
+    #[prost(string, tag="6")]
+    pub proof: ::prost::alloc::string::String,
     #[prost(string, tag="7")]
     pub pubkey: ::prost::alloc::string::String,
     #[prost(string, tag="8")]
