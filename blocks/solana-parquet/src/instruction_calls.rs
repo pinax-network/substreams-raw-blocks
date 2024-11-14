@@ -11,69 +11,101 @@ use substreams_solana::{
 use crate::{
     blocks::insert_blockinfo,
     keys::{inner_instruction_keys, instruction_keys},
+    pb::solana::rawblocks::InstructionCall,
+    structs::{BlockInfo, BlockTimestamp},
     utils::insert_timestamp_without_number,
 };
 
-pub fn insert_instruction_calls(tables: &mut DatabaseChanges, clock: &Clock, block: &Block, transaction: &ConfirmedTransaction, tx_info: &TxInfo, table_prefix: &str) {
-    for (instruction_index, instruction_view) in transaction.walk_instructions().enumerate() {
-        if !instruction_view.is_root() {
-            continue;
-        }
+pub fn collect_instruction_calls(block: &Block, timestamp: &BlockTimestamp, block_info: &BlockInfo) -> Vec<InstructionCall> {
+    let mut vec: Vec<InstructionCall> = vec![];
 
-        insert_outer_instruction(tables, clock, block, tx_info, instruction_index, &instruction_view, table_prefix);
-        insert_inner_instructions(tables, clock, block, tx_info, instruction_index, &instruction_view, table_prefix);
+    for (index, transaction) in block.transactions.iter().enumerate() {
+        let message = transaction.transaction.as_ref().expect("Transaction is missing").message.as_ref().expect("Message is missing");
+        let signer = base58::encode(message.account_keys.first().expect("Signer is missing"));
+
+        let tx_info = TxInfo {
+            tx_id: transaction.id().to_string(),
+            tx_index: index as u32,
+            tx_signer: signer,
+            tx_success: transaction.meta.as_ref().unwrap().err.is_none(),
+            log_messages: transaction.meta.as_ref().unwrap().log_messages.clone(),
+        };
+
+        for (instruction_index, instruction_view) in transaction.walk_instructions().enumerate() {
+            if !instruction_view.is_root() {
+                continue;
+            }
+
+            collect_outer_instruction(&mut vec, timestamp, block_info, &tx_info, instruction_index, &instruction_view);
+            collect_inner_instructions(&mut vec, timestamp, block_info, &tx_info, instruction_index, &instruction_view);
+        }
     }
+
+    vec
 }
 
-fn insert_outer_instruction(tables: &mut DatabaseChanges, clock: &Clock, block: &Block, tx_info: &TxInfo, instruction_index: usize, instruction_view: &InstructionView, table_prefix: &str) {
+fn collect_outer_instruction(vec: &mut Vec<InstructionCall>, timestamp: &BlockTimestamp, block_info: &BlockInfo, tx_info: &TxInfo, instruction_index: usize, instruction_view: &InstructionView) {
     let executing_account = base58::encode(instruction_view.program_id());
-    let account_arguments = to_string_array_to_string(&instruction_view.accounts());
+    // let account_arguments = to_string_array_to_string(&instruction_view.accounts());
+    let account_arguments = instruction_view.accounts().iter().map(|arg| arg.to_string()).collect();
     let data = bytes_to_hex(&instruction_view.data());
-
-    let keys = instruction_keys(tx_info.tx_id, instruction_index.to_string().as_str());
 
     let inner_instructions_str = build_inner_instructions_str(instruction_view);
 
-    let row = tables
-        .push_change_composite(format!("{}instruction_calls", table_prefix), keys, 0, table_change::Operation::Create)
-        .change("outer_instruction_index", ("", instruction_index.to_string().as_str()))
-        .change("outer_executing_account", ("", executing_account.as_str()))
-        .change("inner_instruction_index", ("", "-1"))
-        .change("inner_executing_account", ("", ""))
-        .change("executing_account", ("", executing_account.as_str()))
-        .change("is_inner", ("", "false"))
-        .change("data", ("", data.as_str()))
-        .change("account_arguments", ("", account_arguments.as_str()))
-        .change("inner_instructions", ("", inner_instructions_str.as_str()));
-
-    insert_timestamp_without_number(row, clock, false, true);
-    insert_blockinfo(row, block, true);
-    insert_tx_info(row, tx_info);
+    vec.push(InstructionCall {
+        block_time: Some(timestamp.time),
+        block_hash: timestamp.hash.clone(),
+        block_date: timestamp.date.clone(),
+        block_slot: block_info.slot,
+        block_height: block_info.height,
+        block_previous_block_hash: block_info.previous_block_hash.clone(),
+        block_parent_slot: block_info.parent_slot,
+        tx_id: tx_info.tx_id.clone(),
+        tx_index: tx_info.tx_index,
+        tx_signer: tx_info.tx_signer.to_string(),
+        tx_success: tx_info.tx_success,
+        log_messages: tx_info.log_messages.clone(),
+        outer_instruction_index: instruction_index as u32,
+        inner_instruction_index: -1,
+        inner_executing_account: "".to_string(),
+        outer_executing_account: executing_account.clone(),
+        executing_account,
+        is_inner: false,
+        data,
+        account_arguments: account_arguments,
+        inner_instructions: inner_instructions_str,
+    });
 }
 
-fn insert_inner_instructions(tables: &mut DatabaseChanges, clock: &Clock, block: &Block, tx_info: &TxInfo, instruction_index: usize, instruction_view: &InstructionView, table_prefix: &str) {
+fn collect_inner_instructions(vec: &mut Vec<InstructionCall>, timestamp: &BlockTimestamp, block_info: &BlockInfo, tx_info: &TxInfo, instruction_index: usize, instruction_view: &InstructionView) {
     for (inner_index, inner_instruction) in instruction_view.inner_instructions().enumerate() {
         let inner_data = bytes_to_hex(inner_instruction.data());
         let executing_account = inner_instruction.program_id().to_string();
-        let account_arguments = to_string_array_to_string(&inner_instruction.accounts());
+        let account_arguments = inner_instruction.accounts().iter().map(|arg| arg.to_string()).collect();
 
-        let keys = inner_instruction_keys(tx_info.tx_id, instruction_index.to_string().as_str(), inner_index.to_string().as_str());
-
-        let row = tables
-            .push_change_composite(format!("{}instruction_calls", table_prefix), keys, 0, table_change::Operation::Create)
-            .change("outer_instruction_index", ("", instruction_index.to_string().as_str()))
-            .change("inner_instruction_index", ("", inner_index.to_string().as_str()))
-            .change("inner_executing_account", ("", executing_account.as_str()))
-            .change("outer_executing_account", ("", instruction_view.program_id().to_string().as_str()))
-            .change("executing_account", ("", executing_account.as_str()))
-            .change("is_inner", ("", "true"))
-            .change("data", ("", inner_data.as_str()))
-            .change("account_arguments", ("", account_arguments.as_str()))
-            .change("inner_instructions", ("", "[]"));
-
-        insert_timestamp_without_number(row, clock, false, true);
-        insert_blockinfo(row, block, true);
-        insert_tx_info(row, tx_info);
+        vec.push(InstructionCall {
+            block_time: Some(timestamp.time),
+            block_hash: timestamp.hash.clone(),
+            block_date: timestamp.date.clone(),
+            block_slot: block_info.slot,
+            block_height: block_info.height,
+            block_previous_block_hash: block_info.previous_block_hash.clone(),
+            block_parent_slot: block_info.parent_slot,
+            tx_id: tx_info.tx_id.clone(),
+            tx_index: tx_info.tx_index,
+            tx_signer: tx_info.tx_signer.to_string(),
+            tx_success: tx_info.tx_success,
+            log_messages: tx_info.log_messages.clone(),
+            outer_instruction_index: instruction_index as u32,
+            inner_instruction_index: inner_index as i32,
+            inner_executing_account: executing_account.clone(),
+            outer_executing_account: instruction_view.program_id().to_string(),
+            executing_account,
+            is_inner: true,
+            data: inner_data,
+            account_arguments,
+            inner_instructions: "".to_string(),
+        });
     }
 }
 
@@ -92,18 +124,10 @@ fn build_inner_instructions_str(instruction_view: &InstructionView) -> String {
     serde_json::to_string(&inner_instructions).expect("Failed to serialize inner instructions")
 }
 
-fn insert_tx_info(row: &mut TableChange, tx_info: &TxInfo) {
-    row.change("tx_id", ("", tx_info.tx_id))
-        .change("tx_index", ("", tx_info.tx_index))
-        .change("tx_signer", ("", tx_info.tx_signer))
-        .change("tx_success", ("", tx_info.tx_success))
-        .change("log_messages", ("", tx_info.log_messages));
-}
-
-pub struct TxInfo<'a> {
-    pub tx_id: &'a str,
-    pub tx_index: &'a str,
-    pub tx_signer: &'a str,
-    pub tx_success: &'a str,
-    pub log_messages: &'a str,
+pub struct TxInfo {
+    pub tx_id: String,
+    pub tx_index: u32,
+    pub tx_signer: String,
+    pub tx_success: bool,
+    pub log_messages: Vec<String>,
 }
