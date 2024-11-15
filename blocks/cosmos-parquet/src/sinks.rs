@@ -4,8 +4,13 @@ use substreams_cosmos::Block;
 use substreams_database_change::pb::database::DatabaseChanges;
 
 use crate::{
-    blocks::collect_blocks, consensus_param_updates::insert_consensus_params, events::insert_block_events, misbehaviors::insert_misbehaviors, pb::cosmos::rawblocks::Events,
-    transactions::insert_transactions, validator_updates::insert_validator_updates,
+    blocks::collect_blocks,
+    consensus_param_updates::insert_consensus_params,
+    events::insert_block_events,
+    misbehaviors::insert_misbehaviors,
+    pb::cosmos::rawblocks::Events,
+    transactions::{collect_transactions, insert_transactions},
+    validator_updates::insert_validator_updates,
 };
 
 #[substreams::handlers::map]
@@ -14,7 +19,7 @@ pub fn ch_out(clock: Clock, block: Block) -> Result<Events, Error> {
 
     Ok(Events {
         blocks: collect_blocks(&block, &timestamp),
-        transactions: vec![],
+        transactions: collect_transactions(&block, &timestamp),
         tx_events: vec![],
         block_events: vec![],
         misbehaviors: vec![],
