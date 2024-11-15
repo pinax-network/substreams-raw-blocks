@@ -7,7 +7,15 @@ use substreams_database_change::pb::database::{table_change, DatabaseChanges, Ta
 use substreams_ethereum::pb::eth::v2::{Call, TransactionTrace};
 
 use crate::{
-    account_creations::insert_account_creation, balance_changes::insert_balance_change, code_changes::insert_code_change, gas_changes::insert_gas_change, keys::traces_keys, logs::insert_log, nonce_changes::insert_nonce_change, storage_changes::insert_storage_change, transactions::{insert_empty_transaction_metadata, insert_transaction_metadata}
+    account_creations::insert_account_creation,
+    balance_changes::insert_balance_change,
+    code_changes::insert_code_change,
+    gas_changes::insert_gas_change,
+    keys::traces_keys,
+    logs::insert_log,
+    nonce_changes::insert_nonce_change,
+    storage_changes::insert_storage_change,
+    transactions::{insert_empty_transaction_metadata, insert_transaction_metadata},
 };
 
 pub fn call_types_to_string(call_type: i32) -> String {

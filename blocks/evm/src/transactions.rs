@@ -138,44 +138,6 @@ pub fn insert_transaction(tables: &mut DatabaseChanges, clock: &Clock, transacti
     }
 }
 
-pub fn insert_transaction_metadata(row: &mut TableChange, transaction: &TransactionTrace, is_transaction: bool) {
-    let tx_hash = bytes_to_hex(&transaction.hash);
-    let tx_index = transaction.index;
-    let from = bytes_to_hex(&transaction.from); // does trace contain `from`?
-    let to = bytes_to_hex(&transaction.to); // does trace contain `to`?
-    let tx_status = transaction_status_to_string(transaction.status);
-    let tx_status_code = transaction.status;
-    let tx_success = is_transaction_success(transaction.status);
-    let prefix = if is_transaction { "" } else { "tx_" };
-
-    row.change("tx_hash", ("", tx_hash.as_str()))
-        .change("tx_index", ("", tx_index.to_string().as_str()))
-        .change(format!("{}from", prefix).as_str(), ("", from.as_str()))
-        .change(format!("{}to", prefix).as_str(), ("", to.as_str()))
-        .change("tx_status", ("", tx_status.as_str()))
-        .change("tx_status_code", ("", tx_status_code.to_string().as_str()))
-        .change("tx_success", ("", tx_success.to_string().as_str()));
-}
-
-pub fn insert_empty_transaction_metadata(row: &mut TableChange, is_transaction: bool) {
-    let tx_hash = "";
-    let tx_index = 0;
-    let from = "";
-    let to = "";
-    let tx_status = transaction_status_to_string(1);
-    let tx_status_code = 1;
-    let tx_success = true;
-    let prefix = if is_transaction { "" } else { "tx_" };
-
-    row.change("tx_hash", ("", tx_hash))
-        .change("tx_index", ("", tx_index.to_string().as_str()))
-        .change(format!("{}from", prefix).as_str(), ("", from))
-        .change(format!("{}to", prefix).as_str(), ("", to))
-        .change("tx_status", ("", tx_status.as_str()))
-        .change("tx_status_code", ("", tx_status_code.to_string().as_str()))
-        .change("tx_success", ("", tx_success.to_string().as_str()));
-}
-
 pub fn collect_transactions(block: &Block, timestamp: &BlockTimestamp) -> Vec<RawTransaction> {
     let block_header = block.header.as_ref().unwrap();
 
@@ -221,4 +183,42 @@ pub fn collect_transactions(block: &Block, timestamp: &BlockTimestamp) -> Vec<Ra
             }
         })
         .collect()
+}
+
+pub fn insert_transaction_metadata(row: &mut TableChange, transaction: &TransactionTrace, is_transaction: bool) {
+    let tx_hash = bytes_to_hex(&transaction.hash);
+    let tx_index = transaction.index;
+    let from = bytes_to_hex(&transaction.from); // does trace contain `from`?
+    let to = bytes_to_hex(&transaction.to); // does trace contain `to`?
+    let tx_status = transaction_status_to_string(transaction.status);
+    let tx_status_code = transaction.status;
+    let tx_success = is_transaction_success(transaction.status);
+    let prefix = if is_transaction { "" } else { "tx_" };
+
+    row.change("tx_hash", ("", tx_hash.as_str()))
+        .change("tx_index", ("", tx_index.to_string().as_str()))
+        .change(format!("{}from", prefix).as_str(), ("", from.as_str()))
+        .change(format!("{}to", prefix).as_str(), ("", to.as_str()))
+        .change("tx_status", ("", tx_status.as_str()))
+        .change("tx_status_code", ("", tx_status_code.to_string().as_str()))
+        .change("tx_success", ("", tx_success.to_string().as_str()));
+}
+
+pub fn insert_empty_transaction_metadata(row: &mut TableChange, is_transaction: bool) {
+    let tx_hash = "";
+    let tx_index = 0;
+    let from = "";
+    let to = "";
+    let tx_status = transaction_status_to_string(1);
+    let tx_status_code = 1;
+    let tx_success = true;
+    let prefix = if is_transaction { "" } else { "tx_" };
+
+    row.change("tx_hash", ("", tx_hash))
+        .change("tx_index", ("", tx_index.to_string().as_str()))
+        .change(format!("{}from", prefix).as_str(), ("", from))
+        .change(format!("{}to", prefix).as_str(), ("", to))
+        .change("tx_status", ("", tx_status.as_str()))
+        .change("tx_status_code", ("", tx_status_code.to_string().as_str()))
+        .change("tx_success", ("", tx_success.to_string().as_str()));
 }
