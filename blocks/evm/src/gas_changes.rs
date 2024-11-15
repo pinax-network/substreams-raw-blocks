@@ -1,9 +1,11 @@
 use common::blocks::insert_timestamp;
+use common::structs::BlockTimestamp;
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
-use substreams_ethereum::pb::eth::v2::GasChange;
+use substreams_ethereum::pb::eth::v2::{Block, GasChange};
 
 use crate::keys::block_ordinal_keys;
+use crate::pb::evm::GasChange as RawGasChange;
 
 pub fn gas_change_reason_to_string(reason: i32) -> String {
     match reason {
@@ -56,4 +58,46 @@ pub fn insert_gas_change(tables: &mut DatabaseChanges, clock: &Clock, gas_change
         .change("ordinal", ("", ordinal.to_string().as_str()));
 
     insert_timestamp(row, clock, false, true);
+}
+
+pub fn collect_gas_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec<RawGasChange> {
+    let mut gas_changes: Vec<RawGasChange> = vec![];
+
+    // Collect gas changes from system calls
+    for call in &block.system_calls {
+        for gas_change in &call.gas_changes {
+            gas_changes.push(RawGasChange {
+                block_time: Some(timestamp.time),
+                block_number: timestamp.number,
+                block_hash: timestamp.hash.clone(),
+                block_date: timestamp.date.clone(),
+                old_value: gas_change.old_value,
+                new_value: gas_change.new_value,
+                reason: gas_change_reason_to_string(gas_change.reason),
+                reason_code: gas_change.reason as u32,
+                ordinal: gas_change.ordinal,
+            });
+        }
+    }
+
+    // Collect gas changes from transaction traces
+    for transaction in &block.transaction_traces {
+        for call in &transaction.calls {
+            for gas_change in &call.gas_changes {
+                gas_changes.push(RawGasChange {
+                    block_time: Some(timestamp.time),
+                    block_number: timestamp.number,
+                    block_hash: timestamp.hash.clone(),
+                    block_date: timestamp.date.clone(),
+                    old_value: gas_change.old_value,
+                    new_value: gas_change.new_value,
+                    reason: gas_change_reason_to_string(gas_change.reason),
+                    reason_code: gas_change.reason as u32,
+                    ordinal: gas_change.ordinal,
+                });
+            }
+        }
+    }
+
+    gas_changes
 }
