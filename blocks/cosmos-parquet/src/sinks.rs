@@ -5,6 +5,7 @@ use substreams_cosmos::Block;
 use crate::{
     blocks::collect_blocks,
     events::{collect_block_events, collect_tx_events},
+    misbehaviors::collect_misbehaviors,
     pb::cosmos::rawblocks::Events,
     transactions::collect_transactions,
 };
@@ -18,7 +19,7 @@ pub fn ch_out(clock: Clock, block: Block) -> Result<Events, Error> {
         transactions: collect_transactions(&block, &timestamp),
         tx_events: collect_tx_events(&block, &timestamp),
         block_events: collect_block_events(&block, &timestamp),
-        misbehaviors: vec![],
+        misbehaviors: collect_misbehaviors(&block, &timestamp),
         validator_updates: vec![],
         consensus_param_updates: vec![],
         transaction_messages: vec![],

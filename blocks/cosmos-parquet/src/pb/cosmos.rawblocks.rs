@@ -154,8 +154,8 @@ pub struct Misbehavior {
     pub validator_power: i64,
     #[prost(int64, tag="9")]
     pub height: i64,
-    #[prost(string, tag="10")]
-    pub time: ::prost::alloc::string::String,
+    #[prost(message, optional, tag="10")]
+    pub time: ::core::option::Option<::prost_types::Timestamp>,
     #[prost(int64, tag="11")]
     pub total_voting_power: i64,
 }

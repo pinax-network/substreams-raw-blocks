@@ -87,7 +87,7 @@ message Misbehavior {
   string validator_address = 7;
   int64 validator_power = 8;
   int64 height = 9;
-  string time = 10;
+  google.protobuf.Timestamp time = 10;
   int64 total_voting_power = 11;
 }
 
