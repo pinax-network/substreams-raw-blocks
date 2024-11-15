@@ -1,9 +1,11 @@
-use common::blocks::insert_timestamp;
-use substreams::pb::substreams::Clock;
+use common::{structs::BlockTimestamp, utils::bytes_to_hex};
 use substreams_cosmos::Block;
-use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 
-pub fn insert_consensus_params(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
+use crate::pb::cosmos::rawblocks::ConsensusParamUpdate as RawConsensusParamUpdate;
+
+pub fn collect_consensus_params(block: &Block, timestamp: &BlockTimestamp) -> Vec<RawConsensusParamUpdate> {
+    let mut vec: Vec<RawConsensusParamUpdate> = vec![];
+
     if let Some(consensus_params) = &block.consensus_param_updates {
         let mut json = serde_json::json!({});
 
@@ -34,12 +36,14 @@ pub fn insert_consensus_params(tables: &mut DatabaseChanges, clock: &Clock, bloc
             });
         }
 
-        let json_str = json.to_string();
-
-        let row = tables
-            .push_change("consensus_param_updates", &clock.number.to_string(), 0, table_change::Operation::Create)
-            .change("json", ("", json_str.as_str()));
-
-        insert_timestamp(row, clock, false, true);
+        vec.push(RawConsensusParamUpdate {
+            block_time: Some(timestamp.time),
+            block_number: timestamp.number,
+            block_date: timestamp.date.clone(),
+            block_hash: bytes_to_hex(&block.hash),
+            json: json.to_string(),
+        });
     }
+
+    vec
 }

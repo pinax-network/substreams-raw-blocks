@@ -4,10 +4,13 @@ use substreams_cosmos::Block;
 
 use crate::{
     blocks::collect_blocks,
+    consensus_param_updates::collect_consensus_params,
     events::{collect_block_events, collect_tx_events},
     misbehaviors::collect_misbehaviors,
     pb::cosmos::rawblocks::Events,
+    transaction_messages::collect_transaction_messages,
     transactions::collect_transactions,
+    validator_updates::collect_validator_updates,
 };
 
 #[substreams::handlers::map]
@@ -17,12 +20,12 @@ pub fn ch_out(clock: Clock, block: Block) -> Result<Events, Error> {
     Ok(Events {
         blocks: collect_blocks(&block, &timestamp),
         transactions: collect_transactions(&block, &timestamp),
-        tx_events: collect_tx_events(&block, &timestamp),
+        transaction_events: collect_tx_events(&block, &timestamp),
         block_events: collect_block_events(&block, &timestamp),
         misbehaviors: collect_misbehaviors(&block, &timestamp),
-        validator_updates: vec![],
-        consensus_param_updates: vec![],
-        transaction_messages: vec![],
+        validator_updates: collect_validator_updates(&block, &timestamp),
+        consensus_param_updates: collect_consensus_params(&block, &timestamp),
+        transaction_messages: collect_transaction_messages(&block, &timestamp),
     })
 
     // TABLE::blocks

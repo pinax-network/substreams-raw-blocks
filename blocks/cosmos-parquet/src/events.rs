@@ -1,13 +1,7 @@
-use common::{blocks::insert_timestamp, structs::BlockTimestamp, utils::bytes_to_hex};
-use substreams::pb::substreams::Clock;
-use substreams_cosmos::{
-    pb::{Event, TxResults},
-    Block,
-};
-use substreams_database_change::pb::database::{table_change, DatabaseChanges};
+use common::{structs::BlockTimestamp, utils::bytes_to_hex};
+use substreams_cosmos::Block;
 
 use crate::{
-    keys::event_keys,
     pb::cosmos::rawblocks::{BlockEvent as RawBlockEvent, TransactionEvent as RawTransactionEvent},
     utils::build_attributes_array_string,
 };

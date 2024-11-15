@@ -8,7 +8,7 @@ pub struct Events {
     #[prost(message, repeated, tag="2")]
     pub transactions: ::prost::alloc::vec::Vec<Transaction>,
     #[prost(message, repeated, tag="3")]
-    pub tx_events: ::prost::alloc::vec::Vec<TransactionEvent>,
+    pub transaction_events: ::prost::alloc::vec::Vec<TransactionEvent>,
     #[prost(message, repeated, tag="4")]
     pub block_events: ::prost::alloc::vec::Vec<BlockEvent>,
     #[prost(message, repeated, tag="5")]

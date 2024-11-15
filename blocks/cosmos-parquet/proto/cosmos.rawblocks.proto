@@ -7,7 +7,7 @@ import "google/protobuf/timestamp.proto";
 message Events {
   repeated Block blocks = 1;
   repeated Transaction transactions = 2;
-  repeated TransactionEvent tx_events = 3;
+  repeated TransactionEvent transaction_events = 3;
   repeated BlockEvent block_events = 4;
   repeated Misbehavior misbehaviors = 5;
   repeated ValidatorUpdate validator_updates = 6;
