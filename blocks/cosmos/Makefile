@@ -23,11 +23,11 @@ info:
 
 .PHONY: run
 run:
-	substreams run substreams.yaml -e mainnet.injective.streamingfast.io:443 ch_out -s 80000000 -o json
+	substreams run substreams.yaml -e mainnet.injective.streamingfast.io:443 map_events -s 80000000 -o json
 
 .PHONY: gui
 gui:
-	substreams gui substreams.yaml -e mainnet.injective.streamingfast.io:443 ch_out -s 80000000
+	substreams gui substreams.yaml -e mainnet.injective.streamingfast.io:443 map_events -s 80000000
 
 
 .PHONY: protogen
@@ -36,12 +36,7 @@ protogen:
 
 .PHONY: parquet
 parquet:
-	substreams-sink-files run mainnet.injective.streamingfast.io:443 substreams.yaml ch_out './out' 80000000:80000500 --encoder parquet --file-block-count 100 --development-mode
-
-.PHONY: sql-run-cosmos
-sql-run-cosmos:
-	substreams-sink-sql run clickhouse://default:default@localhost:9000/cosmos substreams.yaml -e mainnet.injective.streamingfast.io:443 80000000:81000000 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn  --batch-block-flush-interval 1 --development-mode
-
+	substreams-sink-files run mainnet.injective.streamingfast.io:443 substreams.yaml map_events './out' 80000000:80000500 --encoder parquet --file-block-count 100 --development-mode
 
 .PHONY: deploy
 deploy:
