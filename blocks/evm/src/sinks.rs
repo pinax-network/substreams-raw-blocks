@@ -4,10 +4,12 @@ use substreams::pb::substreams::Clock;
 
 use substreams_ethereum::pb::eth::v2::Block;
 
+use crate::account_creations::collect_account_creations;
 use crate::balance_changes::collect_balance_changes;
 use crate::blocks::{block_detail_to_string, collect_block};
 use crate::code_changes::collect_code_changes;
 use crate::logs::collect_logs;
+use crate::nonce_changes::collect_nonce_changes;
 use crate::pb::evm::Events;
 use crate::storage_changes::collect_storage_changes;
 use crate::traces::collect_traces;
@@ -36,8 +38,8 @@ pub fn map_events(clock: Clock, block: Block) -> Result<Events, Error> {
         balance_changes: collect_balance_changes(&block, &timestamp),
         storage_changes: collect_storage_changes(&block, &timestamp),
         code_changes: collect_code_changes(&block, &timestamp),
-        account_creations: vec![],
-        nonce_changes: vec![],
+        account_creations: collect_account_creations(&block, &timestamp),
+        nonce_changes: collect_nonce_changes(&block, &timestamp),
         gas_changes: vec![],
     })
 }
