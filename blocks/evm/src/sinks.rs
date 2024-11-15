@@ -8,6 +8,7 @@ use crate::balance_changes::collect_balance_changes;
 use crate::blocks::{block_detail_to_string, collect_block};
 use crate::logs::collect_logs;
 use crate::pb::evm::Events;
+use crate::storage_changes::collect_storage_changes;
 use crate::traces::collect_traces;
 use crate::transactions::collect_transactions;
 
@@ -32,7 +33,7 @@ pub fn map_events(clock: Clock, block: Block) -> Result<Events, Error> {
         logs: collect_logs(&block, &timestamp, &detail_level),
         traces: collect_traces(&block, &timestamp, &detail_level),
         balance_changes: collect_balance_changes(&block, &timestamp),
-        storage_changes: vec![],
+        storage_changes: collect_storage_changes(&block, &timestamp),
         code_changes: vec![],
         account_creations: vec![],
         nonce_changes: vec![],
