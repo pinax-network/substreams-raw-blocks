@@ -1,10 +1,11 @@
 use common::{
     blocks::insert_timestamp,
+    structs::BlockTimestamp,
     utils::{bytes_to_hex, optional_bigint_to_string},
 };
 use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges, TableChange};
-use substreams_ethereum::pb::eth::v2::{Call, TransactionTrace};
+use substreams_ethereum::pb::eth::v2::{Block, Call, TransactionTrace};
 
 use crate::{
     account_creations::insert_account_creation,
@@ -14,8 +15,9 @@ use crate::{
     keys::traces_keys,
     logs::insert_log,
     nonce_changes::insert_nonce_change,
+    pb::evm::Trace as RawTrace,
     storage_changes::insert_storage_change,
-    transactions::{insert_empty_transaction_metadata, insert_transaction_metadata},
+    transactions::{insert_empty_transaction_metadata, insert_transaction_metadata, is_transaction_success, transaction_status_to_string},
 };
 
 pub fn call_types_to_string(call_type: i32) -> String {
@@ -133,4 +135,93 @@ pub fn insert_trace_row(row: &mut TableChange, call: &Call) {
         .change("value", ("", value.as_str()))
         .change("failure_reason", ("", failure_reason.as_str()))
         .change("return_data", ("", return_data.as_str()));
+}
+
+pub fn collect_traces(block: &Block, timestamp: &BlockTimestamp, detail_level: &str) -> Vec<RawTrace> {
+    // Only required DetailLevel=EXTENDED
+    if detail_level != "Extended" {
+        return vec![];
+    }
+
+    let mut traces: Vec<RawTrace> = vec![];
+
+    // Collect system traces
+    for call in &block.system_calls {
+        traces.push(RawTrace {
+            block_time: Some(timestamp.time),
+            block_number: timestamp.number,
+            block_hash: timestamp.hash.clone(),
+            block_date: timestamp.date.clone(),
+            // As this is a system call, tx_hash is empty
+            // tx_index, tx_status, tx_status_code, tx_success are irrelevant as well
+            tx_hash: String::new(),
+            tx_index: 0,
+            tx_status: transaction_status_to_string(1),
+            tx_status_code: 1,
+            tx_success: true,
+            from: bytes_to_hex(&call.caller),
+            to: bytes_to_hex(&call.address),
+            index: call.index,
+            parent_index: call.parent_index,
+            depth: call.depth,
+            caller: bytes_to_hex(&call.caller),
+            call_type: call_types_to_string(call.call_type),
+            call_type_code: call.call_type as u32,
+            address: bytes_to_hex(&call.address),
+            value: optional_bigint_to_string(&call.value, "0"),
+            gas_limit: call.gas_limit,
+            gas_consumed: call.gas_consumed,
+            input: bytes_to_hex(&call.input),
+            return_data: bytes_to_hex(&call.return_data),
+            failure_reason: call.failure_reason.clone(),
+            begin_ordinal: call.begin_ordinal,
+            end_ordinal: call.end_ordinal,
+            executed_code: call.executed_code,
+            state_reverted: call.state_reverted,
+            status_failed: call.status_failed,
+            status_reverted: call.status_reverted,
+            suicide: call.suicide,
+        });
+    }
+
+    // Collect transaction traces
+    for transaction in &block.transaction_traces {
+        for call in &transaction.calls {
+            traces.push(RawTrace {
+                block_time: Some(timestamp.time),
+                block_number: timestamp.number,
+                block_hash: timestamp.hash.clone(),
+                block_date: timestamp.date.clone(),
+                tx_hash: bytes_to_hex(&transaction.hash),
+                tx_index: transaction.index,
+                tx_status: transaction_status_to_string(transaction.status),
+                tx_status_code: transaction.status as u32,
+                tx_success: is_transaction_success(transaction.status),
+                from: bytes_to_hex(&transaction.from),
+                to: bytes_to_hex(&transaction.to),
+                index: call.index,
+                parent_index: call.parent_index,
+                depth: call.depth,
+                caller: bytes_to_hex(&call.caller),
+                call_type: call_types_to_string(call.call_type),
+                call_type_code: call.call_type as u32,
+                address: bytes_to_hex(&call.address),
+                value: optional_bigint_to_string(&call.value, "0"),
+                gas_limit: call.gas_limit,
+                gas_consumed: call.gas_consumed,
+                input: bytes_to_hex(&call.input),
+                return_data: bytes_to_hex(&call.return_data),
+                failure_reason: call.failure_reason.clone(),
+                begin_ordinal: call.begin_ordinal,
+                end_ordinal: call.end_ordinal,
+                executed_code: call.executed_code,
+                state_reverted: call.state_reverted,
+                status_failed: call.status_failed,
+                status_reverted: call.status_reverted,
+                suicide: call.suicide,
+            });
+        }
+    }
+
+    traces
 }

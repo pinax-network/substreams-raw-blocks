@@ -7,6 +7,7 @@ use substreams_ethereum::pb::eth::v2::Block;
 use crate::blocks::{block_detail_to_string, collect_block};
 use crate::logs::collect_logs;
 use crate::pb::evm::Events;
+use crate::traces::collect_traces;
 use crate::transactions::collect_transactions;
 
 // #[substreams::handlers::map]
@@ -28,7 +29,7 @@ pub fn map_events(clock: Clock, block: Block) -> Result<Events, Error> {
         blocks: vec![collect_block(&block, &timestamp)],
         transactions: collect_transactions(&block, &timestamp),
         logs: collect_logs(&block, &timestamp, &detail_level),
-        traces: vec![],
+        traces: collect_traces(&block, &timestamp, &detail_level),
         balance_changes: vec![],
         storage_changes: vec![],
         code_changes: vec![],
