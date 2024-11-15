@@ -1,18 +1,38 @@
+use common::utils::build_timestamp;
 use substreams::errors::Error;
 use substreams::pb::substreams::Clock;
-use substreams_database_change::pb::database::DatabaseChanges;
+
 use substreams_ethereum::pb::eth::v2::Block;
 
-use crate::blocks::insert_blocks;
+use crate::blocks::collect_block;
+use crate::pb::evm::Events;
+
+// #[substreams::handlers::map]
+// pub fn ch_out(clock: Clock, block: Block) -> Result<DatabaseChanges, Error> {
+//     let mut tables: DatabaseChanges = DatabaseChanges::default();
+
+//     // TABLE::blocks
+//     insert_blocks(&mut tables, &clock, &block);
+
+//     Ok(tables)
+// }
 
 #[substreams::handlers::map]
-pub fn ch_out(clock: Clock, block: Block) -> Result<DatabaseChanges, Error> {
-    let mut tables: DatabaseChanges = DatabaseChanges::default();
+pub fn map_events(clock: Clock, block: Block) -> Result<Events, Error> {
+    let timestamp = build_timestamp(&clock);
 
-    // TABLE::blocks
-    insert_blocks(&mut tables, &clock, &block);
-
-    Ok(tables)
+    Ok(Events {
+        blocks: vec![collect_block(&block, &timestamp)],
+        transactions: vec![],
+        logs: vec![],
+        traces: vec![],
+        balance_changes: vec![],
+        storage_changes: vec![],
+        code_changes: vec![],
+        account_creations: vec![],
+        nonce_changes: vec![],
+        gas_changes: vec![],
+    })
 }
 
 // // TO-DO: Implement the `graph_out` function using EntityChanges

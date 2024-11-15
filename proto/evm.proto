@@ -1,0 +1,218 @@
+syntax = "proto3";
+
+package evm;
+
+import "google/protobuf/timestamp.proto";
+
+message Events {
+  repeated Block blocks = 1;
+  repeated Transaction transactions = 2;
+  repeated Log logs = 3;
+  repeated Trace traces = 4;
+  repeated BalanceChange balance_changes = 5;
+  repeated StorageChange storage_changes = 6;
+  repeated CodeChange code_changes = 7;
+  repeated AccountCreation account_creations = 8;
+  repeated NonceChange nonce_changes = 9;
+  repeated GasChange gas_changes = 10;
+}
+
+
+message Block {
+  google.protobuf.Timestamp time = 1;
+  uint64 number = 2;
+  string date = 3;
+  string hash = 4;
+  string parent_hash = 5;
+  uint64 nonce = 6;
+  string ommers_hash = 7;
+  string logs_bloom = 8;
+  string transactions_root = 9;
+  string state_root = 10;
+  string receipts_root = 11;
+  string withdrawals_root = 12;
+  string parent_beacon_root = 13;
+  string miner = 14;
+  uint64 difficulty = 15;
+  string total_difficulty = 16;
+  string mix_hash = 17;
+  string extra_data = 18;
+  string extra_data_utf8 = 19;
+  uint64 gas_limit = 20;
+  uint64 gas_used = 21;
+  string base_fee_per_gas = 22;
+  string blob_gas_used = 23;
+  string excess_blob_gas = 24;
+  uint64 size = 25;
+  uint64 total_transactions = 26;
+  uint64 successful_transactions = 27;
+  uint64 failed_transactions = 28;
+  uint64 total_balance_changes = 29;
+  uint64 total_withdrawals = 30;
+  string detail_level = 31;
+  uint32 detail_level_code = 32;
+}
+
+
+message Transaction {
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_hash = 3;
+  string block_date = 4;
+  string transactions_root = 5;
+  string receipts_root = 6;
+  uint32 index = 7;
+  string hash = 8;
+  string from = 9;
+  string to = 10;
+  uint64 nonce = 11;
+  string status = 12;
+  uint32 status_code = 13;
+  bool success = 14;
+  string gas_price = 15;
+  uint64 gas_limit = 16;
+  string value = 17;
+  string data = 18;
+  string v = 19;
+  string r = 20;
+  string s = 21;
+  uint64 gas_used = 22;
+  string type = 23;
+  uint32 type_code = 24;
+  string max_fee_per_gas = 25;
+  string max_priority_fee_per_gas = 26;
+  uint64 begin_ordinal = 27;
+  uint64 end_ordinal = 28;
+  string blob_gas_price = 29;
+  uint64 blob_gas_used = 30;
+  uint64 cumulative_gas_used = 31;
+  string logs_bloom = 32;
+  string state_root = 33;
+}
+
+message Log {
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_hash = 3;
+  string block_date = 4;
+  string tx_hash = 5;
+  uint32 tx_index = 6;
+  string tx_status = 7;
+  uint32 tx_status_code = 8;
+  bool tx_success = 9;
+  string tx_from = 10;
+  string tx_to = 11;
+  uint32 index = 12;
+  uint32 block_index = 13;
+  string contract_address = 14;
+  string topic0 = 15;
+  string topic1 = 16;
+  string topic2 = 17;
+  string topic3 = 18;
+  string data = 19;
+}
+
+message Trace {
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_hash = 3;
+  string block_date = 4;
+  string tx_hash = 5;
+  uint32 tx_index = 6;
+  string tx_status = 7;
+  uint32 tx_status_code = 8;
+  bool tx_success = 9;
+  string from = 10;
+  string to = 11;
+  uint32 index = 12;
+  uint32 parent_index = 13;
+  uint32 depth = 14;
+  string caller = 15;
+  string call_type = 16;
+  uint32 call_type_code = 17;
+  string address = 18;
+  string value = 19;
+  uint64 gas_limit = 20;
+  uint64 gas_consumed = 21;
+  string return_data = 22;
+  string input = 23;
+  bool suicide = 24;
+  string failure_reason = 25;
+  bool state_reverted = 26;
+  bool status_reverted = 27;
+  bool status_failed = 28;
+  bool executed_code = 29;
+  uint64 begin_ordinal = 30;
+  uint64 end_ordinal = 31;
+}
+
+message BalanceChange {
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_hash = 3;
+  string block_date = 4;
+  string address = 5;
+  string new_balance = 6;
+  string old_balance = 7;
+  string amount = 8;
+  uint64 ordinal = 9;
+  string reason = 10;
+  uint32 reason_code = 11;
+}
+
+message StorageChange {
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_hash = 3;
+  string block_date = 4;
+  uint64 ordinal = 5;
+  string address = 6;
+  string key = 7;
+  string new_value = 8;
+  string old_value = 9;
+}
+
+message CodeChange {
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_hash = 3;
+  string block_date = 4;
+  uint64 ordinal = 5;
+  string address = 6;
+  string old_hash = 7;
+  string old_code = 8;
+  string new_hash = 9;
+  string new_code = 10;
+}
+
+message AccountCreation {
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_hash = 3;
+  string block_date = 4;
+  uint64 ordinal = 5;
+  string account = 6;
+}
+
+message NonceChange {
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_hash = 3;
+  string block_date = 4;
+  uint64 ordinal = 5;
+  string address = 6;
+  uint64 old_value = 7;
+  uint64 new_value = 8;
+}
+
+message GasChange {
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_hash = 3;
+  string block_date = 4;
+  uint64 ordinal = 5;
+  uint64 old_value = 6;
+  uint64 new_value = 7;
+  string reason = 8;
+  uint32 reason_code = 9;
+}

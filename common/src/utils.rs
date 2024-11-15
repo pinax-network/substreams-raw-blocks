@@ -65,6 +65,13 @@ pub fn optional_bigint_to_string(value: &Option<BigInt>, default: &str) -> Strin
     }
 }
 
+pub fn optional_bigint_to_u64(value: &Option<BigInt>) -> u64 {
+    match value {
+        Some(bigint) => bigint.clone().with_decimal(0).to_string().parse::<u64>().unwrap(),
+        None => 0,
+    }
+}
+
 pub fn optional_bigint_to_decimal(value: Option<BigInt>) -> BigDecimal {
     match value {
         Some(bigint) => bigint.with_decimal(0),
