@@ -27,16 +27,3 @@ pub struct BlockTimestamp {
     pub date: String,
     pub hash: String,
 }
-
-#[derive(Clone)]
-pub struct Reward {
-    pub block_time: String,
-    pub block_date: String,
-    pub block_hash: String,
-    pub pubkey: String,
-    pub lamports: i64,
-    pub pre_balance: i128,
-    pub post_balance: u64,
-    pub reward_type: String,
-    pub commission: String,
-}

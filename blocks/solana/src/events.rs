@@ -18,6 +18,25 @@ pub fn map_events(clock: Clock, block: Block) -> Result<Events, Error> {
     let timestamp = get_timestamp_without_number(&clock);
     let block_info = get_block_info(&block);
 
+    let transactions_with_index: Vec<(usize, &ConfirmedTransaction)> = block.transactions.iter().enumerate().collect();
+
+    Ok(Events {
+        blocks: vec![collect_block(&block, &timestamp, &block_info).unwrap()],
+        rewards: collect_rewards(&block, &timestamp, &block_info),
+        transactions: collect_transactions(&transactions_with_index, &block_info, &timestamp),
+        instruction_calls: collect_instruction_calls(&block, &timestamp, &block_info),
+        account_activity: collect_account_activities(&block_info, &timestamp, &transactions_with_index),
+        vote_transactions: vec![],
+        vote_instruction_calls: vec![],
+        vote_account_activity: vec![],
+    })
+}
+
+#[substreams::handlers::map]
+pub fn map_events_with_votes(clock: Clock, block: Block) -> Result<Events, Error> {
+    let timestamp = get_timestamp_without_number(&clock);
+    let block_info = get_block_info(&block);
+
     let (non_vote_trx, vote_trx): (Vec<(usize, &ConfirmedTransaction)>, Vec<(usize, &ConfirmedTransaction)>) = block.transactions.iter().enumerate().partition(|(_index, trx)| {
         !trx.transaction
             .as_ref()
@@ -34,22 +53,5 @@ pub fn map_events(clock: Clock, block: Block) -> Result<Events, Error> {
         vote_transactions: collect_transactions(&vote_trx, &block_info, &timestamp),
         vote_instruction_calls: collect_instruction_calls(&block, &timestamp, &block_info),
         vote_account_activity: collect_account_activities(&block_info, &timestamp, &vote_trx),
-    })
-}
-
-#[substreams::handlers::map]
-pub fn map_events_with_votes(clock: Clock, block: Block) -> Result<Events, Error> {
-    let timestamp = get_timestamp_without_number(&clock);
-    let block_info = get_block_info(&block);
-
-    Ok(Events {
-        blocks: vec![collect_block(&block, &timestamp, &block_info).unwrap()],
-        rewards: collect_rewards(&block, &timestamp, &block_info),
-        transactions: vec![],
-        instruction_calls: vec![],
-        account_activity: vec![],
-        vote_transactions: vec![],
-        vote_instruction_calls: vec![],
-        vote_account_activity: vec![],
     })
 }
