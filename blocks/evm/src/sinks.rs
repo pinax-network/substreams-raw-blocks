@@ -6,6 +6,7 @@ use substreams_ethereum::pb::eth::v2::Block;
 
 use crate::blocks::collect_block;
 use crate::pb::evm::Events;
+use crate::transactions::collect_transactions;
 
 // #[substreams::handlers::map]
 // pub fn ch_out(clock: Clock, block: Block) -> Result<DatabaseChanges, Error> {
@@ -23,7 +24,7 @@ pub fn map_events(clock: Clock, block: Block) -> Result<Events, Error> {
 
     Ok(Events {
         blocks: vec![collect_block(&block, &timestamp)],
-        transactions: vec![],
+        transactions: collect_transactions(&block, &timestamp),
         logs: vec![],
         traces: vec![],
         balance_changes: vec![],
