@@ -29,10 +29,14 @@ run:
 gui:
 	substreams gui substreams.yaml -e mainnet.injective.streamingfast.io:443 ch_out -s 80000000
 
-.PHONY: sql-setup
-sql-setup:
-	# EVM blocks
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/cosmos substreams.yaml
+
+.PHONY: protogen
+protogen:
+	substreams protogen --exclude-paths google
+
+.PHONY: parquet
+parquet:
+	substreams-sink-files run mainnet.injective.streamingfast.io:443 substreams.yaml ch_out './out' 80000000:80000500 --encoder parquet --file-block-count 100 --development-mode
 
 .PHONY: sql-run-cosmos
 sql-run-cosmos:

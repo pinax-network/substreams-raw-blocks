@@ -6,7 +6,6 @@ members = [
   "blocks/beacon",
   "blocks/solana",
   "blocks/beacon-parquet",
-  "blocks/cosmos-parquet",
   "common",
 ]
 resolver = "2"

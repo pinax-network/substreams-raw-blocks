@@ -1,10 +1,8 @@
 // @generated
+// @@protoc_insertion_point(attribute:cosmos)
 pub mod cosmos {
-    // @@protoc_insertion_point(attribute:cosmos.rawblocks)
-    pub mod rawblocks {
-        include!("cosmos.rawblocks.rs");
-        // @@protoc_insertion_point(cosmos.rawblocks)
-    }
+    include!("cosmos.rs");
+    // @@protoc_insertion_point(cosmos)
 }
 pub mod sf {
     // @@protoc_insertion_point(attribute:sf.substreams)

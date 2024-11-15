@@ -1,28 +1,31 @@
-use common::{blocks::insert_timestamp, utils::bytes_to_hex};
-use substreams::pb::substreams::Clock;
-use substreams_database_change::pb::database::{table_change, DatabaseChanges};
+use common::{structs::BlockTimestamp, utils::bytes_to_hex};
+use substreams_cosmos::Block;
 
-use crate::keys::transaction_message_keys;
+use crate::pb::cosmos::TransactionMessage;
 
-pub fn insert_transaction_messages(tables: &mut DatabaseChanges, clock: &Clock, tx_as_bytes: &[u8], tx_hash: &str) {
-    if let Ok(tx) = <TxPartial as prost::Message>::decode(tx_as_bytes) {
-        if let Some(body) = tx.body {
-            for (index, message) in body.messages.iter().enumerate() {
-                let message_type = &message.type_url[1..];
-                let message_value_hex = bytes_to_hex(&message.value);
+pub fn collect_transaction_messages(block: &Block, timestamp: &BlockTimestamp) -> Vec<TransactionMessage> {
+    let mut vec: Vec<TransactionMessage> = vec![];
 
-                let keys = transaction_message_keys(tx_hash, &index.to_string());
-
-                let row = tables
-                    .push_change_composite("transaction_messages", keys, 0, table_change::Operation::Create)
-                    .change("index", ("", index.to_string().as_str()))
-                    .change("type", ("", message_type))
-                    .change("value", ("", message_value_hex.as_str()));
-
-                insert_timestamp(row, clock, false, true);
+    for i in 0..block.tx_results.len() {
+        if let Ok(tx) = <TxPartial as prost::Message>::decode(block.txs[i].as_slice()) {
+            if let Some(body) = tx.body {
+                for (index, message) in body.messages.iter().enumerate() {
+                    vec.push(TransactionMessage {
+                        block_time: Some(timestamp.time),
+                        block_number: timestamp.number,
+                        block_date: timestamp.date.clone(),
+                        block_hash: bytes_to_hex(&block.hash),
+                        tx_hash: bytes_to_hex(&block.txs[i]),
+                        index: index as u32,
+                        r#type: message.type_url[1..].to_string(),
+                        value: bytes_to_hex(&message.value),
+                    });
+                }
             }
         }
     }
+
+    vec
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]

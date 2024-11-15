@@ -1,27 +1,27 @@
-use common::blocks::insert_timestamp;
-use substreams::{pb::substreams::Clock, Hex};
+use common::{structs::BlockTimestamp, utils::bytes_to_hex};
+use substreams::Hex;
 use substreams_cosmos::{pb::public_key, Block};
-use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 
-use crate::keys::validator_update_keys;
+use crate::pb::cosmos::ValidatorUpdate as RawValidatorUpdate;
 
-pub fn insert_validator_updates(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
+pub fn collect_validator_updates(block: &Block, timestamp: &BlockTimestamp) -> Vec<RawValidatorUpdate> {
+    let mut vec: Vec<RawValidatorUpdate> = vec![];
+
     for (index, validator_update) in block.validator_updates.iter().enumerate() {
-        let index_str = index.to_string();
         let public_key = match validator_update.pub_key.as_ref().unwrap().sum.as_ref().unwrap() {
             public_key::Sum::Ed25519(bytes) => bytes,
             public_key::Sum::Secp256k1(bytes) => bytes,
         };
-        let public_key_str = Hex::encode(public_key);
-        let power = validator_update.power;
 
-        let keys = validator_update_keys(&clock.number.to_string(), &index_str);
-
-        let row = tables
-            .push_change_composite("validator_updates", keys, 0, table_change::Operation::Create)
-            .change("public_key", ("", public_key_str.as_str()))
-            .change("power", ("", power.to_string().as_str()));
-
-        insert_timestamp(row, clock, false, true);
+        vec.push(RawValidatorUpdate {
+            block_time: Some(timestamp.time),
+            block_number: timestamp.number,
+            block_date: timestamp.date.clone(),
+            block_hash: bytes_to_hex(&block.hash),
+            index: index as u32,
+            public_key: Hex::encode(public_key),
+            power: validator_update.power,
+        });
     }
+    vec
 }

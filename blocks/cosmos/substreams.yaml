@@ -1,18 +1,22 @@
 specVersion: v0.1.0
 package:
   name: raw_blocks_cosmos
-  version: v0.1.0
+  version: v0.6.0
   url: https://github.com/pinax-network/substreams-raw-blocks
-  image: logo.png
-
-imports:
-  database_change: https://github.com/streamingfast/substreams-sink-database-changes/releases/download/v2.0.0/substreams-database-change-v2.0.0.spkg
-  sql: https://github.com/streamingfast/substreams-sink-sql/releases/download/protodefs-v1.0.7/substreams-sink-sql-protodefs-v1.0.7.spkg
 
 binaries:
   default:
     type: wasm/rust-v1
     file: ../../target/wasm32-unknown-unknown/release/raw_blocks_cosmos.wasm
+
+protobuf:
+  files:
+    - cosmos.proto
+  importPaths:
+    - ../../proto
+  excludePaths:
+    - sf/substreams
+    - google
 
 modules:
   - name: ch_out
@@ -21,13 +25,4 @@ modules:
       - source: sf.substreams.v1.Clock
       - source: sf.cosmos.type.v2.Block
     output:
-      type: proto:sf.substreams.sink.database.v1.DatabaseChanges
-
-sink:
-  module: ch_out
-  type: sf.substreams.sink.sql.v1.Service
-  config:
-    schema: "./schema.sql"
-    engine: clickhouse
-    postgraphile_frontend:
-      enabled: false
+      type: proto:cosmos.Events

@@ -12,6 +12,6 @@ substreams-cosmos = { workspace = true }
 substreams-database-change = { workspace = true }
 substreams = { workspace = true }
 sha2 = "0.10.8"
-serde_json = "1.0.1"
-prost = "0.13"
-prost-types = "0.13"
+serde_json = { workspace = true }
+prost = { workspace = true }
+prost-types = { workspace = true }

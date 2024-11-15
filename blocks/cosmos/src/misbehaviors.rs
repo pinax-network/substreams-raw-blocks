@@ -1,34 +1,29 @@
-use common::{blocks::insert_timestamp, utils::bytes_to_hex};
-use substreams::pb::substreams::Clock;
+use common::{structs::BlockTimestamp, utils::bytes_to_hex};
 use substreams_cosmos::Block;
-use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 
-use crate::keys::misbehavior_keys;
+use crate::pb::cosmos::Misbehavior as RawMisbehavior;
 
-pub fn insert_misbehaviors(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
+pub fn collect_misbehaviors(block: &Block, timestamp: &BlockTimestamp) -> Vec<RawMisbehavior> {
+    let mut vec: Vec<RawMisbehavior> = vec![];
+
     for (index, misbehavior) in block.misbehavior.iter().enumerate() {
-        let misbehavior_type = misbehavior_type_to_string(&misbehavior.r#type);
         let validator = misbehavior.validator.as_ref().unwrap();
-        let validator_address = bytes_to_hex(&validator.address);
-        let validator_power = validator.power;
-        let height = misbehavior.height;
-        let time = misbehavior.time.as_ref().unwrap();
-        let total_voting_power = misbehavior.total_voting_power;
-        let index_str = index.to_string();
-        let keys = misbehavior_keys(&clock.number.to_string(), &index_str);
-
-        let row = tables
-            .push_change_composite("misbehaviors", keys, 0, table_change::Operation::Create)
-            .change("index", ("", index_str.as_str()))
-            .change("type", ("", misbehavior_type.as_str()))
-            .change("validator_address", ("", validator_address.as_str()))
-            .change("validator_power", ("", validator_power.to_string().as_str()))
-            .change("height", ("", height.to_string().as_str()))
-            .change("time", ("", time.to_string().as_str()))
-            .change("total_voting_power", ("", total_voting_power.to_string().as_str()));
-
-        insert_timestamp(row, clock, false, true);
+        vec.push(RawMisbehavior {
+            block_time: Some(timestamp.time),
+            block_number: timestamp.number,
+            block_date: timestamp.date.clone(),
+            block_hash: bytes_to_hex(&block.hash),
+            index: index as u32,
+            r#type: misbehavior_type_to_string(&misbehavior.r#type),
+            validator_address: bytes_to_hex(&validator.address),
+            validator_power: validator.power,
+            height: misbehavior.height,
+            time: misbehavior.time,
+            total_voting_power: misbehavior.total_voting_power,
+        });
     }
+
+    vec
 }
 
 fn misbehavior_type_to_string(misbehavior_type: &i32) -> String {
