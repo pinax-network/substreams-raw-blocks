@@ -7,14 +7,14 @@ use substreams::{errors::Error, pb::substreams::Clock};
 use crate::{
     blocks::collect_blocks,
     pb::{
-        beacon::rawblocks::Events,
+        beacon::Events,
         sf::beacon::r#type::v1::{AltairBody, BellatrixBody, Block as BeaconBlock, CapellaBody, DenebBody, Phase0Body},
     },
     utils::build_timestamp,
 };
 
 #[substreams::handlers::map]
-pub fn ch_out(clock: Clock, block: BeaconBlock) -> Result<Events, Error> {
+pub fn map_events(clock: Clock, block: BeaconBlock) -> Result<Events, Error> {
     let spec = spec_to_string(block.spec);
 
     let body = block.body.as_ref().unwrap();

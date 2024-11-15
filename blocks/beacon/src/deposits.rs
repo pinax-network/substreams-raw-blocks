@@ -1,31 +1,29 @@
-use common::{
-    blocks::insert_timestamp,
-    utils::{bytes_to_hex, hex_array_to_string},
+use common::utils::bytes_to_hex;
+
+use crate::{
+    pb::{beacon::Deposit as RawDeposit, sf::beacon::r#type::v1::Deposit},
+    structs::BlockTimestamp,
+    utils::{encode_2d_array_to_csv_string, encode_hex_2d_array},
 };
-use substreams::pb::substreams::Clock;
-use substreams_database_change::pb::database::DatabaseChanges;
 
-use crate::{keys::deposit_keys, pb::sf::beacon::r#type::v1::Deposit};
+pub fn collect_deposits(deposits: &Vec<Deposit>, timestamp: &BlockTimestamp) -> Vec<RawDeposit> {
+    let mut vec = Vec::<RawDeposit>::new();
 
-pub fn insert_deposits(tables: &mut DatabaseChanges, clock: &Clock, deposits: &Vec<Deposit>) {
-    for (index, deposit) in deposits.iter().enumerate() {
-        let proof = hex_array_to_string(&deposit.proof);
-        let deposit_data = deposit.data.as_ref().unwrap();
-        let pubkey = bytes_to_hex(&deposit_data.public_key);
-        let withdrawal_credentials = bytes_to_hex(&deposit_data.withdrawal_credentials);
-        let signature = bytes_to_hex(&deposit_data.signature);
-        let gwei = deposit_data.gwei;
-
-        let keys = deposit_keys(&clock.id, index as u64);
-
-        let row = tables
-            .push_change_composite("deposits", keys, 0, substreams_database_change::pb::database::table_change::Operation::Create)
-            .change("proof", ("", proof.as_str()))
-            .change("pubkey", ("", pubkey.as_str()))
-            .change("withdrawal_credentials", ("", withdrawal_credentials.as_str()))
-            .change("signature", ("", signature.as_str()))
-            .change("gwei", ("", gwei.to_string().as_str()));
-
-        insert_timestamp(row, clock, false, true);
+    for (index, d) in deposits.iter().enumerate() {
+        vec.push(RawDeposit {
+            block_time: Some(timestamp.time),
+            block_number: timestamp.number,
+            block_date: timestamp.date.clone(),
+            block_hash: timestamp.hash.clone(),
+            index: index as u64,
+            // TODO: use encode_hex_2d_array once Array(Text) is supported
+            proof: encode_2d_array_to_csv_string(&d.proof),
+            pubkey: bytes_to_hex(&d.data.as_ref().unwrap().public_key),
+            withdrawal_credentials: bytes_to_hex(&d.data.as_ref().unwrap().withdrawal_credentials),
+            signature: bytes_to_hex(&d.data.as_ref().unwrap().signature),
+            gwei: d.data.as_ref().unwrap().gwei,
+        });
     }
+
+    vec
 }

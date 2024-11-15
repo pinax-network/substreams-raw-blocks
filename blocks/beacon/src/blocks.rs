@@ -1,32 +1,29 @@
-use common::{blocks::insert_timestamp, utils::bytes_to_hex};
-use substreams::pb::substreams::Clock;
-use substreams_database_change::pb::database::{table_change, DatabaseChanges};
+use common::utils::bytes_to_hex;
 
-use crate::pb::sf::beacon::r#type::v1::Block as BeaconBlock;
+use crate::{
+    pb::{beacon::Block, sf::beacon::r#type::v1::Block as BeaconBlock},
+    structs::BlockTimestamp,
+};
 
-pub fn insert_blocks(tables: &mut DatabaseChanges, block: &BeaconBlock, spec: &str, clock: &Clock) {
-    let version = block.version;
-    let slot = block.slot;
-    let parent_slot = block.parent_slot;
-    let root = bytes_to_hex(&block.root);
-    let parent_root = bytes_to_hex(&block.parent_root);
-    let state_root = bytes_to_hex(&block.state_root);
-    let proposer_index = block.proposer_index;
-    let body_root = bytes_to_hex(&block.body_root);
-    let signature = bytes_to_hex(&block.signature);
+pub fn collect_blocks(block: &BeaconBlock, spec: &str, timestamp: &BlockTimestamp) -> Vec<Block> {
+    let mut blocks = Vec::new();
 
-    let row = tables
-        .push_change("blocks", &clock.id, 0, table_change::Operation::Create)
-        .change("version", ("", version.to_string().as_str()))
-        .change("spec", ("", spec))
-        .change("slot", ("", slot.to_string().as_str()))
-        .change("parent_slot", ("", parent_slot.to_string().as_str()))
-        .change("root", ("", root.as_str()))
-        .change("parent_root", ("", parent_root.as_str()))
-        .change("state_root", ("", state_root.as_str()))
-        .change("proposer_index", ("", proposer_index.to_string().as_str()))
-        .change("body_root", ("", body_root.as_str()))
-        .change("signature", ("", signature.as_str()));
+    blocks.push(Block {
+        time: Some(timestamp.time),
+        number: timestamp.number,
+        date: timestamp.date.clone(),
+        hash: timestamp.hash.clone(),
+        version: block.version,
+        spec: spec.to_string(),
+        slot: block.slot,
+        parent_slot: block.parent_slot,
+        root: bytes_to_hex(&block.root),
+        parent_root: bytes_to_hex(&block.parent_root),
+        state_root: bytes_to_hex(&block.state_root),
+        proposer_index: block.proposer_index,
+        body_root: bytes_to_hex(&block.body_root),
+        signature: bytes_to_hex(&block.signature),
+    });
 
-    insert_timestamp(row, clock, true, false);
+    blocks
 }
