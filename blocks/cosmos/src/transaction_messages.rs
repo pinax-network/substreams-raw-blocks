@@ -1,4 +1,5 @@
-use common::{structs::BlockTimestamp, utils::bytes_to_hex};
+use common::structs::BlockTimestamp;
+use substreams::Hex;
 use substreams_cosmos::Block;
 
 use crate::pb::cosmos::TransactionMessage;
@@ -14,11 +15,11 @@ pub fn collect_transaction_messages(block: &Block, timestamp: &BlockTimestamp) -
                         block_time: Some(timestamp.time),
                         block_number: timestamp.number,
                         block_date: timestamp.date.clone(),
-                        block_hash: bytes_to_hex(&block.hash),
-                        tx_hash: bytes_to_hex(&block.txs[i]),
+                        block_hash: Hex::encode(&block.hash),
+                        tx_hash: Hex::encode(&block.txs[i]),
                         index: index as u32,
                         r#type: message.type_url[1..].to_string(),
-                        value: bytes_to_hex(&message.value),
+                        value: Hex::encode(&message.value),
                     });
                 }
             }

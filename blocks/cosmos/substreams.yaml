@@ -19,7 +19,7 @@ protobuf:
     - google
 
 modules:
-  - name: ch_out
+  - name: map_events
     kind: map
     inputs:
       - source: sf.substreams.v1.Clock

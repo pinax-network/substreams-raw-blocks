@@ -14,7 +14,7 @@ use crate::{
 };
 
 #[substreams::handlers::map]
-pub fn ch_out(clock: Clock, block: Block) -> Result<Events, Error> {
+pub fn map_events(clock: Clock, block: Block) -> Result<Events, Error> {
     let timestamp = build_timestamp(&clock);
 
     Ok(Events {
@@ -27,22 +27,4 @@ pub fn ch_out(clock: Clock, block: Block) -> Result<Events, Error> {
         consensus_param_updates: collect_consensus_params(&block, &timestamp),
         transaction_messages: collect_transaction_messages(&block, &timestamp),
     })
-
-    // TABLE::blocks
-    // insert_blocks(&mut tables, &clock, &block);
-
-    // // TABLE::block_events
-    // insert_block_events(&mut tables, &clock, &block);
-
-    // // TABLE::transactions + TABLE::tx_events + TABLE::transaction_messages
-    // insert_transactions(&mut tables, &clock, &block);
-
-    // // TABLE::misbehaviors
-    // insert_misbehaviors(&mut tables, &clock, &block);
-
-    // // TABLE::validator_updates
-    // insert_validator_updates(&mut tables, &clock, &block);
-
-    // // TABLE::consensus_param_updates
-    // insert_consensus_params(&mut tables, &clock, &block);
 }

@@ -1,4 +1,5 @@
-use common::{structs::BlockTimestamp, utils::bytes_to_hex};
+use common::structs::BlockTimestamp;
+use substreams::Hex;
 use substreams_cosmos::Block;
 
 use crate::pb::cosmos::ConsensusParamUpdate as RawConsensusParamUpdate;
@@ -40,7 +41,7 @@ pub fn collect_consensus_params(block: &Block, timestamp: &BlockTimestamp) -> Ve
             block_time: Some(timestamp.time),
             block_number: timestamp.number,
             block_date: timestamp.date.clone(),
-            block_hash: bytes_to_hex(&block.hash),
+            block_hash: Hex::encode(&block.hash),
             json: json.to_string(),
         });
     }

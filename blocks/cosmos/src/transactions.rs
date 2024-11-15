@@ -1,4 +1,5 @@
-use common::{structs::BlockTimestamp, utils::bytes_to_hex};
+use common::structs::BlockTimestamp;
+use substreams::Hex;
 use substreams_cosmos::Block;
 
 use crate::{pb::cosmos::Transaction as RawTransaction, utils::compute_tx_hash};
@@ -10,13 +11,13 @@ pub fn collect_transactions(block: &Block, timestamp: &BlockTimestamp) -> Vec<Ra
         let tx_as_bytes = block.txs.get(i).unwrap();
         let tx_hash = compute_tx_hash(tx_as_bytes);
         let code = transaction.code;
-        let data = bytes_to_hex(&transaction.data);
+        let data = Hex::encode(&transaction.data);
 
         vec.push(RawTransaction {
             block_time: Some(timestamp.time),
             block_number: timestamp.number,
             block_date: timestamp.date.clone(),
-            block_hash: bytes_to_hex(&block.hash),
+            block_hash: Hex::encode(&block.hash),
             index: i as u32,
             hash: tx_hash,
             code,

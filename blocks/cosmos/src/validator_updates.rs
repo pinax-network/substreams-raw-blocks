@@ -1,4 +1,4 @@
-use common::{structs::BlockTimestamp, utils::bytes_to_hex};
+use common::structs::BlockTimestamp;
 use substreams::Hex;
 use substreams_cosmos::{pb::public_key, Block};
 
@@ -17,7 +17,7 @@ pub fn collect_validator_updates(block: &Block, timestamp: &BlockTimestamp) -> V
             block_time: Some(timestamp.time),
             block_number: timestamp.number,
             block_date: timestamp.date.clone(),
-            block_hash: bytes_to_hex(&block.hash),
+            block_hash: Hex::encode(&block.hash),
             index: index as u32,
             public_key: Hex::encode(public_key),
             power: validator_update.power,

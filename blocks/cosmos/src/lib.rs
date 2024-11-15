@@ -1,9 +1,9 @@
 mod blocks;
 mod consensus_param_updates;
 mod events;
+mod map_events;
 mod misbehaviors;
 mod pb;
-mod sinks;
 mod size;
 mod transaction_messages;
 mod transactions;

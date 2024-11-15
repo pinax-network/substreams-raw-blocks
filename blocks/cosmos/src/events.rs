@@ -1,4 +1,5 @@
-use common::{structs::BlockTimestamp, utils::bytes_to_hex};
+use common::structs::BlockTimestamp;
+use substreams::Hex;
 use substreams_cosmos::Block;
 
 use crate::{
@@ -14,9 +15,9 @@ pub fn collect_tx_events(block: &Block, timestamp: &BlockTimestamp) -> Vec<RawTr
             block_time: Some(timestamp.time),
             block_number: timestamp.number,
             block_date: timestamp.date.clone(),
-            block_hash: bytes_to_hex(&block.hash),
+            block_hash: Hex::encode(&block.hash),
             index: index as u32,
-            tx_hash: bytes_to_hex(&block.hash),
+            tx_hash: Hex::encode(&block.hash),
             r#type: event.r#type.clone(),
             attributes: build_attributes_array_string(&event.attributes),
         });
@@ -32,7 +33,7 @@ pub fn collect_block_events(block: &Block, timestamp: &BlockTimestamp) -> Vec<Ra
             block_time: Some(timestamp.time),
             block_number: timestamp.number,
             block_date: timestamp.date.clone(),
-            block_hash: bytes_to_hex(&block.hash),
+            block_hash: Hex::encode(&block.hash),
             index: index as u32,
             r#type: event.r#type.clone(),
             attributes: build_attributes_array_string(&event.attributes),
