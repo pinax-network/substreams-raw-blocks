@@ -1,4 +1,4 @@
-use common::blocks::insert_timestamp;
+use common::{blocks::insert_timestamp, structs::BlockTimestamp, utils::bytes_to_hex};
 use substreams::pb::substreams::Clock;
 use substreams_cosmos::{
     pb::{Event, TxResults},
@@ -6,35 +6,44 @@ use substreams_cosmos::{
 };
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 
-use crate::{keys::event_keys, utils::build_attributes_array_string};
+use crate::{
+    keys::event_keys,
+    pb::cosmos::rawblocks::{BlockEvent as RawBlockEvent, TransactionEvent as RawTransactionEvent},
+    utils::build_attributes_array_string,
+};
 
-pub fn insert_tx_events(tables: &mut DatabaseChanges, clock: &Clock, transaction: &TxResults, tx_hash: &str) {
-    for (index, event) in transaction.events.iter().enumerate() {
-        insert_event(tables, clock, tx_hash, index, event, "tx");
-    }
-}
+pub fn collect_tx_events(block: &Block, timestamp: &BlockTimestamp) -> Vec<RawTransactionEvent> {
+    let mut vec: Vec<RawTransactionEvent> = vec![];
 
-pub fn insert_block_events(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
     for (index, event) in block.events.iter().enumerate() {
-        insert_event(tables, clock, &clock.id, index, event, "block");
+        vec.push(RawTransactionEvent {
+            block_time: Some(timestamp.time),
+            block_number: timestamp.number,
+            block_date: timestamp.date.clone(),
+            block_hash: bytes_to_hex(&block.hash),
+            index: index as u32,
+            tx_hash: bytes_to_hex(&block.hash),
+            r#type: event.r#type.clone(),
+            attributes: build_attributes_array_string(&event.attributes),
+        });
     }
+    vec
 }
 
-fn insert_event(tables: &mut DatabaseChanges, clock: &Clock, hash: &str, index: usize, event: &Event, table_prefix: &str) {
-    let event_type = &event.r#type;
-    let attributes_str = build_attributes_array_string(&event.attributes);
+pub fn collect_block_events(block: &Block, timestamp: &BlockTimestamp) -> Vec<RawBlockEvent> {
+    let mut vec: Vec<RawBlockEvent> = vec![];
 
-    let index_str = index.to_string();
+    for (index, event) in block.events.iter().enumerate() {
+        vec.push(RawBlockEvent {
+            block_time: Some(timestamp.time),
+            block_number: timestamp.number,
+            block_date: timestamp.date.clone(),
+            block_hash: bytes_to_hex(&block.hash),
+            index: index as u32,
+            r#type: event.r#type.clone(),
+            attributes: build_attributes_array_string(&event.attributes),
+        });
+    }
 
-    let keys = event_keys(hash, &index_str);
-
-    let table_name = format!("{}_events", table_prefix);
-
-    let row = tables
-        .push_change_composite(table_name, keys, 0, table_change::Operation::Create)
-        .change("index", ("", index_str.as_str()))
-        .change("type", ("", event_type.as_str()))
-        .change("attributes", ("", attributes_str.as_str()));
-
-    insert_timestamp(row, clock, false, true);
+    vec
 }
