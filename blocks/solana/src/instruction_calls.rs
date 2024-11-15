@@ -1,4 +1,4 @@
-use common::utils::bytes_to_hex;
+use substreams::Hex;
 use substreams_solana::{base58, block_view::InstructionView, pb::sf::solana::r#type::v1::Block};
 
 use crate::{
@@ -39,7 +39,7 @@ fn collect_outer_instruction(vec: &mut Vec<InstructionCall>, timestamp: &BlockTi
     let executing_account = base58::encode(instruction_view.program_id());
     // let account_arguments = to_string_array_to_string(&instruction_view.accounts());
     let account_arguments = instruction_view.accounts().iter().map(|arg| arg.to_string()).collect::<Vec<String>>();
-    let data = bytes_to_hex(&instruction_view.data());
+    let data = Hex::encode(&instruction_view.data());
 
     let inner_instructions_str = build_inner_instructions_str(instruction_view);
 
@@ -72,7 +72,7 @@ fn collect_outer_instruction(vec: &mut Vec<InstructionCall>, timestamp: &BlockTi
 
 fn collect_inner_instructions(vec: &mut Vec<InstructionCall>, timestamp: &BlockTimestamp, block_info: &BlockInfo, tx_info: &TxInfo, instruction_index: usize, instruction_view: &InstructionView) {
     for (inner_index, inner_instruction) in instruction_view.inner_instructions().enumerate() {
-        let inner_data = bytes_to_hex(inner_instruction.data());
+        let inner_data = Hex::encode(inner_instruction.data());
         let executing_account = inner_instruction.program_id().to_string();
         let account_arguments = inner_instruction.accounts().iter().map(|arg| arg.to_string()).collect::<Vec<String>>();
 
