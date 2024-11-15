@@ -23,19 +23,18 @@ protobuf:
     - google
 
 modules:
-  - name: blocks_without_votes_all
-    kind: map
-    inputs:
-      - source: sf.solana.type.v1.Block
-    output:
-      type: proto:sf.solana.type.v1.Block
+  # - name: blocks_without_votes_all
+  #   kind: map
+  #   inputs:
+  #     - source: sf.solana.type.v1.Block
+  #   output:
+  #     type: proto:sf.solana.type.v1.Block
 
   - name: map_events
     kind: map
     inputs:
       - source: sf.substreams.v1.Clock
-      - map: blocks_without_votes_all
-      # - map: common:blocks_without_votes
+      - map: common:blocks_without_votes
     output:
       type: proto:solana.Events
   - name: map_events_with_votes
