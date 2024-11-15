@@ -3,6 +3,8 @@ use substreams::pb::substreams::Clock;
 use substreams_database_change::pb::database::TableChange;
 use substreams_solana::{b58, base58, pb::sf::solana::r#type::v1::ConfirmedTransaction};
 
+use crate::structs::BlockTimestamp;
+
 pub static VOTE_INSTRUCTION: [u8; 32] = b58!("Vote111111111111111111111111111111111111111");
 
 pub fn insert_timestamp_without_number(row: &mut TableChange, clock: &Clock, is_block: bool, with_prefix: bool) {
@@ -18,6 +20,17 @@ pub fn insert_timestamp_without_number(row: &mut TableChange, clock: &Clock, is_
     row.change(format!("{}date", prefix).as_str(), ("", block_date.as_str()))
         .change(format!("{}time", prefix).as_str(), ("", block_time.as_str()))
         .change(format!("{}hash", prefix).as_str(), ("", block_hash.as_str()));
+}
+
+pub fn get_timestamp_without_number(clock: &Clock) -> BlockTimestamp {
+    let timestamp = clock.clone().timestamp.unwrap();
+    let block_date = block_time_to_date(timestamp.to_string().as_str());
+
+    BlockTimestamp {
+        time: clock.timestamp.expect("timestamp is required"),
+        date: block_date,
+        hash: clock.id.to_string(),
+    }
 }
 
 pub fn build_csv_string<T: ToString>(values: &[T]) -> String {

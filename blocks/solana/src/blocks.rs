@@ -1,48 +1,38 @@
-use substreams::pb::substreams::Clock;
-use substreams_database_change::pb::database::{table_change, DatabaseChanges, TableChange};
-use substreams_solana::{
-    b58,
-    pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction},
-};
+use substreams_solana::pb::sf::solana::r#type::v1::Block;
 
-use crate::{account_activity::insert_account_activity, counters::insert_block_counters, rewards::insert_rewards, transactions::insert_transactions, utils::insert_timestamp_without_number};
+use crate::structs::BlockTimestamp;
+use crate::{pb::solana::Block as RawBlock, structs::BlockInfo};
 
-static VOTE_INSTRUCTION: [u8; 32] = b58!("Vote111111111111111111111111111111111111111");
+use crate::counters::get_block_counters;
 
-pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block) {
-    let row = tables.push_change("blocks", block.blockhash.as_str(), 0, table_change::Operation::Create);
-
-    insert_blockinfo(row, block, false);
-    insert_timestamp_without_number(row, clock, true, false);
-    insert_block_counters(row, block);
-
-    // TABLE::rewards
-    insert_rewards(tables, clock, block);
-
-    // Separate transactions into vote and non-vote arrays
-    // Original index before separation is preserved
-    let (non_vote_trx, vote_trx): (Vec<(usize, &ConfirmedTransaction)>, Vec<(usize, &ConfirmedTransaction)>) = block.transactions.iter().enumerate().partition(|(_index, trx)| {
-        !trx.transaction
-            .as_ref()
-            .and_then(|t| t.message.as_ref())
-            .map_or(false, |message| message.account_keys.iter().any(|key| key == &VOTE_INSTRUCTION))
-    });
-
-    // Process non-vote transactions
-    insert_transactions(tables, clock, block, &non_vote_trx, "");
-    insert_account_activity(tables, clock, block, &non_vote_trx, "");
-
-    // Process vote transactions
-    insert_transactions(tables, clock, block, &vote_trx, "vote_");
-    insert_account_activity(tables, clock, block, &vote_trx, "vote_");
+pub fn get_block_info(block: &Block) -> BlockInfo {
+    BlockInfo {
+        slot: block.slot,
+        height: block.block_height.as_ref().expect("Block height is missing").block_height,
+        previous_block_hash: block.previous_blockhash.clone(),
+        parent_slot: block.parent_slot,
+    }
 }
 
-pub fn insert_blockinfo(row: &mut TableChange, block: &Block, with_prefix: bool) {
-    let height = block.block_height.as_ref().map_or_else(|| "0".to_string(), |bh| bh.block_height.to_string());
+pub fn collect_block(block: &Block, timestamp: &BlockTimestamp, block_info: &BlockInfo) -> Option<RawBlock> {
+    let counters = get_block_counters(block);
 
-    let prefix_str = if with_prefix { "block_" } else { "" };
-    row.change(format!("{}slot", prefix_str).as_str(), ("", block.slot.to_string().as_str()))
-        .change(format!("{}height", prefix_str).as_str(), ("", height.as_str()))
-        .change(format!("{}previous_block_hash", prefix_str).as_str(), ("", block.previous_blockhash.as_str()))
-        .change(format!("{}parent_slot", prefix_str).as_str(), ("", block.parent_slot.to_string().as_str()));
+    Some(RawBlock {
+        time: Some(timestamp.time),
+        date: timestamp.date.clone(),
+        hash: timestamp.hash.clone(),
+        slot: block.slot,
+        height: block_info.height,
+        previous_block_hash: block_info.previous_block_hash.clone(),
+        parent_slot: block_info.parent_slot,
+        total_transactions: counters.total_transactions,
+        successful_transactions: counters.successful_transactions,
+        failed_transactions: counters.failed_transactions,
+        total_vote_transactions: counters.total_vote_transactions,
+        total_non_vote_transactions: counters.total_non_vote_transactions,
+        successful_vote_transactions: counters.successful_vote_transactions,
+        successful_non_vote_transactions: counters.successful_non_vote_transactions,
+        failed_vote_transactions: counters.failed_vote_transactions,
+        failed_non_vote_transactions: counters.failed_non_vote_transactions,
+    })
 }

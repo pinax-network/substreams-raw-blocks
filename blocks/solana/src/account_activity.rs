@@ -1,14 +1,14 @@
-use substreams::pb::substreams::Clock;
-use substreams_database_change::pb::database::{table_change, DatabaseChanges};
-use substreams_solana::pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction, MessageHeader, TokenBalance, Transaction};
+use substreams_solana::pb::sf::solana::r#type::v1::{ConfirmedTransaction, MessageHeader, TokenBalance, Transaction};
 
 use crate::{
-    blocks::insert_blockinfo,
-    keys::account_activity_keys,
-    utils::{get_account_keys_extended, insert_timestamp_without_number},
+    pb::solana::AccountActivity,
+    structs::{BlockInfo, BlockTimestamp},
+    utils::get_account_keys_extended,
 };
 
-pub fn insert_account_activity(tables: &mut DatabaseChanges, clock: &Clock, block: &Block, transactions: &Vec<(usize, &ConfirmedTransaction)>, table_prefix: &str) {
+pub fn collect_account_activities(block_info: &BlockInfo, timestamp: &BlockTimestamp, transactions: &Vec<(usize, &ConfirmedTransaction)>) -> Vec<AccountActivity> {
+    let mut account_activities: Vec<AccountActivity> = Vec::new();
+
     for (index, transaction) in transactions {
         let meta = match transaction.meta.as_ref() {
             Some(m) => m,
@@ -65,41 +65,36 @@ pub fn insert_account_activity(tables: &mut DatabaseChanges, clock: &Clock, bloc
             };
 
             let balance_change = *post_balance as i128 - *pre_balance as i128;
-
             let signed = is_signed(trx, balance_index);
-
             let writable = writability.get(balance_index).unwrap_or(&false);
 
-            let keys = account_activity_keys(&transaction_id, address.as_str());
-
-            let row = tables
-                .push_change_composite(format!("{}account_activity", table_prefix), keys, 0, table_change::Operation::Create)
-                .change("address", ("", address.as_str()))
-                .change("tx_index", ("", transaction_index.as_str()))
-                .change("tx_id", ("", transaction_id.as_str()))
-                .change("tx_success", ("", tx_success.to_string().as_str()))
-                .change("signed", ("", signed.to_string().as_str()))
-                .change("writable", ("", writable.to_string().as_str()))
-                .change("token_mint_address", ("", mint.as_deref().unwrap_or("")))
-                .change("pre_balance", ("", pre_balance.to_string().as_str()))
-                .change("post_balance", ("", post_balance.to_string().as_str()))
-                .change("balance_change", ("", balance_change.to_string().as_str()))
-                .change("pre_token_balance", ("", pre_token_balance.as_ref().map(|v| v.to_string()).as_deref().unwrap_or("-1.0")))
-                .change("post_token_balance", ("", post_token_balance.as_ref().map(|v| v.to_string()).as_deref().unwrap_or("-1.0")))
-                .change("token_balance_change", ("", token_balance_change.as_ref().map(|v| v.to_string()).as_deref().unwrap_or("0")))
-                .change("token_balance_owner", ("", owner.as_deref().unwrap_or("")));
-
-            // TODO: Uncomment when sink supports nullable types
-            // if pre_token_balance.is_some() {
-            //     row.change("pre_token_balance", ("", pre_token_balance.as_ref().unwrap().to_string().as_str()))
-            //         .change("post_token_balance", ("", post_token_balance.as_ref().unwrap().to_string().as_str()))
-            //         .change("token_balance_change", ("", token_balance_change.as_ref().unwrap().to_string().as_str()));
-            // }
-
-            insert_timestamp_without_number(row, clock, false, false);
-            insert_blockinfo(row, block, true);
+            account_activities.push(AccountActivity {
+                block_time: Some(timestamp.time),
+                block_hash: timestamp.hash.clone(),
+                block_date: timestamp.date.clone(),
+                block_slot: block_info.slot,
+                block_height: block_info.height,
+                block_previous_block_hash: block_info.previous_block_hash.clone(),
+                block_parent_slot: block_info.parent_slot,
+                address: address.clone(),
+                tx_index: transaction_index.parse().unwrap(),
+                tx_id: transaction_id.clone(),
+                tx_success,
+                signed,
+                writable: *writable,
+                token_mint_address: mint,
+                pre_balance: *pre_balance,
+                post_balance: *post_balance,
+                balance_change: balance_change as i64,
+                pre_token_balance,
+                post_token_balance,
+                token_balance_change,
+                token_balance_owner: owner,
+            });
         }
     }
+
+    account_activities
 }
 
 // Extracts the token balance changes for a given account index

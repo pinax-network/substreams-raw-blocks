@@ -6,7 +6,7 @@ use substreams_solana::pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction}
 use crate::account_activity::collect_account_activities;
 use crate::blocks::{collect_block, get_block_info};
 use crate::instruction_calls::collect_instruction_calls;
-use crate::pb::solana::rawblocks::Events;
+use crate::pb::solana::Events;
 use crate::rewards::collect_rewards;
 use crate::transactions::collect_transactions;
 use crate::utils::get_timestamp_without_number;
@@ -14,7 +14,7 @@ use crate::utils::get_timestamp_without_number;
 static VOTE_INSTRUCTION: [u8; 32] = b58!("Vote111111111111111111111111111111111111111");
 
 #[substreams::handlers::map]
-pub fn ch_out_without_votes(clock: Clock, block: Block) -> Result<Events, Error> {
+pub fn map_events(clock: Clock, block: Block) -> Result<Events, Error> {
     let timestamp = get_timestamp_without_number(&clock);
     let block_info = get_block_info(&block);
 
@@ -38,7 +38,7 @@ pub fn ch_out_without_votes(clock: Clock, block: Block) -> Result<Events, Error>
 }
 
 #[substreams::handlers::map]
-pub fn ch_out(clock: Clock, block: Block) -> Result<Events, Error> {
+pub fn map_events_with_votes(clock: Clock, block: Block) -> Result<Events, Error> {
     let timestamp = get_timestamp_without_number(&clock);
     let block_info = get_block_info(&block);
 

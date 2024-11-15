@@ -1,0 +1,194 @@
+syntax = "proto3";
+
+package beacon;
+
+import "google/protobuf/timestamp.proto";
+
+message Events {
+  repeated Block blocks = 1;
+  repeated Blob blobs = 2;
+  repeated Deposit deposits = 3;
+  repeated Withdrawal withdrawals = 4;
+  repeated Attestation attestations = 5;
+  repeated AttesterSlashing attester_slashings = 6;
+  repeated BlsToExecutionChange bls_to_execution_changes = 7;
+  repeated ProposerSlashing proposer_slashings = 8;
+  repeated VoluntaryExit voluntary_exits = 9;
+}
+
+
+message Block {
+  // clock
+  google.protobuf.Timestamp time = 1;
+  uint64 number = 2;
+  string date = 3;
+  string hash = 4;
+
+  // block
+  uint32 version = 5;
+  string spec = 6;
+  uint64 slot = 7;
+  uint64 parent_slot = 8;
+  string root = 9;
+  string parent_root = 10;
+  string state_root = 11;
+  uint64 proposer_index = 12;
+  string body_root = 13;
+  string signature = 14;
+}
+
+message Blob {
+  // clock
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_date = 3;
+  string block_hash = 4;
+
+  // blob
+  uint64 index = 5;
+  string blob = 6;
+  string kzg_commitment = 7;
+  string kzg_proof = 8;
+  // csv string for now but should be array(text) once supported
+  string kzg_commitment_inclusion_proof = 9;
+}
+
+message Deposit {
+  // clock
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_date = 3;
+  string block_hash = 4;
+
+  // deposit
+  uint64 index = 5;
+  // csv string for now but should be array(text) once supported
+  string proof = 6;
+  string pubkey = 7;
+  string withdrawal_credentials = 8;
+  string signature = 9;
+  uint64 gwei = 10;
+}
+
+message Withdrawal {
+  // clock
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_date = 3;
+  string block_hash = 4;
+
+  // withdrawal
+  uint64 withdrawal_index = 5;
+  uint64 validator_index = 6;
+  string address = 7;
+  uint64 gwei = 8;
+}
+
+message Attestation {
+  // clock
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_date = 3;
+  string block_hash = 4;
+
+  // attestation
+  uint64 index = 5;
+  string aggregation_bits = 6;
+  uint64 slot = 7;
+  uint64 committee_index = 8;
+  string beacon_block_root = 9;
+  uint64 source_epoch = 10;
+  string source_root = 11;
+  uint64 target_epoch = 12;
+  string target_root = 13;
+  string signature = 14;
+}
+
+message AttesterSlashing {
+  // clock
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_date = 3;
+  string block_hash = 4;
+
+  // attester slashing
+  uint64 index = 5;
+
+  // attestation 1
+  string attestation_1_attesting_indices = 6;
+  uint64 attestation_1_slot = 7;
+  uint64 attestation_1_committee_index = 8;
+  string attestation_1_beacon_block_root = 9;
+  uint64 attestation_1_source_epoch = 10;
+  string attestation_1_source_root = 11;
+  uint64 attestation_1_target_epoch = 12;
+  string attestation_1_target_root = 13;
+  string attestation_1_signature = 14;
+
+  // attestation 2
+  string attestation_2_attesting_indices = 15;
+  uint64 attestation_2_slot = 16;
+  uint64 attestation_2_committee_index = 17;
+  string attestation_2_beacon_block_root = 18;
+  uint64 attestation_2_source_epoch = 19;
+  string attestation_2_source_root = 20;
+  uint64 attestation_2_target_epoch = 21;
+  string attestation_2_target_root = 22;
+  string attestation_2_signature = 23;
+}
+
+message BlsToExecutionChange {
+  // clock
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_date = 3;
+  string block_hash = 4;
+
+  // bls to execution change
+  uint64 index = 5;
+  uint64 validator_index = 6;
+  string from_bls_pubkey = 7;
+  string to_execution_address = 8;
+  string signature = 9;
+}
+
+message ProposerSlashing {
+  // clock
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_date = 3;
+  string block_hash = 4;
+
+  // proposer slashing
+  uint64 index = 5;
+
+  // signed header 1
+  uint64 signed_header_1_slot = 6;
+  uint64 signed_header_1_proposer_index = 7;
+  string signed_header_1_parent_root = 8;
+  string signed_header_1_state_root = 9;
+  string signed_header_1_body_root = 10;
+  string signed_header_1_signature = 11;
+
+  // signed header 2
+  uint64 signed_header_2_slot = 12;
+  uint64 signed_header_2_proposer_index = 13;
+  string signed_header_2_parent_root = 14;
+  string signed_header_2_state_root = 15;
+  string signed_header_2_body_root = 16;
+  string signed_header_2_signature = 17;
+}
+
+message VoluntaryExit {
+  // clock
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_date = 3;
+  string block_hash = 4;
+
+  // voluntary exit
+  uint64 index = 5;
+  uint64 epoch = 6;
+  uint64 validator_index = 7;
+  string signature = 8;
+}

@@ -26,10 +26,8 @@ pub mod sol {
         }
     }
 }
+// @@protoc_insertion_point(attribute:solana)
 pub mod solana {
-    // @@protoc_insertion_point(attribute:solana.rawblocks)
-    pub mod rawblocks {
-        include!("solana.rawblocks.rs");
-        // @@protoc_insertion_point(solana.rawblocks)
-    }
+    include!("solana.rs");
+    // @@protoc_insertion_point(solana)
 }

@@ -2,10 +2,9 @@
 members = [
   "blocks/evm",
   "blocks/antelope",
-  "blocks/solana",
   "blocks/cosmos",
   "blocks/beacon",
-  "blocks/solana-parquet",
+  "blocks/solana",
   "blocks/beacon-parquet",
   "blocks/cosmos-parquet",
   "common",

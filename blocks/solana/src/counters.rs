@@ -1,9 +1,10 @@
-use substreams_database_change::pb::database::TableChange;
+use crate::structs::BlockCounters;
+
 use substreams_solana::pb::sf::solana::r#type::v1::Block;
 
 use crate::utils::VOTE_INSTRUCTION;
 
-pub fn insert_block_counters(row: &mut TableChange, block: &Block) {
+pub fn get_block_counters(block: &Block) -> BlockCounters {
     // Counters
     let total_transactions = block.transactions.len();
     let mut successful_transactions = 0;
@@ -35,13 +36,15 @@ pub fn insert_block_counters(row: &mut TableChange, block: &Block) {
     let failed_vote_transactions = total_vote_transactions - successful_vote_transactions;
     let failed_non_vote_transactions = failed_transactions - failed_vote_transactions;
 
-    row.change("total_transactions", ("", total_transactions.to_string().as_str()))
-        .change("successful_transactions", ("", successful_transactions.to_string().as_str()))
-        .change("failed_transactions", ("", failed_transactions.to_string().as_str()))
-        .change("total_vote_transactions", ("", total_vote_transactions.to_string().as_str()))
-        .change("total_non_vote_transactions", ("", total_non_vote_transactions.to_string().as_str()))
-        .change("successful_vote_transactions", ("", successful_vote_transactions.to_string().as_str()))
-        .change("successful_non_vote_transactions", ("", successful_non_vote_transactions.to_string().as_str()))
-        .change("failed_vote_transactions", ("", failed_vote_transactions.to_string().as_str()))
-        .change("failed_non_vote_transactions", ("", failed_non_vote_transactions.to_string().as_str()));
+    BlockCounters {
+        total_transactions: total_transactions as u64,
+        successful_transactions: successful_transactions as u64,
+        failed_transactions: failed_transactions as u64,
+        total_vote_transactions: total_vote_transactions as u64,
+        successful_vote_transactions: successful_vote_transactions as u64,
+        total_non_vote_transactions: total_non_vote_transactions as u64,
+        successful_non_vote_transactions: successful_non_vote_transactions as u64,
+        failed_vote_transactions: failed_vote_transactions as u64,
+        failed_non_vote_transactions: failed_non_vote_transactions as u64,
+    }
 }
