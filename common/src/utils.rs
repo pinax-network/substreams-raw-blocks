@@ -1,6 +1,8 @@
 use serde_json;
-use substreams::{scalar::BigDecimal, Hex};
+use substreams::{pb::substreams::Clock, scalar::BigDecimal, Hex};
 use substreams_ethereum::pb::eth::v2::BigInt;
+
+use crate::structs::BlockTimestamp;
 
 // Timestamp to date conversion
 // ex: 2015-07-30T16:02:18Z => 2015-07-30
@@ -167,6 +169,18 @@ pub fn to_string_array_to_string<T: ToString>(values: &[T]) -> String {
 
 pub fn string_array_to_string_with_escapes(values: &[String]) -> String {
     serde_json::to_string(values).unwrap_or_else(|_| "[]".to_string())
+}
+
+pub fn build_timestamp(clock: &Clock) -> BlockTimestamp {
+    let timestamp = clock.timestamp.unwrap();
+    let block_date = block_time_to_date(timestamp.to_string().as_str());
+
+    BlockTimestamp {
+        time: timestamp,
+        date: block_date,
+        hash: clock.id.clone(),
+        number: clock.number,
+    }
 }
 
 #[cfg(test)]
