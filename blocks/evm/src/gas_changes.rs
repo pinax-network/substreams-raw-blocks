@@ -1,10 +1,6 @@
-use common::blocks::insert_timestamp;
 use common::structs::BlockTimestamp;
-use substreams::pb::substreams::Clock;
-use substreams_database_change::pb::database::{table_change, DatabaseChanges};
-use substreams_ethereum::pb::eth::v2::{Block, GasChange};
+use substreams_ethereum::pb::eth::v2::Block;
 
-use crate::keys::block_ordinal_keys;
 use crate::pb::evm::GasChange as RawGasChange;
 
 pub fn gas_change_reason_to_string(reason: i32) -> String {
@@ -41,25 +37,6 @@ pub fn gas_change_reason_to_string(reason: i32) -> String {
 
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L726C9-L726C20
 // DetailLevel: EXTENDED
-pub fn insert_gas_change(tables: &mut DatabaseChanges, clock: &Clock, gas_change: &GasChange) {
-    let old_value = gas_change.old_value;
-    let new_value = gas_change.new_value;
-    let reason = gas_change_reason_to_string(gas_change.reason);
-    let reason_code = gas_change.reason;
-    let ordinal = gas_change.ordinal;
-
-    let keys = block_ordinal_keys(&clock, &ordinal);
-    let row = tables
-        .push_change_composite("gas_changes", keys, 0, table_change::Operation::Create)
-        .change("reason", ("", reason.as_str()))
-        .change("reason_code", ("", reason_code.to_string().as_str()))
-        .change("old_value", ("", old_value.to_string().as_str()))
-        .change("new_value", ("", new_value.to_string().as_str()))
-        .change("ordinal", ("", ordinal.to_string().as_str()));
-
-    insert_timestamp(row, clock, false, true);
-}
-
 pub fn collect_gas_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec<RawGasChange> {
     let mut gas_changes: Vec<RawGasChange> = vec![];
 

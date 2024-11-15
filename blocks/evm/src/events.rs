@@ -16,16 +16,6 @@ use crate::storage_changes::collect_storage_changes;
 use crate::traces::collect_traces;
 use crate::transactions::collect_transactions;
 
-// #[substreams::handlers::map]
-// pub fn ch_out(clock: Clock, block: Block) -> Result<DatabaseChanges, Error> {
-//     let mut tables: DatabaseChanges = DatabaseChanges::default();
-
-//     // TABLE::blocks
-//     insert_blocks(&mut tables, &clock, &block);
-
-//     Ok(tables)
-// }
-
 #[substreams::handlers::map]
 pub fn map_events(clock: Clock, block: Block) -> Result<Events, Error> {
     let timestamp = build_timestamp(&clock);
@@ -44,12 +34,3 @@ pub fn map_events(clock: Clock, block: Block) -> Result<Events, Error> {
         gas_changes: collect_gas_changes(&block, &timestamp),
     })
 }
-
-// // TO-DO: Implement the `graph_out` function using EntityChanges
-// #[substreams::handlers::map]
-// pub fn graph_out(clock: Clock, block: Block) -> Result<DatabaseChanges, Error> {
-//     let mut tables: DatabaseChanges = DatabaseChanges::default();
-//     insert_blocks(&mut tables, &clock, &block);
-//     // TO-DO: Convert DatabaseChanges to EntityChanges
-//     Ok(tables)
-// }
