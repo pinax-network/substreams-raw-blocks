@@ -6,7 +6,7 @@ use substreams_antelope::{
 };
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 
-use crate::{keys::db_ops_keys, pb::antelope::DbOp as RawDbOp};
+use crate::{keys::db_ops_keys, pb::antelope::DbOp as RawDbOp, transactions::is_transaction_success};
 
 use super::transactions::insert_transaction_metadata;
 
@@ -66,7 +66,7 @@ pub fn collect_db_ops(block: &Block, timestamp: &BlockTimestamp) -> Vec<RawDbOp>
 
     for transaction in block.transaction_traces() {
         let tx_hash = &transaction.id;
-        let tx_success = transaction.receipt.clone().unwrap_or_default().status == 1;
+        let tx_success = is_transaction_success(transaction.receipt.clone().unwrap_or_default().status);
 
         for (index, db_op) in transaction.db_ops.iter().enumerate() {
             db_ops.push(RawDbOp {

@@ -11,7 +11,7 @@ use crate::auth_sequences::insert_auth_sequence;
 use crate::authorizations::insert_authorization;
 use crate::keys::actions_keys;
 use crate::pb::antelope::Action as RawAction;
-use crate::transactions::insert_transaction_metadata;
+use crate::transactions::{insert_transaction_metadata, is_transaction_success};
 
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L525
 pub fn insert_action(tables: &mut DatabaseChanges, clock: &Clock, trace: &ActionTrace, transaction: &TransactionTrace, block_header: &BlockHeader) {
@@ -133,7 +133,7 @@ pub fn collect_actions(block: &Block, timestamp: &BlockTimestamp) -> Vec<RawActi
 
     for transaction in block.transaction_traces() {
         let tx_hash = &transaction.id;
-        let tx_success = transaction.receipt.clone().unwrap_or_default().status == 1;
+        let tx_success = is_transaction_success(transaction.receipt.clone().unwrap_or_default().status);
 
         for trace in transaction.action_traces.iter() {
             let action = trace.action.clone().unwrap_or_default();
