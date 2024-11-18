@@ -29,12 +29,17 @@ run:
 gui:
 	substreams gui -e eos.substreams.pinax.network:443 ch_out -s 386946801 -t 386946802
 
-.PHONY: sql-setup
-sql-setup:
-	# EVM blocks
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/eos substreams.yaml
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/wax substreams.yaml
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/telos substreams.yaml
+.PHONY: protogen
+protogen:
+	substreams protogen --exclude-paths google,sf
+
+.PHONY: parquet-eos
+parquet-eos:
+	substreams-sink-files run eos.substreams.pinax.network:443  substreams.yaml map_events './out' 386841287:386841787 --encoder parquet --file-block-count 100 --development-mode
+
+.PHONY: parquet-wax
+parquet-wax:
+	substreams-sink-files run wax.substreams.pinax.network:443 substreams.yaml map_events './out' 32233917:32234417 --encoder parquet --file-block-count 100 --development-mode
 
 # Antelope blocks
 .PHONY: sql-run-eos

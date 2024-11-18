@@ -1,7 +1,16 @@
 use substreams_antelope::Block;
 use substreams_database_change::pb::database::TableChange;
 
-pub fn insert_size(row: &mut TableChange, block: &Block) {
+pub struct BlockSize {
+    pub size: u64,
+    pub total_transactions: u64,
+    pub successful_transactions: u64,
+    pub failed_transactions: u64,
+    pub total_actions: u64,
+    pub total_db_ops: u64,
+}
+
+pub fn collect_size(block: &Block) -> BlockSize {
     // counters
     let mut size = 0;
     let mut total_transactions = 0;
@@ -57,10 +66,23 @@ pub fn insert_size(row: &mut TableChange, block: &Block) {
             size += db_op.old_data_json.len();
         }
     }
-    row.change("size", ("", size.to_string().as_str()))
-        .change("total_transactions", ("", total_transactions.to_string().as_str()))
-        .change("successful_transactions", ("", successful_transactions.to_string().as_str()))
-        .change("failed_transactions", ("", failed_transactions.to_string().as_str()))
-        .change("total_actions", ("", total_actions.to_string().as_str()))
-        .change("total_db_ops", ("", total_db_ops.to_string().as_str()));
+
+    BlockSize {
+        size: size as u64,
+        total_transactions,
+        successful_transactions,
+        failed_transactions,
+        total_actions: total_actions as u64,
+        total_db_ops: total_db_ops as u64,
+    }
+}
+
+pub fn insert_size(row: &mut TableChange, block: &Block) {
+    let size = collect_size(block);
+    row.change("size", ("", size.size.to_string().as_str()))
+        .change("total_transactions", ("", size.total_transactions.to_string().as_str()))
+        .change("successful_transactions", ("", size.successful_transactions.to_string().as_str()))
+        .change("failed_transactions", ("", size.failed_transactions.to_string().as_str()))
+        .change("total_actions", ("", size.total_actions.to_string().as_str()))
+        .change("total_db_ops", ("", size.total_db_ops.to_string().as_str()));
 }

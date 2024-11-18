@@ -1,9 +1,8 @@
-use common::blocks::insert_timestamp;
+use crate::{keys::blocks_keys, pb::antelope::Block as RawBlock, size::collect_size};
+use common::{blocks::insert_timestamp, structs::BlockTimestamp, utils::bytes_to_hex};
 use substreams::{pb::substreams::Clock, Hex};
-use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 use substreams_antelope::pb::Block;
-
-use crate::keys::blocks_keys;
+use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 
 use super::{size::insert_size, transactions::insert_transaction};
 
@@ -28,7 +27,7 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
     // TO-DO
     // Array(String) type is not supported by `substreams-sink-sql`
     // https://github.com/pinax-network/substreams-sink-sql/issues/18
-    // let blockroot_merkle_active_nodes = blockroot_merkle.active_nodes.iter().map(|row| bytes_to_hex(row).to_string()).collect::<Vec<String>>();
+    let blockroot_merkle_active_nodes = blockroot_merkle.active_nodes.iter().map(|row| bytes_to_hex(row)).collect::<Vec<String>>().join(",");
     let blockroot_merkle_node_count = blockroot_merkle.node_count;
 
     // block roots
@@ -48,19 +47,16 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
         .change("producer", ("", producer.to_string().as_str()))
         .change("confirmed", ("", confirmed.to_string().as_str()))
         .change("schedule_version", ("", schedule_version.to_string().as_str()))
-
         // block
         .change("version", ("", version.to_string().as_str()))
         .change("producer_signature", ("", producer_signature.to_string().as_str()))
         .change("dpos_proposed_irreversible_blocknum", ("", dpos_proposed_irreversible_blocknum.to_string().as_str()))
         .change("dpos_irreversible_blocknum", ("", dpos_irreversible_blocknum.to_string().as_str()))
-
         // block roots
         .change("transaction_mroot", ("", transaction_mroot.to_string().as_str()))
         .change("action_mroot", ("", action_mroot.to_string().as_str()))
         // .change("blockroot_merkle_active_nodes", ("", format!("['{}']", blockroot_merkle_active_nodes.join("','") ).as_str()))
-        .change("blockroot_merkle_node_count", ("", blockroot_merkle_node_count.to_string().as_str()))
-        ;
+        .change("blockroot_merkle_node_count", ("", blockroot_merkle_node_count.to_string().as_str()));
 
     // transaction status counts
     insert_size(row, block);
@@ -69,5 +65,36 @@ pub fn insert_blocks(tables: &mut DatabaseChanges, clock: &Clock, block: &Block)
     // TABLE::transactions
     for transaction in block.transaction_traces() {
         insert_transaction(tables, clock, &transaction, &header);
+    }
+}
+
+pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> RawBlock {
+    let header = block.header.clone().unwrap_or_default();
+    let blockroot_merkle = block.blockroot_merkle.clone().unwrap_or_default();
+    let size = collect_size(block);
+
+    RawBlock {
+        time: Some(timestamp.time),
+        number: timestamp.number,
+        date: timestamp.date.clone(),
+        hash: timestamp.hash.clone(),
+        parent_hash: header.previous,
+        producer: header.producer,
+        confirmed: header.confirmed,
+        schedule_version: header.schedule_version,
+        version: block.version,
+        producer_signature: block.producer_signature.clone(),
+        dpos_proposed_irreversible_blocknum: block.dpos_proposed_irreversible_blocknum,
+        dpos_irreversible_blocknum: block.dpos_irreversible_blocknum,
+        transaction_mroot: Hex::encode(&header.transaction_mroot.to_vec()),
+        action_mroot: Hex::encode(&header.action_mroot.to_vec()),
+        blockroot_merkle_active_nodes: blockroot_merkle.active_nodes.iter().map(|row| bytes_to_hex(row)).collect::<Vec<String>>().join(","),
+        blockroot_merkle_node_count: blockroot_merkle.node_count,
+        size: size.size,
+        total_transactions: size.total_transactions,
+        successful_transactions: size.successful_transactions,
+        failed_transactions: size.failed_transactions,
+        total_actions: size.total_actions,
+        total_db_ops: size.total_db_ops,
     }
 }

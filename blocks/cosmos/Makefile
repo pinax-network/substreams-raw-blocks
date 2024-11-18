@@ -32,7 +32,7 @@ gui:
 
 .PHONY: protogen
 protogen:
-	substreams protogen --exclude-paths google
+	substreams protogen --exclude-paths google,sf
 
 .PHONY: parquet
 parquet:

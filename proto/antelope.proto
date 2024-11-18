@@ -1,0 +1,278 @@
+syntax = "proto3";
+
+package antelope;
+
+import "google/protobuf/timestamp.proto";
+
+
+message Block {
+  google.protobuf.Timestamp time = 1;
+  uint64 number = 2;
+  string date = 3;
+  string hash = 4;
+  string parent_hash = 5;
+  string producer = 6;
+  uint32 confirmed = 7;
+  uint32 schedule_version = 8;
+  uint32 version = 9;
+  string producer_signature = 10;
+  uint32 dpos_proposed_irreversible_blocknum = 11;
+  uint32 dpos_irreversible_blocknum = 12;
+  string transaction_mroot = 13;
+  string action_mroot = 14;
+  string blockroot_merkle_active_nodes = 15;
+  uint32 blockroot_merkle_node_count = 16;
+  uint64 size = 17;
+  uint64 total_transactions = 18;
+  uint64 successful_transactions = 19;
+  uint64 failed_transactions = 20;
+  uint64 total_actions = 21;
+  uint64 total_db_ops = 22;
+}
+
+message Transaction {
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_hash = 3;
+  string block_date = 4;
+  string hash = 5;
+  uint64 index = 6;
+  int64 elapsed = 7;
+  uint64 net_usage = 8;
+  bool scheduled = 9;
+  uint32 cpu_usage_micro_seconds = 10;
+  uint32 net_usage_words = 11;
+  string status = 12;
+  uint32 status_code = 13;
+  bool success = 14;
+  string transaction_mroot = 15;
+}
+
+message Action {
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_hash = 3;
+  string block_date = 4;
+  string tx_hash = 5;
+  bool tx_success = 6;
+  uint64 abi_sequence = 7;
+  uint64 code_sequence = 8;
+  string digest = 9;
+  uint64 global_sequence = 10;
+  string receipt_receiver = 11;
+  uint64 recv_sequence = 12;
+  string account = 13;
+  string name = 14;
+  string json_data = 15;
+  string raw_data = 16;
+  uint32 index = 17;
+  uint32 action_ordinal = 18;
+  string receiver = 19;
+  bool context_free = 20;
+  int64 elapsed = 21;
+  string console = 22;
+  string raw_return_value = 23;
+  string json_return_value = 24;
+  uint32 creator_action_ordinal = 25;
+  uint32 closest_unnotified_ancestor_action_ordinal = 26;
+  string action_mroot = 27;
+}
+
+message DbOp {
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_hash = 3;
+  string block_date = 4;
+  string tx_hash = 5;
+  bool tx_success = 6;
+  uint32 action_index = 7;
+  uint32 index = 8;
+  string operation = 9;
+  uint32 operation_code = 10;
+  string code = 11;
+  string scope = 12;
+  string table_name = 13;
+  string primary_key = 14;
+  string old_payer = 15;
+  string new_payer = 16;
+  string old_data = 17;
+  string new_data = 18;
+  string old_data_json = 19;
+  string new_data_json = 20;
+}
+
+message FeatureOp {
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_hash = 3;
+  string block_date = 4;
+  string tx_hash = 5;
+  bool tx_success = 6;
+  uint32 action_index = 7;
+  string feature_digest = 8;
+  string kind = 9;
+  string description_digest = 10;
+  string protocol_feature_type = 11;
+}
+
+message PermOp {
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_hash = 3;
+  string block_date = 4;
+  string tx_hash = 5;
+  bool tx_success = 6;
+  uint32 action_index = 7;
+  string operation = 8;
+  uint32 operation_code = 9;
+  uint64 id = 10;
+  uint64 parent_id = 11;
+  string owner = 12;
+  string name = 13;
+  uint32 threshold = 14;
+}
+
+message TableOp {
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_hash = 3;
+  string block_date = 4;
+  string tx_hash = 5;
+  bool tx_success = 6;
+  uint32 action_index = 7;
+  uint32 index = 8;
+  string operation = 9;
+  uint32 operation_code = 10;
+  string payer = 11;
+  string code = 12;
+  string scope = 13;
+  string table_name = 14;
+}
+
+message Account {
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_hash = 3;
+  string block_date = 4;
+  string tx_hash = 5;
+  bool tx_success = 6;
+  uint32 action_index = 7;
+  uint32 index = 8;
+  string actor = 9;
+  string permission = 10;
+  uint32 weight = 11;
+}
+
+message Key {
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_hash = 3;
+  string block_date = 4;
+  string tx_hash = 5;
+  bool tx_success = 6;
+  uint32 action_index = 7;
+  uint32 index = 8;
+  string public_key = 9;
+  uint32 weight = 10;
+}
+
+message Wait {
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_hash = 3;
+  string block_date = 4;
+  string tx_hash = 5;
+  bool tx_success = 6;
+  uint32 action_index = 7;
+  uint32 index = 8;
+  uint32 wait_sec = 9;
+  uint32 weight = 10;
+}
+
+message RamOp {
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_hash = 3;
+  string block_date = 4;
+  string tx_hash = 5;
+  bool tx_success = 6;
+  uint32 action_index = 7;
+  string operation = 8;
+  uint32 operation_code = 9;
+  string payer = 10;
+  int64 delta = 11;
+  uint64 usage = 12;
+  string namespace = 13;
+  uint32 namespace_code = 14;
+  string action = 15;
+  uint32 action_code = 16;
+  string unique_key = 17;
+}
+
+message Authorization {
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_hash = 3;
+  string block_date = 4;
+  string tx_hash = 5;
+  bool tx_success = 6;
+  uint32 action_index = 7;
+  uint32 index = 8;
+  string actor = 9;
+  string permission = 10;
+}
+
+message AuthSequence {
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_hash = 3;
+  string block_date = 4;
+  string tx_hash = 5;
+  bool tx_success = 6;
+  uint32 action_index = 7;
+  uint32 index = 8;
+  string account_name = 9;
+  uint64 sequence = 10;
+}
+
+message AccountRamDelta {
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_hash = 3;
+  string block_date = 4;
+  string tx_hash = 5;
+  bool tx_success = 6;
+  uint32 action_index = 7;
+  uint32 index = 8;
+  string account = 9;
+  int64 delta = 10;
+}
+
+message CreationTree {
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_hash = 3;
+  string block_date = 4;
+  string tx_hash = 5;
+  bool tx_success = 6;
+  int32 creator_action_index = 7;
+  uint32 execution_action_index = 8;
+}
+
+message Events {
+  repeated Block blocks = 1;
+  repeated Transaction transactions = 2;
+  repeated Action actions = 3;
+  repeated DbOp db_ops = 4;
+  repeated FeatureOp feature_ops = 5;
+  repeated PermOp perm_ops = 6;
+  repeated TableOp table_ops = 7;
+  repeated Account accounts = 8;
+  repeated Key keys = 9;
+  repeated Wait waits = 10;
+  repeated RamOp ram_ops = 11;
+  repeated Authorization authorizations = 12;
+  repeated AuthSequence auth_sequences = 13;
+  repeated AccountRamDelta account_ram_deltas = 14;
+  repeated CreationTree creation_trees = 15;
+}
