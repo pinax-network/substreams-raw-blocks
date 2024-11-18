@@ -4,8 +4,8 @@ use substreams::pb::substreams::Clock;
 use substreams_antelope::pb::Block;
 
 use crate::{
-    actions::collect_actions, authority::collect_authority_vectors, authorizations::collect_authorizations, blocks::collect_block, db_ops::collect_db_ops, feature_ops::collect_feature_ops,
-    pb::antelope::Events, perm_ops::collect_perm_ops, ram_ops::collect_ram_ops, table_ops::collect_table_ops, transactions::collect_transactions,
+    actions::collect_actions, auth_sequences::collect_auth_sequences, authority::collect_authority_vectors, authorizations::collect_authorizations, blocks::collect_block, db_ops::collect_db_ops,
+    feature_ops::collect_feature_ops, pb::antelope::Events, perm_ops::collect_perm_ops, ram_ops::collect_ram_ops, table_ops::collect_table_ops, transactions::collect_transactions,
 };
 
 #[substreams::handlers::map]
@@ -26,7 +26,7 @@ pub fn map_events(clock: Clock, block: Block) -> Result<Events, Error> {
         waits: authority_vectors.waits,
         ram_ops: collect_ram_ops(&block, &timestamp),
         authorizations: collect_authorizations(&block, &timestamp),
-        auth_sequences: vec![],
+        auth_sequences: collect_auth_sequences(&block, &timestamp),
         account_ram_deltas: vec![],
         creation_trees: vec![],
     })
