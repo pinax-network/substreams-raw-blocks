@@ -1,16 +1,13 @@
-use common::blocks::insert_timestamp;
+use common::{blocks::insert_timestamp, structs::BlockTimestamp};
 use substreams::pb::substreams::Clock;
 use substreams::Hex;
-use substreams_antelope::pb::{BlockHeader, TransactionTrace};
-use substreams_database_change::pb::database::TableChange;
-use substreams_database_change::pb::database::{table_change, DatabaseChanges};
+use substreams_antelope::pb::{Block, BlockHeader, TransactionTrace};
+use substreams_database_change::pb::database::{table_change, DatabaseChanges, TableChange};
 
-use crate::creation_tree::insert_creation_tree;
-use crate::feature_ops::insert_feature_op;
-use crate::keys::transactions_keys;
-use crate::perm_ops::insert_perm_op;
-use crate::ram_ops::insert_ram_op;
-use crate::table_ops::insert_table_op;
+use crate::{
+    creation_tree::insert_creation_tree, feature_ops::insert_feature_op, keys::transactions_keys, pb::antelope::Transaction as RawTransaction, perm_ops::insert_perm_op, ram_ops::insert_ram_op,
+    table_ops::insert_table_op,
+};
 
 use super::actions::insert_action;
 use super::db_ops::insert_db_op;
@@ -160,4 +157,36 @@ pub fn insert_transaction_metadata(row: &mut TableChange, transaction: &Transact
     let tx_success = is_transaction_success(header.status);
 
     row.change("tx_hash", ("", tx_hash.as_str())).change("tx_success", ("", tx_success.to_string().as_str()));
+}
+
+pub fn collect_transactions(block: &Block, timestamp: &BlockTimestamp) -> Vec<RawTransaction> {
+    let header = block.header.clone().unwrap_or_default();
+    let mut transactions = Vec::new();
+
+    for (index, transaction) in block.transaction_traces().enumerate() {
+        let receipt = transaction.receipt.clone().unwrap_or_default();
+        let status_code = receipt.status;
+        let status = transaction_status_to_string(status_code);
+        let success = is_transaction_success(status_code);
+
+        transactions.push(RawTransaction {
+            block_time: Some(timestamp.time.clone()),
+            block_number: timestamp.number,
+            block_hash: timestamp.hash.clone(),
+            block_date: timestamp.date.clone(),
+            hash: transaction.id.clone(),
+            index: index as u64,
+            elapsed: transaction.elapsed,
+            net_usage: transaction.net_usage,
+            scheduled: transaction.scheduled,
+            cpu_usage_micro_seconds: receipt.cpu_usage_micro_seconds,
+            net_usage_words: receipt.net_usage_words,
+            status,
+            status_code: status_code as u32,
+            success,
+            transaction_mroot: Hex::encode(&header.transaction_mroot.to_vec()),
+        });
+    }
+
+    transactions
 }

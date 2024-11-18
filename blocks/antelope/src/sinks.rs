@@ -3,8 +3,7 @@ use substreams::errors::Error;
 use substreams::pb::substreams::Clock;
 use substreams_antelope::pb::Block;
 
-use crate::blocks::collect_block;
-use crate::pb::antelope::Events;
+use crate::{blocks::collect_block, pb::antelope::Events, transactions::collect_transactions};
 
 #[substreams::handlers::map]
 pub fn map_events(clock: Clock, block: Block) -> Result<Events, Error> {
@@ -12,7 +11,7 @@ pub fn map_events(clock: Clock, block: Block) -> Result<Events, Error> {
 
     Ok(Events {
         blocks: vec![collect_block(&block, &timestamp)],
-        transactions: vec![],
+        transactions: collect_transactions(&block, &timestamp),
         actions: vec![],
         db_ops: vec![],
         feature_ops: vec![],
