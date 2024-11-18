@@ -1,10 +1,13 @@
 use common::blocks::insert_timestamp;
+use common::structs::BlockTimestamp;
 use substreams::pb::substreams::Clock;
 use substreams_antelope::pb::{RamOp, TransactionTrace};
+use substreams_antelope::Block;
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 
 use crate::keys::ram_op_keys;
-use crate::transactions::insert_transaction_metadata;
+use crate::pb::antelope::RamOp as RawRamOp;
+use crate::transactions::{insert_transaction_metadata, is_transaction_success};
 
 pub fn namespace_to_string(namespace: i32) -> String {
     match namespace {
@@ -94,4 +97,37 @@ pub fn insert_ram_op(tables: &mut DatabaseChanges, clock: &Clock, ram_op: &RamOp
 
     insert_transaction_metadata(row, transaction);
     insert_timestamp(row, clock, false, false);
+}
+
+pub fn collect_ram_ops(block: &Block, timestamp: &BlockTimestamp) -> Vec<RawRamOp> {
+    let mut ram_ops: Vec<RawRamOp> = vec![];
+
+    for transaction in block.transaction_traces() {
+        let tx_hash = &transaction.id;
+        let tx_success = is_transaction_success(transaction.receipt.clone().unwrap_or_default().status);
+
+        for ram_op in transaction.ram_ops.iter() {
+            ram_ops.push(RawRamOp {
+                block_time: Some(timestamp.time.clone()),
+                block_number: timestamp.number,
+                block_hash: timestamp.hash.clone(),
+                block_date: timestamp.date.clone(),
+                tx_hash: tx_hash.clone(),
+                tx_success,
+                operation: operation_to_string(ram_op.operation),
+                action_index: ram_op.action_index,
+                payer: ram_op.payer.clone(),
+                delta: ram_op.delta,
+                usage: ram_op.usage,
+                namespace: namespace_to_string(ram_op.namespace),
+                action: action_to_string(ram_op.action),
+                unique_key: ram_op.unique_key.clone(),
+                operation_code: ram_op.operation as u32,
+                namespace_code: ram_op.namespace as u32,
+                action_code: ram_op.action as u32,
+            });
+        }
+    }
+
+    ram_ops
 }
