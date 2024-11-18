@@ -5,7 +5,11 @@ use substreams_antelope::pb::{ActionTrace, TransactionTrace};
 use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 
 use crate::keys::account_ram_delta_keys;
+use crate::pb::antelope::AccountRamDelta as RawAccountRamDelta;
 use crate::transactions::insert_transaction_metadata;
+use crate::transactions::is_transaction_success;
+use common::structs::BlockTimestamp;
+use substreams_antelope::Block;
 
 pub fn insert_account_ram_delta(tables: &mut DatabaseChanges, clock: &Clock, action: &ActionTrace, transaction: &TransactionTrace, account_ram_delta: &AccountRamDelta, index: &u32) {
     // transaction
@@ -29,4 +33,34 @@ pub fn insert_account_ram_delta(tables: &mut DatabaseChanges, clock: &Clock, act
 
     insert_transaction_metadata(row, transaction);
     insert_timestamp(row, clock, false, false);
+}
+
+pub fn collect_account_ram_deltas(block: &Block, timestamp: &BlockTimestamp) -> Vec<RawAccountRamDelta> {
+    let mut account_ram_deltas: Vec<RawAccountRamDelta> = vec![];
+
+    for transaction in block.transaction_traces() {
+        let tx_hash = &transaction.id;
+        let tx_success = is_transaction_success(transaction.receipt.clone().unwrap_or_default().status);
+
+        for action_trace in transaction.action_traces.iter() {
+            let action_index = action_trace.execution_index;
+
+            for (index, delta) in action_trace.account_ram_deltas.iter().enumerate() {
+                account_ram_deltas.push(RawAccountRamDelta {
+                    block_time: Some(timestamp.time.clone()),
+                    block_number: timestamp.number,
+                    block_hash: timestamp.hash.clone(),
+                    block_date: timestamp.date.clone(),
+                    tx_hash: tx_hash.clone(),
+                    tx_success,
+                    action_index,
+                    index: index as u32,
+                    account: delta.account.clone(),
+                    delta: delta.delta,
+                });
+            }
+        }
+    }
+
+    account_ram_deltas
 }
