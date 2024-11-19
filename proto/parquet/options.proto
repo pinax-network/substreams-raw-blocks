@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package parquet;
+
+option go_package = "github.com/streamingfast/substreams-sink-files/pb/parquet;pbparquet";
+
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.MessageOptions {
+  // As long as table_name is not blank,
+  // a schema is generated for top-level messages in each file.
+  string table_name = 14756842;
+}
+
+extend google.protobuf.FieldOptions {
+  bool ignored = 548935;
+  optional Column column = 548936;
+}
+
+message Column {
+  // Not implemented yet but planned so we reserved the field id now
+  // optional string name = 1;
+  optional ColumnType type = 2;
+  optional Compression compression = 3;
+}
+
+enum ColumnType {
+  UNSPECIFIED_COLUMN_TYPE = 0;
+  UINT256 = 1;
+  INT256 = 2;
+}
+
+enum Compression {
+  UNCOMPRESSED = 0;
+  SNAPPY = 1;
+  GZIP = 2;
+  LZ4_RAW = 3;
+  BROTLI = 4;
+  ZSTD = 5;
+}

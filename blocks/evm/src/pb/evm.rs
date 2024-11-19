@@ -27,6 +27,7 @@ pub struct Events {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Block {
+    /// -- clock --
     #[prost(message, optional, tag="1")]
     pub time: ::core::option::Option<::prost_types::Timestamp>,
     #[prost(uint64, tag="2")]
@@ -35,6 +36,7 @@ pub struct Block {
     pub date: ::prost::alloc::string::String,
     #[prost(string, tag="4")]
     pub hash: ::prost::alloc::string::String,
+    /// -- header --
     #[prost(string, tag="5")]
     pub parent_hash: ::prost::alloc::string::String,
     #[prost(uint64, tag="6")]
@@ -49,8 +51,10 @@ pub struct Block {
     pub state_root: ::prost::alloc::string::String,
     #[prost(string, tag="11")]
     pub receipts_root: ::prost::alloc::string::String,
+    /// EVM Root EIP-4895 (Shangai Fork)
     #[prost(string, tag="12")]
     pub withdrawals_root: ::prost::alloc::string::String,
+    /// EVM Root EIP-4788 (Dencun Fork)
     #[prost(string, tag="13")]
     pub parent_beacon_root: ::prost::alloc::string::String,
     #[prost(string, tag="14")]
@@ -69,12 +73,18 @@ pub struct Block {
     pub gas_limit: u64,
     #[prost(uint64, tag="21")]
     pub gas_used: u64,
+    /// EIP-1559 (London Fork)
     #[prost(string, tag="22")]
     pub base_fee_per_gas: ::prost::alloc::string::String,
+    /// EIP-4844 (Dencun Fork)
     #[prost(string, tag="23")]
     pub blob_gas_used: ::prost::alloc::string::String,
+    /// EIP-4844 (Dencun Fork)
     #[prost(string, tag="24")]
     pub excess_blob_gas: ::prost::alloc::string::String,
+    /// -- counters --
+    ///
+    /// block size in bytes
     #[prost(uint64, tag="25")]
     pub size: u64,
     #[prost(uint64, tag="26")]
@@ -87,6 +97,7 @@ pub struct Block {
     pub total_balance_changes: u64,
     #[prost(uint64, tag="30")]
     pub total_withdrawals: u64,
+    /// -- detail level --
     #[prost(string, tag="31")]
     pub detail_level: ::prost::alloc::string::String,
     #[prost(uint32, tag="32")]
@@ -95,6 +106,7 @@ pub struct Block {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Transaction {
+    /// -- block --
     #[prost(message, optional, tag="1")]
     pub block_time: ::core::option::Option<::prost_types::Timestamp>,
     #[prost(uint64, tag="2")]
@@ -103,10 +115,12 @@ pub struct Transaction {
     pub block_hash: ::prost::alloc::string::String,
     #[prost(string, tag="4")]
     pub block_date: ::prost::alloc::string::String,
+    /// -- block roots --
     #[prost(string, tag="5")]
     pub transactions_root: ::prost::alloc::string::String,
     #[prost(string, tag="6")]
     pub receipts_root: ::prost::alloc::string::String,
+    /// -- transaction --
     #[prost(uint32, tag="7")]
     pub index: u32,
     #[prost(string, tag="8")]
@@ -139,8 +153,10 @@ pub struct Transaction {
     pub s: ::prost::alloc::string::String,
     #[prost(uint64, tag="22")]
     pub gas_used: u64,
+    /// EIP-1559
     #[prost(string, tag="23")]
     pub r#type: ::prost::alloc::string::String,
+    /// EIP-1559
     #[prost(uint32, tag="24")]
     pub type_code: u32,
     #[prost(string, tag="25")]
@@ -151,6 +167,7 @@ pub struct Transaction {
     pub begin_ordinal: u64,
     #[prost(uint64, tag="28")]
     pub end_ordinal: u64,
+    /// -- transaction receipt --
     #[prost(string, tag="29")]
     pub blob_gas_price: ::prost::alloc::string::String,
     #[prost(uint64, tag="30")]
@@ -165,6 +182,7 @@ pub struct Transaction {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Log {
+    /// -- block --
     #[prost(message, optional, tag="1")]
     pub block_time: ::core::option::Option<::prost_types::Timestamp>,
     #[prost(uint64, tag="2")]
@@ -173,6 +191,7 @@ pub struct Log {
     pub block_hash: ::prost::alloc::string::String,
     #[prost(string, tag="4")]
     pub block_date: ::prost::alloc::string::String,
+    /// -- transaction --
     #[prost(string, tag="5")]
     pub tx_hash: ::prost::alloc::string::String,
     #[prost(uint32, tag="6")]
@@ -187,6 +206,7 @@ pub struct Log {
     pub tx_from: ::prost::alloc::string::String,
     #[prost(string, tag="11")]
     pub tx_to: ::prost::alloc::string::String,
+    /// -- logs --
     #[prost(uint32, tag="12")]
     pub index: u32,
     #[prost(uint32, tag="13")]
@@ -195,18 +215,19 @@ pub struct Log {
     pub contract_address: ::prost::alloc::string::String,
     #[prost(string, tag="15")]
     pub topic0: ::prost::alloc::string::String,
-    #[prost(string, tag="16")]
-    pub topic1: ::prost::alloc::string::String,
-    #[prost(string, tag="17")]
-    pub topic2: ::prost::alloc::string::String,
-    #[prost(string, tag="18")]
-    pub topic3: ::prost::alloc::string::String,
+    #[prost(string, optional, tag="16")]
+    pub topic1: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="17")]
+    pub topic2: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="18")]
+    pub topic3: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, tag="19")]
     pub data: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Trace {
+    /// -- block --
     #[prost(message, optional, tag="1")]
     pub block_time: ::core::option::Option<::prost_types::Timestamp>,
     #[prost(uint64, tag="2")]
@@ -215,6 +236,7 @@ pub struct Trace {
     pub block_hash: ::prost::alloc::string::String,
     #[prost(string, tag="4")]
     pub block_date: ::prost::alloc::string::String,
+    /// -- transaction --
     #[prost(string, tag="5")]
     pub tx_hash: ::prost::alloc::string::String,
     #[prost(uint32, tag="6")]
@@ -229,6 +251,7 @@ pub struct Trace {
     pub from: ::prost::alloc::string::String,
     #[prost(string, tag="11")]
     pub to: ::prost::alloc::string::String,
+    /// -- trace --
     #[prost(uint32, tag="12")]
     pub index: u32,
     #[prost(uint32, tag="13")]
@@ -249,6 +272,7 @@ pub struct Trace {
     pub gas_limit: u64,
     #[prost(uint64, tag="21")]
     pub gas_consumed: u64,
+    /// Return data is set by contract calls using RETURN or REVERT.
     #[prost(string, tag="22")]
     pub return_data: ::prost::alloc::string::String,
     #[prost(string, tag="23")]
@@ -273,6 +297,7 @@ pub struct Trace {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct BalanceChange {
+    /// -- block --
     #[prost(message, optional, tag="1")]
     pub block_time: ::core::option::Option<::prost_types::Timestamp>,
     #[prost(uint64, tag="2")]
@@ -281,6 +306,7 @@ pub struct BalanceChange {
     pub block_hash: ::prost::alloc::string::String,
     #[prost(string, tag="4")]
     pub block_date: ::prost::alloc::string::String,
+    /// -- balance change --
     #[prost(string, tag="5")]
     pub address: ::prost::alloc::string::String,
     #[prost(string, tag="6")]
@@ -299,6 +325,7 @@ pub struct BalanceChange {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct StorageChange {
+    /// -- block --
     #[prost(message, optional, tag="1")]
     pub block_time: ::core::option::Option<::prost_types::Timestamp>,
     #[prost(uint64, tag="2")]
@@ -307,6 +334,9 @@ pub struct StorageChange {
     pub block_hash: ::prost::alloc::string::String,
     #[prost(string, tag="4")]
     pub block_date: ::prost::alloc::string::String,
+    /// -- storage change --
+    ///
+    /// block global ordinal
     #[prost(uint64, tag="5")]
     pub ordinal: u64,
     #[prost(string, tag="6")]
@@ -321,6 +351,7 @@ pub struct StorageChange {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CodeChange {
+    /// -- block --
     #[prost(message, optional, tag="1")]
     pub block_time: ::core::option::Option<::prost_types::Timestamp>,
     #[prost(uint64, tag="2")]
@@ -329,6 +360,9 @@ pub struct CodeChange {
     pub block_hash: ::prost::alloc::string::String,
     #[prost(string, tag="4")]
     pub block_date: ::prost::alloc::string::String,
+    /// -- code change --
+    ///
+    /// block global ordinal
     #[prost(uint64, tag="5")]
     pub ordinal: u64,
     #[prost(string, tag="6")]
@@ -345,6 +379,7 @@ pub struct CodeChange {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AccountCreation {
+    /// -- block --
     #[prost(message, optional, tag="1")]
     pub block_time: ::core::option::Option<::prost_types::Timestamp>,
     #[prost(uint64, tag="2")]
@@ -353,6 +388,9 @@ pub struct AccountCreation {
     pub block_hash: ::prost::alloc::string::String,
     #[prost(string, tag="4")]
     pub block_date: ::prost::alloc::string::String,
+    /// -- account creation --
+    ///
+    /// block global ordinal
     #[prost(uint64, tag="5")]
     pub ordinal: u64,
     #[prost(string, tag="6")]
@@ -361,6 +399,7 @@ pub struct AccountCreation {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct NonceChange {
+    /// -- block --
     #[prost(message, optional, tag="1")]
     pub block_time: ::core::option::Option<::prost_types::Timestamp>,
     #[prost(uint64, tag="2")]
@@ -369,6 +408,9 @@ pub struct NonceChange {
     pub block_hash: ::prost::alloc::string::String,
     #[prost(string, tag="4")]
     pub block_date: ::prost::alloc::string::String,
+    /// -- nonce change --
+    ///
+    /// block global ordinal
     #[prost(uint64, tag="5")]
     pub ordinal: u64,
     #[prost(string, tag="6")]
@@ -381,6 +423,7 @@ pub struct NonceChange {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GasChange {
+    /// -- block --
     #[prost(message, optional, tag="1")]
     pub block_time: ::core::option::Option<::prost_types::Timestamp>,
     #[prost(uint64, tag="2")]
@@ -389,6 +432,9 @@ pub struct GasChange {
     pub block_hash: ::prost::alloc::string::String,
     #[prost(string, tag="4")]
     pub block_date: ::prost::alloc::string::String,
+    /// -- gas change --
+    ///
+    /// block global ordinal
     #[prost(uint64, tag="5")]
     pub ordinal: u64,
     #[prost(uint64, tag="6")]
