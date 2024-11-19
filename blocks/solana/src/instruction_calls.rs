@@ -1,5 +1,9 @@
 use substreams::Hex;
-use substreams_solana::{base58, block_view::InstructionView, pb::sf::solana::r#type::v1::Block};
+use substreams_solana::{
+    base58,
+    block_view::InstructionView,
+    pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction},
+};
 
 use crate::{
     pb::solana::InstructionCall,
@@ -7,29 +11,27 @@ use crate::{
     utils::build_csv_string,
 };
 
-pub fn collect_instruction_calls(block: &Block, timestamp: &BlockTimestamp, block_info: &BlockInfo) -> Vec<InstructionCall> {
+pub fn collect_tx_instruction_calls(transaction: &ConfirmedTransaction, index: usize, block_info: &BlockInfo, timestamp: &BlockTimestamp) -> Vec<InstructionCall> {
     let mut vec: Vec<InstructionCall> = vec![];
 
-    for (index, transaction) in block.transactions.iter().enumerate() {
-        let message = transaction.transaction.as_ref().expect("Transaction is missing").message.as_ref().expect("Message is missing");
-        let signer = base58::encode(message.account_keys.first().expect("Signer is missing"));
+    let message = transaction.transaction.as_ref().expect("Transaction is missing").message.as_ref().expect("Message is missing");
+    let signer = base58::encode(message.account_keys.first().expect("Signer is missing"));
 
-        let tx_info = TxInfo {
-            tx_id: transaction.id().to_string(),
-            tx_index: index as u32,
-            tx_signer: signer,
-            tx_success: transaction.meta.as_ref().unwrap().err.is_none(),
-            log_messages: transaction.meta.as_ref().unwrap().log_messages.clone(),
-        };
+    let tx_info = TxInfo {
+        tx_id: transaction.id().to_string(),
+        tx_index: index as u32,
+        tx_signer: signer,
+        tx_success: transaction.meta.as_ref().unwrap().err.is_none(),
+        log_messages: transaction.meta.as_ref().unwrap().log_messages.clone(),
+    };
 
-        for (instruction_index, instruction_view) in transaction.walk_instructions().enumerate() {
-            if !instruction_view.is_root() {
-                continue;
-            }
-
-            collect_outer_instruction(&mut vec, timestamp, block_info, &tx_info, instruction_index, &instruction_view);
-            collect_inner_instructions(&mut vec, timestamp, block_info, &tx_info, instruction_index, &instruction_view);
+    for (instruction_index, instruction_view) in transaction.walk_instructions().enumerate() {
+        if !instruction_view.is_root() {
+            continue;
         }
+
+        collect_outer_instruction(&mut vec, timestamp, block_info, &tx_info, instruction_index, &instruction_view);
+        collect_inner_instructions(&mut vec, timestamp, block_info, &tx_info, instruction_index, &instruction_view);
     }
 
     vec

@@ -14,10 +14,10 @@ pub fn get_block_info(block: &Block) -> BlockInfo {
     }
 }
 
-pub fn collect_block(block: &Block, timestamp: &BlockTimestamp, block_info: &BlockInfo) -> Option<RawBlock> {
+pub fn collect_block(block: &Block, timestamp: &BlockTimestamp, block_info: &BlockInfo) -> RawBlock {
     let counters = get_block_counters(block);
 
-    Some(RawBlock {
+    RawBlock {
         time: Some(timestamp.time),
         date: timestamp.date.clone(),
         hash: timestamp.hash.clone(),
@@ -34,5 +34,5 @@ pub fn collect_block(block: &Block, timestamp: &BlockTimestamp, block_info: &Blo
         successful_non_vote_transactions: counters.successful_non_vote_transactions,
         failed_vote_transactions: counters.failed_vote_transactions,
         failed_non_vote_transactions: counters.failed_non_vote_transactions,
-    })
+    }
 }
