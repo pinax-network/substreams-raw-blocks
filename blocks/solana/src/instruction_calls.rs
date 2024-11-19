@@ -1,9 +1,5 @@
 use substreams::Hex;
-use substreams_solana::{
-    base58,
-    block_view::InstructionView,
-    pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction},
-};
+use substreams_solana::{base58, block_view::InstructionView, pb::sf::solana::r#type::v1::ConfirmedTransaction};
 
 use crate::{
     pb::solana::InstructionCall,

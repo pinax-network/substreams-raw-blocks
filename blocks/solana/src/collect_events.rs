@@ -1,4 +1,3 @@
-use common::structs::BlockTimestamp;
 use substreams::pb::substreams::Clock;
 use substreams_solana::{
     b58,
