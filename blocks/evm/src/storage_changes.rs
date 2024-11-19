@@ -13,7 +13,7 @@ pub fn collect_storage_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec
     // Collect storage changes from system calls
     for call in &block.system_calls {
         for storage_change in &call.storage_changes {
-            storage_changes.push(parse_storage_change(storage_change, transaction, timestamp));
+            storage_changes.push(parse_storage_change(storage_change, &TransactionTrace::default(), timestamp));
         }
     }
 
@@ -22,6 +22,7 @@ pub fn collect_storage_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec
         for call in &transaction.calls {
             for storage_change in &call.storage_changes {
                 storage_changes.push(parse_storage_change(storage_change, transaction, timestamp));
+            }
         }
     }
 
