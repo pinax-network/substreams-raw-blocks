@@ -13,7 +13,7 @@ pub fn collect_misbehaviors(block: &Block, timestamp: &BlockTimestamp) -> Vec<Ra
             block_time: Some(timestamp.time),
             block_number: timestamp.number,
             block_date: timestamp.date.clone(),
-            block_hash: Hex::encode(&block.hash),
+            block_hash: timestamp.hash.clone(),
             index: index as u32,
             r#type: misbehavior_type_to_string(&misbehavior.r#type),
             validator_address: Hex::encode(&validator.address),

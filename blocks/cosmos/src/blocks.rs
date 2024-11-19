@@ -4,15 +4,13 @@ use substreams_cosmos::Block;
 
 use crate::{pb::cosmos::Block as RawBlock, size::get_size};
 
-pub fn collect_blocks(block: &Block, timestamp: &BlockTimestamp) -> Vec<RawBlock> {
-    let mut vec: Vec<RawBlock> = vec![];
-
+pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> RawBlock {
     let header = block.header.as_ref().unwrap();
     let consensus = header.version.as_ref().unwrap();
 
-    let (total_transactions, successful_transactions, failed_transactions) = get_size(block);
+    let size = get_size(block);
 
-    vec.push(RawBlock {
+    RawBlock {
         time: Some(timestamp.time),
         number: timestamp.number,
         date: timestamp.date.clone(),
@@ -33,10 +31,8 @@ pub fn collect_blocks(block: &Block, timestamp: &BlockTimestamp) -> Vec<RawBlock
         last_results_hash: Hex::encode(&header.last_results_hash),
         evidence_hash: Hex::encode(&header.evidence_hash),
         proposer_address: Hex::encode(&header.proposer_address),
-        total_transactions,
-        successful_transactions,
-        failed_transactions,
-    });
-
-    vec
+        total_transactions: size.total_transactions,
+        successful_transactions: size.successful_transactions,
+        failed_transactions: size.failed_transactions,
+    }
 }
