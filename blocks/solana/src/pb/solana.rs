@@ -132,20 +132,20 @@ pub struct Transaction {
     pub error: ::prost::alloc::string::String,
     #[prost(string, tag="17")]
     pub recent_block_hash: ::prost::alloc::string::String,
-    #[prost(string, tag="18")]
-    pub account_keys: ::prost::alloc::string::String,
-    #[prost(string, tag="19")]
-    pub log_messages: ::prost::alloc::string::String,
-    #[prost(string, tag="20")]
-    pub pre_balances: ::prost::alloc::string::String,
-    #[prost(string, tag="21")]
-    pub post_balances: ::prost::alloc::string::String,
-    #[prost(string, tag="22")]
-    pub signatures: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag="18")]
+    pub account_keys: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(string, repeated, tag="19")]
+    pub log_messages: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(uint64, repeated, tag="20")]
+    pub pre_balances: ::prost::alloc::vec::Vec<u64>,
+    #[prost(uint64, repeated, tag="21")]
+    pub post_balances: ::prost::alloc::vec::Vec<u64>,
+    #[prost(string, repeated, tag="22")]
+    pub signatures: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     #[prost(string, tag="23")]
     pub signer: ::prost::alloc::string::String,
-    #[prost(string, tag="24")]
-    pub signers: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag="24")]
+    pub signers: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -175,8 +175,8 @@ pub struct InstructionCall {
     pub tx_signer: ::prost::alloc::string::String,
     #[prost(bool, tag="11")]
     pub tx_success: bool,
-    #[prost(string, tag="12")]
-    pub log_messages: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag="12")]
+    pub log_messages: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     /// instruction
     #[prost(uint32, tag="13")]
     pub outer_instruction_index: u32,
@@ -192,9 +192,9 @@ pub struct InstructionCall {
     pub is_inner: bool,
     #[prost(string, tag="19")]
     pub data: ::prost::alloc::string::String,
-    #[prost(string, tag="20")]
-    pub account_arguments: ::prost::alloc::string::String,
-    /// string representing a nested array. Switch to nested array type when supported by sink-files
+    #[prost(string, repeated, tag="20")]
+    pub account_arguments: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    /// TODO: Use repeated InnerInstruction when supported by parquet sink
     #[prost(string, tag="21")]
     pub inner_instructions: ::prost::alloc::string::String,
 }

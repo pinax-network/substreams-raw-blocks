@@ -17,10 +17,6 @@ pub fn get_timestamp_without_number(clock: &Clock) -> BlockTimestamp {
     }
 }
 
-pub fn build_csv_string<T: ToString>(values: &[T]) -> String {
-    values.iter().map(|value| value.to_string()).collect::<Vec<String>>().join(",")
-}
-
 // Get all encoded account keys including loaded writable and readonly addresses
 pub fn get_account_keys_extended(transaction: &ConfirmedTransaction) -> Vec<String> {
     let message = transaction.transaction.as_ref().unwrap().message.as_ref().unwrap();
