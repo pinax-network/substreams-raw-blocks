@@ -13,10 +13,13 @@ pub fn collect_code_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec<Co
     for call in &block.system_calls {
         for code_change in &call.code_changes {
             code_changes.push(CodeChange {
+                // block
                 block_time: Some(timestamp.time),
                 block_number: timestamp.number,
                 block_hash: timestamp.hash.clone(),
                 block_date: timestamp.date.clone(),
+
+                // code changes
                 address: bytes_to_hex(&code_change.address),
                 old_hash: bytes_to_hex(&code_change.old_hash),
                 old_code: bytes_to_hex(&code_change.old_code),
@@ -32,10 +35,13 @@ pub fn collect_code_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec<Co
         for call in &transaction.calls {
             for code_change in &call.code_changes {
                 code_changes.push(CodeChange {
+                    // block
                     block_time: Some(timestamp.time),
                     block_number: timestamp.number,
                     block_hash: timestamp.hash.clone(),
                     block_date: timestamp.date.clone(),
+
+                    // code changes
                     address: bytes_to_hex(&code_change.address),
                     old_hash: bytes_to_hex(&code_change.old_hash),
                     old_code: bytes_to_hex(&code_change.old_code),

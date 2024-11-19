@@ -16,6 +16,7 @@
   - [x] **Account Creation**
   - [x] **Gas Changes**
   - [x] **Nonce Changes**
+  - [x] **Creation Traces**
 
 ## Graph
 
@@ -34,6 +35,7 @@ graph TD;
   extended --> account_creations;
   extended --> gas_changes;
   extended --> nonce_changes;
+  extended --> creation_traces;
 ```
 
 ## Modules

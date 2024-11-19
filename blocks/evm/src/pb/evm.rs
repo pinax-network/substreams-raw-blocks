@@ -23,6 +23,8 @@ pub struct Events {
     pub nonce_changes: ::prost::alloc::vec::Vec<NonceChange>,
     #[prost(message, repeated, tag="10")]
     pub gas_changes: ::prost::alloc::vec::Vec<GasChange>,
+    #[prost(message, repeated, tag="11")]
+    pub creation_traces: ::prost::alloc::vec::Vec<CreationTrace>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -389,11 +391,12 @@ pub struct AccountCreation {
     #[prost(string, tag="4")]
     pub block_date: ::prost::alloc::string::String,
     /// -- account creation --
-    ///
+    #[prost(string, optional, tag="5")]
+    pub tx_hash: ::core::option::Option<::prost::alloc::string::String>,
     /// block global ordinal
-    #[prost(uint64, tag="5")]
+    #[prost(uint64, tag="6")]
     pub ordinal: u64,
-    #[prost(string, tag="6")]
+    #[prost(string, tag="7")]
     pub account: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -445,5 +448,29 @@ pub struct GasChange {
     pub reason: ::prost::alloc::string::String,
     #[prost(uint32, tag="9")]
     pub reason_code: u32,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct CreationTrace {
+    /// -- block --
+    #[prost(message, optional, tag="1")]
+    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    #[prost(uint64, tag="2")]
+    pub block_number: u64,
+    #[prost(string, tag="3")]
+    pub block_hash: ::prost::alloc::string::String,
+    #[prost(string, tag="4")]
+    pub block_date: ::prost::alloc::string::String,
+    /// -- creation trace --
+    #[prost(string, tag="5")]
+    pub tx_hash: ::prost::alloc::string::String,
+    #[prost(string, tag="6")]
+    pub address: ::prost::alloc::string::String,
+    #[prost(string, tag="7")]
+    pub from: ::prost::alloc::string::String,
+    #[prost(string, tag="8")]
+    pub factory: ::prost::alloc::string::String,
+    #[prost(string, tag="9")]
+    pub code: ::prost::alloc::string::String,
 }
 // @@protoc_insertion_point(module)

@@ -14,10 +14,16 @@ pub fn collect_account_creations(block: &Block, timestamp: &BlockTimestamp) -> V
     for call in &block.system_calls {
         for account_creation in &call.account_creations {
             account_creations.push(AccountCreation {
+                // block
                 block_time: Some(timestamp.time),
                 block_number: timestamp.number,
                 block_hash: timestamp.hash.clone(),
                 block_date: timestamp.date.clone(),
+
+                // transaction
+                tx_hash: Some("".to_string()),
+
+                // account creation
                 account: bytes_to_hex(&account_creation.account),
                 ordinal: account_creation.ordinal,
             });
@@ -29,10 +35,16 @@ pub fn collect_account_creations(block: &Block, timestamp: &BlockTimestamp) -> V
         for call in &transaction.calls {
             for account_creation in &call.account_creations {
                 account_creations.push(AccountCreation {
+                    // block
                     block_time: Some(timestamp.time),
                     block_number: timestamp.number,
                     block_hash: timestamp.hash.clone(),
                     block_date: timestamp.date.clone(),
+
+                    // transaction
+                    tx_hash: Some(bytes_to_hex(&transaction.hash)),
+
+                    // account creation
                     account: bytes_to_hex(&account_creation.account),
                     ordinal: account_creation.ordinal,
                 });

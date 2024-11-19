@@ -34,9 +34,9 @@ pub fn collect_logs(block: &Block, timestamp: &BlockTimestamp, detail_level: &st
                 block_index: log.block_index,
                 contract_address: bytes_to_hex(&log.address),
                 topic0: extract_topic(&log.topics, 0),
-                topic1: extract_topic(&log.topics, 1),
-                topic2: extract_topic(&log.topics, 2),
-                topic3: extract_topic(&log.topics, 3),
+                topic1: Some(extract_topic(&log.topics, 1)),
+                topic2: Some(extract_topic(&log.topics, 2)),
+                topic3: Some(extract_topic(&log.topics, 3)),
                 data: bytes_to_hex(&log.data),
             });
         }

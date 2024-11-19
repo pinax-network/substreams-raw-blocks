@@ -43,10 +43,13 @@ pub fn collect_balance_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec
         for balance_change in &call.balance_changes {
             let amount = optional_bigint_to_decimal(balance_change.new_value.clone()) - optional_bigint_to_decimal(balance_change.old_value.clone());
             balance_changes.push(BalanceChange {
+                // block
                 block_time: Some(timestamp.time),
                 block_number: timestamp.number,
                 block_hash: timestamp.hash.clone(),
                 block_date: timestamp.date.clone(),
+
+                // balance changes
                 address: bytes_to_hex(&balance_change.address),
                 new_balance: optional_bigint_to_string(&balance_change.new_value, "0"),
                 old_balance: optional_bigint_to_string(&balance_change.old_value, "0"),
@@ -64,10 +67,13 @@ pub fn collect_balance_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec
             for balance_change in &call.balance_changes {
                 let amount = optional_bigint_to_decimal(balance_change.new_value.clone()) - optional_bigint_to_decimal(balance_change.old_value.clone());
                 balance_changes.push(BalanceChange {
+                    // block
                     block_time: Some(timestamp.time),
                     block_number: timestamp.number,
                     block_hash: timestamp.hash.clone(),
                     block_date: timestamp.date.clone(),
+
+                    // balance changes
                     address: bytes_to_hex(&balance_change.address),
                     new_balance: optional_bigint_to_string(&balance_change.new_value, "0"),
                     old_balance: optional_bigint_to_string(&balance_change.old_value, "0"),

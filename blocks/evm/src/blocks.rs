@@ -26,10 +26,13 @@ pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> BlockHeader {
     let total_withdrawals = block.balance_changes.iter().filter(|t| t.reason == 16).count() as u64;
 
     BlockHeader {
+        // clock
         time: Some(timestamp.time),
         number: header.number,
         date: timestamp.date.clone(),
         hash: bytes_to_hex(&block.hash),
+
+        // header
         parent_hash: bytes_to_hex(&header.parent_hash),
         nonce: header.nonce,
         ommers_hash: bytes_to_hex(&header.uncle_hash),
@@ -50,6 +53,8 @@ pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> BlockHeader {
         base_fee_per_gas: optional_bigint_to_string(&header.base_fee_per_gas, ""),
         blob_gas_used: optional_u64_to_string(&header.blob_gas_used, ""),
         excess_blob_gas: optional_u64_to_string(&header.excess_blob_gas, ""),
+
+        // counters
         size: block.size,
         total_transactions: block.transaction_traces.len() as u64,
         successful_transactions,

@@ -8,6 +8,7 @@ use crate::account_creations::collect_account_creations;
 use crate::balance_changes::collect_balance_changes;
 use crate::blocks::{block_detail_to_string, collect_block};
 use crate::code_changes::collect_code_changes;
+use crate::creation_traces::collect_creation_traces;
 use crate::gas_changes::collect_gas_changes;
 use crate::logs::collect_logs;
 use crate::nonce_changes::collect_nonce_changes;
@@ -32,5 +33,6 @@ pub fn map_events(clock: Clock, block: Block) -> Result<Events, Error> {
         account_creations: collect_account_creations(&block, &timestamp),
         nonce_changes: collect_nonce_changes(&block, &timestamp),
         gas_changes: collect_gas_changes(&block, &timestamp),
+        creation_traces: collect_creation_traces(&block, &timestamp),
     })
 }

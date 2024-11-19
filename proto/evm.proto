@@ -16,8 +16,8 @@ message Events {
   repeated AccountCreation account_creations = 8;
   repeated NonceChange nonce_changes = 9;
   repeated GasChange gas_changes = 10;
+  repeated CreationTrace creation_traces = 11;
 }
-
 
 message Block {
   // -- clock --
@@ -37,8 +37,8 @@ message Block {
   string withdrawals_root = 12; // EVM Root EIP-4895 (Shangai Fork)
   string parent_beacon_root = 13; // EVM Root EIP-4788 (Dencun Fork)
   string miner = 14;
-  uint64 difficulty = 15 [(parquet.column) = {type: UINT256}];
-  string total_difficulty = 16;
+  uint64 difficulty = 15;
+  string total_difficulty = 16 [(parquet.column) = {type: UINT256}];
   string mix_hash = 17;
   string extra_data = 18;
   string extra_data_utf8 = 19;
@@ -226,9 +226,12 @@ message AccountCreation {
   string block_hash = 3;
   string block_date = 4;
 
+  // -- transaction --
+  optional string tx_hash = 5;
+
   // -- account creation --
-  uint64 ordinal = 5; // block global ordinal
-  string account = 6;
+  uint64 ordinal = 6; // block global ordinal
+  string account = 7;
 }
 
 message NonceChange {
@@ -258,4 +261,21 @@ message GasChange {
   uint64 new_value = 7;
   string reason = 8;
   uint32 reason_code = 9;
+}
+
+message CreationTrace {
+  // -- block --
+  google.protobuf.Timestamp block_time = 1;
+  uint64 block_number = 2;
+  string block_hash = 3;
+  string block_date = 4;
+
+  // -- transaction --
+  string tx_hash = 5;
+
+  // -- creation trace --
+  string address = 6;
+  string from = 7;
+  string factory = 8;
+  string code = 9;
 }
