@@ -14,6 +14,7 @@ Try 30 day limited trial access to the dataset on the [Snowflake Data Marketplac
 | `logs`              | Event logs from smart contracts. |
 | `storage_changes`   | Changes in smart contract storage. |
 | `code_changes`      | Smart contract code updates. |
+| `creation_traces`   | Contract creation transactions. |
 
 ## Sample SQL Queries
 

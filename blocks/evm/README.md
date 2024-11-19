@@ -16,20 +16,25 @@
   - [x] **Account Creation**
   - [x] **Gas Changes**
   - [x] **Nonce Changes**
+  - [x] **Creation Traces**
+
+## Graph
 
 ```mermaid
 graph TD;
-  raw[sf.ethereum.type.v2.Block];
-  raw --> base(BASE)
-  raw --> extended(EXTENDED);
-  base --> blocks;
-  base --> logs;
-  base --> transactions;
-  extended --> traces;
-  extended --> balance_changes;
-  extended --> storage_changes;
-  extended --> code_changes;
-  extended --> account_creations;
-  extended --> gas_changes;
-  extended --> nonce_changes;
+  map_events[map: map_events];
+  sf.substreams.v1.Clock[source: sf.substreams.v1.Clock] --> map_events;
+  sf.ethereum.type.v2.Block[source: sf.ethereum.type.v2.Block] --> map_events;
+```
+
+## Modules
+
+```bash
+Name: map_events
+Initial block: 0
+Kind: map
+Input: source: sf.substreams.v1.Clock
+Input: source: sf.ethereum.type.v2.Block
+Output Type: proto:evm.Events
+Hash: ec09630461ab227a2e7448038cebaa91b49400bf
 ```

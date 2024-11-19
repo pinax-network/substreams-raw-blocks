@@ -29,39 +29,9 @@ run:
 gui:
 	substreams gui -e eth.substreams.pinax.network:443 ch_out -s 20500000 -t 20501001 --production-mode
 
-.PHONY: sql-setup
-sql-setup:
-	# EVM blocks
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/eth substreams.yaml
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/ethtest substreams.yaml
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/eth substreams.yaml --cursors-table cursors1
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/eth substreams.yaml --cursors-table cursors2
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/eth substreams.yaml --cursors-table cursors3
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/base substreams.yaml
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/bsc substreams.yaml
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/polygon substreams.yaml
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/arbone substreams.yaml
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/mode substreams.yaml
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/zora substreams.yaml
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/xai substreams.yaml
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/linea substreams.yaml
-
-	# testnets
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/arbsepolia substreams.yaml
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/sepolia substreams.yaml
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/chapel substreams.yaml
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/holesky substreams.yaml
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/amoy substreams.yaml
-
-	# not detailed EVM blocks
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/avalanche substreams.yaml
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/optimism substreams.yaml
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/blast substreams.yaml
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/boba substreams.yaml
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/fantom substreams.yaml
-
-	# not compatible with EVM blocks
-	substreams-sink-sql setup clickhouse://default:default@localhost:9000/injective substreams.yaml
+.PHONY: protogen
+protogen:
+	substreams protogen --exclude-paths sf/substreams,google
 
 # EVM blocks
 .PHONY: sql-run-eth
@@ -163,6 +133,10 @@ sql-run-injective:
 .PHONY: sql-run-fantom
 sql-run-fantom:
 	substreams-sink-sql run clickhouse://default:default@localhost:9000/fantom substreams.yaml -e fantom.substreams.pinax.network:443 87606376:87714334 --final-blocks-only --undo-buffer-size 1 --on-module-hash-mistmatch=warn --batch-block-flush-interval 100 --development-mode
+
+.PHONY: parquet
+parquet:
+	substreams-sink-files run eth.substreams.pinax.network:443 substreams.yaml map_events './out' 20444295:20444795 --encoder parquet --file-block-count 100 --development-mode
 
 .PHONY: deploy
 deploy:
