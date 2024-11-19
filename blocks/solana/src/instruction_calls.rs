@@ -4,7 +4,6 @@ use substreams_solana::{base58, block_view::InstructionView, pb::sf::solana::r#t
 use crate::{
     pb::solana::InstructionCall,
     structs::{BlockInfo, BlockTimestamp},
-    utils::build_csv_string,
 };
 
 pub fn collect_tx_instruction_calls(transaction: &ConfirmedTransaction, index: usize, block_info: &BlockInfo, timestamp: &BlockTimestamp) -> Vec<InstructionCall> {
@@ -39,8 +38,6 @@ fn collect_outer_instruction(vec: &mut Vec<InstructionCall>, timestamp: &BlockTi
     let account_arguments = instruction_view.accounts().iter().map(|arg| arg.to_string()).collect::<Vec<String>>();
     let data = Hex::encode(&instruction_view.data());
 
-    let inner_instructions_str = build_inner_instructions_str(instruction_view);
-
     vec.push(InstructionCall {
         block_time: Some(timestamp.time),
         block_hash: timestamp.hash.clone(),
@@ -53,8 +50,7 @@ fn collect_outer_instruction(vec: &mut Vec<InstructionCall>, timestamp: &BlockTi
         tx_index: tx_info.tx_index,
         tx_signer: tx_info.tx_signer.to_string(),
         tx_success: tx_info.tx_success,
-        // TODO: use Array(Text) once sink-files supports it
-        log_messages: build_csv_string(&tx_info.log_messages),
+        log_messages: tx_info.log_messages.clone(),
         outer_instruction_index: instruction_index as u32,
         inner_instruction_index: -1,
         inner_executing_account: "".to_string(),
@@ -62,9 +58,8 @@ fn collect_outer_instruction(vec: &mut Vec<InstructionCall>, timestamp: &BlockTi
         executing_account,
         is_inner: false,
         data,
-        // TODO: use Array(Text) once sink-files supports it
-        account_arguments: build_csv_string(&account_arguments),
-        inner_instructions: inner_instructions_str,
+        account_arguments,
+        inner_instructions: build_inner_instructions_str(instruction_view),
     });
 }
 
@@ -86,7 +81,7 @@ fn collect_inner_instructions(vec: &mut Vec<InstructionCall>, timestamp: &BlockT
             tx_index: tx_info.tx_index,
             tx_signer: tx_info.tx_signer.to_string(),
             tx_success: tx_info.tx_success,
-            log_messages: build_csv_string(&tx_info.log_messages),
+            log_messages: tx_info.log_messages.clone(),
             outer_instruction_index: instruction_index as u32,
             inner_instruction_index: inner_index as i32,
             inner_executing_account: executing_account.clone(),
@@ -94,12 +89,13 @@ fn collect_inner_instructions(vec: &mut Vec<InstructionCall>, timestamp: &BlockT
             executing_account,
             is_inner: true,
             data: inner_data,
-            account_arguments: build_csv_string(&account_arguments),
+            account_arguments,
             inner_instructions: "".to_string(),
         });
     }
 }
 
+// TODO: Instead of building a string, return a complex array when supported by parquet sink
 fn build_inner_instructions_str(instruction_view: &InstructionView) -> String {
     let inner_instructions: Vec<(String, String, Vec<String>)> = instruction_view
         .inner_instructions()

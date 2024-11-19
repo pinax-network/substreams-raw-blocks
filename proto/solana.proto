@@ -83,13 +83,13 @@ message Transaction {
   bool success = 15;
   string error = 16;
   string recent_block_hash = 17;
-  string account_keys = 18;
-  string log_messages = 19;
-  string pre_balances = 20;
-  string post_balances = 21;
-  string signatures = 22;
+  repeated string account_keys = 18;
+  repeated string log_messages = 19;
+  repeated uint64 pre_balances = 20;
+  repeated uint64 post_balances = 21;
+  repeated string signatures = 22;
   string signer = 23;
-  string signers = 24;
+  repeated string signers = 24;
 }
 
 message InstructionCall {
@@ -109,7 +109,7 @@ message InstructionCall {
   uint32 tx_index = 9;
   string tx_signer = 10;
   bool tx_success = 11;
-  string log_messages = 12;
+  repeated string log_messages = 12;
 
   // instruction
   uint32 outer_instruction_index = 13;
@@ -119,8 +119,8 @@ message InstructionCall {
   string executing_account = 17;
   bool is_inner = 18;
   string data = 19;
-  string account_arguments = 20;
-  // string representing a nested array. Switch to nested array type when supported by sink-files
+  repeated string account_arguments = 20;
+  // TODO: Use repeated InnerInstruction when supported by parquet sink
   string inner_instructions = 21;
 }
 
