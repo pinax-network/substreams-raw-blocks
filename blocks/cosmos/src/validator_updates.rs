@@ -17,7 +17,7 @@ pub fn collect_validator_updates(block: &Block, timestamp: &BlockTimestamp) -> V
             block_time: Some(timestamp.time),
             block_number: timestamp.number,
             block_date: timestamp.date.clone(),
-            block_hash: Hex::encode(&block.hash),
+            block_hash: timestamp.hash.clone(),
             index: index as u32,
             public_key: Hex::encode(public_key),
             power: validator_update.power,

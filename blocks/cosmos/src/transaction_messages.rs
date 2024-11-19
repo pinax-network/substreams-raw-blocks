@@ -4,7 +4,7 @@ use substreams_cosmos::Block;
 
 use crate::pb::cosmos::TransactionMessage;
 
-pub fn collect_tx_transaction_messages(block: &Block, tx_index: usize, timestamp: &BlockTimestamp) -> Vec<TransactionMessage> {
+pub fn collect_tx_transaction_messages(block: &Block, tx_index: usize, tx_hash: &str, timestamp: &BlockTimestamp) -> Vec<TransactionMessage> {
     let mut vec: Vec<TransactionMessage> = vec![];
 
     if let Ok(tx) = <TxPartial as prost::Message>::decode(block.txs[tx_index].as_slice()) {
@@ -14,8 +14,8 @@ pub fn collect_tx_transaction_messages(block: &Block, tx_index: usize, timestamp
                     block_time: Some(timestamp.time),
                     block_number: timestamp.number,
                     block_date: timestamp.date.clone(),
-                    block_hash: Hex::encode(&block.hash),
-                    tx_hash: Hex::encode(&block.txs[tx_index]),
+                    block_hash: timestamp.hash.clone(),
+                    tx_hash: tx_hash.to_string(),
                     index: index as u32,
                     r#type: message.type_url[1..].to_string(),
                     value: Hex::encode(&message.value),

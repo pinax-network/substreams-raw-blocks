@@ -1,6 +1,6 @@
 use substreams_cosmos::Block;
 
-pub fn get_size(block: &Block) -> (u64, u64, u64) {
+pub fn get_size(block: &Block) -> BlockSize {
     let transactions = &block.tx_results;
 
     let mut total_transactions = 0;
@@ -13,6 +13,15 @@ pub fn get_size(block: &Block) -> (u64, u64, u64) {
         total_transactions += 1;
     }
 
-    // return total transactions, successful transactions, failed transactions
-    (total_transactions, successful_transactions, total_transactions - successful_transactions)
+    BlockSize {
+        total_transactions,
+        successful_transactions,
+        failed_transactions: total_transactions - successful_transactions,
+    }
+}
+
+pub struct BlockSize {
+    pub total_transactions: u64,
+    pub successful_transactions: u64,
+    pub failed_transactions: u64,
 }

@@ -26,7 +26,7 @@ pub fn collect_events(block: &Block, clock: &Clock) -> RawEvents {
 
         transactions.push(collect_transaction(tx_result, &tx_hash, &timestamp, i));
         transaction_events.extend(collect_transaction_events(tx_result, &tx_hash, &timestamp));
-        transaction_messages.extend(collect_tx_transaction_messages(block, i, &timestamp));
+        transaction_messages.extend(collect_tx_transaction_messages(block, i, &tx_hash, &timestamp));
     }
 
     RawEvents {

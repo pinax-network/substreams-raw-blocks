@@ -8,7 +8,7 @@ pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> RawBlock {
     let header = block.header.as_ref().unwrap();
     let consensus = header.version.as_ref().unwrap();
 
-    let (total_transactions, successful_transactions, failed_transactions) = get_size(block);
+    let size = get_size(block);
 
     RawBlock {
         time: Some(timestamp.time),
@@ -31,8 +31,8 @@ pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> RawBlock {
         last_results_hash: Hex::encode(&header.last_results_hash),
         evidence_hash: Hex::encode(&header.evidence_hash),
         proposer_address: Hex::encode(&header.proposer_address),
-        total_transactions,
-        successful_transactions,
-        failed_transactions,
+        total_transactions: size.total_transactions,
+        successful_transactions: size.successful_transactions,
+        failed_transactions: size.failed_transactions,
     }
 }
