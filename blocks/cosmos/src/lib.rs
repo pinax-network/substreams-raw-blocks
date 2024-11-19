@@ -1,11 +1,12 @@
 mod blocks;
+mod collect_events;
 mod consensus_param_updates;
-mod events;
 mod map_events;
 mod misbehaviors;
 mod pb;
 mod size;
 mod transaction_messages;
 mod transactions;
+mod tx_and_block_events;
 mod utils;
 mod validator_updates;

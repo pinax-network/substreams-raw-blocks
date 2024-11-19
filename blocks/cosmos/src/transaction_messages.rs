@@ -4,24 +4,22 @@ use substreams_cosmos::Block;
 
 use crate::pb::cosmos::TransactionMessage;
 
-pub fn collect_transaction_messages(block: &Block, timestamp: &BlockTimestamp) -> Vec<TransactionMessage> {
+pub fn collect_tx_transaction_messages(block: &Block, tx_index: usize, timestamp: &BlockTimestamp) -> Vec<TransactionMessage> {
     let mut vec: Vec<TransactionMessage> = vec![];
 
-    for i in 0..block.tx_results.len() {
-        if let Ok(tx) = <TxPartial as prost::Message>::decode(block.txs[i].as_slice()) {
-            if let Some(body) = tx.body {
-                for (index, message) in body.messages.iter().enumerate() {
-                    vec.push(TransactionMessage {
-                        block_time: Some(timestamp.time),
-                        block_number: timestamp.number,
-                        block_date: timestamp.date.clone(),
-                        block_hash: Hex::encode(&block.hash),
-                        tx_hash: Hex::encode(&block.txs[i]),
-                        index: index as u32,
-                        r#type: message.type_url[1..].to_string(),
-                        value: Hex::encode(&message.value),
-                    });
-                }
+    if let Ok(tx) = <TxPartial as prost::Message>::decode(block.txs[tx_index].as_slice()) {
+        if let Some(body) = tx.body {
+            for (index, message) in body.messages.iter().enumerate() {
+                vec.push(TransactionMessage {
+                    block_time: Some(timestamp.time),
+                    block_number: timestamp.number,
+                    block_date: timestamp.date.clone(),
+                    block_hash: Hex::encode(&block.hash),
+                    tx_hash: Hex::encode(&block.txs[tx_index]),
+                    index: index as u32,
+                    r#type: message.type_url[1..].to_string(),
+                    value: Hex::encode(&message.value),
+                });
             }
         }
     }
