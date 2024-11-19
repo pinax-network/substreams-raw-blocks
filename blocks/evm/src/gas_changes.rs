@@ -1,4 +1,4 @@
-use common::structs::BlockTimestamp;
+use common::{structs::BlockTimestamp, utils::bytes_to_hex};
 use substreams_ethereum::pb::eth::v2::Block;
 
 use crate::pb::evm::GasChange;
@@ -50,6 +50,9 @@ pub fn collect_gas_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec<Gas
                 block_hash: timestamp.hash.clone(),
                 block_date: timestamp.date.clone(),
 
+                // transaction
+                tx_hash: Some(String::new()),
+
                 // gas changes
                 old_value: gas_change.old_value,
                 new_value: gas_change.new_value,
@@ -70,6 +73,9 @@ pub fn collect_gas_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec<Gas
                     block_number: timestamp.number,
                     block_hash: timestamp.hash.clone(),
                     block_date: timestamp.date.clone(),
+
+                    // transaction
+                    tx_hash: Some(bytes_to_hex(&transaction.hash)),
 
                     // gas changes
                     old_value: gas_change.old_value,

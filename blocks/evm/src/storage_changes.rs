@@ -20,6 +20,9 @@ pub fn collect_storage_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec
                 block_hash: timestamp.hash.clone(),
                 block_date: timestamp.date.clone(),
 
+                // transaction
+                tx_hash: Some(String::new()),
+
                 // storage changes
                 address: bytes_to_hex(&storage_change.address),
                 key: bytes_to_hex(&storage_change.key),
@@ -40,6 +43,9 @@ pub fn collect_storage_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec
                     block_number: timestamp.number,
                     block_hash: timestamp.hash.clone(),
                     block_date: timestamp.date.clone(),
+
+                    // transaction
+                    tx_hash: Some(bytes_to_hex(&transaction.hash)),
 
                     // storage changes
                     address: bytes_to_hex(&storage_change.address),

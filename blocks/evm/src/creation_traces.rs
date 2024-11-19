@@ -23,9 +23,11 @@ pub fn collect_creation_traces(block: &Block, timestamp: &BlockTimestamp) -> Vec
                         block_hash: timestamp.hash.clone(),
                         block_date: timestamp.date.clone(),
 
+                        // transaction
+                        tx_hash: bytes_to_hex(&trace.hash),
+
                         // creation trace
                         from: bytes_to_hex(&trace.from),
-                        tx_hash: bytes_to_hex(&trace.hash),
                         address: bytes_to_hex(&code.address),
                         factory: factory.to_string(),
                         code: bytes_to_hex(&code.new_code),

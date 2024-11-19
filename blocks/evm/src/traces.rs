@@ -44,9 +44,7 @@ pub fn collect_traces(block: &Block, timestamp: &BlockTimestamp) -> Vec<Trace> {
             block_date: timestamp.date.clone(),
 
             // transaction
-            // As this is a system call, tx_hash is empty
-            // tx_index, tx_status, tx_status_code, tx_success are irrelevant as well
-            tx_hash: String::new(),
+            tx_hash: String::new(), // As this is a system call, tx_hash is empty
             tx_index: 0,
             tx_status: transaction_status_to_string(1),
             tx_status_code: 1,

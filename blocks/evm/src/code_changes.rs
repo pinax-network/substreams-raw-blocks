@@ -19,6 +19,9 @@ pub fn collect_code_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec<Co
                 block_hash: timestamp.hash.clone(),
                 block_date: timestamp.date.clone(),
 
+                // transaction
+                tx_hash: Some(String::new()),
+
                 // code changes
                 address: bytes_to_hex(&code_change.address),
                 old_hash: bytes_to_hex(&code_change.old_hash),
@@ -40,6 +43,9 @@ pub fn collect_code_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec<Co
                     block_number: timestamp.number,
                     block_hash: timestamp.hash.clone(),
                     block_date: timestamp.date.clone(),
+
+                    // transaction
+                    tx_hash: Some(bytes_to_hex(&transaction.hash)),
 
                     // code changes
                     address: bytes_to_hex(&code_change.address),

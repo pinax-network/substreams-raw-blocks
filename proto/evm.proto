@@ -198,12 +198,15 @@ message StorageChange {
   string block_hash = 3;
   string block_date = 4;
 
+  // -- transaction --
+  optional string tx_hash = 5;
+
   // -- storage change --
-  uint64 ordinal = 5; // block global ordinal
-  string address = 6;
-  string key = 7;
-  string new_value = 8;
-  string old_value = 9;
+  uint64 ordinal = 6; // block global ordinal
+  string address = 7;
+  string key = 8;
+  string new_value = 9;
+  string old_value = 10;
 }
 
 message CodeChange {
@@ -213,13 +216,16 @@ message CodeChange {
   string block_hash = 3;
   string block_date = 4;
 
+  // -- transaction --
+  optional string tx_hash = 5;
+
   // -- code change --
-  uint64 ordinal = 5; // block global ordinal
-  string address = 6;
-  string old_hash = 7;
-  string old_code = 8;
-  string new_hash = 9;
-  string new_code = 10;
+  uint64 ordinal = 6; // block global ordinal
+  string address = 7;
+  string old_hash = 8;
+  string old_code = 9;
+  string new_hash = 10;
+  string new_code = 11;
 }
 
 message AccountCreation {
@@ -244,11 +250,14 @@ message NonceChange {
   string block_hash = 3;
   string block_date = 4;
 
+  // -- transaction --
+  optional string tx_hash = 5;
+
   // -- nonce change --
-  uint64 ordinal = 5; // block global ordinal
-  string address = 6;
-  uint64 old_value = 7;
-  uint64 new_value = 8;
+  uint64 ordinal = 6; // block global ordinal
+  string address = 7;
+  uint64 old_value = 8;
+  uint64 new_value = 9;
 }
 
 message GasChange {
@@ -258,12 +267,15 @@ message GasChange {
   string block_hash = 3;
   string block_date = 4;
 
+  // -- transaction --
+  optional string tx_hash = 5;
+
   // -- gas change --
-  uint64 ordinal = 5; // block global ordinal
-  uint64 old_value = 6;
-  uint64 new_value = 7;
-  string reason = 8;
-  uint32 reason_code = 9;
+  uint64 ordinal = 6; // block global ordinal
+  uint64 old_value = 7;
+  uint64 new_value = 8;
+  string reason = 9;
+  uint32 reason_code = 10;
 }
 
 message CreationTrace {

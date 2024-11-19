@@ -339,18 +339,21 @@ pub struct StorageChange {
     pub block_hash: ::prost::alloc::string::String,
     #[prost(string, tag="4")]
     pub block_date: ::prost::alloc::string::String,
+    /// -- transaction --
+    #[prost(string, optional, tag="5")]
+    pub tx_hash: ::core::option::Option<::prost::alloc::string::String>,
     /// -- storage change --
     ///
     /// block global ordinal
-    #[prost(uint64, tag="5")]
+    #[prost(uint64, tag="6")]
     pub ordinal: u64,
-    #[prost(string, tag="6")]
-    pub address: ::prost::alloc::string::String,
     #[prost(string, tag="7")]
-    pub key: ::prost::alloc::string::String,
+    pub address: ::prost::alloc::string::String,
     #[prost(string, tag="8")]
-    pub new_value: ::prost::alloc::string::String,
+    pub key: ::prost::alloc::string::String,
     #[prost(string, tag="9")]
+    pub new_value: ::prost::alloc::string::String,
+    #[prost(string, tag="10")]
     pub old_value: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -365,20 +368,23 @@ pub struct CodeChange {
     pub block_hash: ::prost::alloc::string::String,
     #[prost(string, tag="4")]
     pub block_date: ::prost::alloc::string::String,
+    /// -- transaction --
+    #[prost(string, optional, tag="5")]
+    pub tx_hash: ::core::option::Option<::prost::alloc::string::String>,
     /// -- code change --
     ///
     /// block global ordinal
-    #[prost(uint64, tag="5")]
+    #[prost(uint64, tag="6")]
     pub ordinal: u64,
-    #[prost(string, tag="6")]
-    pub address: ::prost::alloc::string::String,
     #[prost(string, tag="7")]
-    pub old_hash: ::prost::alloc::string::String,
+    pub address: ::prost::alloc::string::String,
     #[prost(string, tag="8")]
-    pub old_code: ::prost::alloc::string::String,
+    pub old_hash: ::prost::alloc::string::String,
     #[prost(string, tag="9")]
-    pub new_hash: ::prost::alloc::string::String,
+    pub old_code: ::prost::alloc::string::String,
     #[prost(string, tag="10")]
+    pub new_hash: ::prost::alloc::string::String,
+    #[prost(string, tag="11")]
     pub new_code: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -416,16 +422,19 @@ pub struct NonceChange {
     pub block_hash: ::prost::alloc::string::String,
     #[prost(string, tag="4")]
     pub block_date: ::prost::alloc::string::String,
+    /// -- transaction --
+    #[prost(string, optional, tag="5")]
+    pub tx_hash: ::core::option::Option<::prost::alloc::string::String>,
     /// -- nonce change --
     ///
     /// block global ordinal
-    #[prost(uint64, tag="5")]
+    #[prost(uint64, tag="6")]
     pub ordinal: u64,
-    #[prost(string, tag="6")]
+    #[prost(string, tag="7")]
     pub address: ::prost::alloc::string::String,
-    #[prost(uint64, tag="7")]
-    pub old_value: u64,
     #[prost(uint64, tag="8")]
+    pub old_value: u64,
+    #[prost(uint64, tag="9")]
     pub new_value: u64,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -440,18 +449,21 @@ pub struct GasChange {
     pub block_hash: ::prost::alloc::string::String,
     #[prost(string, tag="4")]
     pub block_date: ::prost::alloc::string::String,
+    /// -- transaction --
+    #[prost(string, optional, tag="5")]
+    pub tx_hash: ::core::option::Option<::prost::alloc::string::String>,
     /// -- gas change --
     ///
     /// block global ordinal
-    #[prost(uint64, tag="5")]
-    pub ordinal: u64,
     #[prost(uint64, tag="6")]
-    pub old_value: u64,
+    pub ordinal: u64,
     #[prost(uint64, tag="7")]
+    pub old_value: u64,
+    #[prost(uint64, tag="8")]
     pub new_value: u64,
-    #[prost(string, tag="8")]
+    #[prost(string, tag="9")]
     pub reason: ::prost::alloc::string::String,
-    #[prost(uint32, tag="9")]
+    #[prost(uint32, tag="10")]
     pub reason_code: u32,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]

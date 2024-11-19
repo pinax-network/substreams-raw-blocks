@@ -19,6 +19,9 @@ pub fn collect_nonce_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec<N
                 block_hash: timestamp.hash.clone(),
                 block_date: timestamp.date.clone(),
 
+                // transaction
+                tx_hash: Some(String::new()),
+
                 // nonce changes
                 address: bytes_to_hex(&nonce_change.address),
                 old_value: nonce_change.old_value,
@@ -38,6 +41,9 @@ pub fn collect_nonce_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec<N
                     block_number: timestamp.number,
                     block_hash: timestamp.hash.clone(),
                     block_date: timestamp.date.clone(),
+
+                    // transaction
+                    tx_hash: Some(bytes_to_hex(&transaction.hash)),
 
                     // nonce changes
                     address: bytes_to_hex(&nonce_change.address),
