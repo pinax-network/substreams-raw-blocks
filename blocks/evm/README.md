@@ -22,20 +22,9 @@
 
 ```mermaid
 graph TD;
-  raw[sf.ethereum.type.v2.Block];
-  raw --> base(BASE)
-  raw --> extended(EXTENDED);
-  base --> blocks;
-  base --> logs;
-  base --> transactions;
-  extended --> traces;
-  extended --> balance_changes;
-  extended --> storage_changes;
-  extended --> code_changes;
-  extended --> account_creations;
-  extended --> gas_changes;
-  extended --> nonce_changes;
-  extended --> creation_traces;
+  map_events[map: map_events];
+  sf.substreams.v1.Clock[source: sf.substreams.v1.Clock] --> map_events;
+  sf.ethereum.type.v2.Block[source: sf.ethereum.type.v2.Block] --> map_events;
 ```
 
 ## Modules
@@ -47,5 +36,5 @@ Kind: map
 Input: source: sf.substreams.v1.Clock
 Input: source: sf.ethereum.type.v2.Block
 Output Type: proto:evm.Events
-Hash: e9a39ec8c7084a493d9a9f60c1f2f5d18f7505ad
+Hash: ec09630461ab227a2e7448038cebaa91b49400bf
 ```
