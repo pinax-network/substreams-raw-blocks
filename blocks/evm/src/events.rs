@@ -20,6 +20,7 @@ use crate::transactions::collect_transactions;
 #[substreams::handlers::map]
 pub fn map_events(clock: Clock, block: Block) -> Result<Events, Error> {
     let timestamp = build_timestamp_with_prefix(&clock);
+    let mut events = Events::default();
 
     Ok(Events {
         blocks: vec![collect_block(&block, &timestamp)],

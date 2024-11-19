@@ -1,7 +1,7 @@
 use common::{structs::BlockTimestamp, utils::bytes_to_hex};
-use substreams_ethereum::pb::eth::v2::Block;
+use substreams_ethereum::pb::eth::v2::{Block, GasChange, TransactionTrace};
 
-use crate::pb::evm::GasChange;
+use crate::pb::evm::GasChange as GasChangeEvent;
 
 pub fn gas_change_reason_to_string(reason: i32) -> String {
     match reason {
@@ -37,29 +37,13 @@ pub fn gas_change_reason_to_string(reason: i32) -> String {
 
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L726C9-L726C20
 // DetailLevel: EXTENDED
-pub fn collect_gas_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec<GasChange> {
-    let mut gas_changes: Vec<GasChange> = vec![];
+pub fn collect_gas_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec<GasChangeEvent> {
+    let mut gas_changes: Vec<GasChangeEvent> = vec![];
 
     // Collect gas changes from system calls
     for call in &block.system_calls {
         for gas_change in &call.gas_changes {
-            gas_changes.push(GasChange {
-                // block
-                block_time: Some(timestamp.time),
-                block_number: timestamp.number,
-                block_hash: timestamp.hash.clone(),
-                block_date: timestamp.date.clone(),
-
-                // transaction
-                tx_hash: Some(String::new()),
-
-                // gas changes
-                old_value: gas_change.old_value,
-                new_value: gas_change.new_value,
-                reason: gas_change_reason_to_string(gas_change.reason),
-                reason_code: gas_change.reason as u32,
-                ordinal: gas_change.ordinal,
-            });
+            gas_changes.push(parse_gas_changes(gas_change, &TransactionTrace::default(), timestamp));
         }
     }
 
@@ -67,26 +51,30 @@ pub fn collect_gas_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec<Gas
     for transaction in &block.transaction_traces {
         for call in &transaction.calls {
             for gas_change in &call.gas_changes {
-                gas_changes.push(GasChange {
-                    // block
-                    block_time: Some(timestamp.time),
-                    block_number: timestamp.number,
-                    block_hash: timestamp.hash.clone(),
-                    block_date: timestamp.date.clone(),
-
-                    // transaction
-                    tx_hash: Some(bytes_to_hex(&transaction.hash)),
-
-                    // gas changes
-                    old_value: gas_change.old_value,
-                    new_value: gas_change.new_value,
-                    reason: gas_change_reason_to_string(gas_change.reason),
-                    reason_code: gas_change.reason as u32,
-                    ordinal: gas_change.ordinal,
-                });
+                gas_changes.push(parse_gas_changes(gas_change, transaction, timestamp));
             }
         }
     }
 
     gas_changes
+}
+
+pub fn parse_gas_changes(gas_change: &GasChange, transaction: &TransactionTrace, timestamp: &BlockTimestamp) -> GasChangeEvent {
+    GasChangeEvent {
+        // block
+        block_time: Some(timestamp.time),
+        block_number: timestamp.number,
+        block_hash: timestamp.hash.clone(),
+        block_date: timestamp.date.clone(),
+
+        // transaction
+        tx_hash: Some(bytes_to_hex(&transaction.hash)),
+
+        // gas changes
+        old_value: gas_change.old_value,
+        new_value: gas_change.new_value,
+        reason: gas_change_reason_to_string(gas_change.reason),
+        reason_code: gas_change.reason as u32,
+        ordinal: gas_change.ordinal,
+    }
 }

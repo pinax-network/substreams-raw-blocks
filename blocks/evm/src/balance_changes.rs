@@ -1,9 +1,9 @@
 use common::structs::BlockTimestamp;
 use common::utils::optional_bigint_to_string;
 use common::utils::{bytes_to_hex, optional_bigint_to_decimal};
-use substreams_ethereum::pb::eth::v2::Block;
+use substreams_ethereum::pb::eth::v2::{BalanceChange, Block, TransactionTrace};
 
-use crate::pb::evm::BalanceChange;
+use crate::pb::evm::BalanceChange as BalanceChangeEvent;
 
 pub fn balance_change_reason_to_string(reason: i32) -> String {
     match reason {
@@ -35,32 +35,13 @@ pub fn balance_change_reason_to_string(reason: i32) -> String {
 
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L658
 // DetailLevel: EXTENDED
-pub fn collect_balance_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec<BalanceChange> {
-    let mut balance_changes: Vec<BalanceChange> = vec![];
+pub fn collect_balance_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec<BalanceChangeEvent> {
+    let mut balance_changes: Vec<BalanceChangeEvent> = vec![];
 
     // Collect balance changes from system calls
     for call in &block.system_calls {
         for balance_change in &call.balance_changes {
-            let amount = optional_bigint_to_decimal(balance_change.new_value.clone()) - optional_bigint_to_decimal(balance_change.old_value.clone());
-            balance_changes.push(BalanceChange {
-                // block
-                block_time: Some(timestamp.time),
-                block_number: timestamp.number,
-                block_hash: timestamp.hash.clone(),
-                block_date: timestamp.date.clone(),
-
-                // transaction
-                tx_hash: Some("".to_string()),
-
-                // balance changes
-                address: bytes_to_hex(&balance_change.address),
-                new_balance: optional_bigint_to_string(&balance_change.new_value, "0"),
-                old_balance: optional_bigint_to_string(&balance_change.old_value, "0"),
-                amount: amount.to_string(),
-                ordinal: balance_change.ordinal,
-                reason: balance_change_reason_to_string(balance_change.reason),
-                reason_code: balance_change.reason as u32,
-            });
+            balance_changes.push(parse_balance_change(balance_change, &TransactionTrace::default(), timestamp));
         }
     }
 
@@ -68,29 +49,33 @@ pub fn collect_balance_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec
     for transaction in &block.transaction_traces {
         for call in &transaction.calls {
             for balance_change in &call.balance_changes {
-                let amount = optional_bigint_to_decimal(balance_change.new_value.clone()) - optional_bigint_to_decimal(balance_change.old_value.clone());
-                balance_changes.push(BalanceChange {
-                    // block
-                    block_time: Some(timestamp.time),
-                    block_number: timestamp.number,
-                    block_hash: timestamp.hash.clone(),
-                    block_date: timestamp.date.clone(),
-
-                    // transaction
-                    tx_hash: Some(bytes_to_hex(&transaction.hash)),
-
-                    // balance changes
-                    address: bytes_to_hex(&balance_change.address),
-                    new_balance: optional_bigint_to_string(&balance_change.new_value, "0"),
-                    old_balance: optional_bigint_to_string(&balance_change.old_value, "0"),
-                    amount: amount.to_string(),
-                    ordinal: balance_change.ordinal,
-                    reason: balance_change_reason_to_string(balance_change.reason),
-                    reason_code: balance_change.reason as u32,
-                });
+                balance_changes.push(parse_balance_change(balance_change, transaction, timestamp));
             }
         }
     }
 
     balance_changes
+}
+
+pub fn parse_balance_change(balance_change: &BalanceChange, transaction: &TransactionTrace, timestamp: &BlockTimestamp) -> BalanceChangeEvent {
+    let amount = optional_bigint_to_decimal(balance_change.new_value.clone()) - optional_bigint_to_decimal(balance_change.old_value.clone());
+    BalanceChangeEvent {
+        // block
+        block_time: Some(timestamp.time),
+        block_number: timestamp.number,
+        block_hash: timestamp.hash.clone(),
+        block_date: timestamp.date.clone(),
+
+        // transaction
+        tx_hash: Some(bytes_to_hex(&transaction.hash)),
+
+        // balance changes
+        address: bytes_to_hex(&balance_change.address),
+        new_balance: optional_bigint_to_string(&balance_change.new_value, "0"),
+        old_balance: optional_bigint_to_string(&balance_change.old_value, "0"),
+        amount: amount.to_string(),
+        ordinal: balance_change.ordinal,
+        reason: balance_change_reason_to_string(balance_change.reason),
+        reason_code: balance_change.reason as u32,
+    }
 }
