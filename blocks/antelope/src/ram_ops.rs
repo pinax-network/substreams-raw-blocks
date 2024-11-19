@@ -1,13 +1,8 @@
-use common::blocks::insert_timestamp;
 use common::structs::BlockTimestamp;
-use substreams::pb::substreams::Clock;
-use substreams_antelope::pb::{RamOp, TransactionTrace};
 use substreams_antelope::Block;
-use substreams_database_change::pb::database::{table_change, DatabaseChanges};
 
-use crate::keys::ram_op_keys;
 use crate::pb::antelope::RamOp as RawRamOp;
-use crate::transactions::{insert_transaction_metadata, is_transaction_success};
+use crate::transactions::is_transaction_success;
 
 pub fn namespace_to_string(namespace: i32) -> String {
     match namespace {
@@ -68,35 +63,6 @@ pub fn operation_to_string(operation: i32) -> String {
         25 => "Deprecated".to_string(),
         _ => "Unknown".to_string(),
     }
-}
-
-pub fn insert_ram_op(tables: &mut DatabaseChanges, clock: &Clock, ram_op: &RamOp, transaction: &TransactionTrace) {
-    let operation = operation_to_string(ram_op.operation);
-    let action_index = ram_op.action_index;
-    let payer = &ram_op.payer;
-    let delta = ram_op.delta;
-    let usage = ram_op.usage;
-    let namespace = namespace_to_string(ram_op.namespace);
-    let action = action_to_string(ram_op.action);
-    let unique_key = &ram_op.unique_key;
-
-    let keys = ram_op_keys(&transaction.id, &action_index, unique_key);
-    let row = tables
-        .push_change_composite("ram_ops", keys, 0, table_change::Operation::Create)
-        .change("operation", ("", operation.as_str()))
-        .change("operation_code", ("", ram_op.operation.to_string().as_str()))
-        .change("action_index", ("", action_index.to_string().as_str()))
-        .change("payer", ("", payer.as_str()))
-        .change("delta", ("", delta.to_string().as_str()))
-        .change("usage", ("", usage.to_string().as_str()))
-        .change("namespace", ("", namespace.as_str()))
-        .change("namespace_code", ("", ram_op.namespace.to_string().as_str()))
-        .change("action", ("", action.as_str()))
-        .change("action_code", ("", ram_op.action.to_string().as_str()))
-        .change("unique_key", ("", unique_key.as_str()));
-
-    insert_transaction_metadata(row, transaction);
-    insert_timestamp(row, clock, false, false);
 }
 
 pub fn collect_ram_ops(block: &Block, timestamp: &BlockTimestamp) -> Vec<RawRamOp> {

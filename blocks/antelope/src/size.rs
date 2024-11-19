@@ -1,5 +1,4 @@
 use substreams_antelope::Block;
-use substreams_database_change::pb::database::TableChange;
 
 pub struct BlockSize {
     pub size: u64,
@@ -75,14 +74,4 @@ pub fn collect_size(block: &Block) -> BlockSize {
         total_actions: total_actions as u64,
         total_db_ops: total_db_ops as u64,
     }
-}
-
-pub fn insert_size(row: &mut TableChange, block: &Block) {
-    let size = collect_size(block);
-    row.change("size", ("", size.size.to_string().as_str()))
-        .change("total_transactions", ("", size.total_transactions.to_string().as_str()))
-        .change("successful_transactions", ("", size.successful_transactions.to_string().as_str()))
-        .change("failed_transactions", ("", size.failed_transactions.to_string().as_str()))
-        .change("total_actions", ("", size.total_actions.to_string().as_str()))
-        .change("total_db_ops", ("", size.total_db_ops.to_string().as_str()));
 }
