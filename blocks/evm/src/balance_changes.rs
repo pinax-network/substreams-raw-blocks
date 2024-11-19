@@ -3,7 +3,7 @@ use common::utils::optional_bigint_to_string;
 use common::utils::{bytes_to_hex, optional_bigint_to_decimal};
 use substreams_ethereum::pb::eth::v2::Block;
 
-use crate::pb::evm::BalanceChange as RawBalanceChange;
+use crate::pb::evm::BalanceChange;
 
 pub fn balance_change_reason_to_string(reason: i32) -> String {
     match reason {
@@ -35,14 +35,14 @@ pub fn balance_change_reason_to_string(reason: i32) -> String {
 
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L658
 // DetailLevel: EXTENDED
-pub fn collect_balance_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec<RawBalanceChange> {
-    let mut balance_changes: Vec<RawBalanceChange> = vec![];
+pub fn collect_balance_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec<BalanceChange> {
+    let mut balance_changes: Vec<BalanceChange> = vec![];
 
     // Collect balance changes from system calls
     for call in &block.system_calls {
         for balance_change in &call.balance_changes {
             let amount = optional_bigint_to_decimal(balance_change.new_value.clone()) - optional_bigint_to_decimal(balance_change.old_value.clone());
-            balance_changes.push(RawBalanceChange {
+            balance_changes.push(BalanceChange {
                 block_time: Some(timestamp.time),
                 block_number: timestamp.number,
                 block_hash: timestamp.hash.clone(),
@@ -63,7 +63,7 @@ pub fn collect_balance_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec
         for call in &transaction.calls {
             for balance_change in &call.balance_changes {
                 let amount = optional_bigint_to_decimal(balance_change.new_value.clone()) - optional_bigint_to_decimal(balance_change.old_value.clone());
-                balance_changes.push(RawBalanceChange {
+                balance_changes.push(BalanceChange {
                     block_time: Some(timestamp.time),
                     block_number: timestamp.number,
                     block_hash: timestamp.hash.clone(),

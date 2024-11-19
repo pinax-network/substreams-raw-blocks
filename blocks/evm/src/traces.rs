@@ -5,7 +5,7 @@ use common::{
 use substreams_ethereum::pb::eth::v2::Block;
 
 use crate::{
-    pb::evm::Trace as RawTrace,
+    pb::evm::Trace,
     transactions::{is_transaction_success, transaction_status_to_string},
 };
 
@@ -21,19 +21,19 @@ pub fn call_types_to_string(call_type: i32) -> String {
     }
 }
 
-pub fn collect_traces(block: &Block, timestamp: &BlockTimestamp, detail_level: &str) -> Vec<RawTrace> {
+pub fn collect_traces(block: &Block, timestamp: &BlockTimestamp, detail_level: &str) -> Vec<Trace> {
     // Only required DetailLevel=EXTENDED
     if detail_level != "Extended" {
         return vec![];
     }
 
-    let mut traces: Vec<RawTrace> = vec![];
+    let mut traces: Vec<Trace> = vec![];
 
     // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L121-L124
     // DetailLevel: EXTENDED
     // System calls are introduced in Cancun, along with blobs. They are executed outside of transactions but affect the state.
     for call in &block.system_calls {
-        traces.push(RawTrace {
+        traces.push(Trace {
             block_time: Some(timestamp.time),
             block_number: timestamp.number,
             block_hash: timestamp.hash.clone(),
@@ -73,7 +73,7 @@ pub fn collect_traces(block: &Block, timestamp: &BlockTimestamp, detail_level: &
     // Collect transaction traces
     for transaction in &block.transaction_traces {
         for call in &transaction.calls {
-            traces.push(RawTrace {
+            traces.push(Trace {
                 block_time: Some(timestamp.time),
                 block_number: timestamp.number,
                 block_hash: timestamp.hash.clone(),

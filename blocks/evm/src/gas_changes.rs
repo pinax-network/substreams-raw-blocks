@@ -1,7 +1,7 @@
 use common::structs::BlockTimestamp;
 use substreams_ethereum::pb::eth::v2::Block;
 
-use crate::pb::evm::GasChange as RawGasChange;
+use crate::pb::evm::GasChange;
 
 pub fn gas_change_reason_to_string(reason: i32) -> String {
     match reason {
@@ -37,13 +37,13 @@ pub fn gas_change_reason_to_string(reason: i32) -> String {
 
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L726C9-L726C20
 // DetailLevel: EXTENDED
-pub fn collect_gas_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec<RawGasChange> {
-    let mut gas_changes: Vec<RawGasChange> = vec![];
+pub fn collect_gas_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec<GasChange> {
+    let mut gas_changes: Vec<GasChange> = vec![];
 
     // Collect gas changes from system calls
     for call in &block.system_calls {
         for gas_change in &call.gas_changes {
-            gas_changes.push(RawGasChange {
+            gas_changes.push(GasChange {
                 block_time: Some(timestamp.time),
                 block_number: timestamp.number,
                 block_hash: timestamp.hash.clone(),
@@ -61,7 +61,7 @@ pub fn collect_gas_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec<Raw
     for transaction in &block.transaction_traces {
         for call in &transaction.calls {
             for gas_change in &call.gas_changes {
-                gas_changes.push(RawGasChange {
+                gas_changes.push(GasChange {
                     block_time: Some(timestamp.time),
                     block_number: timestamp.number,
                     block_hash: timestamp.hash.clone(),

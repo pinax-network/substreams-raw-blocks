@@ -4,7 +4,7 @@ use common::utils::{bytes_to_hex, optional_bigint_to_u64, optional_u64_to_string
 
 use substreams_ethereum::pb::eth::v2::Block;
 
-use crate::pb::evm::Block as RawBlock;
+use crate::pb::evm::Block as BlockHeader;
 
 pub fn block_detail_to_string(detail_level: i32) -> String {
     match detail_level {
@@ -17,7 +17,7 @@ pub fn block_detail_to_string(detail_level: i32) -> String {
 
 // https://github.com/streamingfast/firehose-ethereum/blob/develop/proto/sf/ethereum/type/v2/type.proto
 // DetailLevel: BASE
-pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> RawBlock {
+pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> BlockHeader {
     let header = block.header.as_ref().unwrap();
 
     let total_transactions = block.transaction_traces.len() as u64;
@@ -25,7 +25,7 @@ pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> RawBlock {
     let failed_transactions = total_transactions - successful_transactions;
     let total_withdrawals = block.balance_changes.iter().filter(|t| t.reason == 16).count() as u64;
 
-    RawBlock {
+    BlockHeader {
         time: Some(timestamp.time),
         number: header.number,
         date: timestamp.date.clone(),

@@ -17,6 +17,8 @@
   - [x] **Gas Changes**
   - [x] **Nonce Changes**
 
+## Graph
+
 ```mermaid
 graph TD;
   raw[sf.ethereum.type.v2.Block];
@@ -32,4 +34,16 @@ graph TD;
   extended --> account_creations;
   extended --> gas_changes;
   extended --> nonce_changes;
+```
+
+## Modules
+
+```bash
+Name: map_events
+Initial block: 0
+Kind: map
+Input: source: sf.substreams.v1.Clock
+Input: source: sf.ethereum.type.v2.Block
+Output Type: proto:evm.Events
+Hash: e9a39ec8c7084a493d9a9f60c1f2f5d18f7505ad
 ```
