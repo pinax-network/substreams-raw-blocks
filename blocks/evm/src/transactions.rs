@@ -46,12 +46,17 @@ pub fn collect_transactions(block: &Block, timestamp: &BlockTimestamp) -> Vec<Tr
         .map(|transaction| {
             let receipt = transaction.receipt.clone().unwrap();
             Transaction {
+                // block
                 block_time: Some(timestamp.time),
                 block_number: timestamp.number,
                 block_hash: timestamp.hash.clone(),
                 block_date: timestamp.date.clone(),
+
+                // block roots
                 transactions_root: bytes_to_hex(&block_header.transactions_root),
                 receipts_root: bytes_to_hex(&block_header.receipt_root),
+
+                // transaction
                 index: transaction.index,
                 hash: bytes_to_hex(&transaction.hash),
                 from: bytes_to_hex(&transaction.from),

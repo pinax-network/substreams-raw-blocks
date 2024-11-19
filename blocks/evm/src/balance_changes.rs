@@ -49,6 +49,9 @@ pub fn collect_balance_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec
                 block_hash: timestamp.hash.clone(),
                 block_date: timestamp.date.clone(),
 
+                // transaction
+                tx_hash: Some("".to_string()),
+
                 // balance changes
                 address: bytes_to_hex(&balance_change.address),
                 new_balance: optional_bigint_to_string(&balance_change.new_value, "0"),
@@ -72,6 +75,9 @@ pub fn collect_balance_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec
                     block_number: timestamp.number,
                     block_hash: timestamp.hash.clone(),
                     block_date: timestamp.date.clone(),
+
+                    // transaction
+                    tx_hash: Some(bytes_to_hex(&transaction.hash)),
 
                     // balance changes
                     address: bytes_to_hex(&balance_change.address),

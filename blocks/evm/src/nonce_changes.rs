@@ -13,10 +13,13 @@ pub fn collect_nonce_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec<N
     for call in &block.system_calls {
         for nonce_change in &call.nonce_changes {
             nonce_changes.push(NonceChange {
+                // block
                 block_time: Some(timestamp.time),
                 block_number: timestamp.number,
                 block_hash: timestamp.hash.clone(),
                 block_date: timestamp.date.clone(),
+
+                // nonce changes
                 address: bytes_to_hex(&nonce_change.address),
                 old_value: nonce_change.old_value,
                 new_value: nonce_change.new_value,
@@ -30,10 +33,13 @@ pub fn collect_nonce_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec<N
         for call in &transaction.calls {
             for nonce_change in &call.nonce_changes {
                 nonce_changes.push(NonceChange {
+                    // block
                     block_time: Some(timestamp.time),
                     block_number: timestamp.number,
                     block_hash: timestamp.hash.clone(),
                     block_date: timestamp.date.clone(),
+
+                    // nonce changes
                     address: bytes_to_hex(&nonce_change.address),
                     old_value: nonce_change.old_value,
                     new_value: nonce_change.new_value,

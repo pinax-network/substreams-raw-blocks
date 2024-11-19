@@ -308,20 +308,23 @@ pub struct BalanceChange {
     pub block_hash: ::prost::alloc::string::String,
     #[prost(string, tag="4")]
     pub block_date: ::prost::alloc::string::String,
+    /// -- transaction --
+    #[prost(string, optional, tag="5")]
+    pub tx_hash: ::core::option::Option<::prost::alloc::string::String>,
     /// -- balance change --
-    #[prost(string, tag="5")]
-    pub address: ::prost::alloc::string::String,
     #[prost(string, tag="6")]
-    pub new_balance: ::prost::alloc::string::String,
+    pub address: ::prost::alloc::string::String,
     #[prost(string, tag="7")]
-    pub old_balance: ::prost::alloc::string::String,
+    pub new_balance: ::prost::alloc::string::String,
     #[prost(string, tag="8")]
+    pub old_balance: ::prost::alloc::string::String,
+    #[prost(string, tag="9")]
     pub amount: ::prost::alloc::string::String,
-    #[prost(uint64, tag="9")]
+    #[prost(uint64, tag="10")]
     pub ordinal: u64,
-    #[prost(string, tag="10")]
+    #[prost(string, tag="11")]
     pub reason: ::prost::alloc::string::String,
-    #[prost(uint32, tag="11")]
+    #[prost(uint32, tag="12")]
     pub reason_code: u32,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -390,9 +393,11 @@ pub struct AccountCreation {
     pub block_hash: ::prost::alloc::string::String,
     #[prost(string, tag="4")]
     pub block_date: ::prost::alloc::string::String,
-    /// -- account creation --
+    /// -- transaction --
     #[prost(string, optional, tag="5")]
     pub tx_hash: ::core::option::Option<::prost::alloc::string::String>,
+    /// -- account creation --
+    ///
     /// block global ordinal
     #[prost(uint64, tag="6")]
     pub ordinal: u64,
@@ -461,9 +466,10 @@ pub struct CreationTrace {
     pub block_hash: ::prost::alloc::string::String,
     #[prost(string, tag="4")]
     pub block_date: ::prost::alloc::string::String,
-    /// -- creation trace --
+    /// -- transaction --
     #[prost(string, tag="5")]
     pub tx_hash: ::prost::alloc::string::String,
+    /// -- creation trace --
     #[prost(string, tag="6")]
     pub address: ::prost::alloc::string::String,
     #[prost(string, tag="7")]

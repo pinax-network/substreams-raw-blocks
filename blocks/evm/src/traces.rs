@@ -5,6 +5,7 @@ use common::{
 use substreams_ethereum::pb::eth::v2::Block;
 
 use crate::{
+    blocks::block_detail_to_string,
     pb::evm::Trace,
     transactions::{is_transaction_success, transaction_status_to_string},
 };
@@ -21,7 +22,9 @@ pub fn call_types_to_string(call_type: i32) -> String {
     }
 }
 
-pub fn collect_traces(block: &Block, timestamp: &BlockTimestamp, detail_level: &str) -> Vec<Trace> {
+pub fn collect_traces(block: &Block, timestamp: &BlockTimestamp) -> Vec<Trace> {
+    let detail_level = block_detail_to_string(block.detail_level);
+
     // Only required DetailLevel=EXTENDED
     if detail_level != "Extended" {
         return vec![];
@@ -34,10 +37,13 @@ pub fn collect_traces(block: &Block, timestamp: &BlockTimestamp, detail_level: &
     // System calls are introduced in Cancun, along with blobs. They are executed outside of transactions but affect the state.
     for call in &block.system_calls {
         traces.push(Trace {
+            // block
             block_time: Some(timestamp.time),
             block_number: timestamp.number,
             block_hash: timestamp.hash.clone(),
             block_date: timestamp.date.clone(),
+
+            // transaction
             // As this is a system call, tx_hash is empty
             // tx_index, tx_status, tx_status_code, tx_success are irrelevant as well
             tx_hash: String::new(),
@@ -45,6 +51,8 @@ pub fn collect_traces(block: &Block, timestamp: &BlockTimestamp, detail_level: &
             tx_status: transaction_status_to_string(1),
             tx_status_code: 1,
             tx_success: true,
+
+            // trace
             from: bytes_to_hex(&call.caller),
             to: bytes_to_hex(&call.address),
             index: call.index,

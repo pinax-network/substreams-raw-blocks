@@ -190,6 +190,12 @@ pub fn build_timestamp(clock: &Clock) -> BlockTimestamp {
     }
 }
 
+pub fn build_timestamp_with_prefix(clock: &Clock) -> BlockTimestamp {
+    let mut data = build_timestamp(clock);
+    data.hash = add_prefix_to_hex(&data.hash);
+    data
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

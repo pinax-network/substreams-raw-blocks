@@ -2,12 +2,15 @@ use common::structs::BlockTimestamp;
 use common::utils::{bytes_to_hex, extract_topic};
 use substreams_ethereum::pb::eth::v2::Block;
 
+use crate::blocks::block_detail_to_string;
 use crate::pb::evm::Log;
 use crate::transactions::{is_transaction_success, transaction_status_to_string};
 
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L512
 // DetailLevel: BASE (only successful transactions) & EXTENDED
-pub fn collect_logs(block: &Block, timestamp: &BlockTimestamp, detail_level: &str) -> Vec<Log> {
+pub fn collect_logs(block: &Block, timestamp: &BlockTimestamp) -> Vec<Log> {
+    let detail_level = block_detail_to_string(block.detail_level);
+
     // Only required DetailLevel=BASE since traces are not available in BASE
     if detail_level == "Base" {
         return vec![];
@@ -19,10 +22,13 @@ pub fn collect_logs(block: &Block, timestamp: &BlockTimestamp, detail_level: &st
         let receipt = transaction.receipt.as_ref().unwrap();
         for log in &receipt.logs {
             logs.push(Log {
+                // block
                 block_time: Some(timestamp.time),
                 block_number: timestamp.number,
                 block_hash: timestamp.hash.clone(),
                 block_date: timestamp.date.clone(),
+
+                // transaction
                 tx_hash: bytes_to_hex(&transaction.hash),
                 tx_index: transaction.index,
                 tx_status: transaction_status_to_string(transaction.status),
@@ -30,6 +36,8 @@ pub fn collect_logs(block: &Block, timestamp: &BlockTimestamp, detail_level: &st
                 tx_success: is_transaction_success(transaction.status),
                 tx_from: bytes_to_hex(&transaction.from),
                 tx_to: bytes_to_hex(&transaction.to),
+
+                // log
                 index: log.index,
                 block_index: log.block_index,
                 contract_address: bytes_to_hex(&log.address),

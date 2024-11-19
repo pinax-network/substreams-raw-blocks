@@ -178,14 +178,17 @@ message BalanceChange {
   string block_hash = 3;
   string block_date = 4;
 
+  // -- transaction --
+  optional string tx_hash = 5;
+
   // -- balance change --
-  string address = 5;
-  string new_balance = 6 [(parquet.column) = {type: UINT256}];
-  string old_balance = 7 [(parquet.column) = {type: UINT256}];
-  string amount = 8 [(parquet.column) = {type: INT256}];
-  uint64 ordinal = 9;
-  string reason = 10;
-  uint32 reason_code = 11;
+  string address = 6;
+  string new_balance = 7 [(parquet.column) = {type: UINT256}];
+  string old_balance = 8 [(parquet.column) = {type: UINT256}];
+  string amount = 9 [(parquet.column) = {type: INT256}];
+  uint64 ordinal = 10;
+  string reason = 11;
+  uint32 reason_code = 12;
 }
 
 message StorageChange {

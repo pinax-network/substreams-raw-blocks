@@ -14,10 +14,13 @@ pub fn collect_storage_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec
     for call in &block.system_calls {
         for storage_change in &call.storage_changes {
             storage_changes.push(StorageChange {
+                // block
                 block_time: Some(timestamp.time),
                 block_number: timestamp.number,
                 block_hash: timestamp.hash.clone(),
                 block_date: timestamp.date.clone(),
+
+                // storage changes
                 address: bytes_to_hex(&storage_change.address),
                 key: bytes_to_hex(&storage_change.key),
                 new_value: bytes_to_hex(&storage_change.new_value),
@@ -32,10 +35,13 @@ pub fn collect_storage_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec
         for call in &transaction.calls {
             for storage_change in &call.storage_changes {
                 storage_changes.push(StorageChange {
+                    // block
                     block_time: Some(timestamp.time),
                     block_number: timestamp.number,
                     block_hash: timestamp.hash.clone(),
                     block_date: timestamp.date.clone(),
+
+                    // storage changes
                     address: bytes_to_hex(&storage_change.address),
                     key: bytes_to_hex(&storage_change.key),
                     new_value: bytes_to_hex(&storage_change.new_value),

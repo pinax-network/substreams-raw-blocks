@@ -44,10 +44,13 @@ pub fn collect_gas_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec<Gas
     for call in &block.system_calls {
         for gas_change in &call.gas_changes {
             gas_changes.push(GasChange {
+                // block
                 block_time: Some(timestamp.time),
                 block_number: timestamp.number,
                 block_hash: timestamp.hash.clone(),
                 block_date: timestamp.date.clone(),
+
+                // gas changes
                 old_value: gas_change.old_value,
                 new_value: gas_change.new_value,
                 reason: gas_change_reason_to_string(gas_change.reason),
@@ -62,10 +65,13 @@ pub fn collect_gas_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec<Gas
         for call in &transaction.calls {
             for gas_change in &call.gas_changes {
                 gas_changes.push(GasChange {
+                    // block
                     block_time: Some(timestamp.time),
                     block_number: timestamp.number,
                     block_hash: timestamp.hash.clone(),
                     block_date: timestamp.date.clone(),
+
+                    // gas changes
                     old_value: gas_change.old_value,
                     new_value: gas_change.new_value,
                     reason: gas_change_reason_to_string(gas_change.reason),
