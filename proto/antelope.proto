@@ -20,7 +20,7 @@ message Block {
   uint32 dpos_irreversible_blocknum = 12;
   string transaction_mroot = 13;
   string action_mroot = 14;
-  string blockroot_merkle_active_nodes = 15;
+  repeated string blockroot_merkle_active_nodes = 15;
   uint32 blockroot_merkle_node_count = 16;
   uint64 size = 17;
   uint64 total_transactions = 18;

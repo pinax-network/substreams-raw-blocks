@@ -4,6 +4,7 @@ mod auth_sequences;
 mod authority;
 mod authorizations;
 mod blocks;
+mod collect_events;
 mod creation_tree;
 mod db_ops;
 mod feature_ops;

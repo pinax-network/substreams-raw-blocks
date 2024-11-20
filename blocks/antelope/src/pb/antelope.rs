@@ -31,8 +31,8 @@ pub struct Block {
     pub transaction_mroot: ::prost::alloc::string::String,
     #[prost(string, tag="14")]
     pub action_mroot: ::prost::alloc::string::String,
-    #[prost(string, tag="15")]
-    pub blockroot_merkle_active_nodes: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag="15")]
+    pub blockroot_merkle_active_nodes: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     #[prost(uint32, tag="16")]
     pub blockroot_merkle_node_count: u32,
     #[prost(uint64, tag="17")]
