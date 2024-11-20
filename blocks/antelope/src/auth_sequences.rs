@@ -1,9 +1,9 @@
 use common::structs::BlockTimestamp;
 use substreams_antelope::pb::TransactionTrace;
 
-use crate::pb::antelope::AuthSequence as RawAuthSequence;
+use crate::pb::antelope::AuthSequence;
 
-pub fn collect_tx_auth_sequences(transaction: &TransactionTrace, timestamp: &BlockTimestamp, tx_success: bool) -> Vec<RawAuthSequence> {
+pub fn collect_tx_auth_sequences(transaction: &TransactionTrace, timestamp: &BlockTimestamp, tx_success: bool) -> Vec<AuthSequence> {
     let mut auth_sequences = Vec::new();
 
     for action_trace in transaction.action_traces.iter() {
@@ -11,7 +11,7 @@ pub fn collect_tx_auth_sequences(transaction: &TransactionTrace, timestamp: &Blo
         let action_index = action_trace.execution_index;
 
         for (index, auth) in receipt.auth_sequence.iter().enumerate() {
-            auth_sequences.push(RawAuthSequence {
+            auth_sequences.push(AuthSequence {
                 block_time: Some(timestamp.time.clone()),
                 block_number: timestamp.number,
                 block_hash: timestamp.hash.clone(),

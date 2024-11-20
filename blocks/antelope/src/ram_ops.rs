@@ -1,7 +1,7 @@
 use common::structs::BlockTimestamp;
 use substreams_antelope::pb::TransactionTrace;
 
-use crate::pb::antelope::RamOp as RawRamOp;
+use crate::pb::antelope::RamOp;
 
 pub fn namespace_to_string(namespace: i32) -> String {
     match namespace {
@@ -64,11 +64,11 @@ pub fn operation_to_string(operation: i32) -> String {
     }
 }
 
-pub fn collect_tx_ram_ops(transaction: &TransactionTrace, timestamp: &BlockTimestamp, tx_success: bool) -> Vec<RawRamOp> {
+pub fn collect_tx_ram_ops(transaction: &TransactionTrace, timestamp: &BlockTimestamp, tx_success: bool) -> Vec<RamOp> {
     let mut ram_ops = Vec::new();
 
     for ram_op in transaction.ram_ops.iter() {
-        ram_ops.push(RawRamOp {
+        ram_ops.push(RamOp {
             block_time: Some(timestamp.time.clone()),
             block_number: timestamp.number,
             block_hash: timestamp.hash.clone(),

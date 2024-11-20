@@ -1,15 +1,15 @@
-use crate::{pb::antelope::Block as RawBlock, size::collect_size};
+use crate::{pb::antelope::Block as EventsBlock, size::collect_size};
 use common::structs::BlockTimestamp;
 use substreams::Hex;
 use substreams_antelope::Block;
 
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L21
-pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> RawBlock {
+pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> EventsBlock {
     let header = block.header.clone().unwrap_or_default();
     let blockroot_merkle = block.blockroot_merkle.clone().unwrap_or_default();
     let size = collect_size(block);
 
-    RawBlock {
+    EventsBlock {
         time: Some(timestamp.time),
         number: timestamp.number,
         date: timestamp.date.clone(),

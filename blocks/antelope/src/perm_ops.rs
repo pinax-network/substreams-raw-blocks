@@ -1,6 +1,7 @@
-use crate::pb::antelope::PermOp as RawPermOp;
 use common::structs::BlockTimestamp;
 use substreams_antelope::pb::TransactionTrace;
+
+use crate::pb::antelope::PermOp;
 
 pub fn perm_op_operation_to_string(operation: i32) -> String {
     match operation {
@@ -12,14 +13,14 @@ pub fn perm_op_operation_to_string(operation: i32) -> String {
     }
 }
 
-pub fn collect_tx_perm_ops(transaction: &TransactionTrace, timestamp: &BlockTimestamp, tx_success: bool) -> Vec<RawPermOp> {
+pub fn collect_tx_perm_ops(transaction: &TransactionTrace, timestamp: &BlockTimestamp, tx_success: bool) -> Vec<PermOp> {
     let mut perm_ops = Vec::new();
 
     for perm_op in transaction.perm_ops.iter() {
         if let Some(new_perm) = &perm_op.new_perm {
             let threshold = new_perm.authority.as_ref().map_or(0, |authority| authority.threshold);
 
-            perm_ops.push(RawPermOp {
+            perm_ops.push(PermOp {
                 block_time: Some(timestamp.time.clone()),
                 block_number: timestamp.number,
                 block_hash: timestamp.hash.clone(),

@@ -2,7 +2,7 @@ use common::structs::BlockTimestamp;
 use substreams::Hex;
 use substreams_antelope::pb::TransactionTrace;
 
-use crate::pb::antelope::DbOp as RawDbOp;
+use crate::pb::antelope::DbOp;
 
 pub fn operation_to_string(operation: i32) -> String {
     match operation {
@@ -15,11 +15,11 @@ pub fn operation_to_string(operation: i32) -> String {
 }
 
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L647
-pub fn collect_tx_db_ops(transaction: &TransactionTrace, timestamp: &BlockTimestamp, tx_success: bool) -> Vec<RawDbOp> {
-    let mut db_ops: Vec<RawDbOp> = Vec::new();
+pub fn collect_tx_db_ops(transaction: &TransactionTrace, timestamp: &BlockTimestamp, tx_success: bool) -> Vec<DbOp> {
+    let mut db_ops: Vec<DbOp> = Vec::new();
 
     for (index, db_op) in transaction.db_ops.iter().enumerate() {
-        db_ops.push(RawDbOp {
+        db_ops.push(DbOp {
             block_time: Some(timestamp.time.clone()),
             block_number: timestamp.number,
             block_hash: timestamp.hash.clone(),

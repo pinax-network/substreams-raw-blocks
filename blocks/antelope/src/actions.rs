@@ -4,18 +4,18 @@ use substreams::Hex;
 use substreams_antelope::pb::TransactionTrace;
 use substreams_antelope::Block;
 
-use crate::pb::antelope::Action as RawAction;
+use crate::pb::antelope::Action;
 
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L525
-pub fn collect_tx_actions(block: &Block, transaction: &TransactionTrace, timestamp: &BlockTimestamp, tx_success: bool) -> Vec<RawAction> {
+pub fn collect_tx_actions(block: &Block, transaction: &TransactionTrace, timestamp: &BlockTimestamp, tx_success: bool) -> Vec<Action> {
     let header = block.header.clone().unwrap_or_default();
-    let mut actions: Vec<RawAction> = Vec::new();
+    let mut actions: Vec<Action> = Vec::new();
 
     for trace in transaction.action_traces.iter() {
         let action = trace.action.clone().unwrap_or_default();
         let receipt = trace.receipt.clone().unwrap_or_default();
 
-        actions.push(RawAction {
+        actions.push(Action {
             block_time: Some(timestamp.time.clone()),
             block_number: timestamp.number,
             block_hash: timestamp.hash.clone(),

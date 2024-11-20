@@ -1,17 +1,17 @@
-use crate::pb::antelope::{Account as RawAccount, Key as RawKey, Wait as RawWait};
+use crate::pb::antelope::{Account, Key, Wait};
 use common::structs::BlockTimestamp;
 use substreams_antelope::pb::TransactionTrace;
 
 pub struct AuthorityVectors {
-    pub accounts: Vec<RawAccount>,
-    pub keys: Vec<RawKey>,
-    pub waits: Vec<RawWait>,
+    pub accounts: Vec<Account>,
+    pub keys: Vec<Key>,
+    pub waits: Vec<Wait>,
 }
 
 pub fn collect_tx_authority_vectors(transaction: &TransactionTrace, timestamp: &BlockTimestamp, tx_success: bool) -> AuthorityVectors {
-    let mut accounts: Vec<RawAccount> = Vec::new();
-    let mut keys: Vec<RawKey> = Vec::new();
-    let mut waits: Vec<RawWait> = Vec::new();
+    let mut accounts: Vec<Account> = Vec::new();
+    let mut keys: Vec<Key> = Vec::new();
+    let mut waits: Vec<Wait> = Vec::new();
 
     for perm_op in transaction.perm_ops.iter() {
         if let Some(new_perm) = &perm_op.new_perm {
@@ -21,7 +21,7 @@ pub fn collect_tx_authority_vectors(transaction: &TransactionTrace, timestamp: &
             // Process authority accounts
             for (index, account) in authority.accounts.iter().enumerate() {
                 if let Some(permission) = &account.permission {
-                    accounts.push(RawAccount {
+                    accounts.push(Account {
                         block_time: Some(timestamp.time.clone()),
                         block_number: timestamp.number,
                         block_hash: timestamp.hash.clone(),
@@ -39,7 +39,7 @@ pub fn collect_tx_authority_vectors(transaction: &TransactionTrace, timestamp: &
 
             // Process authority keys
             for (index, key) in authority.keys.iter().enumerate() {
-                keys.push(RawKey {
+                keys.push(Key {
                     block_time: Some(timestamp.time.clone()),
                     block_number: timestamp.number,
                     block_hash: timestamp.hash.clone(),
@@ -55,7 +55,7 @@ pub fn collect_tx_authority_vectors(transaction: &TransactionTrace, timestamp: &
 
             // Process authority waits
             for (index, wait) in authority.waits.iter().enumerate() {
-                waits.push(RawWait {
+                waits.push(Wait {
                     block_time: Some(timestamp.time.clone()),
                     block_number: timestamp.number,
                     block_hash: timestamp.hash.clone(),

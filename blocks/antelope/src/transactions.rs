@@ -2,7 +2,7 @@ use common::structs::BlockTimestamp;
 use substreams::Hex;
 use substreams_antelope::{pb::TransactionTrace, Block};
 
-use crate::pb::antelope::Transaction as RawTransaction;
+use crate::pb::antelope::Transaction;
 
 pub fn transaction_status_to_string(status: i32) -> String {
     match status {
@@ -23,13 +23,13 @@ pub fn is_transaction_success(status: i32) -> bool {
 }
 
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L525
-pub fn collect_transaction(block: &Block, transaction: &TransactionTrace, timestamp: &BlockTimestamp, tx_success: bool) -> RawTransaction {
+pub fn collect_transaction(block: &Block, transaction: &TransactionTrace, timestamp: &BlockTimestamp, tx_success: bool) -> Transaction {
     let header = block.header.clone().unwrap_or_default();
     let receipt = transaction.receipt.clone().unwrap_or_default();
     let status_code = receipt.status;
     let status = transaction_status_to_string(status_code);
 
-    RawTransaction {
+    Transaction {
         block_time: Some(timestamp.time.clone()),
         block_number: timestamp.number,
         block_hash: timestamp.hash.clone(),

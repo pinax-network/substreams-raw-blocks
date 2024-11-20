@@ -11,15 +11,15 @@ use crate::{
     creation_tree::collect_tx_creation_trees,
     db_ops::collect_tx_db_ops,
     feature_ops::collect_tx_feature_ops,
-    pb::antelope::Events as RawEvents,
+    pb::antelope::Events,
     perm_ops::collect_tx_perm_ops,
     ram_ops::collect_tx_ram_ops,
     table_ops::collect_tx_table_ops,
     transactions::{collect_transaction, is_transaction_success},
 };
 
-pub fn collect_events(block: &Block, timestamp: &BlockTimestamp) -> RawEvents {
-    let mut events = RawEvents {
+pub fn collect_events(block: &Block, timestamp: &BlockTimestamp) -> Events {
+    let mut events = Events {
         blocks: vec![collect_block(block, timestamp)],
         transactions: Vec::new(),
         actions: Vec::new(),

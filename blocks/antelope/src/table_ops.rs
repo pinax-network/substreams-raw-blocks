@@ -1,7 +1,7 @@
 use common::structs::BlockTimestamp;
 use substreams_antelope::pb::TransactionTrace;
 
-use crate::pb::antelope::TableOp as RawTableOp;
+use crate::pb::antelope::TableOp;
 
 pub fn table_op_operation_to_string(operation: i32) -> String {
     match operation {
@@ -12,11 +12,11 @@ pub fn table_op_operation_to_string(operation: i32) -> String {
     }
 }
 
-pub fn collect_tx_table_ops(transaction: &TransactionTrace, timestamp: &BlockTimestamp, tx_success: bool) -> Vec<RawTableOp> {
+pub fn collect_tx_table_ops(transaction: &TransactionTrace, timestamp: &BlockTimestamp, tx_success: bool) -> Vec<TableOp> {
     let mut table_ops = Vec::new();
 
     for (index, table_op) in transaction.table_ops.iter().enumerate() {
-        table_ops.push(RawTableOp {
+        table_ops.push(TableOp {
             block_time: Some(timestamp.time.clone()),
             block_number: timestamp.number,
             block_hash: timestamp.hash.clone(),
