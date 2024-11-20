@@ -49,8 +49,7 @@ message Blob {
   string blob = 6;
   string kzg_commitment = 7;
   string kzg_proof = 8;
-  // csv string for now but should be array(text) once supported
-  string kzg_commitment_inclusion_proof = 9;
+  repeated string kzg_commitment_inclusion_proof = 9;
 }
 
 message Deposit {
@@ -62,8 +61,7 @@ message Deposit {
 
   // deposit
   uint64 index = 5;
-  // csv string for now but should be array(text) once supported
-  string proof = 6;
+  repeated string proof = 6;
   string pubkey = 7;
   string withdrawal_credentials = 8;
   string signature = 9;

@@ -18,7 +18,3 @@ pub fn build_timestamp(clock: &Clock) -> BlockTimestamp {
 pub fn encode_hex_2d_array(hex_array: &Vec<Vec<u8>>) -> Vec<String> {
     hex_array.iter().map(|bytes| bytes_to_hex(bytes)).collect()
 }
-
-pub fn encode_2d_array_to_csv_string(hex_array: &Vec<Vec<u8>>) -> String {
-    hex_array.iter().map(|bytes| bytes_to_hex(bytes)).collect::<Vec<String>>().join(",")
-}
