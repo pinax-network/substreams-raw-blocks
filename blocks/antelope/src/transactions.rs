@@ -23,38 +23,6 @@ pub fn is_transaction_success(status: i32) -> bool {
 }
 
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L525
-pub fn collect_transactions(block: &Block, timestamp: &BlockTimestamp) -> Vec<RawTransaction> {
-    let header = block.header.clone().unwrap_or_default();
-    let mut transactions = Vec::new();
-
-    for (index, transaction) in block.transaction_traces().enumerate() {
-        let receipt = transaction.receipt.clone().unwrap_or_default();
-        let status_code = receipt.status;
-        let status = transaction_status_to_string(status_code);
-        let success = is_transaction_success(status_code);
-
-        transactions.push(RawTransaction {
-            block_time: Some(timestamp.time.clone()),
-            block_number: timestamp.number,
-            block_hash: timestamp.hash.clone(),
-            block_date: timestamp.date.clone(),
-            hash: transaction.id.clone(),
-            index: index as u64,
-            elapsed: transaction.elapsed,
-            net_usage: transaction.net_usage,
-            scheduled: transaction.scheduled,
-            cpu_usage_micro_seconds: receipt.cpu_usage_micro_seconds,
-            net_usage_words: receipt.net_usage_words,
-            status,
-            status_code: status_code as u32,
-            success,
-            transaction_mroot: Hex::encode(&header.transaction_mroot.to_vec()),
-        });
-    }
-
-    transactions
-}
-
 pub fn collect_transaction(block: &Block, transaction: &TransactionTrace, timestamp: &BlockTimestamp, tx_success: bool) -> RawTransaction {
     let header = block.header.clone().unwrap_or_default();
     let receipt = transaction.receipt.clone().unwrap_or_default();

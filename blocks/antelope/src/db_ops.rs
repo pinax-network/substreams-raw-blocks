@@ -1,8 +1,8 @@
 use common::structs::BlockTimestamp;
 use substreams::Hex;
-use substreams_antelope::{pb::TransactionTrace, Block};
+use substreams_antelope::pb::TransactionTrace;
 
-use crate::{pb::antelope::DbOp as RawDbOp, transactions::is_transaction_success};
+use crate::pb::antelope::DbOp as RawDbOp;
 
 pub fn operation_to_string(operation: i32) -> String {
     match operation {
@@ -15,42 +15,6 @@ pub fn operation_to_string(operation: i32) -> String {
 }
 
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L647
-pub fn collect_db_ops(block: &Block, timestamp: &BlockTimestamp) -> Vec<RawDbOp> {
-    let mut db_ops = Vec::new();
-
-    for transaction in block.transaction_traces() {
-        let tx_hash = &transaction.id;
-        let tx_success = is_transaction_success(transaction.receipt.clone().unwrap_or_default().status);
-
-        for (index, db_op) in transaction.db_ops.iter().enumerate() {
-            db_ops.push(RawDbOp {
-                block_time: Some(timestamp.time.clone()),
-                block_number: timestamp.number,
-                block_hash: timestamp.hash.clone(),
-                block_date: timestamp.date.clone(),
-                tx_hash: tx_hash.clone(),
-                tx_success,
-                index: index as u32,
-                operation: operation_to_string(db_op.operation),
-                operation_code: db_op.operation as u32,
-                action_index: db_op.action_index,
-                code: db_op.code.clone(),
-                scope: db_op.scope.clone(),
-                table_name: db_op.table_name.clone(),
-                primary_key: db_op.primary_key.clone(),
-                old_payer: db_op.old_payer.clone(),
-                new_payer: db_op.new_payer.clone(),
-                old_data: Hex::encode(&db_op.old_data),
-                new_data: Hex::encode(&db_op.new_data),
-                old_data_json: db_op.old_data_json.clone(),
-                new_data_json: db_op.new_data_json.clone(),
-            });
-        }
-    }
-
-    db_ops
-}
-
 pub fn collect_tx_db_ops(transaction: &TransactionTrace, timestamp: &BlockTimestamp, tx_success: bool) -> Vec<RawDbOp> {
     let mut db_ops: Vec<RawDbOp> = Vec::new();
 
