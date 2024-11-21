@@ -9,7 +9,6 @@ crate-type = ["cdylib"]
 [dependencies]
 common = { path = "../../common" }
 substreams-solana = { workspace = true }
-substreams-database-change = { workspace = true }
 substreams = { workspace = true }
 serde_json = { workspace = true }
 prost = { workspace = true }
