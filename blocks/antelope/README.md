@@ -39,5 +39,5 @@ Kind: map
 Input: source: sf.substreams.v1.Clock
 Input: source: sf.antelope.type.v1.Block
 Output Type: proto:antelope.Events
-Hash: 9e6d04e82d8c5bce50f835b57ce669e79af4b7b2
+Hash: 2ee4412cab8f461aaf8de27c2e970970a545117c
 ```

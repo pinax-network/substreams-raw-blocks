@@ -15,7 +15,6 @@ message Events {
   repeated RamOp ram_ops = 8;
 }
 
-
 message Block {
   // clock
   google.protobuf.Timestamp time = 1;
