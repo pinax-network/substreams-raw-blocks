@@ -2,10 +2,10 @@ use common::structs::BlockTimestamp;
 use substreams::Hex;
 use substreams_cosmos::Block;
 
-use crate::pb::cosmos::ConsensusParamUpdate as RawConsensusParamUpdate;
+use crate::pb::pinax::cosmos::ConsensusParamUpdate;
 
-pub fn collect_consensus_params(block: &Block, timestamp: &BlockTimestamp) -> Vec<RawConsensusParamUpdate> {
-    let mut vec: Vec<RawConsensusParamUpdate> = vec![];
+pub fn collect_consensus_params(block: &Block, timestamp: &BlockTimestamp) -> Vec<ConsensusParamUpdate> {
+    let mut vec: Vec<ConsensusParamUpdate> = vec![];
 
     if let Some(consensus_params) = &block.consensus_param_updates {
         let mut json = serde_json::json!({});
@@ -37,7 +37,7 @@ pub fn collect_consensus_params(block: &Block, timestamp: &BlockTimestamp) -> Ve
             });
         }
 
-        vec.push(RawConsensusParamUpdate {
+        vec.push(ConsensusParamUpdate {
             block_time: Some(timestamp.time),
             block_number: timestamp.number,
             block_date: timestamp.date.clone(),
