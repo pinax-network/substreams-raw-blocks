@@ -37,22 +37,22 @@ pub struct Block {
     pub mint_reward: f64,
     #[prost(string, tag="11")]
     pub merkle_root: ::prost::alloc::string::String,
-    #[prost(int64, tag="12")]
-    pub transaction_count: i64,
-    #[prost(int64, tag="13")]
-    pub nonce: i64,
+    #[prost(uint64, tag="12")]
+    pub transaction_count: u64,
+    #[prost(uint32, tag="13")]
+    pub nonce: u32,
     #[prost(string, tag="14")]
     pub coinbase: ::prost::alloc::string::String,
     #[prost(string, tag="15")]
     pub previous_block_hash: ::prost::alloc::string::String,
-    #[prost(int64, tag="16")]
-    pub size: i64,
-    #[prost(int64, tag="17")]
-    pub stripped_size: i64,
-    #[prost(int64, tag="18")]
-    pub version: i64,
-    #[prost(int64, tag="19")]
-    pub weight: i64,
+    #[prost(int32, tag="16")]
+    pub size: i32,
+    #[prost(int32, tag="17")]
+    pub stripped_size: i32,
+    #[prost(int32, tag="18")]
+    pub version: i32,
+    #[prost(int32, tag="19")]
+    pub weight: i32,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
