@@ -1,7 +1,7 @@
 use common::utils::bytes_to_hex;
 
 use crate::{
-    pb::{beacon::Withdrawal as RawWithdrawal, sf::beacon::r#type::v1::Withdrawal},
+    pb::{pinax::beacon::v1::Withdrawal as RawWithdrawal, sf::beacon::r#type::v1::Withdrawal},
     structs::BlockTimestamp,
 };
 

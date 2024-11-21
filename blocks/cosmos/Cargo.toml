@@ -9,7 +9,6 @@ crate-type = ["cdylib"]
 [dependencies]
 common = { path = "../../common" }
 substreams-cosmos = { workspace = true }
-substreams-database-change = { workspace = true }
 substreams = { workspace = true }
 sha2 = "0.10.8"
 serde_json = { workspace = true }

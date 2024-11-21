@@ -2,14 +2,14 @@ use common::structs::BlockTimestamp;
 use substreams::Hex;
 use substreams_cosmos::Block;
 
-use crate::pb::cosmos::Misbehavior as RawMisbehavior;
+use crate::pb::pinax::cosmos::Misbehavior;
 
-pub fn collect_misbehaviors(block: &Block, timestamp: &BlockTimestamp) -> Vec<RawMisbehavior> {
-    let mut vec: Vec<RawMisbehavior> = vec![];
+pub fn collect_misbehaviors(block: &Block, timestamp: &BlockTimestamp) -> Vec<Misbehavior> {
+    let mut vec: Vec<Misbehavior> = vec![];
 
     for (index, misbehavior) in block.misbehavior.iter().enumerate() {
         let validator = misbehavior.validator.as_ref().unwrap();
-        vec.push(RawMisbehavior {
+        vec.push(Misbehavior {
             block_time: Some(timestamp.time),
             block_number: timestamp.number,
             block_date: timestamp.date.clone(),

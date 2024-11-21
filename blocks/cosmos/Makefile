@@ -8,31 +8,17 @@ all:
 .PHONY: build
 build:
 	cargo build --target wasm32-unknown-unknown --release
-
-.PHONY: pack
-pack:
 	substreams pack
-
-.PHONY: graph
-graph:
 	substreams graph
-
-.PHONY: info
-info:
 	substreams info
-
-.PHONY: run
-run:
-	substreams run substreams.yaml -e mainnet.injective.streamingfast.io:443 map_events -s 80000000 -o json
 
 .PHONY: gui
 gui:
 	substreams gui substreams.yaml -e mainnet.injective.streamingfast.io:443 map_events -s 80000000
 
-
 .PHONY: protogen
 protogen:
-	substreams protogen --exclude-paths google,sf
+	substreams protogen
 
 .PHONY: parquet
 parquet:

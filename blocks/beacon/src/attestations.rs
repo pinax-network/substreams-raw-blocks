@@ -1,7 +1,7 @@
 use common::utils::bytes_to_hex;
 
 use crate::{
-    pb::{beacon::Attestation as RawAttestation, sf::beacon::r#type::v1::Attestation},
+    pb::{pinax::beacon::v1::Attestation as RawAttestation, sf::beacon::r#type::v1::Attestation},
     structs::BlockTimestamp,
 };
 

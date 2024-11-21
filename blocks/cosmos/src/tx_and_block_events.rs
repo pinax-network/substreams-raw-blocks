@@ -2,15 +2,15 @@ use common::structs::BlockTimestamp;
 use substreams_cosmos::{pb::TxResults, Block};
 
 use crate::{
-    pb::cosmos::{BlockEvent as RawBlockEvent, TransactionEvent as RawTransactionEvent},
+    pb::pinax::cosmos::{BlockEvent, TransactionEvent},
     utils::build_attributes_array_string,
 };
 
-pub fn collect_block_events(block: &Block, timestamp: &BlockTimestamp) -> Vec<RawBlockEvent> {
-    let mut vec: Vec<RawBlockEvent> = vec![];
+pub fn collect_block_events(block: &Block, timestamp: &BlockTimestamp) -> Vec<BlockEvent> {
+    let mut vec: Vec<BlockEvent> = vec![];
 
     for (index, event) in block.events.iter().enumerate() {
-        vec.push(RawBlockEvent {
+        vec.push(BlockEvent {
             block_time: Some(timestamp.time),
             block_number: timestamp.number,
             block_date: timestamp.date.clone(),
@@ -24,11 +24,11 @@ pub fn collect_block_events(block: &Block, timestamp: &BlockTimestamp) -> Vec<Ra
     vec
 }
 
-pub fn collect_transaction_events(tx_result: &TxResults, tx_hash: &str, timestamp: &BlockTimestamp) -> Vec<RawTransactionEvent> {
-    let mut vec: Vec<RawTransactionEvent> = vec![];
+pub fn collect_transaction_events(tx_result: &TxResults, tx_hash: &str, timestamp: &BlockTimestamp) -> Vec<TransactionEvent> {
+    let mut vec: Vec<TransactionEvent> = vec![];
 
     for (event_index, event) in tx_result.events.iter().enumerate() {
-        vec.push(RawTransactionEvent {
+        vec.push(TransactionEvent {
             block_time: Some(timestamp.time),
             block_number: timestamp.number,
             block_date: timestamp.date.clone(),

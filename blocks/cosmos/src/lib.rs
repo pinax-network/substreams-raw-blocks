@@ -1,5 +1,4 @@
 mod blocks;
-mod collect_events;
 mod consensus_param_updates;
 mod map_events;
 mod misbehaviors;

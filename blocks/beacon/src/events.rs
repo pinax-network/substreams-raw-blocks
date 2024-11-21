@@ -7,7 +7,7 @@ use substreams::{errors::Error, pb::substreams::Clock};
 use crate::{
     blocks::collect_blocks,
     pb::{
-        beacon::Events,
+        pinax::beacon::v1::Events,
         sf::beacon::r#type::v1::{AltairBody, BellatrixBody, Block as BeaconBlock, CapellaBody, DenebBody, Phase0Body},
     },
     utils::build_timestamp,

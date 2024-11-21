@@ -2,10 +2,10 @@ use common::structs::BlockTimestamp;
 use substreams::Hex;
 use substreams_cosmos::{pb::public_key, Block};
 
-use crate::pb::cosmos::ValidatorUpdate as RawValidatorUpdate;
+use crate::pb::pinax::cosmos::ValidatorUpdate;
 
-pub fn collect_validator_updates(block: &Block, timestamp: &BlockTimestamp) -> Vec<RawValidatorUpdate> {
-    let mut vec: Vec<RawValidatorUpdate> = vec![];
+pub fn collect_validator_updates(block: &Block, timestamp: &BlockTimestamp) -> Vec<ValidatorUpdate> {
+    let mut vec: Vec<ValidatorUpdate> = vec![];
 
     for (index, validator_update) in block.validator_updates.iter().enumerate() {
         let public_key = match validator_update.pub_key.as_ref().unwrap().sum.as_ref().unwrap() {
@@ -13,7 +13,7 @@ pub fn collect_validator_updates(block: &Block, timestamp: &BlockTimestamp) -> V
             public_key::Sum::Secp256k1(bytes) => bytes,
         };
 
-        vec.push(RawValidatorUpdate {
+        vec.push(ValidatorUpdate {
             block_time: Some(timestamp.time),
             block_number: timestamp.number,
             block_date: timestamp.date.clone(),

@@ -1,7 +1,7 @@
 use common::utils::bytes_to_hex;
 
 use crate::{
-    pb::{beacon::Deposit as RawDeposit, sf::beacon::r#type::v1::Deposit},
+    pb::{pinax::beacon::v1::Deposit as RawDeposit, sf::beacon::r#type::v1::Deposit},
     structs::BlockTimestamp,
     utils::encode_hex_2d_array,
 };
