@@ -4,7 +4,7 @@
 > [`sf.antelope.type.v1.Block`](https://buf.build/pinax/firehose-antelope/docs/main:sf.antelope.type.v1)
 
 - [x] **Blocks**
-  - [ ] **Savanna Merkle Roots**
+  - [x] **Savanna Merkle Roots**
 - [x] **Transactions**
   - [x] **Feature Operations**
   - [x] **Permission Operations**
@@ -21,13 +21,23 @@
   - [x] **Account RAM Deltas**
 - [x] **Database Operations**
 
-## Substreams Graph
+## Graph
 
 ```mermaid
 graph TD;
-  raw[sf.antelope.type.v1.Block];
-  raw --> blocks;
-  raw --> transactions;
-  raw --> actions;
-  raw --> db_ops;
+  map_events[map: map_events];
+  sf.substreams.v1.Clock[source: sf.substreams.v1.Clock] --> map_events;
+  sf.antelope.type.v1.Block[source: sf.antelope.type.v1.Block] --> map_events;
+```
+
+## Modules
+
+```bash
+Name: map_events
+Initial block: 0
+Kind: map
+Input: source: sf.substreams.v1.Clock
+Input: source: sf.antelope.type.v1.Block
+Output Type: proto:antelope.Events
+Hash: 2ee4412cab8f461aaf8de27c2e970970a545117c
 ```

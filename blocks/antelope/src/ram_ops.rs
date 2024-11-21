@@ -1,10 +1,7 @@
-use common::blocks::insert_timestamp;
-use substreams::pb::substreams::Clock;
-use substreams_antelope::pb::{RamOp, TransactionTrace};
-use substreams_database_change::pb::database::{table_change, DatabaseChanges};
+use common::structs::BlockTimestamp;
+use substreams_antelope::pb::TransactionTrace;
 
-use crate::keys::ram_op_keys;
-use crate::transactions::insert_transaction_metadata;
+use crate::pb::antelope::RamOp;
 
 pub fn namespace_to_string(namespace: i32) -> String {
     match namespace {
@@ -67,31 +64,37 @@ pub fn operation_to_string(operation: i32) -> String {
     }
 }
 
-pub fn insert_ram_op(tables: &mut DatabaseChanges, clock: &Clock, ram_op: &RamOp, transaction: &TransactionTrace) {
-    let operation = operation_to_string(ram_op.operation);
-    let action_index = ram_op.action_index;
-    let payer = &ram_op.payer;
-    let delta = ram_op.delta;
-    let usage = ram_op.usage;
-    let namespace = namespace_to_string(ram_op.namespace);
-    let action = action_to_string(ram_op.action);
-    let unique_key = &ram_op.unique_key;
+pub fn collect_tx_ram_ops(transaction: &TransactionTrace, timestamp: &BlockTimestamp, tx_success: bool) -> Vec<RamOp> {
+    let mut ram_ops = Vec::new();
 
-    let keys = ram_op_keys(&transaction.id, &action_index, unique_key);
-    let row = tables
-        .push_change_composite("ram_ops", keys, 0, table_change::Operation::Create)
-        .change("operation", ("", operation.as_str()))
-        .change("operation_code", ("", ram_op.operation.to_string().as_str()))
-        .change("action_index", ("", action_index.to_string().as_str()))
-        .change("payer", ("", payer.as_str()))
-        .change("delta", ("", delta.to_string().as_str()))
-        .change("usage", ("", usage.to_string().as_str()))
-        .change("namespace", ("", namespace.as_str()))
-        .change("namespace_code", ("", ram_op.namespace.to_string().as_str()))
-        .change("action", ("", action.as_str()))
-        .change("action_code", ("", ram_op.action.to_string().as_str()))
-        .change("unique_key", ("", unique_key.as_str()));
+    for ram_op in transaction.ram_ops.iter() {
+        ram_ops.push(RamOp {
+            // block
+            block_time: Some(timestamp.time.clone()),
+            block_number: timestamp.number,
+            block_hash: timestamp.hash.clone(),
+            block_date: timestamp.date.clone(),
 
-    insert_transaction_metadata(row, transaction);
-    insert_timestamp(row, clock, false, false);
+            // transaction
+            tx_hash: transaction.id.clone(),
+            tx_success,
+
+            // action
+            action_index: ram_op.action_index,
+
+            // ram operation
+            operation: operation_to_string(ram_op.operation),
+            payer: ram_op.payer.clone(),
+            delta: ram_op.delta,
+            usage: ram_op.usage,
+            namespace: namespace_to_string(ram_op.namespace),
+            action: action_to_string(ram_op.action),
+            unique_key: ram_op.unique_key.clone(),
+            operation_code: ram_op.operation,
+            namespace_code: ram_op.namespace,
+            action_code: ram_op.action,
+        });
+    }
+
+    ram_ops
 }

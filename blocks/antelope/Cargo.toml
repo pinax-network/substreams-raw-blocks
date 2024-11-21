@@ -9,5 +9,6 @@ crate-type = ["cdylib"]
 [dependencies]
 common = { path = "../../common" }
 substreams-antelope = { workspace = true }
-substreams-database-change = { workspace = true }
 substreams = { workspace = true }
+prost = { workspace = true }
+prost-types = { workspace = true }
