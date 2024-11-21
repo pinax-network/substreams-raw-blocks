@@ -12,7 +12,6 @@ binaries:
 protobuf:
   files:
     - beacon.proto
-    - sf.beacon.type.v1.proto
   importPaths:
     - ../../proto
   excludePaths:

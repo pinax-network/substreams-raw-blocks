@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package beacon;
+package pinax.beacon.v1;
 
 import "google/protobuf/timestamp.proto";
 
@@ -15,7 +15,6 @@ message Events {
   repeated ProposerSlashing proposer_slashings = 8;
   repeated VoluntaryExit voluntary_exits = 9;
 }
-
 
 message Block {
   // clock
@@ -112,27 +111,16 @@ message AttesterSlashing {
   // attester slashing
   uint64 index = 5;
 
-  // attestation 1
-  string attestation_1_attesting_indices = 6;
-  uint64 attestation_1_slot = 7;
-  uint64 attestation_1_committee_index = 8;
-  string attestation_1_beacon_block_root = 9;
-  uint64 attestation_1_source_epoch = 10;
-  string attestation_1_source_root = 11;
-  uint64 attestation_1_target_epoch = 12;
-  string attestation_1_target_root = 13;
-  string attestation_1_signature = 14;
-
-  // attestation 2
-  string attestation_2_attesting_indices = 15;
-  uint64 attestation_2_slot = 16;
-  uint64 attestation_2_committee_index = 17;
-  string attestation_2_beacon_block_root = 18;
-  uint64 attestation_2_source_epoch = 19;
-  string attestation_2_source_root = 20;
-  uint64 attestation_2_target_epoch = 21;
-  string attestation_2_target_root = 22;
-  string attestation_2_signature = 23;
+  // attestation
+  string attestation_attesting_indices = 6;
+  uint64 attestation_slot = 7;
+  uint64 attestation_committee_index = 8;
+  string attestation_beacon_block_root = 9;
+  uint64 attestation_source_epoch = 10;
+  string attestation_source_root = 11;
+  uint64 attestation_target_epoch = 12;
+  string attestation_target_root = 13;
+  string attestation_signature = 14;
 }
 
 message BlsToExecutionChange {
@@ -160,21 +148,13 @@ message ProposerSlashing {
   // proposer slashing
   uint64 index = 5;
 
-  // signed header 1
-  uint64 signed_header_1_slot = 6;
-  uint64 signed_header_1_proposer_index = 7;
-  string signed_header_1_parent_root = 8;
-  string signed_header_1_state_root = 9;
-  string signed_header_1_body_root = 10;
-  string signed_header_1_signature = 11;
-
-  // signed header 2
-  uint64 signed_header_2_slot = 12;
-  uint64 signed_header_2_proposer_index = 13;
-  string signed_header_2_parent_root = 14;
-  string signed_header_2_state_root = 15;
-  string signed_header_2_body_root = 16;
-  string signed_header_2_signature = 17;
+  // signed header
+  uint64 signed_header_slot = 6;
+  uint64 signed_header_proposer_index = 7;
+  string signed_header_parent_root = 8;
+  string signed_header_state_root = 9;
+  string signed_header_body_root = 10;
+  string signed_header_signature = 11;
 }
 
 message VoluntaryExit {

@@ -77,9 +77,8 @@ pub struct Blob {
     pub kzg_commitment: ::prost::alloc::string::String,
     #[prost(string, tag="8")]
     pub kzg_proof: ::prost::alloc::string::String,
-    /// csv string for now but should be array(text) once supported
-    #[prost(string, tag="9")]
-    pub kzg_commitment_inclusion_proof: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag="9")]
+    pub kzg_commitment_inclusion_proof: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -96,9 +95,8 @@ pub struct Deposit {
     /// deposit
     #[prost(uint64, tag="5")]
     pub index: u64,
-    /// csv string for now but should be array(text) once supported
-    #[prost(string, tag="6")]
-    pub proof: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag="6")]
+    pub proof: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     #[prost(string, tag="7")]
     pub pubkey: ::prost::alloc::string::String,
     #[prost(string, tag="8")]
@@ -179,44 +177,25 @@ pub struct AttesterSlashing {
     /// attester slashing
     #[prost(uint64, tag="5")]
     pub index: u64,
-    /// attestation 1
+    /// attestation
     #[prost(string, tag="6")]
-    pub attestation_1_attesting_indices: ::prost::alloc::string::String,
+    pub attestation_attesting_indices: ::prost::alloc::string::String,
     #[prost(uint64, tag="7")]
-    pub attestation_1_slot: u64,
+    pub attestation_slot: u64,
     #[prost(uint64, tag="8")]
-    pub attestation_1_committee_index: u64,
+    pub attestation_committee_index: u64,
     #[prost(string, tag="9")]
-    pub attestation_1_beacon_block_root: ::prost::alloc::string::String,
+    pub attestation_beacon_block_root: ::prost::alloc::string::String,
     #[prost(uint64, tag="10")]
-    pub attestation_1_source_epoch: u64,
+    pub attestation_source_epoch: u64,
     #[prost(string, tag="11")]
-    pub attestation_1_source_root: ::prost::alloc::string::String,
+    pub attestation_source_root: ::prost::alloc::string::String,
     #[prost(uint64, tag="12")]
-    pub attestation_1_target_epoch: u64,
+    pub attestation_target_epoch: u64,
     #[prost(string, tag="13")]
-    pub attestation_1_target_root: ::prost::alloc::string::String,
+    pub attestation_target_root: ::prost::alloc::string::String,
     #[prost(string, tag="14")]
-    pub attestation_1_signature: ::prost::alloc::string::String,
-    /// attestation 2
-    #[prost(string, tag="15")]
-    pub attestation_2_attesting_indices: ::prost::alloc::string::String,
-    #[prost(uint64, tag="16")]
-    pub attestation_2_slot: u64,
-    #[prost(uint64, tag="17")]
-    pub attestation_2_committee_index: u64,
-    #[prost(string, tag="18")]
-    pub attestation_2_beacon_block_root: ::prost::alloc::string::String,
-    #[prost(uint64, tag="19")]
-    pub attestation_2_source_epoch: u64,
-    #[prost(string, tag="20")]
-    pub attestation_2_source_root: ::prost::alloc::string::String,
-    #[prost(uint64, tag="21")]
-    pub attestation_2_target_epoch: u64,
-    #[prost(string, tag="22")]
-    pub attestation_2_target_root: ::prost::alloc::string::String,
-    #[prost(string, tag="23")]
-    pub attestation_2_signature: ::prost::alloc::string::String,
+    pub attestation_signature: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -257,32 +236,19 @@ pub struct ProposerSlashing {
     /// proposer slashing
     #[prost(uint64, tag="5")]
     pub index: u64,
-    /// signed header 1
+    /// signed header
     #[prost(uint64, tag="6")]
-    pub signed_header_1_slot: u64,
+    pub signed_header_slot: u64,
     #[prost(uint64, tag="7")]
-    pub signed_header_1_proposer_index: u64,
+    pub signed_header_proposer_index: u64,
     #[prost(string, tag="8")]
-    pub signed_header_1_parent_root: ::prost::alloc::string::String,
+    pub signed_header_parent_root: ::prost::alloc::string::String,
     #[prost(string, tag="9")]
-    pub signed_header_1_state_root: ::prost::alloc::string::String,
+    pub signed_header_state_root: ::prost::alloc::string::String,
     #[prost(string, tag="10")]
-    pub signed_header_1_body_root: ::prost::alloc::string::String,
+    pub signed_header_body_root: ::prost::alloc::string::String,
     #[prost(string, tag="11")]
-    pub signed_header_1_signature: ::prost::alloc::string::String,
-    /// signed header 2
-    #[prost(uint64, tag="12")]
-    pub signed_header_2_slot: u64,
-    #[prost(uint64, tag="13")]
-    pub signed_header_2_proposer_index: u64,
-    #[prost(string, tag="14")]
-    pub signed_header_2_parent_root: ::prost::alloc::string::String,
-    #[prost(string, tag="15")]
-    pub signed_header_2_state_root: ::prost::alloc::string::String,
-    #[prost(string, tag="16")]
-    pub signed_header_2_body_root: ::prost::alloc::string::String,
-    #[prost(string, tag="17")]
-    pub signed_header_2_signature: ::prost::alloc::string::String,
+    pub signed_header_signature: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
