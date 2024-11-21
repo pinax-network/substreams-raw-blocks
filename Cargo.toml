@@ -5,6 +5,7 @@ members = [
   "blocks/cosmos",
   "blocks/beacon",
   "blocks/solana",
+  "blocks/bitcoin",
   "common",
 ]
 resolver = "2"
@@ -23,5 +24,5 @@ substreams-cosmos = "0.2"
 prost = "0.13"
 prost-types = "0.13"
 serde_json = "1.0"
-# substreams-bitcoin = "1.0"
+substreams-bitcoin = "2.0"
 # substreams-near = "0.9"

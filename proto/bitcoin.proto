@@ -1,0 +1,94 @@
+syntax = "proto3";
+
+package bitcoin;
+
+import "google/protobuf/timestamp.proto";
+
+message Events {
+    repeated Block blocks = 1;
+    repeated Transaction transactions = 2;
+    repeated Input inputs = 3;
+    repeated Output outputs = 4;
+}
+
+message Block {
+    google.protobuf.Timestamp time = 1;
+    int64 height = 2;                   
+    string date = 3;                   
+    string hash = 4;                 
+    string bits = 5;             
+    string chainwork = 6;                
+    double difficulty = 7;              
+    double total_fees = 8;              
+    double total_reward = 9;           
+    double mint_reward = 10;            
+    string merkle_root = 11;             
+    int64 transaction_count = 12;       
+    int64 nonce = 13;                   
+    string coinbase = 14;
+    string previous_block_hash = 15;      
+    int64 size = 16;                    
+    int64 stripped_size = 17;           
+    int64 version = 18;                  
+    int64 weight = 19;                   
+}
+
+message Transaction {
+    google.protobuf.Timestamp block_time = 1; 
+    string block_date = 2;                    
+    int64 block_height = 3;                   
+    int32 index = 4;                          
+    string block_hash = 5;                     
+    string id = 6;                             
+    int64 lock_time = 7;                      
+    int64 size = 8;                           
+    int64 virtual_size = 9;                  
+    string coinbase = 10;                      
+    bool is_coinbase = 11;                   
+    int64 version = 12;                       
+    int32 input_count = 13;                   
+    int32 output_count = 14;                  
+    double input_value = 15;                 
+    double output_value = 16;                
+    double fee = 17;                 
+    string hex = 18;                          
+}
+
+message Input {
+    google.protobuf.Timestamp block_time = 1;
+    string block_date = 2;
+    int64 block_height = 3;
+    string block_hash = 4;
+    string tx_id = 5;
+    int32 index = 6;
+    int64 spent_block_height = 7;
+    string spent_tx_id = 8;
+    int64 spent_output_number = 9;
+    double value = 10;
+    string address = 11;
+    string type = 12;
+    string coinbase = 13;
+    bool is_coinbase = 14;
+    string script_asm = 15;
+    string script_hex = 16;
+    string script_desc = 17;
+    string script_signature_asm = 18;
+    string script_signature_hex = 19;
+    int64 sequence = 20;
+    repeated string witness_data = 21;
+}
+
+
+message Output {
+    google.protobuf.Timestamp block_time = 1;
+    string block_date = 2;
+    int64 block_height = 3;
+    string block_hash = 4;
+    string tx_id = 5;
+    int64 index = 6;
+    double value = 7;
+    string address = 8;
+    string type = 9;
+    string script_asm = 10;
+    string script_hex = 11;
+}

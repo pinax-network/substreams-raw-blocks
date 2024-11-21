@@ -1,0 +1,29 @@
+specVersion: v0.1.0
+package:
+  name: raw_blocks_bitcoin
+  version: v1.0.0
+  url: https://github.com/pinax-network/substreams-raw-blocks
+
+binaries:
+  default:
+    type: wasm/rust-v1
+    file: ../../target/wasm32-unknown-unknown/release/raw_blocks_bitcoin.wasm
+
+protobuf:
+  files:
+    - bitcoin.proto
+    - parquet/options.proto
+  importPaths:
+    - ../../proto
+  excludePaths:
+    - sf/substreams
+    - google
+
+modules:
+  - name: map_events
+    kind: map
+    inputs:
+      - source: sf.substreams.v1.Clock
+      - source: sf.bitcoin.type.v1.Block
+    output:
+      type: proto:bitcoin.Events
