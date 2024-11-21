@@ -17,8 +17,8 @@ pub struct Events {
 pub struct Block {
     #[prost(message, optional, tag="1")]
     pub time: ::core::option::Option<::prost_types::Timestamp>,
-    #[prost(int64, tag="2")]
-    pub height: i64,
+    #[prost(uint32, tag="2")]
+    pub height: u32,
     #[prost(string, tag="3")]
     pub date: ::prost::alloc::string::String,
     #[prost(string, tag="4")]
@@ -61,20 +61,20 @@ pub struct Transaction {
     pub block_time: ::core::option::Option<::prost_types::Timestamp>,
     #[prost(string, tag="2")]
     pub block_date: ::prost::alloc::string::String,
-    #[prost(int64, tag="3")]
-    pub block_height: i64,
-    #[prost(int32, tag="4")]
-    pub index: i32,
+    #[prost(uint32, tag="3")]
+    pub block_height: u32,
+    #[prost(uint32, tag="4")]
+    pub index: u32,
     #[prost(string, tag="5")]
     pub block_hash: ::prost::alloc::string::String,
     #[prost(string, tag="6")]
     pub id: ::prost::alloc::string::String,
-    #[prost(int64, tag="7")]
-    pub lock_time: i64,
-    #[prost(int64, tag="8")]
-    pub size: i64,
-    #[prost(int64, tag="9")]
-    pub virtual_size: i64,
+    #[prost(uint32, tag="7")]
+    pub lock_time: u32,
+    #[prost(int32, tag="8")]
+    pub size: i32,
+    #[prost(int32, tag="9")]
+    pub virtual_size: i32,
     #[prost(string, tag="10")]
     pub coinbase: ::prost::alloc::string::String,
     #[prost(bool, tag="11")]
@@ -85,12 +85,12 @@ pub struct Transaction {
     pub input_count: i32,
     #[prost(int32, tag="14")]
     pub output_count: i32,
-    #[prost(double, tag="15")]
-    pub input_value: f64,
-    #[prost(double, tag="16")]
-    pub output_value: f64,
-    #[prost(double, tag="17")]
-    pub fee: f64,
+    #[prost(string, repeated, tag="15")]
+    pub input_tx_ids: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(uint32, repeated, tag="16")]
+    pub input_output_indices: ::prost::alloc::vec::Vec<u32>,
+    #[prost(double, repeated, tag="17")]
+    pub output_values: ::prost::alloc::vec::Vec<f64>,
     #[prost(string, tag="18")]
     pub hex: ::prost::alloc::string::String,
 }
@@ -101,20 +101,20 @@ pub struct Input {
     pub block_time: ::core::option::Option<::prost_types::Timestamp>,
     #[prost(string, tag="2")]
     pub block_date: ::prost::alloc::string::String,
-    #[prost(int64, tag="3")]
-    pub block_height: i64,
+    #[prost(uint32, tag="3")]
+    pub block_height: u32,
     #[prost(string, tag="4")]
     pub block_hash: ::prost::alloc::string::String,
     #[prost(string, tag="5")]
     pub tx_id: ::prost::alloc::string::String,
-    #[prost(int32, tag="6")]
-    pub index: i32,
-    #[prost(int64, tag="7")]
-    pub spent_block_height: i64,
+    #[prost(uint32, tag="6")]
+    pub index: u32,
+    #[prost(uint32, tag="7")]
+    pub spent_block_height: u32,
     #[prost(string, tag="8")]
     pub spent_tx_id: ::prost::alloc::string::String,
-    #[prost(int64, tag="9")]
-    pub spent_output_number: i64,
+    #[prost(uint64, tag="9")]
+    pub spent_output_number: u64,
     #[prost(double, tag="10")]
     pub value: f64,
     #[prost(string, tag="11")]
@@ -147,14 +147,14 @@ pub struct Output {
     pub block_time: ::core::option::Option<::prost_types::Timestamp>,
     #[prost(string, tag="2")]
     pub block_date: ::prost::alloc::string::String,
-    #[prost(int64, tag="3")]
-    pub block_height: i64,
+    #[prost(uint32, tag="3")]
+    pub block_height: u32,
     #[prost(string, tag="4")]
     pub block_hash: ::prost::alloc::string::String,
     #[prost(string, tag="5")]
     pub tx_id: ::prost::alloc::string::String,
-    #[prost(int64, tag="6")]
-    pub index: i64,
+    #[prost(uint32, tag="6")]
+    pub index: u32,
     #[prost(double, tag="7")]
     pub value: f64,
     #[prost(string, tag="8")]

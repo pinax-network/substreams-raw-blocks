@@ -15,6 +15,7 @@ protobuf:
     - parquet/options.proto
   importPaths:
     - ../../proto
+
   excludePaths:
     - sf/substreams
     - google

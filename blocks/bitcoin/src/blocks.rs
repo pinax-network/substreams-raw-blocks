@@ -6,7 +6,7 @@ use crate::pb::bitcoin::Block as OutputBlock;
 pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> OutputBlock {
     OutputBlock {
         time: Some(timestamp.time),
-        height: block.height,
+        height: block.height as u32,
         date: timestamp.date.clone(),
         hash: block.hash.clone(),
         bits: block.bits.clone(),
