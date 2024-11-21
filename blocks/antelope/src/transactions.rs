@@ -29,6 +29,10 @@ pub fn collect_transaction(block: &Block, transaction: &TransactionTrace, timest
     let status_code = receipt.status;
     let status = transaction_status_to_string(status_code);
 
+    // make execution_action_index as vector
+    let creator_action_indexes = transaction.creation_tree.iter().map(|tree| tree.creator_action_index).collect::<Vec<i32>>();
+    let execution_action_indexes = transaction.creation_tree.iter().map(|tree| tree.execution_action_index).collect::<Vec<u32>>();
+
     Transaction {
         block_time: Some(timestamp.time.clone()),
         block_number: timestamp.number,
@@ -45,5 +49,7 @@ pub fn collect_transaction(block: &Block, transaction: &TransactionTrace, timest
         status_code: status_code as u32,
         success: tx_success,
         transaction_mroot: Hex::encode(&header.transaction_mroot.to_vec()),
+        creator_action_indexes,
+        execution_action_indexes,
     }
 }

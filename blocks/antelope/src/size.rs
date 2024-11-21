@@ -9,7 +9,7 @@ pub struct BlockSize {
     pub total_db_ops: u64,
 }
 
-pub fn collect_size(block: &Block) -> BlockSize {
+pub fn compute_block_size(block: &Block) -> BlockSize {
     // counters
     let mut size = 0;
     let mut total_transactions = 0;

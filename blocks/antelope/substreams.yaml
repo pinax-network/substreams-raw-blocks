@@ -5,10 +5,6 @@ package:
   image: logo.png
   url: https://github.com/pinax-network/substreams-raw-blocks
 
-imports:
-  database_change: https://github.com/streamingfast/substreams-sink-database-changes/releases/download/v2.0.0/substreams-database-change-v2.0.0.spkg
-  sql: https://github.com/streamingfast/substreams-sink-sql/releases/download/protodefs-v1.0.7/substreams-sink-sql-protodefs-v1.0.7.spkg
-
 binaries:
   default:
     type: wasm/rust-v1
@@ -32,5 +28,3 @@ modules:
       - source: sf.antelope.type.v1.Block
     output:
       type: proto:antelope.Events
-
-# network: wax

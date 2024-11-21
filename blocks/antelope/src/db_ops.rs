@@ -20,12 +20,17 @@ pub fn collect_tx_db_ops(transaction: &TransactionTrace, timestamp: &BlockTimest
 
     for (index, db_op) in transaction.db_ops.iter().enumerate() {
         db_ops.push(DbOp {
+            // block
             block_time: Some(timestamp.time.clone()),
             block_number: timestamp.number,
             block_hash: timestamp.hash.clone(),
             block_date: timestamp.date.clone(),
+
+            // transaction
             tx_hash: transaction.id.clone(),
             tx_success,
+
+            // database operation
             index: index as u32,
             operation: operation_to_string(db_op.operation),
             operation_code: db_op.operation as u32,

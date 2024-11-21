@@ -15,19 +15,42 @@ pub fn collect_tx_actions(block: &Block, transaction: &TransactionTrace, timesta
         let action = trace.action.clone().unwrap_or_default();
         let receipt = trace.receipt.clone().unwrap_or_default();
 
+        // auth sequence
+        let auth_sequence = receipt.auth_sequence.iter().map(|seq| seq.sequence).collect::<Vec<u64>>();
+        let auth_sequence_account_name = receipt.auth_sequence.iter().map(|seq| seq.clone().account_name).collect::<Vec<String>>();
+
+        // ram deltas
+        let account_ram_deltas = trace.account_ram_deltas.iter().map(|account_ram| account_ram.delta).collect::<Vec<i64>>();
+        let account_ram_deltas_account = trace.account_ram_deltas.iter().map(|account_ram| account_ram.clone().account).collect::<Vec<String>>();
+
         actions.push(Action {
+            // block
             block_time: Some(timestamp.time.clone()),
             block_number: timestamp.number,
             block_hash: timestamp.hash.clone(),
             block_date: timestamp.date.clone(),
+
+            // tranasction
             tx_hash: transaction.id.clone(),
             tx_success,
+
+            // receipt
             abi_sequence: receipt.abi_sequence,
             code_sequence: receipt.code_sequence,
             digest: receipt.digest,
             global_sequence: receipt.global_sequence,
             receipt_receiver: receipt.receiver,
             recv_sequence: receipt.recv_sequence,
+
+            // auth sequence
+            auth_sequence,
+            auth_sequence_account_name,
+
+            // account ram deltas
+            account_ram_deltas,
+            account_ram_deltas_account,
+
+            // action
             account: action.account,
             name: action.name,
             json_data: action.json_data,

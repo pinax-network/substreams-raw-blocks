@@ -69,14 +69,21 @@ pub fn collect_tx_ram_ops(transaction: &TransactionTrace, timestamp: &BlockTimes
 
     for ram_op in transaction.ram_ops.iter() {
         ram_ops.push(RamOp {
+            // block
             block_time: Some(timestamp.time.clone()),
             block_number: timestamp.number,
             block_hash: timestamp.hash.clone(),
             block_date: timestamp.date.clone(),
+
+            // transaction
             tx_hash: transaction.id.clone(),
             tx_success,
-            operation: operation_to_string(ram_op.operation),
+
+            // action
             action_index: ram_op.action_index,
+
+            // ram operation
+            operation: operation_to_string(ram_op.operation),
             payer: ram_op.payer.clone(),
             delta: ram_op.delta,
             usage: ram_op.usage,
