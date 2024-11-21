@@ -90,9 +90,9 @@ pub fn collect_tx_ram_ops(transaction: &TransactionTrace, timestamp: &BlockTimes
             namespace: namespace_to_string(ram_op.namespace),
             action: action_to_string(ram_op.action),
             unique_key: ram_op.unique_key.clone(),
-            operation_code: ram_op.operation as u32,
-            namespace_code: ram_op.namespace as u32,
-            action_code: ram_op.action as u32,
+            operation_code: ram_op.operation,
+            namespace_code: ram_op.namespace,
+            action_code: ram_op.action,
         });
     }
 

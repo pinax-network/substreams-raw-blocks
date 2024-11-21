@@ -54,7 +54,7 @@ pub fn collect_tx_perm_ops(transaction: &TransactionTrace, timestamp: &BlockTime
 
                 // permission operation
                 operation: perm_op_operation_to_string(perm_op.operation),
-                operation_code: perm_op.operation as u32,
+                operation_code: perm_op.operation,
                 id: new_perm.id,
                 parent_id: new_perm.parent_id,
                 owner: new_perm.owner.clone(),

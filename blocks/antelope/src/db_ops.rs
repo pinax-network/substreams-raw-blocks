@@ -33,7 +33,7 @@ pub fn collect_tx_db_ops(transaction: &TransactionTrace, timestamp: &BlockTimest
             // database operation
             index: index as u32,
             operation: operation_to_string(db_op.operation),
-            operation_code: db_op.operation as u32,
+            operation_code: db_op.operation,
             action_index: db_op.action_index,
             code: db_op.code.clone(),
             scope: db_op.scope.clone(),

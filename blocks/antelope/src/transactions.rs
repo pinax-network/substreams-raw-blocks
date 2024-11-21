@@ -23,7 +23,7 @@ pub fn is_transaction_success(status: i32) -> bool {
 }
 
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L525
-pub fn collect_transaction(block: &Block, transaction: &TransactionTrace, timestamp: &BlockTimestamp, tx_success: bool) -> Transaction {
+pub fn collect_transaction(block: &Block, transaction: &TransactionTrace, timestamp: &BlockTimestamp, success: bool) -> Transaction {
     let header = block.header.clone().unwrap_or_default();
     let receipt = transaction.receipt.clone().unwrap_or_default();
     let status_code = receipt.status;
@@ -34,21 +34,26 @@ pub fn collect_transaction(block: &Block, transaction: &TransactionTrace, timest
     let execution_action_indexes = transaction.creation_tree.iter().map(|tree| tree.execution_action_index).collect::<Vec<u32>>();
 
     Transaction {
+        // block
         block_time: Some(timestamp.time.clone()),
         block_number: timestamp.number,
         block_hash: timestamp.hash.clone(),
         block_date: timestamp.date.clone(),
+
+        // transaction
         hash: transaction.id.clone(),
-        index: transaction.index as u64,
+        index: transaction.index,
         elapsed: transaction.elapsed,
         net_usage: transaction.net_usage,
         scheduled: transaction.scheduled,
         cpu_usage_micro_seconds: receipt.cpu_usage_micro_seconds,
         net_usage_words: receipt.net_usage_words,
         status,
-        status_code: status_code as u32,
-        success: tx_success,
+        status_code,
+        success,
         transaction_mroot: Hex::encode(&header.transaction_mroot.to_vec()),
+
+        // creation flat node
         creator_action_indexes,
         execution_action_indexes,
     }

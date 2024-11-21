@@ -67,7 +67,7 @@ message Transaction {
   uint32 cpu_usage_micro_seconds = 10;
   uint32 net_usage_words = 11;
   string status = 12;
-  uint32 status_code = 13;
+  int32 status_code = 13;
   bool success = 14;
   string transaction_mroot = 15;
 
@@ -136,7 +136,7 @@ message DbOp {
   // database operations
   uint32 index = 8;
   string operation = 9;
-  uint32 operation_code = 10;
+  int32 operation_code = 10;
   string code = 11;
   string scope = 12;
   string table_name = 13;
@@ -186,7 +186,7 @@ message PermOp {
 
   // permission operations
   string operation = 8;
-  uint32 operation_code = 9;
+  int32 operation_code = 9;
   uint64 id = 10;
   uint64 parent_id = 11;
   string owner = 12;
@@ -224,7 +224,7 @@ message TableOp {
   // table operations
   uint32 index = 8;
   string operation = 9;
-  uint32 operation_code = 10;
+  int32 operation_code = 10;
   string payer = 11;
   string code = 12;
   string scope = 13;
@@ -247,13 +247,13 @@ message RamOp {
 
   // ram operations
   string operation = 8;
-  uint32 operation_code = 9;
+  int32 operation_code = 9;
   string payer = 10;
   int64 delta = 11;
   uint64 usage = 12;
   string namespace = 13;
-  uint32 namespace_code = 14;
+  int32 namespace_code = 14;
   string action = 15;
-  uint32 action_code = 16;
+  int32 action_code = 16;
   string unique_key = 17;
 }

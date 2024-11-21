@@ -106,8 +106,8 @@ pub struct Transaction {
     pub net_usage_words: u32,
     #[prost(string, tag="12")]
     pub status: ::prost::alloc::string::String,
-    #[prost(uint32, tag="13")]
-    pub status_code: u32,
+    #[prost(int32, tag="13")]
+    pub status_code: i32,
     #[prost(bool, tag="14")]
     pub success: bool,
     #[prost(string, tag="15")]
@@ -214,8 +214,8 @@ pub struct DbOp {
     pub index: u32,
     #[prost(string, tag="9")]
     pub operation: ::prost::alloc::string::String,
-    #[prost(uint32, tag="10")]
-    pub operation_code: u32,
+    #[prost(int32, tag="10")]
+    pub operation_code: i32,
     #[prost(string, tag="11")]
     pub code: ::prost::alloc::string::String,
     #[prost(string, tag="12")]
@@ -290,8 +290,8 @@ pub struct PermOp {
     /// permission operations
     #[prost(string, tag="8")]
     pub operation: ::prost::alloc::string::String,
-    #[prost(uint32, tag="9")]
-    pub operation_code: u32,
+    #[prost(int32, tag="9")]
+    pub operation_code: i32,
     #[prost(uint64, tag="10")]
     pub id: u64,
     #[prost(uint64, tag="11")]
@@ -344,8 +344,8 @@ pub struct TableOp {
     pub index: u32,
     #[prost(string, tag="9")]
     pub operation: ::prost::alloc::string::String,
-    #[prost(uint32, tag="10")]
-    pub operation_code: u32,
+    #[prost(int32, tag="10")]
+    pub operation_code: i32,
     #[prost(string, tag="11")]
     pub payer: ::prost::alloc::string::String,
     #[prost(string, tag="12")]
@@ -378,8 +378,8 @@ pub struct RamOp {
     /// ram operations
     #[prost(string, tag="8")]
     pub operation: ::prost::alloc::string::String,
-    #[prost(uint32, tag="9")]
-    pub operation_code: u32,
+    #[prost(int32, tag="9")]
+    pub operation_code: i32,
     #[prost(string, tag="10")]
     pub payer: ::prost::alloc::string::String,
     #[prost(int64, tag="11")]
@@ -388,12 +388,12 @@ pub struct RamOp {
     pub usage: u64,
     #[prost(string, tag="13")]
     pub namespace: ::prost::alloc::string::String,
-    #[prost(uint32, tag="14")]
-    pub namespace_code: u32,
+    #[prost(int32, tag="14")]
+    pub namespace_code: i32,
     #[prost(string, tag="15")]
     pub action: ::prost::alloc::string::String,
-    #[prost(uint32, tag="16")]
-    pub action_code: u32,
+    #[prost(int32, tag="16")]
+    pub action_code: i32,
     #[prost(string, tag="17")]
     pub unique_key: ::prost::alloc::string::String,
 }

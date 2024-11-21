@@ -26,7 +26,7 @@ pub fn collect_tx_table_ops(transaction: &TransactionTrace, timestamp: &BlockTim
             index: index as u32,
             action_index: table_op.action_index,
             operation: table_op_operation_to_string(table_op.operation),
-            operation_code: table_op.operation as u32,
+            operation_code: table_op.operation,
             payer: table_op.payer.clone(),
             code: table_op.code.clone(),
             scope: table_op.scope.clone(),
