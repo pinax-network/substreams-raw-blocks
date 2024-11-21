@@ -178,24 +178,24 @@ pub struct AttesterSlashing {
     #[prost(uint64, tag="5")]
     pub index: u64,
     /// attestation
-    #[prost(string, tag="6")]
-    pub attestation_attesting_indices: ::prost::alloc::string::String,
+    #[prost(uint64, repeated, tag="6")]
+    pub attesting_indices: ::prost::alloc::vec::Vec<u64>,
     #[prost(uint64, tag="7")]
-    pub attestation_slot: u64,
+    pub slot: u64,
     #[prost(uint64, tag="8")]
-    pub attestation_committee_index: u64,
+    pub committee_index: u64,
     #[prost(string, tag="9")]
-    pub attestation_beacon_block_root: ::prost::alloc::string::String,
+    pub beacon_block_root: ::prost::alloc::string::String,
     #[prost(uint64, tag="10")]
-    pub attestation_source_epoch: u64,
+    pub source_epoch: u64,
     #[prost(string, tag="11")]
-    pub attestation_source_root: ::prost::alloc::string::String,
+    pub source_root: ::prost::alloc::string::String,
     #[prost(uint64, tag="12")]
-    pub attestation_target_epoch: u64,
+    pub target_epoch: u64,
     #[prost(string, tag="13")]
-    pub attestation_target_root: ::prost::alloc::string::String,
+    pub target_root: ::prost::alloc::string::String,
     #[prost(string, tag="14")]
-    pub attestation_signature: ::prost::alloc::string::String,
+    pub signature: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -238,17 +238,17 @@ pub struct ProposerSlashing {
     pub index: u64,
     /// signed header
     #[prost(uint64, tag="6")]
-    pub signed_header_slot: u64,
+    pub slot: u64,
     #[prost(uint64, tag="7")]
-    pub signed_header_proposer_index: u64,
+    pub proposer_index: u64,
     #[prost(string, tag="8")]
-    pub signed_header_parent_root: ::prost::alloc::string::String,
+    pub parent_root: ::prost::alloc::string::String,
     #[prost(string, tag="9")]
-    pub signed_header_state_root: ::prost::alloc::string::String,
+    pub state_root: ::prost::alloc::string::String,
     #[prost(string, tag="10")]
-    pub signed_header_body_root: ::prost::alloc::string::String,
+    pub body_root: ::prost::alloc::string::String,
     #[prost(string, tag="11")]
-    pub signed_header_signature: ::prost::alloc::string::String,
+    pub signature: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]

@@ -112,15 +112,15 @@ message AttesterSlashing {
   uint64 index = 5;
 
   // attestation
-  string attestation_attesting_indices = 6;
-  uint64 attestation_slot = 7;
-  uint64 attestation_committee_index = 8;
-  string attestation_beacon_block_root = 9;
-  uint64 attestation_source_epoch = 10;
-  string attestation_source_root = 11;
-  uint64 attestation_target_epoch = 12;
-  string attestation_target_root = 13;
-  string attestation_signature = 14;
+  repeated uint64 attesting_indices = 6;
+  uint64 slot = 7;
+  uint64 committee_index = 8;
+  string beacon_block_root = 9;
+  uint64 source_epoch = 10;
+  string source_root = 11;
+  uint64 target_epoch = 12;
+  string target_root = 13;
+  string signature = 14;
 }
 
 message BlsToExecutionChange {
@@ -149,12 +149,12 @@ message ProposerSlashing {
   uint64 index = 5;
 
   // signed header
-  uint64 signed_header_slot = 6;
-  uint64 signed_header_proposer_index = 7;
-  string signed_header_parent_root = 8;
-  string signed_header_state_root = 9;
-  string signed_header_body_root = 10;
-  string signed_header_signature = 11;
+  uint64 slot = 6;
+  uint64 proposer_index = 7;
+  string parent_root = 8;
+  string state_root = 9;
+  string body_root = 10;
+  string signature = 11;
 }
 
 message VoluntaryExit {

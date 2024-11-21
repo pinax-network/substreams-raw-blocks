@@ -1,7 +1,7 @@
 use common::utils::bytes_to_hex;
 
 use crate::{
-    pb::{beacon::VoluntaryExit as RawVoluntaryExit, sf::beacon::r#type::v1::SignedVoluntaryExit},
+    pb::{pinax::beacon::v1::VoluntaryExit as RawVoluntaryExit, sf::beacon::r#type::v1::SignedVoluntaryExit},
     structs::BlockTimestamp,
 };
 

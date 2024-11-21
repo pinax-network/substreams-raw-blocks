@@ -1,7 +1,7 @@
 use common::utils::bytes_to_hex;
 
 use crate::{
-    pb::{beacon::BlsToExecutionChange as RawBlsToExecutionChange, sf::beacon::r#type::v1::SignedBlsToExecutionChange},
+    pb::{pinax::beacon::v1::BlsToExecutionChange as RawBlsToExecutionChange, sf::beacon::r#type::v1::SignedBlsToExecutionChange},
     structs::BlockTimestamp,
 };
 
