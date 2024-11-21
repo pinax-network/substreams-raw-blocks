@@ -7,6 +7,8 @@ use substreams_antelope::Block;
 pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> EventsBlock {
     let header = block.header.as_ref().expect("missing block header");
     let blockroot_merkle = block.blockroot_merkle.clone().unwrap_or_default();
+    let blockroot_merkle_active_nodes = blockroot_merkle.active_nodes.iter().map(|row| Hex::encode(row)).collect::<Vec<String>>();
+    let confirm_count = block.confirm_count.iter().map(|count| count.clone()).collect::<Vec<u32>>();
     let size = compute_block_size(block);
 
     EventsBlock {
@@ -25,10 +27,15 @@ pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> EventsBlock {
         producer_signature: block.producer_signature.clone(),
         dpos_proposed_irreversible_blocknum: block.dpos_proposed_irreversible_blocknum,
         dpos_irreversible_blocknum: block.dpos_irreversible_blocknum,
+
+        // roots
         transaction_mroot: Hex::encode(&header.transaction_mroot.to_vec()),
         action_mroot: Hex::encode(&header.action_mroot.to_vec()),
-        blockroot_merkle_active_nodes: blockroot_merkle.active_nodes.iter().map(|row| Hex::encode(row)).collect::<Vec<String>>(),
+        blockroot_merkle_active_nodes,
         blockroot_merkle_node_count: blockroot_merkle.node_count,
+        action_mroot_savanna: Hex::encode(block.action_mroot_savanna.clone()),
+        block_signing_key: block.block_signing_key.clone(),
+        confirm_count,
 
         // counters
         size: size.size,

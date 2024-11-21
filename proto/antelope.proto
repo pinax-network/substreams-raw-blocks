@@ -32,18 +32,23 @@ message Block {
   string producer_signature = 10;
   uint32 dpos_proposed_irreversible_blocknum = 11;
   uint32 dpos_irreversible_blocknum = 12;
+
+  // roots
   string transaction_mroot = 13;
   string action_mroot = 14;
   repeated string blockroot_merkle_active_nodes = 15;
   uint32 blockroot_merkle_node_count = 16;
+  string action_mroot_savanna = 17;
+  string block_signing_key = 18;
+  repeated uint32 confirm_count = 19;
 
   // counters
-  uint64 size = 17;
-  uint64 total_transactions = 18;
-  uint64 successful_transactions = 19;
-  uint64 failed_transactions = 20;
-  uint64 total_actions = 21;
-  uint64 total_db_ops = 22;
+  uint64 size = 20;
+  uint64 total_transactions = 21;
+  uint64 successful_transactions = 22;
+  uint64 failed_transactions = 23;
+  uint64 total_actions = 24;
+  uint64 total_db_ops = 25;
 }
 
 message Transaction {

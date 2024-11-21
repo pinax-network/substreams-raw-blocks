@@ -48,6 +48,7 @@ pub struct Block {
     pub dpos_proposed_irreversible_blocknum: u32,
     #[prost(uint32, tag="12")]
     pub dpos_irreversible_blocknum: u32,
+    /// roots
     #[prost(string, tag="13")]
     pub transaction_mroot: ::prost::alloc::string::String,
     #[prost(string, tag="14")]
@@ -56,18 +57,24 @@ pub struct Block {
     pub blockroot_merkle_active_nodes: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     #[prost(uint32, tag="16")]
     pub blockroot_merkle_node_count: u32,
+    #[prost(string, tag="17")]
+    pub action_mroot_savanna: ::prost::alloc::string::String,
+    #[prost(string, tag="18")]
+    pub block_signing_key: ::prost::alloc::string::String,
+    #[prost(uint32, repeated, tag="19")]
+    pub confirm_count: ::prost::alloc::vec::Vec<u32>,
     /// counters
-    #[prost(uint64, tag="17")]
-    pub size: u64,
-    #[prost(uint64, tag="18")]
-    pub total_transactions: u64,
-    #[prost(uint64, tag="19")]
-    pub successful_transactions: u64,
     #[prost(uint64, tag="20")]
-    pub failed_transactions: u64,
+    pub size: u64,
     #[prost(uint64, tag="21")]
-    pub total_actions: u64,
+    pub total_transactions: u64,
     #[prost(uint64, tag="22")]
+    pub successful_transactions: u64,
+    #[prost(uint64, tag="23")]
+    pub failed_transactions: u64,
+    #[prost(uint64, tag="24")]
+    pub total_actions: u64,
+    #[prost(uint64, tag="25")]
     pub total_db_ops: u64,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
