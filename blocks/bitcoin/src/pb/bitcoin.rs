@@ -15,6 +15,7 @@ pub struct Events {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Block {
+    /// clock
     #[prost(message, optional, tag="1")]
     pub time: ::core::option::Option<::prost_types::Timestamp>,
     #[prost(uint32, tag="2")]
@@ -23,50 +24,58 @@ pub struct Block {
     pub date: ::prost::alloc::string::String,
     #[prost(string, tag="4")]
     pub hash: ::prost::alloc::string::String,
+    /// block
     #[prost(string, tag="5")]
     pub bits: ::prost::alloc::string::String,
     #[prost(string, tag="6")]
     pub chainwork: ::prost::alloc::string::String,
     #[prost(double, tag="7")]
     pub difficulty: f64,
-    #[prost(double, tag="8")]
-    pub total_fees: f64,
-    #[prost(double, tag="9")]
-    pub total_reward: f64,
-    #[prost(double, tag="10")]
-    pub mint_reward: f64,
-    #[prost(string, tag="11")]
+    #[prost(string, tag="8")]
     pub merkle_root: ::prost::alloc::string::String,
-    #[prost(uint64, tag="12")]
+    #[prost(uint64, tag="9")]
     pub transaction_count: u64,
-    #[prost(uint32, tag="13")]
+    #[prost(uint32, tag="10")]
     pub nonce: u32,
-    #[prost(string, tag="14")]
+    #[prost(string, tag="11")]
     pub coinbase: ::prost::alloc::string::String,
-    #[prost(string, tag="15")]
+    #[prost(string, tag="12")]
     pub previous_block_hash: ::prost::alloc::string::String,
-    #[prost(int32, tag="16")]
-    pub size: i32,
-    #[prost(int32, tag="17")]
-    pub stripped_size: i32,
-    #[prost(int32, tag="18")]
+    #[prost(int32, tag="13")]
     pub version: i32,
-    #[prost(int32, tag="19")]
+    #[prost(int32, tag="14")]
     pub weight: i32,
+    /// counters
+    #[prost(int32, tag="20")]
+    pub size: i32,
+    #[prost(int32, tag="21")]
+    pub stripped_size: i32,
+    #[prost(double, tag="22")]
+    pub total_fees: f64,
+    #[prost(double, tag="23")]
+    pub total_reward: f64,
+    #[prost(double, tag="24")]
+    pub mint_reward: f64,
+    #[prost(uint32, tag="25")]
+    pub total_inputs: u32,
+    #[prost(uint32, tag="26")]
+    pub total_outputs: u32,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Transaction {
+    /// block
     #[prost(message, optional, tag="1")]
     pub block_time: ::core::option::Option<::prost_types::Timestamp>,
     #[prost(string, tag="2")]
     pub block_date: ::prost::alloc::string::String,
     #[prost(uint32, tag="3")]
     pub block_height: u32,
-    #[prost(uint32, tag="4")]
-    pub index: u32,
-    #[prost(string, tag="5")]
+    #[prost(string, tag="4")]
     pub block_hash: ::prost::alloc::string::String,
+    /// transaction
+    #[prost(uint32, tag="5")]
+    pub index: u32,
     #[prost(string, tag="6")]
     pub id: ::prost::alloc::string::String,
     #[prost(uint32, tag="7")]
@@ -97,6 +106,7 @@ pub struct Transaction {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Input {
+    /// block
     #[prost(message, optional, tag="1")]
     pub block_time: ::core::option::Option<::prost_types::Timestamp>,
     #[prost(string, tag="2")]
@@ -105,8 +115,10 @@ pub struct Input {
     pub block_height: u32,
     #[prost(string, tag="4")]
     pub block_hash: ::prost::alloc::string::String,
+    /// transaction
     #[prost(string, tag="5")]
     pub tx_id: ::prost::alloc::string::String,
+    /// input
     #[prost(uint32, tag="6")]
     pub index: u32,
     #[prost(uint32, tag="7")]
@@ -143,6 +155,7 @@ pub struct Input {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Output {
+    /// block
     #[prost(message, optional, tag="1")]
     pub block_time: ::core::option::Option<::prost_types::Timestamp>,
     #[prost(string, tag="2")]
@@ -151,8 +164,10 @@ pub struct Output {
     pub block_height: u32,
     #[prost(string, tag="4")]
     pub block_hash: ::prost::alloc::string::String,
+    /// transaction
     #[prost(string, tag="5")]
     pub tx_id: ::prost::alloc::string::String,
+    /// output
     #[prost(uint32, tag="6")]
     pub index: u32,
     #[prost(double, tag="7")]
