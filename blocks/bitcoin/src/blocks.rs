@@ -4,27 +4,36 @@ use substreams_bitcoin::pb::btc::v1::Block;
 use crate::pb::bitcoin::Block as OutputBlock;
 
 pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> OutputBlock {
+    // Get the coinbase from the first transaction
+    let coinbase = block.tx.first().unwrap().vin.first().unwrap().coinbase.clone();
+
     OutputBlock {
+        // clock
         time: Some(timestamp.time),
         height: block.height as u32,
         date: timestamp.date.clone(),
         hash: block.hash.clone(),
+
+        // block
         bits: block.bits.clone(),
         chainwork: block.chainwork.clone(),
         difficulty: block.difficulty,
+        merkle_root: block.merkle_root.clone(),
+        nonce: block.nonce,
+        coinbase,
+        previous_block_hash: block.previous_hash.clone(),
+        version: block.version,
+        weight: block.weight,
+
+        // counters
+        size: block.size,
+        stripped_size: block.stripped_size,
+        transaction_count: block.tx.len() as u64,
         total_fees: calculate_total_fees(block),
         total_reward: calculate_total_reward(block),
         mint_reward: calculate_mint_reward(block.height),
-        merkle_root: block.merkle_root.clone(),
-        transaction_count: block.tx.len() as u64,
-        nonce: block.nonce as u32,
-        // Get the coinbase from the first transaction
-        coinbase: block.tx.first().unwrap().vin.first().unwrap().coinbase.clone(),
-        previous_block_hash: block.previous_hash.clone(),
-        size: block.size,
-        stripped_size: block.stripped_size,
-        version: block.version,
-        weight: block.weight,
+        total_inputs: block.tx.iter().map(|tx| tx.vin.len() as u32).sum(),
+        total_outputs: block.tx.iter().map(|tx| tx.vout.len() as u32).sum(),
     }
 }
 

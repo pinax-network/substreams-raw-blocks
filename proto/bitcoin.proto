@@ -12,54 +12,69 @@ message Events {
 }
 
 message Block {
+    // clock
     google.protobuf.Timestamp time = 1;
-    uint32 height = 2;                   
-    string date = 3;                   
-    string hash = 4;                 
-    string bits = 5;             
-    string chainwork = 6;                
-    double difficulty = 7;              
-    double total_fees = 8;              
-    double total_reward = 9;           
-    double mint_reward = 10;            
-    string merkle_root = 11;             
-    uint64 transaction_count = 12;       
-    uint32 nonce = 13;                   
-    string coinbase = 14;
-    string previous_block_hash = 15;      
-    int32 size = 16;                    
-    int32 stripped_size = 17;           
-    int32 version = 18;                  
-    int32 weight = 19;                   
+    uint32 height = 2;
+    string date = 3;
+    string hash = 4;
+
+    // block
+    string bits = 5;
+    string chainwork = 6;
+    double difficulty = 7;
+    string merkle_root = 8;
+    uint64 transaction_count = 9;
+    uint32 nonce = 10;
+    string coinbase = 11;
+    string previous_block_hash = 12;
+    int32 version = 13;
+    int32 weight = 14;
+
+    // counters
+    int32 size = 20;
+    int32 stripped_size = 21;
+    double total_fees = 22;
+    double total_reward = 23;
+    double mint_reward = 24;
+    uint32 total_inputs = 25;
+    uint32 total_outputs = 26;
 }
 
 message Transaction {
-    google.protobuf.Timestamp block_time = 1; 
-    string block_date = 2;                    
-    uint32 block_height = 3;                   
-    uint32 index = 4;                          
-    string block_hash = 5;                     
-    string id = 6;                             
-    uint32 lock_time = 7;                      
-    int32 size = 8;                           
-    int32 virtual_size = 9;                  
-    string coinbase = 10;                      
-    bool is_coinbase = 11;                   
-    int64 version = 12;                       
-    int32 input_count = 13;                   
-    int32 output_count = 14;                  
-    repeated string input_tx_ids = 15;                         
-    repeated uint32 input_output_indices = 16;                         
-    repeated double output_values = 17;                         
-    string hex = 18;                          
-}
-
-message Input {
+    // block
     google.protobuf.Timestamp block_time = 1;
     string block_date = 2;
     uint32 block_height = 3;
     string block_hash = 4;
+
+    // transaction
+    uint32 index = 5;
+    string id = 6;
+    uint32 lock_time = 7;
+    int32 size = 8;
+    int32 virtual_size = 9;
+    string coinbase = 10;
+    bool is_coinbase = 11;
+    int64 version = 12;
+    int32 input_count = 13;
+    int32 output_count = 14;
+    repeated string input_tx_ids = 15;
+    repeated uint32 input_output_indices = 16;
+    repeated double output_values = 17;
+    string hex = 18;
+}
+
+message Input {
+    // block
+    google.protobuf.Timestamp block_time = 1;
+    string block_date = 2;
+    uint32 block_height = 3;
+    string block_hash = 4;
+
+    // transaction
     string tx_id = 5;
+
+    // input
     uint32 index = 6;
     uint32 spent_block_height = 7;
     string spent_tx_id = 8;
@@ -80,11 +95,16 @@ message Input {
 
 
 message Output {
+    // block
     google.protobuf.Timestamp block_time = 1;
     string block_date = 2;
     uint32 block_height = 3;
     string block_hash = 4;
+
+    // transaction
     string tx_id = 5;
+
+    // output
     uint32 index = 6;
     double value = 7;
     string address = 8;
