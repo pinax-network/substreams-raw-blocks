@@ -9,6 +9,8 @@ pub fn collect_transaction_inputs(transaction: &Transaction, timestamp: &BlockTi
     for (index, input) in transaction.vin.iter().enumerate() {
         let script_sig = input.script_sig.as_ref();
 
+        let witness_data = if input.txinwitness.len() > 0 { input.txinwitness.clone() } else { vec![String::new()] };
+
         inputs.push(Input {
             block_time: Some(timestamp.time),
             block_date: timestamp.date.clone(),
@@ -30,7 +32,7 @@ pub fn collect_transaction_inputs(transaction: &Transaction, timestamp: &BlockTi
             script_signature_asm: script_sig.map(|s| s.asm.clone()),
             script_signature_hex: script_sig.map(|s| s.hex.clone()),
             sequence: input.sequence,
-            witness_data: input.txinwitness.clone(),
+            witness_data,
         });
     }
 
