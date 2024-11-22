@@ -125,8 +125,8 @@ pub struct Input {
     pub spent_block_height: u32,
     #[prost(string, tag="8")]
     pub spent_tx_id: ::prost::alloc::string::String,
-    #[prost(uint64, tag="9")]
-    pub spent_output_number: u64,
+    #[prost(uint32, tag="9")]
+    pub spent_output_number: u32,
     #[prost(double, tag="10")]
     pub value: f64,
     #[prost(string, tag="11")]

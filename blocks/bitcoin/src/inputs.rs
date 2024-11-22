@@ -18,7 +18,7 @@ pub fn collect_transaction_inputs(transaction: &Transaction, timestamp: &BlockTi
             index: index as u32,
             spent_block_height: 0, // TODO: Need to look up from previous tx
             spent_tx_id: input.txid.clone(),
-            spent_output_number: input.vout as u64,
+            spent_output_number: input.vout,
             value: 0.0,             // TODO: Need to look up from previous tx
             address: String::new(), // TODO: Need to look up from previous tx
             r#type: String::new(),  // TODO: Need to look up from previous tx
