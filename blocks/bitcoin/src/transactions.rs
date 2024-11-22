@@ -27,21 +27,3 @@ pub fn collect_transaction(transaction: &Transaction, timestamp: &BlockTimestamp
         hex: transaction.hex.clone(),
     }
 }
-
-// fn calculate_transaction_values(tx: &Transaction, utxo_map: &HashMap<String, Vec<Vout>>) -> (f64, f64) {
-//     // Calculate input value
-//     let mut input_value = 0.0;
-//     for vin in &tx.vin {
-//         if let Some(previous_outputs) = utxo_map.get(&vin.txid) {
-//             if let Some(output) = previous_outputs.get(vin.vout as usize) {
-//                 input_value += output.value;
-//             }
-//         }
-//     }
-
-//     let input_value = tx.vin.iter().map(|vin| vin.)
-//     // Calculate output value
-//     let output_value: f64 = tx.vout.iter().map(|vout| vout.value).sum();
-
-//     (input_value, output_value)
-// }
