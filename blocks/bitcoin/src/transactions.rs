@@ -1,9 +1,7 @@
-use std::{collections::HashMap, time};
-
 use common::structs::BlockTimestamp;
-use substreams_bitcoin::pb::btc::v1::{Transaction, Vout};
+use substreams_bitcoin::pb::btc::v1::Transaction;
 
-use crate::pb::bitcoin::Transaction as OutputTransaction;
+use crate::pb::pinax::bitcoin::Transaction as OutputTransaction;
 
 pub fn collect_transaction(transaction: &Transaction, timestamp: &BlockTimestamp, index: u32) -> OutputTransaction {
     OutputTransaction {

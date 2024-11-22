@@ -84,12 +84,12 @@ message Input {
     string type = 12;
     string coinbase = 13;
     bool is_coinbase = 14;
-    string script_asm = 15;
-    string script_hex = 16;
-    string script_desc = 17;
-    string script_signature_asm = 18;
-    string script_signature_hex = 19;
-    int64 sequence = 20;
+    optional string script_asm = 15;
+    optional string script_hex = 16;
+    optional string script_desc = 17;
+    optional string script_signature_asm = 18;
+    optional string script_signature_hex = 19;
+    uint32 sequence = 20;
     repeated string witness_data = 21;
 }
 

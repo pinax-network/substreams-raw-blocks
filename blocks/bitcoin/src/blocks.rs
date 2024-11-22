@@ -1,7 +1,7 @@
 use common::structs::BlockTimestamp;
 use substreams_bitcoin::pb::btc::v1::Block;
 
-use crate::pb::bitcoin::Block as OutputBlock;
+use crate::pb::pinax::bitcoin::Block as OutputBlock;
 
 pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> OutputBlock {
     // Get the coinbase from the first transaction

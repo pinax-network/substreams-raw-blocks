@@ -1,13 +1,15 @@
 // @generated
-// @@protoc_insertion_point(attribute:bitcoin)
-pub mod bitcoin {
-    include!("bitcoin.rs");
-    // @@protoc_insertion_point(bitcoin)
-}
 // @@protoc_insertion_point(attribute:parquet)
 pub mod parquet {
     include!("parquet.rs");
     // @@protoc_insertion_point(parquet)
+}
+pub mod pinax {
+    // @@protoc_insertion_point(attribute:pinax.bitcoin)
+    pub mod bitcoin {
+        include!("pinax.bitcoin.rs");
+        // @@protoc_insertion_point(pinax.bitcoin)
+    }
 }
 pub mod sf {
     // @@protoc_insertion_point(attribute:sf.substreams)
