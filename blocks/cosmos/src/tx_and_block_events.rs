@@ -3,7 +3,7 @@ use substreams_cosmos::{pb::TxResults, Block};
 
 use crate::{
     pb::pinax::cosmos::{BlockEvent, TransactionEvent},
-    utils::build_attributes_array_string,
+    utils::build_attributes_array,
 };
 
 pub fn collect_block_events(block: &Block, timestamp: &BlockTimestamp) -> Vec<BlockEvent> {
@@ -17,7 +17,7 @@ pub fn collect_block_events(block: &Block, timestamp: &BlockTimestamp) -> Vec<Bl
             block_hash: timestamp.hash.clone(),
             index: index as u32,
             r#type: event.r#type.clone(),
-            attributes: build_attributes_array_string(&event.attributes),
+            attributes: build_attributes_array(&event.attributes),
         });
     }
 
@@ -36,7 +36,7 @@ pub fn collect_transaction_events(tx_result: &TxResults, tx_hash: &str, timestam
             index: event_index as u32,
             tx_hash: tx_hash.to_string(),
             r#type: event.r#type.clone(),
-            attributes: build_attributes_array_string(&event.attributes),
+            attributes: build_attributes_array(&event.attributes),
         });
     }
 

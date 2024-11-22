@@ -112,8 +112,8 @@ pub struct TransactionEvent {
     #[prost(string, tag="7")]
     pub r#type: ::prost::alloc::string::String,
     /// Should be Array(Tuple(Text, Text)) when supported by sink-files
-    #[prost(string, tag="8")]
-    pub attributes: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag="8")]
+    pub attributes: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -130,8 +130,9 @@ pub struct BlockEvent {
     pub index: u32,
     #[prost(string, tag="6")]
     pub r#type: ::prost::alloc::string::String,
-    #[prost(string, tag="7")]
-    pub attributes: ::prost::alloc::string::String,
+    /// Should be Array(Tuple(Text, Text)) when supported by sink-files
+    #[prost(string, repeated, tag="7")]
+    pub attributes: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -188,8 +189,20 @@ pub struct ConsensusParamUpdate {
     pub block_date: ::prost::alloc::string::String,
     #[prost(string, tag="4")]
     pub block_hash: ::prost::alloc::string::String,
-    #[prost(string, tag="5")]
-    pub json: ::prost::alloc::string::String,
+    #[prost(int64, optional, tag="5")]
+    pub block_max_bytes: ::core::option::Option<i64>,
+    #[prost(int64, optional, tag="6")]
+    pub block_max_gas: ::core::option::Option<i64>,
+    #[prost(int64, optional, tag="7")]
+    pub evidence_max_age_num_blocks: ::core::option::Option<i64>,
+    #[prost(string, optional, tag="8")]
+    pub evidence_max_age_duration: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(int64, optional, tag="9")]
+    pub evidence_max_bytes: ::core::option::Option<i64>,
+    #[prost(string, repeated, tag="10")]
+    pub validator_pub_key_types: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(uint64, optional, tag="11")]
+    pub app_version: ::core::option::Option<u64>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]

@@ -8,41 +8,18 @@ pub fn collect_consensus_params(block: &Block, timestamp: &BlockTimestamp) -> Ve
     let mut vec: Vec<ConsensusParamUpdate> = vec![];
 
     if let Some(consensus_params) = &block.consensus_param_updates {
-        let mut json = serde_json::json!({});
-
-        if let Some(block_params) = &consensus_params.block {
-            json["block"] = serde_json::json!({
-                "max_bytes": block_params.max_bytes,
-                "max_gas": block_params.max_gas,
-            });
-        }
-
-        if let Some(evidence_params) = &consensus_params.evidence {
-            json["evidence"] = serde_json::json!({
-                "max_age_num_blocks": evidence_params.max_age_num_blocks,
-                "max_age_duration": evidence_params.max_age_duration.as_ref().map(|d| d.to_string()),
-                "max_bytes": evidence_params.max_bytes
-            });
-        }
-
-        if let Some(validator_params) = &consensus_params.validator {
-            json["validator"] = serde_json::json!({
-                "pub_key_types": validator_params.pub_key_types
-            });
-        }
-
-        if let Some(version_params) = &consensus_params.version {
-            json["version"] = serde_json::json!({
-                "app_version": version_params.app
-            });
-        }
-
         vec.push(ConsensusParamUpdate {
             block_time: Some(timestamp.time),
             block_number: timestamp.number,
             block_date: timestamp.date.clone(),
             block_hash: Hex::encode(&block.hash),
-            json: json.to_string(),
+            block_max_bytes: consensus_params.block.as_ref().map(|b| b.max_bytes),
+            block_max_gas: consensus_params.block.as_ref().map(|b| b.max_gas),
+            evidence_max_age_num_blocks: consensus_params.evidence.as_ref().map(|e| e.max_age_num_blocks),
+            evidence_max_age_duration: consensus_params.evidence.as_ref().and_then(|e| e.max_age_duration.as_ref().map(|d| d.to_string())),
+            evidence_max_bytes: consensus_params.evidence.as_ref().map(|e| e.max_bytes),
+            validator_pub_key_types: consensus_params.validator.as_ref().map(|v| v.pub_key_types.clone()).unwrap_or_default(),
+            app_version: consensus_params.version.as_ref().map(|v| v.app),
         });
     }
 

@@ -10,8 +10,9 @@ pub fn compute_tx_hash(tx_as_bytes: &[u8]) -> String {
     return Hex::encode(tx_hash);
 }
 
-// Builds a string in the format of an array of tuples (key, value)
-pub fn build_attributes_array_string(attributes: &[EventAttribute]) -> String {
-    let tuples: Vec<(&str, &str)> = attributes.iter().map(|attr| (attr.key.as_str(), attr.value.as_str())).collect();
-    serde_json::to_string(&tuples).unwrap_or_default()
+pub fn build_attributes_array(attributes: &[EventAttribute]) -> Vec<String> {
+    attributes
+        .iter()
+        .map(|attr| format!("\"{key}\":\"{value}\"", key = attr.key, value = serde_json::to_string(&attr.value).unwrap_or_default()))
+        .collect()
 }

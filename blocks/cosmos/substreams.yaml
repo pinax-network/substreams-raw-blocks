@@ -25,4 +25,4 @@ modules:
       - source: sf.substreams.v1.Clock
       - source: sf.cosmos.type.v2.Block
     output:
-      type: proto:cosmos.Events
+      type: proto:pinax.cosmos.Events
