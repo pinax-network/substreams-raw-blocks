@@ -1,0 +1,140 @@
+syntax = "proto3";
+package pinax.starknet;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/streamingfast/firehose-starknet/pb/sf/starknet/type/v1;pbstarknet";
+
+message EventsOutput {
+    repeated Block blocks = 1;
+    repeated Transaction transactions = 2;
+    repeated AccessList access_lists = 3;
+    repeated Events events = 4;
+    repeated Call calls = 5;
+}
+
+message Block {
+    google.protobuf.Timestamp time = 1;
+    uint64 number = 2;
+    string date = 3;
+    string hash = 4;
+    string l1_da_mode = 5;
+    uint64 l1_data_gas_price_in_fri = 6;
+    uint64 l1_data_gas_price_in_wei = 7;
+    uint64 l1_gas_price_in_fri = 8;
+    uint64 l1_gas_price_in_wei = 9;
+    string starknet_version = 10;
+    uint32 tx_count = 11; 
+    string new_root = 12;
+    string parent_hash = 13;
+    string sequencer_address = 14;
+    string state_diff = 15;
+}
+
+
+message Transaction {
+    google.protobuf.Timestamp block_time = 1;
+    uint64 block_number = 2;
+    string block_date = 3;
+    string block_hash = 4;
+
+    string value = 5; // Using string to represent decimal(38,0)
+    uint64 gas_limit = 6;
+    uint64 gas_price = 7;
+    uint64 gas_used = 8;
+    uint64 max_fee_per_gas = 9;
+    uint64 max_priority_fee_per_gas = 10;
+    int64 priority_fee_per_gas = 11;
+    uint64 nonce = 12;
+    uint64 index = 13;
+    bool success = 14;
+    string from = 15; // Varbinary represented as string
+    string to = 16;
+    string data = 17;
+    string hash = 18;
+    string type = 19; // Varchar represented as string
+    repeated string blob_versioned_hashes = 20;
+    uint64 max_fee_per_blob_gas = 21;
+}
+
+message AccessList {
+    // clock
+    google.protobuf.Timestamp block_time = 1;
+    uint64 block_number = 2;
+    string block_date = 3;
+    string block_hash = 4;
+
+    // transaction
+    string tx_hash = 5;
+    bool tx_success = 6;
+    uint64 index = 7; // Index of the access list entry in the transaction
+
+    // access list
+    string address = 8;
+    repeated string storage_keys = 9;
+}
+
+message Events {
+    // clock
+    google.protobuf.Timestamp block_time = 1;
+    uint64 block_number = 2;
+    string block_date = 3;
+    string block_hash = 4;
+
+    // block
+    string block_new_root = 5;
+    string block_parent_hash = 6;
+    string block_sequencer_address = 7;
+    string block_starknet_version = 8;
+
+    // block counters
+    string block_l1_da_mode = 9;
+    uint64 block_l1_data_gas_price_in_fri = 10;
+    uint64 block_l1_data_gas_price_in_wei = 11;
+    uint64 block_l1_gas_price_in_fri = 12;
+    uint64 block_l1_gas_price_in_wei = 13;
+
+    // event
+    uint32 event_index = 14;
+    string tx_hash = 15;
+    repeated string data = 16;
+    repeated string keys = 17;
+    string from_address = 18;
+    string class_hash = 19;
+}
+
+message Call {
+    // clock
+    google.protobuf.Timestamp block_time = 1;
+    uint64 block_number = 2;
+    string block_date = 3;
+    string block_hash = 4;
+
+    // block
+    string block_l1_da_mode = 5;
+    uint64 block_l1_data_gas_price_in_fri = 6;
+    uint64 block_l1_data_gas_price_in_wei = 7;
+    uint64 block_l1_gas_price_in_fri = 8;
+    uint64 block_l1_gas_price_in_wei = 9;
+    string block_starknet_version = 10;
+
+    // transaction
+    uint32 tx_index = 11;
+    string tx_type = 12;
+
+    // call
+    string call_type = 13;
+    string context = 14;
+    string entry_point_type = 15;
+    uint32 execution_resources_bitwise_builtin_applications = 16;
+    uint64 execution_resources_data_availability_l1_gas = 17;
+    uint64 execution_resources_data_availability_l1_data_gas = 18;
+    uint32 execution_resources_ec_op_builtin_applications = 19;
+    uint32 execution_resources_ecdsa_builtin_applications = 20;
+    uint32 execution_resources_keccak_builtin_applications = 21;
+    uint32 execution_resources_memory_holes = 22;
+    uint32 execution_resources_pedersen_builtin_applications = 23;
+    uint32 execution_resources_poseidon_builtin_applications = 24;
+    uint32 execution_resources_range_check_builtin_applications = 25;
+    uint32 execution_resources_segment_arena_builtin = 26;
+}

@@ -1,0 +1,432 @@
+syntax = "proto3";
+package sf.starknet.type.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/streamingfast/firehose-starknet/pb/sf/starknet/type/v1;pbstarknet";
+
+message Block {
+  bytes block_hash = 1;
+  //The hash of this block's parent
+  bytes parent_hash = 2;
+  uint64 block_number = 3;
+  //The new global state root
+  bytes new_root = 4;
+  //The time in which the block was created
+  uint64 timestamp = 5;
+  //The StarkNet identity of the sequencer submitting this block
+  bytes sequencer_address = 6;
+
+  //The price of l1 gas in the block
+  ResourcePrice l1_gas_price = 7;
+  //The price of l1 data gas in the block
+  ResourcePrice l1_data_gas_price = 8;
+  //specifies whether the data of this block is published via blob data or calldata
+  L1_DA_MODE l1_da_mode = 9;
+  //Semver of the current Starknet protocol
+  string starknet_version = 10;
+
+  //The transactions in this block
+  repeated TransactionWithReceipt transactions = 11;
+
+  StateUpdate state_update = 12;
+}
+
+//specifies whether the data of this block is published via blob data or calldata
+enum L1_DA_MODE {
+  L1_DA_MODE_UNKNOWN = 0;
+  CALLDATA = 1;
+  BLOB = 2;
+}
+
+enum FEE_DATA_AVAILABILITY_MODE {
+  FEE_DATA_AVAILABILITY_MODE_UNKNOWN = 0;
+  L1 = 1;
+  L2 = 2;
+}
+
+enum TRANSACTION_TYPE {
+  TRANSACTION_TYPE_UNKNOWN = 0;
+  INVOKE = 1;
+  DECLARE = 2;
+  DEPLOY = 3;
+  DEPLOY_ACCOUNT = 4;
+  L1_HANDLER = 5;
+}
+
+enum EXECUTION_STATUS {
+  EXECUTION_STATUS_UNKNOWN = 0;
+  EXECUTION_STATUS_SUCCESS = 1;
+  EXECUTION_STATUS_REVERTED = 2;
+}
+
+message ResourcePrice {
+  bytes price_in_fri = 1;
+  bytes price_in_wei = 2;
+}
+
+message TransactionWithReceipt {
+  oneof transaction {
+    InvokeTransactionV0 invoke_transaction_v0 = 1;
+    InvokeTransactionV1 invoke_transaction_v1 = 2;
+    InvokeTransactionV3 invoke_transaction_v3 = 3;
+
+    L1HandlerTransaction l1_handler_transaction = 4; //not versioned in api definition
+
+    DeclareTransactionV0 declare_transaction_v0 = 5;
+    DeclareTransactionV1 declare_transaction_v1 = 6;
+    DeclareTransactionV2 declare_transaction_v2 = 7;
+    DeclareTransactionV3 declare_transaction_v3 = 8;
+    DeployTransactionV0 deploy_transaction_v0 = 9;
+
+    DeployAccountTransactionV1 deploy_account_transaction_v1 = 10;
+    DeployAccountTransactionV3 deploy_account_transaction_v3 = 11;
+  }
+
+  TransactionReceipt receipt = 12;
+}
+
+message TransactionReceipt{
+  //The hash identifying the transaction
+  bytes transaction_hash = 1;
+  //The fee that was charged by the sequencer
+  ActualFee actual_fee = 2;
+  //Execution status
+  EXECUTION_STATUS execution_status = 3;
+  string revert_reason = 4;
+
+  TRANSACTION_TYPE type = 5;
+  //Messages sent
+  string message_hash = 6;
+  //The address of the deployed contract
+  repeated MessagesSent messages_sent = 7;
+  //The events emitted as part of this transaction
+  repeated Event events = 8;
+  //The resources consumed by the transaction
+  ExecutionResources execution_resources = 9;
+  //The message hash as it appears on the L1 core contract
+  bytes contract_address = 10;
+
+}
+
+message MessagesSent {
+  //The address of the L2 contract sending the message
+  bytes from_address = 1;
+  //The target L1 address the message is sent to
+  bytes to_address = 2;
+  //The payload of the messageResourceBounds
+  repeated bytes payload = 3;
+}
+
+message Event {
+  //From address
+  bytes from_address = 1;
+  repeated bytes keys = 2;
+  repeated bytes data = 3;
+}
+
+message ExecutionResources {
+  //The number of Cairo steps used
+  uint64 steps = 1;
+  //The number of unused memory cells (each cell is roughly equivalent to a step)
+  uint64 memory_holes = 2;
+  //The number of RANGE_CHECK builtin instances
+  uint64 range_check_builtin_applications = 3;
+  //The number of Pedersen builtin instances
+  uint64 pedersen_builtin_applications = 4;
+  //The number of Poseidon builtin instances
+  uint64 poseidon_builtin_applications = 5;
+  //the number of EC_OP builtin instances
+  uint64 ec_op_builtin_applications = 6;
+  //the number of ECDSA builtin instances
+  uint64 ecdsa_builtin_applications = 7;
+  //the number of BITWISE builtin instances
+  uint64 bitwise_builtin_applications = 8;
+  //The number of KECCAK builtin instances
+  uint64 keccak_builtin_applications = 9;
+  //The number of accesses to the segment arena
+  uint64 segment_arena_builtin = 10;
+  DataAvailability data_availability = 11;
+
+}
+
+//invokes a specific function in the desired contract (not necessarily an account)
+message InvokeTransactionV0 {
+  //The maximal fee that can be charged for including the transaction
+  bytes max_fee = 2;
+  //Version of the transaction scheme
+  string version = 3;
+  repeated bytes signature = 4;
+  bytes contract_address = 5;
+  bytes entry_point_selector = 6;
+  //The parameters passed to the function
+  repeated bytes calldata = 7;
+}
+
+//initiates a transaction from a given account
+message InvokeTransactionV1 {
+  //The maximal fee that can be charged for including the transaction
+  bytes max_fee = 1;
+  //Version of the transaction scheme
+  string version = 2;
+  repeated bytes signature = 3;
+  bytes nonce = 4;
+  //sender address
+  bytes sender_address = 5;
+  //The data expected by the account's `execute` function (in most usecases, this includes the called contract address and a function selector)
+  repeated bytes calldata = 6;
+}
+
+//initiates a transaction from a given account
+message InvokeTransactionV3 {
+  bytes sender_address = 2;
+  //The data expected by the account's `execute` function (in most usecases, this includes the called contract address and a function selector)
+  repeated bytes calldata = 3;
+  //Version of the transaction scheme
+  string version = 4;
+  repeated bytes signature = 5;
+  bytes nonce = 6;
+  //resource bounds for the transaction execution
+  ResourceBounds resource_bounds = 7;
+  //the tip for the transaction
+  bytes tip = 8;
+  //data needed to allow the paymaster to pay for the transaction in native tokens
+  repeated bytes paymaster_data = 9;
+  //data needed to deploy the account contract from which this tx will be initiated
+  repeated bytes account_deployment_data = 10;
+  //The storage domain of the account's nonce (an account has a nonce per DA mode)
+  FEE_DATA_AVAILABILITY_MODE nonce_data_availability_mode = 11;
+  //The storage domain of the account's balance from which fee will be charged
+  FEE_DATA_AVAILABILITY_MODE fee_data_availability_mode = 12;
+}
+
+//a call to an l1_handler on an L2 contract induced by a message from L1
+message L1HandlerTransaction {
+  //Version of the transaction scheme
+  string version = 1;
+  //Version of the transaction scheme
+  string nonce = 3;
+  //The address of the contract whose class hash will be returned
+  bytes contract_address = 4;
+  //Entry point selector
+  bytes entry_point_selector = 5;
+  //The parameters passed to the function
+  repeated bytes calldata = 6;
+}
+
+//Declare Contract Transaction V0
+message DeclareTransactionV0 {
+  bytes sender_address = 2;
+  //The maximal fee that can be charged for including the transaction
+  bytes max_fee = 3;
+  //Version of the transaction scheme
+  string version = 4;
+  repeated bytes signature = 5;
+  //The hash of the requested contract class
+  bytes class_hash = 6;
+}
+
+//Declare Contract Transaction V1
+message DeclareTransactionV1 {
+  bytes sender_address = 2;
+  //The maximal fee that can be charged for including the transaction
+  bytes max_fee = 3;
+  //Version of the transaction scheme
+  string version = 4;
+  repeated bytes signature = 5;
+  bytes nonce = 6;
+  //The hash of the requested contract class
+  bytes class_hash = 7;
+}
+
+//Declare Contract Transaction V2
+message DeclareTransactionV2 {
+  bytes sender_address = 1;
+  //The maximal fee that can be charged for including the transaction
+  bytes compiled_class_hash = 2;
+  bytes max_fee = 3;
+  //Version of the transaction scheme
+  string version = 4;
+  repeated bytes signature = 5;
+  bytes nonce = 6;
+  //The hash of the requested contract class
+  bytes class_hash = 7;
+}
+
+//Declare Contract Transaction V3
+message DeclareTransactionV3 {
+  bytes sender_address = 2;
+  //The hash of the Cairo assembly resulting from the Sierra compilation
+  bytes compiled_class_hash = 3;
+  //Version of the transaction scheme
+  string version = 4;
+  repeated bytes signature = 5;
+  bytes nonce = 6;
+  //The hash of the requested contract class
+  bytes class_hash = 7;
+  //resource bounds for the transaction execution
+  ResourceBounds resource_bounds = 8;
+  //the tip for the transaction
+  bytes tip = 9;
+  //data needed to allow the paymaster to pay for the transaction in native tokens
+  repeated bytes paymaster_data = 10;
+  //data needed to deploy the account contract from which this tx will be initiated
+  repeated bytes account_deployment_data = 11;
+  //The storage domain of the account's nonce (an account has a nonce per DA mode)
+  FEE_DATA_AVAILABILITY_MODE nonce_data_availability_mode = 12;
+  //The storage domain of the account's balance from which fee will be charged
+  FEE_DATA_AVAILABILITY_MODE fee_data_availability_mode = 13;
+}
+
+//deploys a new account contract
+message DeployTransactionV0 {
+  //The hash of the deployed contract's class
+  bytes class_hash = 1;
+  //Version of the transaction scheme
+  string version = 2;
+  //The salt for the address of the deployed contract
+  bytes contract_address_salt = 3;
+  //The parameters passed to the constructor
+  repeated bytes  constructor_calldata = 4;
+}
+
+//Deploys an account contract, charges fee from the pre-funded account addresses
+message DeployAccountTransactionV1 {
+  //The maximal fee that can be charged for including the transaction
+  bytes max_fee = 1;
+  //Version of the transaction scheme
+  string version = 2;
+  repeated bytes signature = 3;
+  bytes nonce = 4;
+  //The hash of the deployed contract's class
+  bytes class_hash = 5;
+  //The salt for the address of the deployed contract
+  bytes contract_address_salt = 6;
+  //The parameters passed to the constructor
+  repeated bytes constructor_calldata = 7;
+}
+
+//Deploys an account contract, charges fee from the pre-funded account addresses
+message DeployAccountTransactionV3 {
+  //Version of the transaction scheme
+  string version = 1;
+  repeated bytes signature = 2;
+  bytes nonce = 3;
+  //The salt for the address of the deployed contract
+  bytes contract_address_salt = 4;
+  //The parameters passed to the constructor
+  repeated bytes constructor_calldata = 5;
+  //The hash of the deployed contract's class
+  bytes class_hash = 6;
+  //resource bounds for the transaction execution
+  ResourceBounds resource_bounds = 7;
+  //the tip for the transaction
+  bytes tip = 8;
+  //data needed to allow the paymaster to pay for the transaction in native tokens
+  repeated bytes paymaster_data = 9;
+  //The storage domain of the account's nonce (an account has a nonce per DA mode)
+  FEE_DATA_AVAILABILITY_MODE nonce_data_availability_mode = 11;
+  //The storage domain of the account's balance from which fee will be charged
+  FEE_DATA_AVAILABILITY_MODE fee_data_availability_mode = 12;
+}
+
+message ResourceBounds {
+  //The max amount and max price per unit of L1 gas used in this tx
+  Resource l1_gas = 1;
+  //The max amount and max price per unit of L2 gas used in this tx
+  Resource l2_gas = 2;
+}
+
+message Resource {
+  //the max amount of the resource that can be used in the tx
+  string max_amount = 1;
+  //the max price per unit of this resource for this tx
+  string max_price_per_unit = 2;
+}
+
+message Receipt {
+  //The fee that was charged by the sequencer
+  ActualFee actual_fee = 1;
+}
+
+message ActualFee {
+  //amount paid
+  bytes amount = 1;
+  //units in which the fee is given
+  string unit = 2;
+}
+
+message DataAvailability {
+  //the data gas consumed by this transaction's data, 0 if it uses gas for DA
+  uint64 l1_gas = 1;
+  //the gas consumed by this transaction's data, 0 if it uses data gas for DA
+  uint64 l1_data_gas = 2;
+}
+
+//State update
+message StateUpdate {
+  //The new global state root
+  bytes new_root = 2;
+  //The previous global state root
+  bytes old_root = 1;
+  //The change in state applied in this block, given as a mapping of addresses to the new values and/or new contracts
+  StateDiff state_diff = 3;
+}
+
+//The change in state applied in this block, given as a mapping of addresses to the new values and/or new contracts
+message StateDiff {
+  //The changes in the storage per contract address
+  repeated ContractStorageDiff storage_diffs = 1;
+  //The hash of the declared class
+  repeated bytes deprecated_declared_classes = 2;
+  //The declared class hash and compiled class hash
+  repeated DeclaredClass declared_classes = 3;
+  //A new contract deployed as part of the state update
+  repeated DeployedContract deployed_contracts = 4;
+  //The list of contracts whose class was replaced
+  repeated ReplacedClass replaced_classes = 5;
+  //The updated nonce per contract address
+  repeated NonceDiff nonces = 6; //Do we need this?
+}
+
+message NonceDiff {
+  //"The address of the contract
+  bytes contract_address = 1;
+  //The nonce for the given address at the end of the block
+  bytes nonce = 2;
+}
+
+message ReplacedClass {
+  //The address of the contract whose class was replaced
+  bytes contract_address = 1;
+  //The new class hash
+  bytes class_hash = 2;
+}
+
+message DeployedContract {
+  //The address of the contract
+  bytes address = 1;
+  //The hash of the contract code
+  bytes class_hash = 2;
+}
+
+message DeclaredClass {
+  //The hash of the declared class
+  bytes class_hash = 1;
+  //The Cairo assembly hash corresponding to the declared class
+  bytes compiled_class_hash = 2;
+}
+
+message ContractStorageDiff {
+  //The address of the contract
+  bytes address = 1;
+  //The changes in the storage of the contract
+  repeated StorageEntries storage_entries = 2;
+}
+
+message StorageEntries {
+  //The key of the changed value
+  bytes key = 1;
+  //The new value applied to the given address
+  bytes value = 2;
+}
