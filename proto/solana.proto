@@ -1,12 +1,12 @@
 syntax = "proto3";
 
-package solana;
+package pinax.solana.v1;
 
 import "google/protobuf/timestamp.proto";
 
 message Events {
   repeated Block blocks = 1;
-  repeated Reward rewards = 2; 
+  repeated Reward rewards = 2;
   repeated Transaction transactions = 3;
   repeated InstructionCall instruction_calls = 4;
   repeated AccountActivity account_activity = 5;

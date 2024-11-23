@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package evm;
+package pinax.evm.v1;
 
 import "google/protobuf/timestamp.proto";
 import "parquet/options.proto";

@@ -7,7 +7,7 @@ use crate::{
     blocks::collect_block,
     consensus_param_updates::collect_consensus_params,
     misbehaviors::collect_misbehaviors,
-    pb::pinax::cosmos::{Events, Transaction, TransactionEvent, TransactionMessage},
+    pb::pinax::cosmos::v1::{Events, Transaction, TransactionEvent, TransactionMessage},
     transaction_messages::collect_tx_transaction_messages,
     transactions::collect_transaction,
     tx_and_block_events::{collect_block_events, collect_transaction_events},

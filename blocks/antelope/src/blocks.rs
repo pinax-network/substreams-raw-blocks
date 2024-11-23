@@ -1,4 +1,4 @@
-use crate::{pb::antelope::Block as EventsBlock, size::compute_block_size};
+use crate::{pb::pinax::antelope::v1::Block as EventsBlock, size::compute_block_size};
 use common::structs::BlockTimestamp;
 use substreams::Hex;
 use substreams_antelope::Block;

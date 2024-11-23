@@ -19,7 +19,6 @@ protobuf:
     - sf/substreams
     - google
 
-
 modules:
   - name: map_events
     kind: map

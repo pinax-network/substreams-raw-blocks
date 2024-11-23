@@ -31,5 +31,5 @@ Kind: map
 Input: source: sf.substreams.v1.Clock
 Input: source: sf.cosmos.type.v2.Block
 Output Type: proto:cosmos.Events
-Hash: def06497ee4c721b6799dc719ea4240c887cb48c
+Hash: 17f7b8c1560fd5c84daf9d89065b7484b22d4211
 ```

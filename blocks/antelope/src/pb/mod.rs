@@ -1,6 +1,10 @@
 // @generated
-// @@protoc_insertion_point(attribute:antelope)
-pub mod antelope {
-    include!("antelope.rs");
-    // @@protoc_insertion_point(antelope)
+pub mod pinax {
+    pub mod antelope {
+        // @@protoc_insertion_point(attribute:pinax.antelope.v1)
+        pub mod v1 {
+            include!("pinax.antelope.v1.rs");
+            // @@protoc_insertion_point(pinax.antelope.v1)
+        }
+    }
 }

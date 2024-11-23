@@ -2,7 +2,7 @@ use common::structs::BlockTimestamp;
 use substreams::Hex;
 use substreams_antelope::{pb::TransactionTrace, Block};
 
-use crate::pb::antelope::Transaction;
+use crate::pb::pinax::antelope::v1::Transaction;
 
 pub fn transaction_status_to_string(status: i32) -> String {
     match status {

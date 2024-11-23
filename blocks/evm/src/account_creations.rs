@@ -3,7 +3,7 @@ use common::utils::bytes_to_hex;
 
 use substreams_ethereum::pb::eth::v2::{AccountCreation, Block, TransactionTrace};
 
-use crate::pb::evm::AccountCreation as AccountCreationEvent;
+use crate::pb::pinax::evm::v1::AccountCreation as AccountCreationEvent;
 
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L736
 // DetailLevel: EXTENDED

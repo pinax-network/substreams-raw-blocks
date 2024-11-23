@@ -2,7 +2,7 @@ use common::utils::build_timestamp;
 use substreams::{errors::Error, pb::substreams::Clock};
 use substreams_bitcoin::pb::btc::v1::Block;
 
-use crate::{blocks::collect_block, inputs::collect_transaction_inputs, outputs::collect_transaction_outputs, pb::pinax::bitcoin::Events, transactions::collect_transaction};
+use crate::{blocks::collect_block, inputs::collect_transaction_inputs, outputs::collect_transaction_outputs, pb::pinax::bitcoin::v1::Events, transactions::collect_transaction};
 
 #[substreams::handlers::map]
 pub fn map_events(clock: Clock, block: Block) -> Result<Events, Error> {

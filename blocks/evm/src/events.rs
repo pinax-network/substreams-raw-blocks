@@ -12,7 +12,7 @@ use crate::creation_traces::collect_creation_traces;
 use crate::gas_changes::collect_gas_changes;
 use crate::logs::collect_logs;
 use crate::nonce_changes::collect_nonce_changes;
-use crate::pb::evm::Events;
+use crate::pb::pinax::evm::v1::Events;
 use crate::storage_changes::collect_storage_changes;
 use crate::traces::collect_traces;
 use crate::transactions::collect_transactions;

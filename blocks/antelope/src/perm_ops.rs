@@ -1,7 +1,7 @@
 use common::structs::BlockTimestamp;
 use substreams_antelope::pb::{PermissionLevel, TransactionTrace};
 
-use crate::pb::antelope::PermOp;
+use crate::pb::pinax::antelope::v1::PermOp;
 
 pub fn perm_op_operation_to_string(operation: i32) -> String {
     match operation {

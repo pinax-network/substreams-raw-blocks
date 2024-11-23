@@ -1,7 +1,7 @@
 use common::structs::BlockTimestamp;
 use substreams_antelope::pb::TransactionTrace;
 
-use crate::pb::antelope::TableOp;
+use crate::pb::pinax::antelope::v1::TableOp;
 
 pub fn table_op_operation_to_string(operation: i32) -> String {
     match operation {

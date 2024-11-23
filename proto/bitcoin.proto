@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package pinax.bitcoin;
+package pinax.bitcoin.v1;
 
 import "google/protobuf/timestamp.proto";
 

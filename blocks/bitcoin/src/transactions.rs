@@ -1,7 +1,7 @@
 use common::structs::BlockTimestamp;
 use substreams_bitcoin::pb::btc::v1::Transaction;
 
-use crate::pb::pinax::bitcoin::Transaction as OutputTransaction;
+use crate::pb::pinax::bitcoin::v1::Transaction as OutputTransaction;
 
 pub fn collect_transaction(transaction: &Transaction, timestamp: &BlockTimestamp, index: u32) -> OutputTransaction {
     OutputTransaction {

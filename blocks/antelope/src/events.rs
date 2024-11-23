@@ -7,7 +7,7 @@ use crate::actions::collect_tx_actions;
 use crate::blocks::collect_block;
 use crate::db_ops::collect_tx_db_ops;
 use crate::feature_ops::collect_tx_feature_ops;
-use crate::pb::antelope::Events;
+use crate::pb::pinax::antelope::v1::Events;
 use crate::perm_ops::collect_tx_perm_ops;
 use crate::ram_ops::collect_tx_ram_ops;
 use crate::table_ops::collect_tx_table_ops;

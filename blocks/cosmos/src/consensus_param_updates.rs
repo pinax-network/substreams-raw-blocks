@@ -2,7 +2,7 @@ use common::structs::BlockTimestamp;
 use substreams::Hex;
 use substreams_cosmos::Block;
 
-use crate::pb::pinax::cosmos::ConsensusParamUpdate;
+use crate::pb::pinax::cosmos::v1::ConsensusParamUpdate;
 
 pub fn collect_consensus_params(block: &Block, timestamp: &BlockTimestamp) -> Vec<ConsensusParamUpdate> {
     let mut vec: Vec<ConsensusParamUpdate> = vec![];

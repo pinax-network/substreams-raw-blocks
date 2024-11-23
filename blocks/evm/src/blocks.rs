@@ -4,7 +4,7 @@ use common::utils::{bytes_to_hex, optional_bigint_to_u64, optional_u64_to_string
 
 use substreams_ethereum::pb::eth::v2::Block;
 
-use crate::pb::evm::Block as BlockHeader;
+use crate::pb::pinax::evm::v1::Block as BlockHeader;
 
 pub fn block_detail_to_string(detail_level: i32) -> String {
     match detail_level {

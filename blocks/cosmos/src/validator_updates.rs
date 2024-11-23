@@ -2,7 +2,7 @@ use common::structs::BlockTimestamp;
 use substreams::Hex;
 use substreams_cosmos::{pb::public_key, Block};
 
-use crate::pb::pinax::cosmos::ValidatorUpdate;
+use crate::pb::pinax::cosmos::v1::ValidatorUpdate;
 
 pub fn collect_validator_updates(block: &Block, timestamp: &BlockTimestamp) -> Vec<ValidatorUpdate> {
     let mut vec: Vec<ValidatorUpdate> = vec![];

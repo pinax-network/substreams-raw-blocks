@@ -3,7 +3,7 @@ use common::utils::{bytes_to_hex, extract_topic};
 use substreams_ethereum::pb::eth::v2::{Block, Log, TransactionTrace};
 
 use crate::blocks::block_detail_to_string;
-use crate::pb::evm::Log as LogEvent;
+use crate::pb::pinax::evm::v1::Log as LogEvent;
 use crate::transactions::{is_transaction_success, transaction_status_to_string};
 
 // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L512

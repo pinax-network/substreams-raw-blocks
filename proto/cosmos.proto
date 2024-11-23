@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package pinax.cosmos;
+package pinax.cosmos.v1;
 
 import "google/protobuf/timestamp.proto";
 

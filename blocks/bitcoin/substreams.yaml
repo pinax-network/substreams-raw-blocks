@@ -12,10 +12,8 @@ binaries:
 protobuf:
   files:
     - bitcoin.proto
-    - parquet/options.proto
   importPaths:
     - ../../proto
-
   excludePaths:
     - sf/substreams
     - google

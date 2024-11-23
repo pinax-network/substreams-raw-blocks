@@ -1,7 +1,7 @@
 use common::structs::BlockTimestamp;
 use substreams_antelope::pb::TransactionTrace;
 
-use crate::pb::antelope::FeatureOp;
+use crate::pb::pinax::antelope::v1::FeatureOp;
 
 pub fn collect_tx_feature_ops(transaction: &TransactionTrace, timestamp: &BlockTimestamp, tx_success: bool) -> Vec<FeatureOp> {
     let mut feature_ops = Vec::new();

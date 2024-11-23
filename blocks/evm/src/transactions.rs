@@ -3,7 +3,7 @@ use common::utils::bytes_to_hex;
 use common::utils::optional_bigint_to_string;
 use substreams_ethereum::pb::eth::v2::Block;
 
-use crate::pb::evm::Transaction;
+use crate::pb::pinax::evm::v1::Transaction;
 
 pub fn transaction_type_to_string(r#type: i32) -> String {
     match r#type {

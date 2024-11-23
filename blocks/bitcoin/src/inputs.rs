@@ -1,7 +1,7 @@
 use common::structs::BlockTimestamp;
 use substreams_bitcoin::pb::btc::v1::Transaction;
 
-use crate::pb::pinax::bitcoin::Input;
+use crate::pb::pinax::bitcoin::v1::Input;
 
 pub fn collect_transaction_inputs(transaction: &Transaction, timestamp: &BlockTimestamp) -> Vec<Input> {
     let mut inputs = Vec::new();

@@ -1,7 +1,7 @@
 use common::{structs::BlockTimestamp, utils::bytes_to_hex};
 use substreams_ethereum::pb::eth::v2::{Block, GasChange, TransactionTrace};
 
-use crate::pb::evm::GasChange as GasChangeEvent;
+use crate::pb::pinax::evm::v1::GasChange as GasChangeEvent;
 
 pub fn gas_change_reason_to_string(reason: i32) -> String {
     match reason {

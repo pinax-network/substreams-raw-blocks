@@ -3,7 +3,7 @@ use common::utils::optional_bigint_to_string;
 use common::utils::{bytes_to_hex, optional_bigint_to_decimal};
 use substreams_ethereum::pb::eth::v2::{BalanceChange, Block, TransactionTrace};
 
-use crate::pb::evm::BalanceChange as BalanceChangeEvent;
+use crate::pb::pinax::evm::v1::BalanceChange as BalanceChangeEvent;
 
 pub fn balance_change_reason_to_string(reason: i32) -> String {
     match reason {

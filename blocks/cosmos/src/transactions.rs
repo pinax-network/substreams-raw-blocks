@@ -2,7 +2,7 @@ use common::structs::BlockTimestamp;
 use substreams::Hex;
 use substreams_cosmos::pb::TxResults;
 
-use crate::pb::pinax::cosmos::Transaction;
+use crate::pb::pinax::cosmos::v1::Transaction;
 
 pub fn collect_transaction(tx_result: &TxResults, tx_hash: &str, timestamp: &BlockTimestamp, index: usize) -> Transaction {
     Transaction {

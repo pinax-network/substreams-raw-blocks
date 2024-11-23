@@ -1,7 +1,7 @@
 use common::structs::BlockTimestamp;
 use substreams_antelope::pb::TransactionTrace;
 
-use crate::pb::antelope::RamOp;
+use crate::pb::pinax::antelope::v1::RamOp;
 
 pub fn namespace_to_string(namespace: i32) -> String {
     match namespace {

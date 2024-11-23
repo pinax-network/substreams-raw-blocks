@@ -2,7 +2,7 @@ use common::structs::BlockTimestamp;
 use substreams::Hex;
 use substreams_cosmos::Block;
 
-use crate::pb::pinax::cosmos::Misbehavior;
+use crate::pb::pinax::cosmos::v1::Misbehavior;
 
 pub fn collect_misbehaviors(block: &Block, timestamp: &BlockTimestamp) -> Vec<Misbehavior> {
     let mut vec: Vec<Misbehavior> = vec![];

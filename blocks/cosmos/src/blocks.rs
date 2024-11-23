@@ -2,7 +2,7 @@ use common::structs::BlockTimestamp;
 use substreams::Hex;
 use substreams_cosmos::Block;
 
-use crate::{pb::pinax::cosmos::Block as RawBlock, size::get_size};
+use crate::{pb::pinax::cosmos::v1::Block as RawBlock, size::get_size};
 
 pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> RawBlock {
     let header = block.header.as_ref().unwrap();

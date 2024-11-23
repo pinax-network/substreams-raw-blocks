@@ -1,8 +1,10 @@
 // @generated
 pub mod pinax {
-    // @@protoc_insertion_point(attribute:pinax.cosmos)
     pub mod cosmos {
-        include!("pinax.cosmos.rs");
-        // @@protoc_insertion_point(pinax.cosmos)
+        // @@protoc_insertion_point(attribute:pinax.cosmos.v1)
+        pub mod v1 {
+            include!("pinax.cosmos.v1.rs");
+            // @@protoc_insertion_point(pinax.cosmos.v1)
+        }
     }
 }

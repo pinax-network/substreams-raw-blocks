@@ -4,7 +4,7 @@ use substreams::Hex;
 use substreams_antelope::pb::TransactionTrace;
 use substreams_antelope::Block;
 
-use crate::pb::antelope::Action;
+use crate::pb::pinax::antelope::v1::Action;
 
 // https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L525
 pub fn collect_tx_actions(block: &Block, transaction: &TransactionTrace, timestamp: &BlockTimestamp, tx_success: bool) -> Vec<Action> {

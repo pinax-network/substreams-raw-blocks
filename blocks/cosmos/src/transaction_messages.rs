@@ -2,7 +2,7 @@ use common::structs::BlockTimestamp;
 use substreams::Hex;
 use substreams_cosmos::Block;
 
-use crate::pb::pinax::cosmos::TransactionMessage;
+use crate::pb::pinax::cosmos::v1::TransactionMessage;
 
 pub fn collect_tx_transaction_messages(block: &Block, tx_index: usize, tx_hash: &str, timestamp: &BlockTimestamp) -> Vec<TransactionMessage> {
     let mut vec: Vec<TransactionMessage> = vec![];

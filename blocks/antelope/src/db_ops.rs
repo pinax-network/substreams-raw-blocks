@@ -2,7 +2,7 @@ use common::structs::BlockTimestamp;
 use substreams::Hex;
 use substreams_antelope::pb::TransactionTrace;
 
-use crate::pb::antelope::DbOp;
+use crate::pb::pinax::antelope::v1::DbOp;
 
 pub fn operation_to_string(operation: i32) -> String {
     match operation {

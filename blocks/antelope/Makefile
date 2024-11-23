@@ -20,12 +20,3 @@ protogen:
 .PHONY: parquet
 parquet:
 	substreams-sink-files run eos.substreams.pinax.network:443 substreams.yaml map_events './out' 386841287:386841787 --encoder parquet --file-block-count 100 --development-mode
-
-.PHONY: parquet-wax
-parquet-wax:
-	substreams-sink-files run wax.substreams.pinax.network:443 substreams.yaml map_events './out' 32233917:32234417 --encoder parquet --file-block-count 100 --development-mode
-
-.PHONY: deploy
-deploy:
-	graph build
-	graph deploy --studio clock

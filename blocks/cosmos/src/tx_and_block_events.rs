@@ -2,7 +2,7 @@ use common::structs::BlockTimestamp;
 use substreams_cosmos::{pb::TxResults, Block};
 
 use crate::{
-    pb::pinax::cosmos::{BlockEvent, TransactionEvent},
+    pb::pinax::cosmos::v1::{BlockEvent, TransactionEvent},
     utils::build_attributes_array,
 };
 

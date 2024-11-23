@@ -1,5 +1,6 @@
 syntax = "proto3";
-package pinax.starknet;
+
+package pinax.starknet.v1;
 
 import "google/protobuf/timestamp.proto";
 
@@ -24,7 +25,7 @@ message Block {
     uint64 l1_gas_price_in_fri = 8;
     uint64 l1_gas_price_in_wei = 9;
     string starknet_version = 10;
-    uint32 tx_count = 11; 
+    uint32 tx_count = 11;
     string new_root = 12;
     string parent_hash = 13;
     string sequencer_address = 14;

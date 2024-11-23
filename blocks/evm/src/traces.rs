@@ -5,7 +5,7 @@ use common::{
 use substreams_ethereum::pb::eth::v2::{Block, Call, TransactionTrace};
 
 use crate::{
-    pb::evm::Trace as TraceEvent,
+    pb::pinax::evm::v1::Trace,
     transactions::{is_transaction_success, transaction_status_to_string},
 };
 
@@ -21,8 +21,8 @@ pub fn call_types_to_string(call_type: i32) -> String {
     }
 }
 
-pub fn collect_traces(block: &Block, timestamp: &BlockTimestamp) -> Vec<TraceEvent> {
-    let mut traces: Vec<TraceEvent> = vec![];
+pub fn collect_traces(block: &Block, timestamp: &BlockTimestamp) -> Vec<Trace> {
+    let mut traces: Vec<Trace> = vec![];
 
     // https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L121-L124
     // DetailLevel: EXTENDED
@@ -40,10 +40,10 @@ pub fn collect_traces(block: &Block, timestamp: &BlockTimestamp) -> Vec<TraceEve
     traces
 }
 
-pub fn parse_traces(call: &Call, transaction: &TransactionTrace, timestamp: &BlockTimestamp) -> TraceEvent {
+pub fn parse_traces(call: &Call, transaction: &TransactionTrace, timestamp: &BlockTimestamp) -> Trace {
     let is_system_call = transaction.hash.is_empty();
 
-    TraceEvent {
+    Trace {
         // block
         block_time: Some(timestamp.time),
         block_number: timestamp.number,

@@ -36,5 +36,5 @@ Kind: map
 Input: source: sf.substreams.v1.Clock
 Input: source: sf.ethereum.type.v2.Block
 Output Type: proto:evm.Events
-Hash: ec09630461ab227a2e7448038cebaa91b49400bf
+Hash: 7605ec58a864d4016ed2245b066d8a8c09b891d3
 ```
