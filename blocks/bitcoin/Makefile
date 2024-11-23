@@ -27,4 +27,4 @@ protogen:
 
 .PHONY: parquet
 parquet:
-	substreams-sink-files run bitcoin.substreams.pinax.network:443 substreams.yaml map_events './out' 0:500 --encoder parquet --file-block-count 100 --development-mode
+	substreams-sink-files run bitcoin.substreams.pinax.network:443 substreams.yaml map_events './out' 800000:800010 --encoder parquet --file-block-count 1 --development-mode --parquet-default-column-compression snappy
