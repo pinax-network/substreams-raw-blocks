@@ -28,4 +28,4 @@ modules:
       - source: sf.substreams.v1.Clock
       - source: sf.starknet.type.v1.Block
     output:
-      type: proto:pinax.starknet.Events
+      type: proto:pinax.starknet.v1.Events

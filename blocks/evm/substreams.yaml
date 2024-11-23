@@ -27,4 +27,4 @@ modules:
       - source: sf.substreams.v1.Clock
       - source: sf.ethereum.type.v2.Block
     output:
-      type: proto:evm.Events
+      type: proto:pinax.evm.v1.Events

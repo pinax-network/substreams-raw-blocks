@@ -26,4 +26,4 @@ modules:
       - source: sf.substreams.v1.Clock
       - source: sf.antelope.type.v1.Block
     output:
-      type: proto:antelope.Events
+      type: proto:pinax.antelope.v1.Events

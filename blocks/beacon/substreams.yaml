@@ -26,4 +26,4 @@ modules:
       - source: sf.substreams.v1.Clock
       - source: sf.beacon.type.v1.Block
     output:
-      type: proto:beacon.Events
+      type: proto:pinax.beacon.v1.Events

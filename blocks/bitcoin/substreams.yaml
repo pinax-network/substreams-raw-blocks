@@ -25,4 +25,4 @@ modules:
       - source: sf.substreams.v1.Clock
       - source: sf.bitcoin.type.v1.Block
     output:
-      type: proto:pinax.bitcoin.Events
+      type: proto:pinax.bitcoin.v1.Events

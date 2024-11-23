@@ -1,7 +1,7 @@
 specVersion: v0.1.0
 package:
   name: raw_blocks_solana
-  version: v0.1.0
+  version: v1.0.0
   image: logo.png
   url: https://github.com/pinax-network/substreams-raw-blocks
 
@@ -23,24 +23,17 @@ protobuf:
     - google
 
 modules:
-  # - name: blocks_without_votes_all
-  #   kind: map
-  #   inputs:
-  #     - source: sf.solana.type.v1.Block
-  #   output:
-  #     type: proto:sf.solana.type.v1.Block
-
   - name: map_events
     kind: map
     inputs:
       - source: sf.substreams.v1.Clock
       - map: common:blocks_without_votes
     output:
-      type: proto:solana.Events
+      type: proto:pinax.solana.v1.Events
   - name: map_events_with_votes
     kind: map
     inputs:
       - source: sf.substreams.v1.Clock
       - source: sf.solana.type.v1.Block
     output:
-      type: proto:solana.Events
+      type: proto:pinax.solana.v1.Events
