@@ -91,6 +91,18 @@ pub struct Block {
     /// UInt256
     #[prost(bytes="vec", tag="25")]
     pub blob_gas_price_bytes: ::prost::alloc::vec::Vec<u8>,
+    /// EIP-4844 (Dencun Fork)
+    #[prost(string, repeated, tag="26")]
+    pub blob_transactions: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    /// EIP-4844 (Dencun Fork)
+    #[prost(string, repeated, tag="27")]
+    pub blob_hashes: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    /// EIP-4844 (Dencun Fork)
+    #[prost(uint32, tag="28")]
+    pub total_blob_transactions: u32,
+    /// EIP-4844 (Dencun Fork),
+    #[prost(uint32, tag="29")]
+    pub total_blobs: u32,
     /// -- counters --
     ///
     /// block size in bytes
@@ -106,13 +118,10 @@ pub struct Block {
     pub total_balance_changes: u32,
     #[prost(uint32, tag="35")]
     pub total_withdrawals: u32,
-    /// EIP-4844 (Dencun Fork)
-    #[prost(uint32, tag="36")]
-    pub blob_transactions: u32,
     /// -- detail level --
-    #[prost(string, tag="37")]
+    #[prost(string, tag="38")]
     pub detail_level: ::prost::alloc::string::String,
-    #[prost(uint32, tag="38")]
+    #[prost(uint32, tag="39")]
     pub detail_level_code: u32,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -193,6 +202,9 @@ pub struct Transaction {
     /// UInt256
     #[prost(bytes="vec", tag="31")]
     pub blob_gas_fee_cap: ::prost::alloc::vec::Vec<u8>,
+    /// EIP-4844 (Dencun Fork)
+    #[prost(string, repeated, tag="32")]
+    pub blob_hashes: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     /// -- transaction receipt --
     #[prost(uint64, tag="33")]
     pub cumulative_gas_used: u64,

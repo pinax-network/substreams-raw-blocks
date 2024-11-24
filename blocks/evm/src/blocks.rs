@@ -26,17 +26,13 @@ pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> BlockHeader {
     let successful_transactions = block.transaction_traces.iter().filter(|t| t.status == 1).count() as u32;
     let failed_transactions = total_transactions - successful_transactions;
     let total_withdrawals = block.balance_changes.iter().filter(|t| t.reason == 16).count() as u32;
-    let blob_transactions = block.transaction_traces.iter().filter(|t| t.r#type == 3).count() as u32;
 
     // blob price
     let blob_gas_price = block.transaction_traces.iter().find_map(|t| t.receipt.as_ref().and_then(|r| r.blob_gas_price.clone()));
-    // let blob_gas_used = block.transaction_traces.iter().filter_map(|t| t.receipt.as_ref()?.blob_gas_used);
-    // let blob_gas_used_sum: u64 = blob_gas_used.sum();
-    // let blob_gas_used: u64 = block.transaction_traces.iter().filter_map(|t| t.receipt.as_ref()?.blob_gas_used).sum();
-    // let blob_gas: u64 = block.transaction_traces.iter().filter_map(|t| t.blob_gas).sum();
-    // let blob_gas: u64 = block.transaction_traces.iter().filter_map(|t| t.blob_gas_fee_cap).sum();
-
-    // log::debug!("blob_gas_used: {}, blob_gas: {}", blob_gas_used, blob_gas);
+    let blob_hashes: Vec<String> = block.transaction_traces.iter().flat_map(|t| t.blob_hashes.iter().map(|hash| bytes_to_hex(hash))).collect();
+    let total_blobs: u32 = blob_hashes.len() as u32;
+    let blob_transactions = block.transaction_traces.iter().filter(|t| t.r#type == 3).map(|t| bytes_to_hex(&t.hash)).collect::<Vec<String>>();
+    let total_blob_transactions = blob_transactions.len() as u32;
 
     BlockHeader {
         // clock
@@ -71,6 +67,10 @@ pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> BlockHeader {
         blob_gas_used: header.blob_gas_used(),
         excess_blob_gas: header.excess_blob_gas(),
         blob_gas_price_bytes: blob_gas_price.unwrap_or_default().bytes,
+        blob_hashes,
+        blob_transactions,
+        total_blob_transactions,
+        total_blobs,
 
         // counters
         size: block.size,
@@ -79,7 +79,6 @@ pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> BlockHeader {
         failed_transactions,
         total_balance_changes: block.balance_changes.len() as u32,
         total_withdrawals,
-        blob_transactions,
 
         // block detail level
         detail_level: block_detail_to_string(block.detail_level),

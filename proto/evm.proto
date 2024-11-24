@@ -51,6 +51,10 @@ message Block {
   uint64 blob_gas_used = 23; // EIP-4844 (Dencun Fork)
   uint64 excess_blob_gas = 24; // EIP-4844 (Dencun Fork)
   bytes blob_gas_price_bytes = 25; // UInt256
+  repeated string blob_transactions = 26; // EIP-4844 (Dencun Fork)
+  repeated string blob_hashes = 27; // EIP-4844 (Dencun Fork)
+  uint32 total_blob_transactions = 28; // EIP-4844 (Dencun Fork)
+  uint32 total_blobs = 29; // EIP-4844 (Dencun Fork),
 
   // -- counters --
   uint64 size = 30; // block size in bytes
@@ -59,11 +63,10 @@ message Block {
   uint32 failed_transactions = 33;
   uint32 total_balance_changes = 34;
   uint32 total_withdrawals = 35;
-  uint32 blob_transactions = 36; // EIP-4844 (Dencun Fork)
 
   // -- detail level --
-  string detail_level = 37;
-  uint32 detail_level_code = 38;
+  string detail_level = 38;
+  uint32 detail_level_code = 39;
 }
 
 message Transaction {
@@ -105,6 +108,7 @@ message Transaction {
   bytes blob_gas_price_bytes = 29; // UInt256
   uint64 blob_gas_used = 30;
   bytes blob_gas_fee_cap = 31; // UInt256
+  repeated string blob_hashes = 32; // EIP-4844 (Dencun Fork)
 
   // -- transaction receipt --
   uint64 cumulative_gas_used = 33;

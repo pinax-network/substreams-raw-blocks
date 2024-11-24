@@ -88,6 +88,7 @@ pub fn collect_transactions(block: &Block, timestamp: &BlockTimestamp) -> Vec<Tr
                 blob_gas_price_bytes: receipt.blob_gas_price.clone().unwrap_or_default().bytes,
                 blob_gas_used: receipt.blob_gas_used(),
                 blob_gas_fee_cap: transaction.clone().blob_gas_fee_cap.unwrap_or_default().bytes,
+                blob_hashes: transaction.blob_hashes.iter().map(|hash| bytes_to_hex(hash)).collect(),
             }
         })
         .collect()

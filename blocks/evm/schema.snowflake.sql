@@ -44,7 +44,7 @@ SELECT
   blob_gas_used,
   ZEROIFNULL(TRY_TO_DECIMAL(hex_encode(blob_gas_fee_cap_bytes), 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')) as blob_gas_fee_cap,
   blob_gas_fee_cap_bytes,
-  blob_gas,
+  blob_hashes,
 
   -- transaction receipt --
   cumulative_gas_used,
