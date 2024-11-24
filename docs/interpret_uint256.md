@@ -13,7 +13,7 @@ WHERE value_bytes != ''
 LIMIT 10;
 ```
 
-## With `cddb`
+## With `chdb`
 
 <https://clickhouse.com/chdb>
 
