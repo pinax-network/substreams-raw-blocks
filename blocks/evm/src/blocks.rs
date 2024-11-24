@@ -44,7 +44,7 @@ pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> BlockHeader {
         parent_beacon_root: bytes_to_hex(&header.parent_beacon_root),
         miner: bytes_to_hex(&header.coinbase),
         difficulty: optional_bigint_to_u64(&header.difficulty),
-        total_difficulty: optional_bigint_to_string(&header.total_difficulty, "0"),
+        total_difficulty_bytes: header.total_difficulty.clone().unwrap_or_default().bytes,
         mix_hash: bytes_to_hex(&header.mix_hash),
         extra_data: bytes_to_hex(&header.extra_data),
         extra_data_utf8: String::from_utf8(header.extra_data.clone()).unwrap_or_default(),

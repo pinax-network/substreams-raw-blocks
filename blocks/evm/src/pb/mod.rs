@@ -1,9 +1,4 @@
 // @generated
-// @@protoc_insertion_point(attribute:parquet)
-pub mod parquet {
-    include!("parquet.rs");
-    // @@protoc_insertion_point(parquet)
-}
 pub mod pinax {
     pub mod evm {
         // @@protoc_insertion_point(attribute:pinax.evm.v1)

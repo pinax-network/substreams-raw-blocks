@@ -29,6 +29,35 @@ pub fn add_prefix_to_hex(hex: &str) -> String {
     }
 }
 
+// pub fn optional_bigint_to_string(value: &Option<BigInt>, default: &str) -> String {
+//     match value {
+//         Some(bigint) => {
+//             let mut bytes = bigint.bytes.clone();
+
+//             // Determine if the number is negative by checking the sign bit
+//             let is_negative = bytes.first().map_or(false, |b| b & 0x80 != 0);
+
+//             // Pad or truncate to 32 bytes
+//             if bytes.len() < 32 {
+//                 let mut padding = if is_negative {
+//                     vec![0xFF; 32 - bytes.len()] // Pad with 0xFF for negative numbers
+//                 } else {
+//                     vec![0x00; 32 - bytes.len()] // Pad with 0x00 for positive numbers
+//                 };
+//                 padding.extend_from_slice(&bytes);
+//                 bytes = padding;
+//             } else if bytes.len() > 32 {
+//                 // Truncate higher-order bytes (keep the last 32 bytes)
+//                 bytes = bytes[bytes.len() - 32..].to_vec();
+//             }
+
+//             // Convert bytes to hex string
+//             bytes.iter().map(|b| format!("{:02x}", b)).collect()
+//         }
+//         None => default.to_string(),
+//     }
+// }
+
 // pub fn bytes_to_hex_no_prefix(bytes: &Vec<u8>) -> String {
 //     if bytes.is_empty() {
 //         return "".to_string();
@@ -79,10 +108,10 @@ pub fn optional_bigint_to_decimal(value: Option<BigInt>) -> BigDecimal {
     }
 }
 
-pub fn optional_bigint_to_hex(value: Option<BigInt>) -> String {
+pub fn optional_bigint_to_hex(value: &Option<BigInt>, default: &str) -> String {
     match value {
         Some(bigint) => bytes_to_hex(&bigint.bytes),
-        None => "".to_string(),
+        None => default.to_string(),
     }
 }
 

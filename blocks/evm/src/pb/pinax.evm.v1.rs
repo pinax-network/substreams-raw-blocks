@@ -63,8 +63,9 @@ pub struct Block {
     pub miner: ::prost::alloc::string::String,
     #[prost(uint64, tag="15")]
     pub difficulty: u64,
-    #[prost(string, tag="16")]
-    pub total_difficulty: ::prost::alloc::string::String,
+    /// UInt256
+    #[prost(bytes="vec", tag="16")]
+    pub total_difficulty_bytes: ::prost::alloc::vec::Vec<u8>,
     #[prost(string, tag="17")]
     pub mix_hash: ::prost::alloc::string::String,
     #[prost(string, tag="18")]
@@ -109,8 +110,7 @@ pub struct Block {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Transaction {
     /// -- block --
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    /// google.protobuf.Timestamp block_time = 1;
     #[prost(uint64, tag="2")]
     pub block_number: u64,
     #[prost(string, tag="3")]
@@ -139,12 +139,14 @@ pub struct Transaction {
     pub status_code: u32,
     #[prost(bool, tag="14")]
     pub success: bool,
-    #[prost(string, tag="15")]
-    pub gas_price: ::prost::alloc::string::String,
+    /// UInt256
+    #[prost(bytes="vec", tag="15")]
+    pub gas_price_bytes: ::prost::alloc::vec::Vec<u8>,
     #[prost(uint64, tag="16")]
     pub gas_limit: u64,
-    #[prost(string, tag="17")]
-    pub value: ::prost::alloc::string::String,
+    /// UInt256
+    #[prost(bytes="vec", tag="17")]
+    pub value_bytes: ::prost::alloc::vec::Vec<u8>,
     #[prost(string, tag="18")]
     pub data: ::prost::alloc::string::String,
     #[prost(string, tag="19")]
@@ -161,17 +163,21 @@ pub struct Transaction {
     /// EIP-1559
     #[prost(uint32, tag="24")]
     pub type_code: u32,
-    #[prost(string, tag="25")]
-    pub max_fee_per_gas: ::prost::alloc::string::String,
-    #[prost(string, tag="26")]
-    pub max_priority_fee_per_gas: ::prost::alloc::string::String,
+    /// UInt256
+    #[prost(bytes="vec", tag="25")]
+    pub max_fee_per_gas_bytes: ::prost::alloc::vec::Vec<u8>,
+    /// UInt256
+    #[prost(bytes="vec", tag="26")]
+    pub max_priority_fee_per_gas_bytes: ::prost::alloc::vec::Vec<u8>,
     #[prost(uint64, tag="27")]
     pub begin_ordinal: u64,
     #[prost(uint64, tag="28")]
     pub end_ordinal: u64,
     /// -- transaction receipt --
-    #[prost(string, tag="29")]
-    pub blob_gas_price: ::prost::alloc::string::String,
+    ///
+    /// UInt256
+    #[prost(bytes="vec", tag="29")]
+    pub blob_gas_price_bytes: ::prost::alloc::vec::Vec<u8>,
     #[prost(uint64, tag="30")]
     pub blob_gas_used: u64,
     #[prost(uint64, tag="31")]
@@ -268,32 +274,36 @@ pub struct Trace {
     pub call_type_code: u32,
     #[prost(string, tag="18")]
     pub address: ::prost::alloc::string::String,
-    #[prost(string, tag="19")]
-    pub value: ::prost::alloc::string::String,
-    #[prost(uint64, tag="20")]
-    pub gas_limit: u64,
+    /// UInt256
+    #[prost(bytes="vec", tag="19")]
+    pub value_bytes: ::prost::alloc::vec::Vec<u8>,
+    /// UInt256 - FOR TESTING PURPOSES
+    #[prost(string, tag="20")]
+    pub value_hex: ::prost::alloc::string::String,
     #[prost(uint64, tag="21")]
+    pub gas_limit: u64,
+    #[prost(uint64, tag="22")]
     pub gas_consumed: u64,
     /// Return data is set by contract calls using RETURN or REVERT.
-    #[prost(string, tag="22")]
-    pub return_data: ::prost::alloc::string::String,
     #[prost(string, tag="23")]
+    pub return_data: ::prost::alloc::string::String,
+    #[prost(string, tag="24")]
     pub input: ::prost::alloc::string::String,
-    #[prost(bool, tag="24")]
+    #[prost(bool, tag="25")]
     pub suicide: bool,
-    #[prost(string, tag="25")]
+    #[prost(string, tag="26")]
     pub failure_reason: ::prost::alloc::string::String,
-    #[prost(bool, tag="26")]
-    pub state_reverted: bool,
     #[prost(bool, tag="27")]
-    pub status_reverted: bool,
+    pub state_reverted: bool,
     #[prost(bool, tag="28")]
-    pub status_failed: bool,
+    pub status_reverted: bool,
     #[prost(bool, tag="29")]
+    pub status_failed: bool,
+    #[prost(bool, tag="30")]
     pub executed_code: bool,
-    #[prost(uint64, tag="30")]
-    pub begin_ordinal: u64,
     #[prost(uint64, tag="31")]
+    pub begin_ordinal: u64,
+    #[prost(uint64, tag="32")]
     pub end_ordinal: u64,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -314,12 +324,12 @@ pub struct BalanceChange {
     /// -- balance change --
     #[prost(string, tag="6")]
     pub address: ::prost::alloc::string::String,
-    #[prost(string, tag="7")]
-    pub new_balance: ::prost::alloc::string::String,
-    #[prost(string, tag="8")]
-    pub old_balance: ::prost::alloc::string::String,
-    #[prost(string, tag="9")]
-    pub amount: ::prost::alloc::string::String,
+    /// UInt256
+    #[prost(bytes="vec", tag="7")]
+    pub new_balance_bytes: ::prost::alloc::vec::Vec<u8>,
+    /// UInt256
+    #[prost(bytes="vec", tag="8")]
+    pub old_balance_bytes: ::prost::alloc::vec::Vec<u8>,
     #[prost(uint64, tag="10")]
     pub ordinal: u64,
     #[prost(string, tag="11")]

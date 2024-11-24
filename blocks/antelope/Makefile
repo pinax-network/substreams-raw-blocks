@@ -11,7 +11,7 @@ build:
 
 .PHONY: gui
 gui:
-	substreams gui -e eos.substreams.pinax.network:443 map_events -s 386946801 -t 386946802
+	substreams gui . -e eos.substreams.pinax.network:443 map_events -s 386946801 -t 386946802 --network eos
 
 .PHONY: protogen
 protogen:

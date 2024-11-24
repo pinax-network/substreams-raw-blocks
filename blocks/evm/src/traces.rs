@@ -1,7 +1,4 @@
-use common::{
-    structs::BlockTimestamp,
-    utils::{bytes_to_hex, optional_bigint_to_string},
-};
+use common::{structs::BlockTimestamp, utils::bytes_to_hex};
 use substreams_ethereum::pb::eth::v2::{Block, Call, TransactionTrace};
 
 use crate::{
@@ -67,7 +64,8 @@ pub fn parse_traces(call: &Call, transaction: &TransactionTrace, timestamp: &Blo
         call_type: call_types_to_string(call.call_type),
         call_type_code: call.call_type as u32,
         address: bytes_to_hex(&call.address),
-        value: optional_bigint_to_string(&call.value, "0"),
+        value_bytes: call.value.clone().unwrap_or_default().bytes,
+        value_hex: bytes_to_hex(&call.value.clone().unwrap_or_default().bytes),
         gas_limit: call.gas_limit,
         gas_consumed: call.gas_consumed,
         input: bytes_to_hex(&call.input),

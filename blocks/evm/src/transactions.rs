@@ -1,9 +1,8 @@
 use common::structs::BlockTimestamp;
 use common::utils::bytes_to_hex;
-use common::utils::optional_bigint_to_string;
-use substreams_ethereum::pb::eth::v2::Block;
 
 use crate::pb::pinax::evm::v1::Transaction;
+use substreams_ethereum::pb::eth::v2::Block;
 
 pub fn transaction_type_to_string(r#type: i32) -> String {
     match r#type {
@@ -47,7 +46,7 @@ pub fn collect_transactions(block: &Block, timestamp: &BlockTimestamp) -> Vec<Tr
             let receipt = transaction.receipt.clone().unwrap();
             Transaction {
                 // block
-                block_time: Some(timestamp.time),
+                // block_time: Some(timestamp.time),
                 block_number: timestamp.number,
                 block_hash: timestamp.hash.clone(),
                 block_date: timestamp.date.clone(),
@@ -65,9 +64,9 @@ pub fn collect_transactions(block: &Block, timestamp: &BlockTimestamp) -> Vec<Tr
                 status: transaction_status_to_string(transaction.status),
                 status_code: transaction.status as u32,
                 success: is_transaction_success(transaction.status),
-                gas_price: optional_bigint_to_string(&transaction.gas_price, "0"),
+                gas_price_bytes: transaction.gas_price.clone().unwrap_or_default().bytes,
                 gas_limit: transaction.gas_limit,
-                value: optional_bigint_to_string(&transaction.value, "0"),
+                value_bytes: transaction.value.clone().unwrap_or_default().bytes,
                 data: bytes_to_hex(&transaction.input),
                 v: bytes_to_hex(&transaction.v),
                 r: bytes_to_hex(&transaction.r),
@@ -75,11 +74,11 @@ pub fn collect_transactions(block: &Block, timestamp: &BlockTimestamp) -> Vec<Tr
                 gas_used: transaction.gas_used,
                 r#type: transaction_type_to_string(transaction.r#type),
                 type_code: transaction.r#type as u32,
-                max_fee_per_gas: optional_bigint_to_string(&transaction.max_fee_per_gas, "0"),
-                max_priority_fee_per_gas: optional_bigint_to_string(&transaction.max_priority_fee_per_gas, "0"),
+                max_fee_per_gas_bytes: transaction.max_fee_per_gas.clone().unwrap_or_default().bytes,
+                max_priority_fee_per_gas_bytes: transaction.max_priority_fee_per_gas.clone().unwrap_or_default().bytes,
                 begin_ordinal: transaction.begin_ordinal,
                 end_ordinal: transaction.end_ordinal,
-                blob_gas_price: optional_bigint_to_string(&receipt.blob_gas_price, "0"),
+                blob_gas_price_bytes: receipt.blob_gas_price.clone().unwrap_or_default().bytes,
                 blob_gas_used: receipt.blob_gas_used(),
                 cumulative_gas_used: receipt.cumulative_gas_used,
                 logs_bloom: bytes_to_hex(&receipt.logs_bloom),

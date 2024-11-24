@@ -3,7 +3,6 @@ syntax = "proto3";
 package pinax.evm.v1;
 
 import "google/protobuf/timestamp.proto";
-import "parquet/options.proto";
 
 message Events {
   repeated Block blocks = 1;
@@ -38,7 +37,7 @@ message Block {
   string parent_beacon_root = 13; // EVM Root EIP-4788 (Dencun Fork)
   string miner = 14;
   uint64 difficulty = 15;
-  string total_difficulty = 16 [(parquet.column) = {type: UINT256}];
+  bytes total_difficulty_bytes = 16; // UInt256
   string mix_hash = 17;
   string extra_data = 18;
   string extra_data_utf8 = 19;
@@ -61,10 +60,9 @@ message Block {
   uint32 detail_level_code = 32;
 }
 
-
 message Transaction {
   // -- block --
-  google.protobuf.Timestamp block_time = 1;
+  // google.protobuf.Timestamp block_time = 1;
   uint64 block_number = 2;
   string block_hash = 3;
   string block_date = 4;
@@ -82,9 +80,9 @@ message Transaction {
   string status = 12;
   uint32 status_code = 13;
   bool success = 14;
-  string gas_price = 15 [(parquet.column) = {type: UINT256}];
+  bytes gas_price_bytes = 15; // UInt256
   uint64 gas_limit = 16;
-  string value = 17 [(parquet.column) = {type: UINT256}];
+  bytes value_bytes = 17; // UInt256
   string data = 18;
   string v = 19;
   string r = 20;
@@ -92,13 +90,13 @@ message Transaction {
   uint64 gas_used = 22;
   string type = 23; // EIP-1559
   uint32 type_code = 24; // EIP-1559
-  string max_fee_per_gas = 25 [(parquet.column) = {type: UINT256}];
-  string max_priority_fee_per_gas = 26 [(parquet.column) = {type: UINT256}];
+  bytes max_fee_per_gas_bytes = 25; // UInt256
+  bytes max_priority_fee_per_gas_bytes = 26; // UInt256
   uint64 begin_ordinal = 27;
   uint64 end_ordinal = 28;
 
   // -- transaction receipt --
-  string blob_gas_price = 29 [(parquet.column) = {type: UINT256}];
+  bytes blob_gas_price_bytes = 29; // UInt256
   uint64 blob_gas_used = 30;
   uint64 cumulative_gas_used = 31;
   string logs_bloom = 32;
@@ -156,19 +154,20 @@ message Trace {
   string call_type = 16;
   uint32 call_type_code = 17;
   string address = 18;
-  string value = 19 [(parquet.column) = {type: UINT256}];
-  uint64 gas_limit = 20;
-  uint64 gas_consumed = 21;
-  string return_data = 22; // Return data is set by contract calls using RETURN or REVERT.
-  string input = 23;
-  bool suicide = 24;
-  string failure_reason = 25;
-  bool state_reverted = 26;
-  bool status_reverted = 27;
-  bool status_failed = 28;
-  bool executed_code = 29;
-  uint64 begin_ordinal = 30;
-  uint64 end_ordinal = 31;
+  bytes value_bytes = 19; // UInt256
+  string value_hex = 20; // UInt256 - FOR TESTING PURPOSES
+  uint64 gas_limit = 21;
+  uint64 gas_consumed = 22;
+  string return_data = 23; // Return data is set by contract calls using RETURN or REVERT.
+  string input = 24;
+  bool suicide = 25;
+  string failure_reason = 26;
+  bool state_reverted = 27;
+  bool status_reverted = 28;
+  bool status_failed = 29;
+  bool executed_code = 30;
+  uint64 begin_ordinal = 31;
+  uint64 end_ordinal = 32;
 }
 
 message BalanceChange {
@@ -183,9 +182,8 @@ message BalanceChange {
 
   // -- balance change --
   string address = 6;
-  string new_balance = 7 [(parquet.column) = {type: UINT256}];
-  string old_balance = 8 [(parquet.column) = {type: UINT256}];
-  string amount = 9 [(parquet.column) = {type: INT256}];
+  bytes new_balance_bytes = 7; // UInt256
+  bytes old_balance_bytes = 8; // UInt256
   uint64 ordinal = 10;
   string reason = 11;
   uint32 reason_code = 12;

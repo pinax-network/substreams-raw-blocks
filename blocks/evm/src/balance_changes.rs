@@ -1,6 +1,5 @@
 use common::structs::BlockTimestamp;
-use common::utils::optional_bigint_to_string;
-use common::utils::{bytes_to_hex, optional_bigint_to_decimal};
+use common::utils::bytes_to_hex;
 use substreams_ethereum::pb::eth::v2::{BalanceChange, Block, TransactionTrace};
 
 use crate::pb::pinax::evm::v1::BalanceChange as BalanceChangeEvent;
@@ -58,7 +57,7 @@ pub fn collect_balance_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec
 }
 
 pub fn parse_balance_change(balance_change: &BalanceChange, transaction: &TransactionTrace, timestamp: &BlockTimestamp) -> BalanceChangeEvent {
-    let amount = optional_bigint_to_decimal(balance_change.new_value.clone()) - optional_bigint_to_decimal(balance_change.old_value.clone());
+    // let amount = optional_bigint_to_decimal(balance_change.new_value.clone()) - optional_bigint_to_decimal(balance_change.old_value.clone());
     BalanceChangeEvent {
         // block
         block_time: Some(timestamp.time),
@@ -71,9 +70,9 @@ pub fn parse_balance_change(balance_change: &BalanceChange, transaction: &Transa
 
         // balance changes
         address: bytes_to_hex(&balance_change.address),
-        new_balance: optional_bigint_to_string(&balance_change.new_value, "0"),
-        old_balance: optional_bigint_to_string(&balance_change.old_value, "0"),
-        amount: amount.to_string(),
+        old_balance_bytes: balance_change.old_value.clone().unwrap_or_default().bytes,
+        new_balance_bytes: balance_change.new_value.clone().unwrap_or_default().bytes,
+
         ordinal: balance_change.ordinal,
         reason: balance_change_reason_to_string(balance_change.reason),
         reason_code: balance_change.reason as u32,

@@ -13,7 +13,6 @@ binaries:
 protobuf:
   files:
     - evm.proto
-    - parquet/options.proto
   importPaths:
     - ../../proto
   excludePaths:
