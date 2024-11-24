@@ -1,7 +1,8 @@
 use common::structs::BlockTimestamp;
 use common::utils::optional_bigint_to_string;
-use common::utils::{bytes_to_hex, optional_bigint_to_u64, optional_u64_to_string};
+use common::utils::{bytes_to_hex, optional_bigint_to_u64};
 
+// use substreams::log;
 use substreams_ethereum::pb::eth::v2::Block;
 
 use crate::pb::pinax::evm::v1::Block as BlockHeader;
@@ -20,10 +21,22 @@ pub fn block_detail_to_string(detail_level: i32) -> String {
 pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> BlockHeader {
     let header = block.header.as_ref().unwrap();
 
-    let total_transactions = block.transaction_traces.len() as u64;
-    let successful_transactions = block.transaction_traces.iter().filter(|t| t.status == 1).count() as u64;
+    // counters
+    let total_transactions = block.transaction_traces.len() as u32;
+    let successful_transactions = block.transaction_traces.iter().filter(|t| t.status == 1).count() as u32;
     let failed_transactions = total_transactions - successful_transactions;
-    let total_withdrawals = block.balance_changes.iter().filter(|t| t.reason == 16).count() as u64;
+    let total_withdrawals = block.balance_changes.iter().filter(|t| t.reason == 16).count() as u32;
+    let blob_transactions = block.transaction_traces.iter().filter(|t| t.r#type == 3).count() as u32;
+
+    // blob price
+    let blob_gas_price = block.transaction_traces.iter().find_map(|t| t.receipt.as_ref().and_then(|r| r.blob_gas_price.clone()));
+    // let blob_gas_used = block.transaction_traces.iter().filter_map(|t| t.receipt.as_ref()?.blob_gas_used);
+    // let blob_gas_used_sum: u64 = blob_gas_used.sum();
+    // let blob_gas_used: u64 = block.transaction_traces.iter().filter_map(|t| t.receipt.as_ref()?.blob_gas_used).sum();
+    // let blob_gas: u64 = block.transaction_traces.iter().filter_map(|t| t.blob_gas).sum();
+    // let blob_gas: u64 = block.transaction_traces.iter().filter_map(|t| t.blob_gas_fee_cap).sum();
+
+    // log::debug!("blob_gas_used: {}, blob_gas: {}", blob_gas_used, blob_gas);
 
     BlockHeader {
         // clock
@@ -32,9 +45,7 @@ pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> BlockHeader {
         date: timestamp.date.clone(),
         hash: bytes_to_hex(&block.hash),
 
-        // header
-        parent_hash: bytes_to_hex(&header.parent_hash),
-        nonce: header.nonce,
+        // roots
         ommers_hash: bytes_to_hex(&header.uncle_hash),
         logs_bloom: bytes_to_hex(&header.logs_bloom),
         transactions_root: bytes_to_hex(&header.transactions_root),
@@ -42,6 +53,10 @@ pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> BlockHeader {
         receipts_root: bytes_to_hex(&header.receipt_root),
         withdrawals_root: bytes_to_hex(&header.withdrawals_root),
         parent_beacon_root: bytes_to_hex(&header.parent_beacon_root),
+
+        // header
+        parent_hash: bytes_to_hex(&header.parent_hash),
+        nonce: header.nonce,
         miner: bytes_to_hex(&header.coinbase),
         difficulty: optional_bigint_to_u64(&header.difficulty),
         total_difficulty_bytes: header.total_difficulty.clone().unwrap_or_default().bytes,
@@ -51,16 +66,22 @@ pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> BlockHeader {
         gas_limit: header.gas_limit,
         gas_used: header.gas_used,
         base_fee_per_gas: optional_bigint_to_string(&header.base_fee_per_gas, ""),
-        blob_gas_used: optional_u64_to_string(&header.blob_gas_used, ""),
-        excess_blob_gas: optional_u64_to_string(&header.excess_blob_gas, ""),
+
+        // blobs
+        blob_gas_used: header.blob_gas_used(),
+        excess_blob_gas: header.excess_blob_gas(),
+        blob_gas_price_bytes: blob_gas_price.unwrap_or_default().bytes,
 
         // counters
         size: block.size,
-        total_transactions: block.transaction_traces.len() as u64,
+        total_transactions: block.transaction_traces.len() as u32,
         successful_transactions,
         failed_transactions,
-        total_balance_changes: block.balance_changes.len() as u64,
+        total_balance_changes: block.balance_changes.len() as u32,
         total_withdrawals,
+        blob_transactions,
+
+        // block detail level
         detail_level: block_detail_to_string(block.detail_level),
         detail_level_code: block.detail_level as u32,
     }

@@ -46,7 +46,7 @@ pub fn collect_transactions(block: &Block, timestamp: &BlockTimestamp) -> Vec<Tr
             let receipt = transaction.receipt.clone().unwrap();
             Transaction {
                 // block
-                // block_time: Some(timestamp.time),
+                block_time: Some(timestamp.time),
                 block_number: timestamp.number,
                 block_hash: timestamp.hash.clone(),
                 block_date: timestamp.date.clone(),
@@ -54,6 +54,7 @@ pub fn collect_transactions(block: &Block, timestamp: &BlockTimestamp) -> Vec<Tr
                 // block roots
                 transactions_root: bytes_to_hex(&block_header.transactions_root),
                 receipts_root: bytes_to_hex(&block_header.receipt_root),
+                state_root: bytes_to_hex(&block_header.state_root),
 
                 // transaction
                 index: transaction.index,
@@ -78,11 +79,15 @@ pub fn collect_transactions(block: &Block, timestamp: &BlockTimestamp) -> Vec<Tr
                 max_priority_fee_per_gas_bytes: transaction.max_priority_fee_per_gas.clone().unwrap_or_default().bytes,
                 begin_ordinal: transaction.begin_ordinal,
                 end_ordinal: transaction.end_ordinal,
-                blob_gas_price_bytes: receipt.blob_gas_price.clone().unwrap_or_default().bytes,
-                blob_gas_used: receipt.blob_gas_used(),
+
+                // transaction receipt
                 cumulative_gas_used: receipt.cumulative_gas_used,
                 logs_bloom: bytes_to_hex(&receipt.logs_bloom),
-                state_root: bytes_to_hex(&receipt.state_root),
+
+                // blob
+                blob_gas_price_bytes: receipt.blob_gas_price.clone().unwrap_or_default().bytes,
+                blob_gas_used: receipt.blob_gas_used(),
+                blob_gas_fee_cap: transaction.clone().blob_gas_fee_cap.unwrap_or_default().bytes,
             }
         })
         .collect()

@@ -38,27 +38,28 @@ pub struct Block {
     pub date: ::prost::alloc::string::String,
     #[prost(string, tag="4")]
     pub hash: ::prost::alloc::string::String,
-    /// -- header --
+    /// -- roots --
     #[prost(string, tag="5")]
-    pub parent_hash: ::prost::alloc::string::String,
-    #[prost(uint64, tag="6")]
-    pub nonce: u64,
-    #[prost(string, tag="7")]
     pub ommers_hash: ::prost::alloc::string::String,
-    #[prost(string, tag="8")]
+    #[prost(string, tag="6")]
     pub logs_bloom: ::prost::alloc::string::String,
-    #[prost(string, tag="9")]
+    #[prost(string, tag="7")]
     pub transactions_root: ::prost::alloc::string::String,
-    #[prost(string, tag="10")]
+    #[prost(string, tag="8")]
     pub state_root: ::prost::alloc::string::String,
-    #[prost(string, tag="11")]
+    #[prost(string, tag="9")]
     pub receipts_root: ::prost::alloc::string::String,
     /// EVM Root EIP-4895 (Shangai Fork)
-    #[prost(string, tag="12")]
+    #[prost(string, tag="10")]
     pub withdrawals_root: ::prost::alloc::string::String,
     /// EVM Root EIP-4788 (Dencun Fork)
-    #[prost(string, tag="13")]
+    #[prost(string, tag="11")]
     pub parent_beacon_root: ::prost::alloc::string::String,
+    /// -- header --
+    #[prost(string, tag="12")]
+    pub parent_hash: ::prost::alloc::string::String,
+    #[prost(uint64, tag="13")]
+    pub nonce: u64,
     #[prost(string, tag="14")]
     pub miner: ::prost::alloc::string::String,
     #[prost(uint64, tag="15")]
@@ -79,38 +80,47 @@ pub struct Block {
     /// EIP-1559 (London Fork)
     #[prost(string, tag="22")]
     pub base_fee_per_gas: ::prost::alloc::string::String,
+    /// -- blobs --
+    ///
     /// EIP-4844 (Dencun Fork)
-    #[prost(string, tag="23")]
-    pub blob_gas_used: ::prost::alloc::string::String,
+    #[prost(uint64, tag="23")]
+    pub blob_gas_used: u64,
     /// EIP-4844 (Dencun Fork)
-    #[prost(string, tag="24")]
-    pub excess_blob_gas: ::prost::alloc::string::String,
+    #[prost(uint64, tag="24")]
+    pub excess_blob_gas: u64,
+    /// UInt256
+    #[prost(bytes="vec", tag="25")]
+    pub blob_gas_price_bytes: ::prost::alloc::vec::Vec<u8>,
     /// -- counters --
     ///
     /// block size in bytes
-    #[prost(uint64, tag="25")]
-    pub size: u64,
-    #[prost(uint64, tag="26")]
-    pub total_transactions: u64,
-    #[prost(uint64, tag="27")]
-    pub successful_transactions: u64,
-    #[prost(uint64, tag="28")]
-    pub failed_transactions: u64,
-    #[prost(uint64, tag="29")]
-    pub total_balance_changes: u64,
     #[prost(uint64, tag="30")]
-    pub total_withdrawals: u64,
-    /// -- detail level --
-    #[prost(string, tag="31")]
-    pub detail_level: ::prost::alloc::string::String,
+    pub size: u64,
+    #[prost(uint32, tag="31")]
+    pub total_transactions: u32,
     #[prost(uint32, tag="32")]
+    pub successful_transactions: u32,
+    #[prost(uint32, tag="33")]
+    pub failed_transactions: u32,
+    #[prost(uint32, tag="34")]
+    pub total_balance_changes: u32,
+    #[prost(uint32, tag="35")]
+    pub total_withdrawals: u32,
+    /// EIP-4844 (Dencun Fork)
+    #[prost(uint32, tag="36")]
+    pub blob_transactions: u32,
+    /// -- detail level --
+    #[prost(string, tag="37")]
+    pub detail_level: ::prost::alloc::string::String,
+    #[prost(uint32, tag="38")]
     pub detail_level_code: u32,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Transaction {
     /// -- block --
-    /// google.protobuf.Timestamp block_time = 1;
+    #[prost(message, optional, tag="1")]
+    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
     #[prost(uint64, tag="2")]
     pub block_number: u64,
     #[prost(string, tag="3")]
@@ -173,18 +183,22 @@ pub struct Transaction {
     pub begin_ordinal: u64,
     #[prost(uint64, tag="28")]
     pub end_ordinal: u64,
-    /// -- transaction receipt --
+    /// -- blobs --
     ///
     /// UInt256
     #[prost(bytes="vec", tag="29")]
     pub blob_gas_price_bytes: ::prost::alloc::vec::Vec<u8>,
     #[prost(uint64, tag="30")]
     pub blob_gas_used: u64,
-    #[prost(uint64, tag="31")]
+    /// UInt256
+    #[prost(bytes="vec", tag="31")]
+    pub blob_gas_fee_cap: ::prost::alloc::vec::Vec<u8>,
+    /// -- transaction receipt --
+    #[prost(uint64, tag="33")]
     pub cumulative_gas_used: u64,
-    #[prost(string, tag="32")]
+    #[prost(string, tag="34")]
     pub logs_bloom: ::prost::alloc::string::String,
-    #[prost(string, tag="33")]
+    #[prost(string, tag="35")]
     pub state_root: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]

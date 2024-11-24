@@ -25,16 +25,18 @@ message Block {
   string date = 3;
   string hash = 4;
 
+  // -- roots --
+  string ommers_hash = 5;
+  string logs_bloom = 6;
+  string transactions_root = 7;
+  string state_root = 8;
+  string receipts_root = 9;
+  string withdrawals_root = 10; // EVM Root EIP-4895 (Shangai Fork)
+  string parent_beacon_root = 11; // EVM Root EIP-4788 (Dencun Fork)
+
   // -- header --
-  string parent_hash = 5;
-  uint64 nonce = 6;
-  string ommers_hash = 7;
-  string logs_bloom = 8;
-  string transactions_root = 9;
-  string state_root = 10;
-  string receipts_root = 11;
-  string withdrawals_root = 12; // EVM Root EIP-4895 (Shangai Fork)
-  string parent_beacon_root = 13; // EVM Root EIP-4788 (Dencun Fork)
+  string parent_hash = 12;
+  uint64 nonce = 13;
   string miner = 14;
   uint64 difficulty = 15;
   bytes total_difficulty_bytes = 16; // UInt256
@@ -44,25 +46,29 @@ message Block {
   uint64 gas_limit = 20;
   uint64 gas_used = 21;
   string base_fee_per_gas = 22; // EIP-1559 (London Fork)
-  string blob_gas_used = 23; // EIP-4844 (Dencun Fork)
-  string excess_blob_gas = 24; // EIP-4844 (Dencun Fork)
+
+  // -- blobs --
+  uint64 blob_gas_used = 23; // EIP-4844 (Dencun Fork)
+  uint64 excess_blob_gas = 24; // EIP-4844 (Dencun Fork)
+  bytes blob_gas_price_bytes = 25; // UInt256
 
   // -- counters --
-  uint64 size = 25; // block size in bytes
-  uint64 total_transactions = 26;
-  uint64 successful_transactions = 27;
-  uint64 failed_transactions = 28;
-  uint64 total_balance_changes = 29;
-  uint64 total_withdrawals = 30;
+  uint64 size = 30; // block size in bytes
+  uint32 total_transactions = 31;
+  uint32 successful_transactions = 32;
+  uint32 failed_transactions = 33;
+  uint32 total_balance_changes = 34;
+  uint32 total_withdrawals = 35;
+  uint32 blob_transactions = 36; // EIP-4844 (Dencun Fork)
 
   // -- detail level --
-  string detail_level = 31;
-  uint32 detail_level_code = 32;
+  string detail_level = 37;
+  uint32 detail_level_code = 38;
 }
 
 message Transaction {
   // -- block --
-  // google.protobuf.Timestamp block_time = 1;
+  google.protobuf.Timestamp block_time = 1;
   uint64 block_number = 2;
   string block_hash = 3;
   string block_date = 4;
@@ -95,12 +101,15 @@ message Transaction {
   uint64 begin_ordinal = 27;
   uint64 end_ordinal = 28;
 
-  // -- transaction receipt --
+  // -- blobs --
   bytes blob_gas_price_bytes = 29; // UInt256
   uint64 blob_gas_used = 30;
-  uint64 cumulative_gas_used = 31;
-  string logs_bloom = 32;
-  string state_root = 33;
+  bytes blob_gas_fee_cap = 31; // UInt256
+
+  // -- transaction receipt --
+  uint64 cumulative_gas_used = 33;
+  string logs_bloom = 34;
+  string state_root = 35;
 }
 
 message Log {
