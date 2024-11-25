@@ -23,7 +23,7 @@ parquet:
 
 .PHONY: s3
 s3:
-	substreams-sink-files run eth.substreams.pinax.network:443 substreams.yaml map_events s3://pinax/eth/c532b0ea3ccdaffaa71f7ff6b9b58d0ebf931f60?region=us-east-1 21200000: --encoder parquet --development-mode --parquet-default-column-compression snappy --file-block-count 1
+	substreams-sink-files run eth.substreams.pinax.network:443 substreams.yaml map_events s3://pinax/eth/323b41131b4f2dc97705d80cc0b859d4a33c52de?region=us-east-1 21200000: --encoder parquet --development-mode --parquet-default-column-compression snappy --file-block-count 1
 
 .PHONY: hash
 hash:

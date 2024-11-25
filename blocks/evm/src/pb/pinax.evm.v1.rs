@@ -201,7 +201,7 @@ pub struct Transaction {
     pub blob_gas_used: u64,
     /// UInt256
     #[prost(bytes="vec", tag="31")]
-    pub blob_gas_fee_cap: ::prost::alloc::vec::Vec<u8>,
+    pub blob_gas_fee_cap_bytes: ::prost::alloc::vec::Vec<u8>,
     /// EIP-4844 (Dencun Fork)
     #[prost(string, repeated, tag="32")]
     pub blob_hashes: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,

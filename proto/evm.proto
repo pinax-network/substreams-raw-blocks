@@ -107,7 +107,7 @@ message Transaction {
   // -- blobs --
   bytes blob_gas_price_bytes = 29; // UInt256
   uint64 blob_gas_used = 30;
-  bytes blob_gas_fee_cap = 31; // UInt256
+  bytes blob_gas_fee_cap_bytes = 31; // UInt256
   repeated string blob_hashes = 32; // EIP-4844 (Dencun Fork)
 
   // -- transaction receipt --
