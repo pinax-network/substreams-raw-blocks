@@ -44,6 +44,14 @@ pub fn collect_transactions(block: &Block, timestamp: &BlockTimestamp) -> Vec<Tr
         .iter()
         .map(|transaction| {
             let receipt = transaction.receipt.clone().unwrap();
+            let mut blob_hashes: Vec<String> = transaction.blob_hashes.iter().map(|hash| bytes_to_hex(hash)).collect();
+
+            // // ISSUE: WORK AROUND
+            // // Array cannot be empty
+            // // https://github.com/streamingfast/substreams-sink-files/issues/11
+            if blob_hashes.is_empty() {
+                blob_hashes.push("".to_string());
+            }
             Transaction {
                 // block
                 block_time: Some(timestamp.time),
@@ -88,7 +96,7 @@ pub fn collect_transactions(block: &Block, timestamp: &BlockTimestamp) -> Vec<Tr
                 blob_gas_price_bytes: receipt.blob_gas_price.clone().unwrap_or_default().bytes,
                 blob_gas_used: receipt.blob_gas_used(),
                 blob_gas_fee_cap: transaction.clone().blob_gas_fee_cap.unwrap_or_default().bytes,
-                blob_hashes: transaction.blob_hashes.iter().map(|hash| bytes_to_hex(hash)).collect(),
+                blob_hashes,
             }
         })
         .collect()

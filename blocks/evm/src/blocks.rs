@@ -29,10 +29,20 @@ pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> BlockHeader {
 
     // blob price
     let blob_gas_price = block.transaction_traces.iter().find_map(|t| t.receipt.as_ref().and_then(|r| r.blob_gas_price.clone()));
-    let blob_hashes: Vec<String> = block.transaction_traces.iter().flat_map(|t| t.blob_hashes.iter().map(|hash| bytes_to_hex(hash))).collect();
+    let mut blob_hashes: Vec<String> = block.transaction_traces.iter().flat_map(|t| t.blob_hashes.iter().map(|hash| bytes_to_hex(hash))).collect();
     let total_blobs: u32 = blob_hashes.len() as u32;
-    let blob_transactions = block.transaction_traces.iter().filter(|t| t.r#type == 3).map(|t| bytes_to_hex(&t.hash)).collect::<Vec<String>>();
+    let mut blob_transactions = block.transaction_traces.iter().filter(|t| t.r#type == 3).map(|t| bytes_to_hex(&t.hash)).collect::<Vec<String>>();
     let total_blob_transactions = blob_transactions.len() as u32;
+
+    // ISSUE: WORK AROUND
+    // Array cannot be empty
+    // https://github.com/streamingfast/substreams-sink-files/issues/11
+    if blob_hashes.is_empty() {
+        blob_hashes.push("".to_string());
+    }
+    if blob_transactions.is_empty() {
+        blob_transactions.push("".to_string());
+    }
 
     BlockHeader {
         // clock
