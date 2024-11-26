@@ -139,6 +139,28 @@ SELECT
     end_ordinal,
 FROM "v1.0.0-traces";
 
+CREATE OR REPLACE SECURE VIEW v1_balance_changes AS
+SELECT
+    -- block --
+    block_time,
+    block_number,
+    block_hash,
+    block_date,
+
+    -- transaction --
+    tx_hash,
+
+    -- balance change --
+    address,
+    ZEROIFNULL(TRY_TO_DECIMAL(hex_encode(new_balance_bytes), 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')) as new_balance,
+    new_balance_bytes,
+    ZEROIFNULL(TRY_TO_DECIMAL(hex_encode(old_balance_bytes), 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')) as old_balance,
+    old_balance_bytes,
+    ordinal,
+    reason,
+    reason_code,
+FROM "v1.0.0-balance_changes";
+
 CREATE OR REPLACE SECURE VIEW v1_logs AS
 SELECT
   *
