@@ -62,7 +62,7 @@ pub fn collect_gas_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec<Gas
 pub fn parse_gas_changes(gas_change: &GasChange, transaction: &TransactionTrace, timestamp: &BlockTimestamp) -> GasChangeEvent {
     GasChangeEvent {
         // block
-        block_time: Some(timestamp.time),
+        block_time: timestamp.time.to_string(),
         block_number: timestamp.number,
         block_hash: timestamp.hash.clone(),
         block_date: timestamp.date.clone(),

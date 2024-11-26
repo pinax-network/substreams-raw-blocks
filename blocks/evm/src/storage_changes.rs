@@ -32,7 +32,7 @@ pub fn collect_storage_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec
 pub fn parse_storage_change(storage_change: &StorageChange, transaction: &TransactionTrace, timestamp: &BlockTimestamp) -> StorageChangeEvent {
     StorageChangeEvent {
         // block
-        block_time: Some(timestamp.time),
+        block_time: timestamp.time.to_string(),
         block_number: timestamp.number,
         block_hash: timestamp.hash.clone(),
         block_date: timestamp.date.clone(),

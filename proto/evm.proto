@@ -20,7 +20,7 @@ message Events {
 
 message Block {
   // -- clock --
-  google.protobuf.Timestamp time = 1;
+  string time = 1; // TIMESTAMP
   uint64 number = 2;
   string date = 3;
   string hash = 4;
@@ -71,7 +71,7 @@ message Block {
 
 message Transaction {
   // -- block --
-  google.protobuf.Timestamp block_time = 1;
+  string block_time = 1; // TIMESTAMP
   uint64 block_number = 2;
   string block_hash = 3;
   string block_date = 4;
@@ -118,7 +118,7 @@ message Transaction {
 
 message Log {
   // -- block --
-  google.protobuf.Timestamp block_time = 1;
+  string block_time = 1; // TIMESTAMP
   uint64 block_number = 2;
   string block_hash = 3;
   string block_date = 4;
@@ -145,7 +145,7 @@ message Log {
 
 message Trace {
   // -- block --
-  google.protobuf.Timestamp block_time = 1;
+  string block_time = 1; // TIMESTAMP
   uint64 block_number = 2;
   string block_hash = 3;
   string block_date = 4;
@@ -185,7 +185,7 @@ message Trace {
 
 message BalanceChange {
   // -- block --
-  google.protobuf.Timestamp block_time = 1;
+  string block_time = 1; // TIMESTAMP
   uint64 block_number = 2;
   string block_hash = 3;
   string block_date = 4;
@@ -204,7 +204,7 @@ message BalanceChange {
 
 message StorageChange {
   // -- block --
-  google.protobuf.Timestamp block_time = 1;
+  string block_time = 1; // TIMESTAMP
   uint64 block_number = 2;
   string block_hash = 3;
   string block_date = 4;
@@ -222,7 +222,7 @@ message StorageChange {
 
 message CodeChange {
   // -- block --
-  google.protobuf.Timestamp block_time = 1;
+  string block_time = 1; // TIMESTAMP
   uint64 block_number = 2;
   string block_hash = 3;
   string block_date = 4;
@@ -241,7 +241,7 @@ message CodeChange {
 
 message AccountCreation {
   // -- block --
-  google.protobuf.Timestamp block_time = 1;
+  string block_time = 1; // TIMESTAMP
   uint64 block_number = 2;
   string block_hash = 3;
   string block_date = 4;
@@ -256,7 +256,7 @@ message AccountCreation {
 
 message NonceChange {
   // -- block --
-  google.protobuf.Timestamp block_time = 1;
+  string block_time = 1; // TIMESTAMP
   uint64 block_number = 2;
   string block_hash = 3;
   string block_date = 4;
@@ -273,7 +273,7 @@ message NonceChange {
 
 message GasChange {
   // -- block --
-  google.protobuf.Timestamp block_time = 1;
+  string block_time = 1; // TIMESTAMP
   uint64 block_number = 2;
   string block_hash = 3;
   string block_date = 4;
@@ -291,7 +291,7 @@ message GasChange {
 
 message CreationTrace {
   // -- block --
-  google.protobuf.Timestamp block_time = 1;
+  string block_time = 1; // TIMESTAMP
   uint64 block_number = 2;
   string block_hash = 3;
   string block_date = 4;

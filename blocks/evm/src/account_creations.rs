@@ -32,7 +32,7 @@ pub fn collect_account_creations(block: &Block, timestamp: &BlockTimestamp) -> V
 pub fn parse_account_creation(account_creation: &AccountCreation, transaction: &TransactionTrace, timestamp: &BlockTimestamp) -> AccountCreationEvent {
     AccountCreationEvent {
         // block
-        block_time: Some(timestamp.time),
+        block_time: timestamp.time.to_string(),
         block_number: timestamp.number,
         block_hash: timestamp.hash.clone(),
         block_date: timestamp.date.clone(),

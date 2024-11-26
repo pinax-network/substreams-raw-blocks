@@ -1,7 +1,59 @@
+CREATE OR REPLACE SECURE VIEW v1_blocks AS
+SELECT
+  -- clock --
+  TO_TIMESTAMP(time / 1000000000) as time,
+  number,
+  date,
+  hash,
+
+  -- roots --
+  ommers_hash,
+  logs_bloom,
+  transactions_root,
+  state_root,
+  receipts_root,
+  withdrawals_root,
+  parent_beacon_root,
+
+  -- header --
+  parent_hash,
+  nonce,
+  miner,
+  difficulty,
+  ZEROIFNULL(TRY_TO_DECIMAL(hex_encode(total_difficulty_bytes), 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')) as total_difficulty,
+  mix_hash,
+  extra_data,
+  extra_data_utf8,
+  gas_limit,
+  gas_used,
+  base_fee_per_gas,
+
+  -- blobs --
+  blob_gas_used,
+  excess_blob_gas,
+  ZEROIFNULL(TRY_TO_DECIMAL(hex_encode(blob_gas_price_bytes), 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')) as blob_gas_price,
+  (IFF(blob_transactions[0] ='', [], blob_transactions)) as blob_transactions,
+  (IFF(blob_hashes[0] ='', [], blob_hashes)) as blob_hashes,
+  total_blob_transactions,
+  total_blobs,
+
+  -- counters --
+  size,
+  total_transactions,
+  successful_transactions,
+  failed_transactions,
+  total_balance_changes,
+  total_withdrawals,
+
+  -- detail level --
+  detail_level,
+  detail_level_code,
+FROM "v1.0.0-blocks";
+
 CREATE OR REPLACE SECURE VIEW v1_transactions AS
 SELECT
   -- block --
-  TO_TIMESTAMP(block_time / 1000000000) as block_time,
+  block_time,
   block_number,
   block_hash,
   block_date,
@@ -49,7 +101,7 @@ FROM "v1.0.0-transactions";
 CREATE OR REPLACE SECURE VIEW v1_traces AS
 SELECT
     -- block --
-    TO_TIMESTAMP(block_time / 1000000000) as block_time,
+    block_time,
     block_number,
     block_hash,
     block_date,
@@ -86,3 +138,8 @@ SELECT
     begin_ordinal,
     end_ordinal,
 FROM "v1.0.0-traces";
+
+CREATE OR REPLACE SECURE VIEW v1_logs AS
+SELECT
+  *
+FROM "v1.0.0-logs";

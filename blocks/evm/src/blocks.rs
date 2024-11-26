@@ -46,7 +46,7 @@ pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> BlockHeader {
 
     BlockHeader {
         // clock
-        time: Some(timestamp.time),
+        time: timestamp.time.to_string(),
         number: header.number,
         date: timestamp.date.clone(),
         hash: bytes_to_hex(&block.hash),

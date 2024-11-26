@@ -31,7 +31,7 @@ pub fn collect_code_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec<Co
 pub fn parse_code_change(code_change: &CodeChange, transaction: &TransactionTrace, timestamp: &BlockTimestamp) -> CodeChangeEvent {
     CodeChangeEvent {
         // block
-        block_time: Some(timestamp.time),
+        block_time: timestamp.time.to_string(),
         block_number: timestamp.number,
         block_hash: timestamp.hash.clone(),
         block_date: timestamp.date.clone(),

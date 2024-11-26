@@ -35,7 +35,7 @@ pub fn collect_logs(block: &Block, timestamp: &BlockTimestamp) -> Vec<LogEvent> 
 pub fn parse_log(log: &Log, transaction: &TransactionTrace, timestamp: &BlockTimestamp) -> LogEvent {
     LogEvent {
         // block
-        block_time: Some(timestamp.time),
+        block_time: timestamp.time.to_string(),
         block_number: timestamp.number,
         block_hash: timestamp.hash.clone(),
         block_date: timestamp.date.clone(),

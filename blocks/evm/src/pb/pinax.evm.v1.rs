@@ -30,8 +30,10 @@ pub struct Events {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Block {
     /// -- clock --
-    #[prost(message, optional, tag="1")]
-    pub time: ::core::option::Option<::prost_types::Timestamp>,
+    ///
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub number: u64,
     #[prost(string, tag="3")]
@@ -128,8 +130,10 @@ pub struct Block {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Transaction {
     /// -- block --
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    ///
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub block_number: u64,
     #[prost(string, tag="3")]
@@ -217,8 +221,10 @@ pub struct Transaction {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Log {
     /// -- block --
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    ///
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub block_number: u64,
     #[prost(string, tag="3")]
@@ -262,8 +268,10 @@ pub struct Log {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Trace {
     /// -- block --
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    ///
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub block_number: u64,
     #[prost(string, tag="3")]
@@ -336,8 +344,10 @@ pub struct Trace {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct BalanceChange {
     /// -- block --
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    ///
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub block_number: u64,
     #[prost(string, tag="3")]
@@ -367,8 +377,10 @@ pub struct BalanceChange {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct StorageChange {
     /// -- block --
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    ///
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub block_number: u64,
     #[prost(string, tag="3")]
@@ -396,8 +408,10 @@ pub struct StorageChange {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CodeChange {
     /// -- block --
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    ///
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub block_number: u64,
     #[prost(string, tag="3")]
@@ -427,8 +441,10 @@ pub struct CodeChange {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AccountCreation {
     /// -- block --
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    ///
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub block_number: u64,
     #[prost(string, tag="3")]
@@ -450,8 +466,10 @@ pub struct AccountCreation {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct NonceChange {
     /// -- block --
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    ///
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub block_number: u64,
     #[prost(string, tag="3")]
@@ -477,8 +495,10 @@ pub struct NonceChange {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GasChange {
     /// -- block --
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    ///
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub block_number: u64,
     #[prost(string, tag="3")]
@@ -506,8 +526,10 @@ pub struct GasChange {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CreationTrace {
     /// -- block --
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    ///
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub block_number: u64,
     #[prost(string, tag="3")]

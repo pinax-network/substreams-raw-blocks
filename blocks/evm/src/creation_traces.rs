@@ -18,7 +18,7 @@ pub fn collect_creation_traces(block: &Block, timestamp: &BlockTimestamp) -> Vec
 
                     creation_traces.push(CreationTrace {
                         // block
-                        block_time: Some(timestamp.time),
+                        block_time: timestamp.time.to_string(),
                         block_number: timestamp.number,
                         block_hash: timestamp.hash.clone(),
                         block_date: timestamp.date.clone(),

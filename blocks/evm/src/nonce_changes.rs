@@ -31,7 +31,7 @@ pub fn collect_nonce_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec<N
 pub fn parse_nonce_change(nonce_change: &NonceChange, transaction: &TransactionTrace, timestamp: &BlockTimestamp) -> NonceChangeEvent {
     NonceChangeEvent {
         // block
-        block_time: Some(timestamp.time),
+        block_time: timestamp.time.to_string(),
         block_number: timestamp.number,
         block_hash: timestamp.hash.clone(),
         block_date: timestamp.date.clone(),
