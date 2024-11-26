@@ -1,7 +1,7 @@
 CREATE OR REPLACE SECURE VIEW v1_blocks AS
 SELECT
   -- clock --
-  TO_TIMESTAMP(time / 1000000000) as time,
+  time,
   number,
   date,
   hash,
