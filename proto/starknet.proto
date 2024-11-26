@@ -178,6 +178,21 @@ message Call {
     uint32 execution_resources_poseidon_builtin_applications = 24;
     uint32 execution_resources_range_check_builtin_applications = 25;
     uint32 execution_resources_segment_arena_builtin = 26;
+    uint32 execution_resources_steps = 27;
+    uint32 num_subcalls = 28;
+    string block_new_root = 29;
+    string block_parent_hash = 30;
+    string block_sequencer_address = 31;
+    string transaction_hash = 32;
+    repeated uint32 callstack_index = 33;
+    repeated string calldata = 34;
+    string caller_address = 35;
+    string class_hash = 36;
+    string contract_address = 37;
+    string entry_point_selector = 38;
+    string result = 39;
+    string revert_reason = 40;
+    string state_diff = 41;
 }
 
 // TODO: TransactionMessagesSent : | messages_sent | array(row(from_address string, payload string, to_address string)) |
