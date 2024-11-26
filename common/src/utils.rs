@@ -28,6 +28,9 @@ pub fn add_prefix_to_hex(hex: &str) -> String {
         format! {"0x{}", hex}.to_string()
     }
 }
+pub fn u8_2d_vec_to_string_array(bytes_2d: &Vec<Vec<u8>>) -> Vec<String> {
+    bytes_2d.iter().map(bytes_to_hex).collect()
+}
 
 // pub fn optional_bigint_to_string(value: &Option<BigInt>, default: &str) -> String {
 //     match value {

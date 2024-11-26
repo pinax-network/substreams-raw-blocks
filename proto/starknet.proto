@@ -20,12 +20,12 @@ message Block {
     string date = 3;
     string hash = 4;
     string l1_da_mode = 5;
-    uint64 l1_data_gas_price_in_fri = 6;
-    uint64 l1_data_gas_price_in_wei = 7;
-    uint64 l1_gas_price_in_fri = 8;
-    uint64 l1_gas_price_in_wei = 9;
+    bytes l1_data_gas_price_in_fri = 6;
+    bytes l1_data_gas_price_in_wei = 7;
+    bytes l1_gas_price_in_fri = 8;
+    bytes l1_gas_price_in_wei = 9;
     string starknet_version = 10;
-    uint32 tx_count = 11;
+    uint32 tx_count = 11; 
     string new_root = 12;
     string parent_hash = 13;
     string sequencer_address = 14;
@@ -34,28 +34,60 @@ message Block {
 
 
 message Transaction {
-    google.protobuf.Timestamp block_time = 1;
-    uint64 block_number = 2;
-    string block_date = 3;
+    string block_date = 1;
+    google.protobuf.Timestamp block_time = 2;
+    uint64 block_number = 3;
     string block_hash = 4;
-
-    string value = 5; // Using string to represent decimal(38,0)
-    uint64 gas_limit = 6;
-    uint64 gas_price = 7;
-    uint64 gas_used = 8;
-    uint64 max_fee_per_gas = 9;
-    uint64 max_priority_fee_per_gas = 10;
-    int64 priority_fee_per_gas = 11;
-    uint64 nonce = 12;
-    uint64 index = 13;
-    bool success = 14;
-    string from = 15; // Varbinary represented as string
-    string to = 16;
-    string data = 17;
-    string hash = 18;
-    string type = 19; // Varchar represented as string
-    repeated string blob_versioned_hashes = 20;
-    uint64 max_fee_per_blob_gas = 21;
+    string block_l1_da_mode = 5;
+    bytes block_l1_data_gas_price_in_fri = 6;
+    bytes block_l1_data_gas_price_in_wei = 7;
+    bytes block_l1_gas_price_in_fri = 8;
+    bytes block_l1_gas_price_in_wei = 9;
+    string block_starknet_version = 10;
+    string fee_data_availability_mode = 11;
+    // transaction
+    string hash = 12;
+    uint32 index = 13;
+    
+    bytes max_fee = 14;
+    bytes nonce = 15;
+    string nonce_data_availability_mode = 16;
+    bytes resource_bounds_l1_gas_max_amount = 17;
+    bytes resource_bounds_l1_gas_max_price_per_unit = 18;
+    bytes tip = 19;
+    string type = 20;
+    string version = 21;
+    bytes actual_fee_amount = 22;
+    string actual_fee_unit = 23;
+    uint64 execution_resources_bitwise_builtin_applications = 24;
+    uint64 execution_resources_data_availability_l1_gas = 25;
+    uint64 execution_resources_data_availability_l1_data_gas = 26;
+    uint64 execution_resources_ec_op_builtin_applications = 27;
+    uint64 execution_resources_ecdsa_builtin_applications = 28;
+    uint64 execution_resources_keccak_builtin_applications = 29;
+    uint64 execution_resources_memory_holes = 30;
+    uint64 execution_resources_pedersen_builtin_applications = 31;
+    uint64 execution_resources_poseidon_builtin_applications = 32;
+    uint64 execution_resources_range_check_builtin_applications = 33;
+    uint64 execution_resources_segment_arena_builtin = 34;
+    uint64 execution_resources_steps = 35;
+    string execution_status = 36;
+    string finality_status = 37;
+    string receipt_type = 38;
+    string block_new_root = 39;
+    string block_parent_hash = 40;
+    string block_sequencer_address = 41;
+    repeated string calldata = 42;
+    string class_hash = 43;
+    string compiled_class_hash = 44;
+    repeated string constructor_calldata = 45;
+    string contract_address = 46;
+    string contract_address_salt = 47;
+    string entry_point_selector = 48;
+    string sender_address = 49;
+    repeated string signature = 50;
+    string message_hash = 51;
+    string revert_reason = 52;
 }
 
 message AccessList {
@@ -68,7 +100,7 @@ message AccessList {
     // transaction
     string tx_hash = 5;
     bool tx_success = 6;
-    uint64 index = 7; // Index of the access list entry in the transaction
+    uint32 index = 7; // Index of the access list entry in the transaction
 
     // access list
     string address = 8;
@@ -90,10 +122,10 @@ message Events {
 
     // block counters
     string block_l1_da_mode = 9;
-    uint64 block_l1_data_gas_price_in_fri = 10;
-    uint64 block_l1_data_gas_price_in_wei = 11;
-    uint64 block_l1_gas_price_in_fri = 12;
-    uint64 block_l1_gas_price_in_wei = 13;
+    bytes block_l1_data_gas_price_in_fri = 10;
+    bytes block_l1_data_gas_price_in_wei = 11;
+    bytes block_l1_gas_price_in_fri = 12;
+    bytes block_l1_gas_price_in_wei = 13;
 
     // event
     uint32 event_index = 14;
@@ -113,10 +145,10 @@ message Call {
 
     // block
     string block_l1_da_mode = 5;
-    uint64 block_l1_data_gas_price_in_fri = 6;
-    uint64 block_l1_data_gas_price_in_wei = 7;
-    uint64 block_l1_gas_price_in_fri = 8;
-    uint64 block_l1_gas_price_in_wei = 9;
+    bytes block_l1_data_gas_price_in_fri = 6;
+    bytes block_l1_data_gas_price_in_wei = 7;
+    bytes block_l1_gas_price_in_fri = 8;
+    bytes block_l1_gas_price_in_wei = 9;
     string block_starknet_version = 10;
 
     // transaction
@@ -139,3 +171,5 @@ message Call {
     uint32 execution_resources_range_check_builtin_applications = 25;
     uint32 execution_resources_segment_arena_builtin = 26;
 }
+
+// TODO: TransactionMessagesSent : | messages_sent | array(row(from_address string, payload string, to_address string)) |
