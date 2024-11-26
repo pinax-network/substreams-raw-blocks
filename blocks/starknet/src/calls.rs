@@ -9,8 +9,8 @@ use crate::{
     utils::BlockHashes,
 };
 
-pub fn collect_calls(block: &Block, transaction: &TransactionWithReceipt, timestamp: &BlockTimestamp, block_hashes: &BlockHashes, tx_data: &TransactionData) -> Vec<Call> {
-    let mut calls: Vec<Call> = Vec::new();
+pub fn _collect_calls(_block: &Block, _transaction: &TransactionWithReceipt, _timestamp: &BlockTimestamp, _block_hashes: &BlockHashes, _tx_data: &TransactionData) -> Vec<Call> {
+    let mut _calls: Vec<Call> = Vec::new();
 
-    calls
+    _calls
 }
