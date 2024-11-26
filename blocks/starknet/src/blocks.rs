@@ -2,12 +2,15 @@ use common::{structs::BlockTimestamp, utils::bytes_to_hex};
 use serde_json::json;
 use substreams::Hex;
 
-use crate::pb::{
-    pinax::starknet::v1::Block as BlockOutput,
-    sf::starknet::r#type::v1::{Block, StateDiff},
+use crate::{
+    pb::{
+        pinax::starknet::v1::Block as BlockOutput,
+        sf::starknet::r#type::v1::{Block, StateDiff},
+    },
+    utils::BlockHashes,
 };
 
-pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> BlockOutput {
+pub fn collect_block(block: &Block, timestamp: &BlockTimestamp, block_hashes: &BlockHashes) -> BlockOutput {
     let l1_data_gas_price = block.l1_data_gas_price.as_ref().expect("L1 data gas price missing");
     let l1_gas_price = block.l1_gas_price.as_ref().expect("L1 gas price missing");
     let state_diff = block.state_update.as_ref().expect("State diff missing").state_diff.as_ref().expect("State diff missing");
@@ -24,14 +27,14 @@ pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> BlockOutput {
         l1_gas_price_in_wei: l1_gas_price.price_in_wei.clone(),
         starknet_version: block.starknet_version.clone(),
         tx_count: block.transactions.len() as u32,
-        new_root: bytes_to_hex(&block.new_root),
-        parent_hash: bytes_to_hex(&block.parent_hash),
-        sequencer_address: bytes_to_hex(&block.sequencer_address),
+        new_root: block_hashes.new_root.clone(),
+        parent_hash: block_hashes.parent_hash.clone(),
+        sequencer_address: block_hashes.sequencer_address.clone(),
         state_diff: state_diff_to_string(state_diff),
     }
 }
 
-fn l1_da_mode_to_string(l1_da_mode: i32) -> String {
+pub fn l1_da_mode_to_string(l1_da_mode: i32) -> String {
     match l1_da_mode {
         0 => "Unknown".to_string(),
         1 => "Calldata".to_string(),

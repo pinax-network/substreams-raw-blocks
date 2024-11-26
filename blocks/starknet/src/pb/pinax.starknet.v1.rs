@@ -51,51 +51,111 @@ pub struct Block {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Transaction {
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
-    #[prost(uint64, tag="2")]
-    pub block_number: u64,
-    #[prost(string, tag="3")]
+    #[prost(string, tag="1")]
     pub block_date: ::prost::alloc::string::String,
+    #[prost(message, optional, tag="2")]
+    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    #[prost(uint64, tag="3")]
+    pub block_number: u64,
     #[prost(string, tag="4")]
     pub block_hash: ::prost::alloc::string::String,
-    /// Using string to represent decimal(38,0)
     #[prost(string, tag="5")]
-    pub value: ::prost::alloc::string::String,
+    pub block_l1_da_mode: ::prost::alloc::string::String,
     #[prost(bytes="vec", tag="6")]
-    pub gas_limit: ::prost::alloc::vec::Vec<u8>,
+    pub block_l1_data_gas_price_in_fri: ::prost::alloc::vec::Vec<u8>,
     #[prost(bytes="vec", tag="7")]
-    pub gas_price: ::prost::alloc::vec::Vec<u8>,
+    pub block_l1_data_gas_price_in_wei: ::prost::alloc::vec::Vec<u8>,
     #[prost(bytes="vec", tag="8")]
-    pub gas_used: ::prost::alloc::vec::Vec<u8>,
+    pub block_l1_gas_price_in_fri: ::prost::alloc::vec::Vec<u8>,
     #[prost(bytes="vec", tag="9")]
-    pub max_fee_per_gas: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes="vec", tag="10")]
-    pub max_priority_fee_per_gas: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes="vec", tag="11")]
-    pub priority_fee_per_gas: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes="vec", tag="12")]
-    pub nonce: ::prost::alloc::vec::Vec<u8>,
-    #[prost(uint64, tag="13")]
-    pub index: u64,
-    #[prost(bool, tag="14")]
-    pub success: bool,
-    /// Varbinary represented as string
-    #[prost(string, tag="15")]
-    pub from: ::prost::alloc::string::String,
-    #[prost(string, tag="16")]
-    pub to: ::prost::alloc::string::String,
-    #[prost(string, tag="17")]
-    pub data: ::prost::alloc::string::String,
-    #[prost(string, tag="18")]
+    pub block_l1_gas_price_in_wei: ::prost::alloc::vec::Vec<u8>,
+    #[prost(string, tag="10")]
+    pub block_starknet_version: ::prost::alloc::string::String,
+    #[prost(string, tag="11")]
+    pub fee_data_availability_mode: ::prost::alloc::string::String,
+    /// transaction
+    #[prost(string, tag="12")]
     pub hash: ::prost::alloc::string::String,
-    /// Varchar represented as string
-    #[prost(string, tag="19")]
+    #[prost(uint32, tag="13")]
+    pub index: u32,
+    #[prost(bytes="vec", tag="14")]
+    pub max_fee: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="15")]
+    pub nonce: ::prost::alloc::vec::Vec<u8>,
+    #[prost(string, tag="16")]
+    pub nonce_data_availability_mode: ::prost::alloc::string::String,
+    #[prost(bytes="vec", tag="17")]
+    pub resource_bounds_l1_gas_max_amount: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="18")]
+    pub resource_bounds_l1_gas_max_price_per_unit: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="19")]
+    pub tip: ::prost::alloc::vec::Vec<u8>,
+    #[prost(string, tag="20")]
     pub r#type: ::prost::alloc::string::String,
-    #[prost(string, repeated, tag="20")]
-    pub blob_versioned_hashes: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
-    #[prost(uint64, tag="21")]
-    pub max_fee_per_blob_gas: u64,
+    #[prost(string, tag="21")]
+    pub version: ::prost::alloc::string::String,
+    #[prost(bytes="vec", tag="22")]
+    pub actual_fee_amount: ::prost::alloc::vec::Vec<u8>,
+    #[prost(string, tag="23")]
+    pub actual_fee_unit: ::prost::alloc::string::String,
+    #[prost(uint64, tag="24")]
+    pub execution_resources_bitwise_builtin_applications: u64,
+    #[prost(uint64, tag="25")]
+    pub execution_resources_data_availability_l1_gas: u64,
+    #[prost(uint64, tag="26")]
+    pub execution_resources_data_availability_l1_data_gas: u64,
+    #[prost(uint64, tag="27")]
+    pub execution_resources_ec_op_builtin_applications: u64,
+    #[prost(uint64, tag="28")]
+    pub execution_resources_ecdsa_builtin_applications: u64,
+    #[prost(uint64, tag="29")]
+    pub execution_resources_keccak_builtin_applications: u64,
+    #[prost(uint64, tag="30")]
+    pub execution_resources_memory_holes: u64,
+    #[prost(uint64, tag="31")]
+    pub execution_resources_pedersen_builtin_applications: u64,
+    #[prost(uint64, tag="32")]
+    pub execution_resources_poseidon_builtin_applications: u64,
+    #[prost(uint64, tag="33")]
+    pub execution_resources_range_check_builtin_applications: u64,
+    #[prost(uint64, tag="34")]
+    pub execution_resources_segment_arena_builtin: u64,
+    #[prost(uint64, tag="35")]
+    pub execution_resources_steps: u64,
+    #[prost(string, tag="36")]
+    pub execution_status: ::prost::alloc::string::String,
+    #[prost(string, tag="37")]
+    pub finality_status: ::prost::alloc::string::String,
+    #[prost(string, tag="38")]
+    pub receipt_type: ::prost::alloc::string::String,
+    #[prost(string, tag="39")]
+    pub block_new_root: ::prost::alloc::string::String,
+    #[prost(string, tag="40")]
+    pub block_parent_hash: ::prost::alloc::string::String,
+    #[prost(string, tag="41")]
+    pub block_sequencer_address: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag="42")]
+    pub calldata: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(string, tag="43")]
+    pub class_hash: ::prost::alloc::string::String,
+    #[prost(string, tag="44")]
+    pub compiled_class_hash: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag="45")]
+    pub constructor_calldata: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(string, tag="46")]
+    pub contract_address: ::prost::alloc::string::String,
+    #[prost(string, tag="47")]
+    pub contract_address_salt: ::prost::alloc::string::String,
+    #[prost(string, tag="48")]
+    pub entry_point_selector: ::prost::alloc::string::String,
+    #[prost(string, tag="49")]
+    pub sender_address: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag="50")]
+    pub signature: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(string, tag="51")]
+    pub message_hash: ::prost::alloc::string::String,
+    #[prost(string, tag="52")]
+    pub revert_reason: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -115,8 +175,8 @@ pub struct AccessList {
     #[prost(bool, tag="6")]
     pub tx_success: bool,
     /// Index of the access list entry in the transaction
-    #[prost(uint64, tag="7")]
-    pub index: u64,
+    #[prost(uint32, tag="7")]
+    pub index: u32,
     /// access list
     #[prost(string, tag="8")]
     pub address: ::prost::alloc::string::String,
