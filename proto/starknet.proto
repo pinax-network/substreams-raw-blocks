@@ -9,6 +9,7 @@ option go_package = "github.com/streamingfast/firehose-starknet/pb/sf/starknet/t
 message EventsOutput {
     repeated Block blocks = 1;
     repeated Transaction transactions = 2;
+    repeated MessageSent messages_sent = 3;
     repeated Events events = 4;
     repeated Call calls = 5;
 }
@@ -87,6 +88,31 @@ message Transaction {
     repeated string signature = 50;
     string message_hash = 51;
     string revert_reason = 52;
+}
+
+message MessageSent {
+    // clock
+    google.protobuf.Timestamp block_time = 1;
+    uint64 block_number = 2;
+    string block_date = 3;
+    string block_hash = 4;
+
+    // block
+    string block_l1_da_mode = 5;
+    bytes block_l1_data_gas_price_in_fri = 6;
+    bytes block_l1_data_gas_price_in_wei = 7;
+    bytes block_l1_gas_price_in_fri = 8;
+    bytes block_l1_gas_price_in_wei = 9;
+    string block_starknet_version = 10;
+
+    // transaction
+    uint32 tx_index = 11;
+    string tx_type = 12;
+
+    // message sent
+    string from_address = 13;
+    repeated string payload = 14;
+    string to_address = 15;
 }
 
 message Events {

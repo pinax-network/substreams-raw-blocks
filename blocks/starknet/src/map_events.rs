@@ -16,13 +16,17 @@ pub fn map_events(clock: Clock, block: Block) -> Result<EventsOutput, Error> {
     let mut events = EventsOutput {
         blocks: vec![collect_block(&block, &timestamp, &block_hashes)],
         transactions: vec![],
-        access_lists: vec![],
+        messages_sent: vec![],
         events: vec![],
         calls: vec![],
     };
 
     for (index, transaction) in block.transactions.iter().enumerate() {
-        events.transactions.push(collect_transaction(&block, transaction, index as u32, &timestamp, &block_hashes));
+        // messages_sent should be a field in `transaction` when complex arrays are supported by substreams-sink-files
+        let (trx, messages_sent) = collect_transaction(&block, transaction, index as u32, &timestamp, &block_hashes);
+
+        events.transactions.push(trx);
+        events.messages_sent.extend(messages_sent);
     }
 
     Ok(events)

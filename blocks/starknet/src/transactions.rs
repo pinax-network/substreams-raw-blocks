@@ -6,13 +6,13 @@ use common::{
 use crate::{
     blocks::l1_da_mode_to_string,
     pb::{
-        pinax::starknet::v1::Transaction,
+        pinax::starknet::v1::{MessageSent, Transaction},
         sf::starknet::r#type::v1::{transaction_with_receipt::Transaction as TrxType, Block, TransactionWithReceipt},
     },
     utils::BlockHashes,
 };
 
-pub fn collect_transaction(block: &Block, transaction: &TransactionWithReceipt, tx_index: u32, timestamp: &BlockTimestamp, block_hashes: &BlockHashes) -> Transaction {
+pub fn collect_transaction(block: &Block, transaction: &TransactionWithReceipt, tx_index: u32, timestamp: &BlockTimestamp, block_hashes: &BlockHashes) -> (Transaction, Vec<MessageSent>) {
     let receipt = transaction.receipt.as_ref().expect("Receipt is missing");
 
     let actual_fee = receipt.actual_fee.as_ref().expect("Actual fee missing");
@@ -25,7 +25,7 @@ pub fn collect_transaction(block: &Block, transaction: &TransactionWithReceipt, 
 
     let tx_data = extract_fields_from_transaction(transaction);
 
-    Transaction {
+    let transaction = Transaction {
         block_date: timestamp.date.clone(),
         block_time: Some(timestamp.time.clone()),
         block_number: timestamp.number,
@@ -82,7 +82,31 @@ pub fn collect_transaction(block: &Block, transaction: &TransactionWithReceipt, 
         signature: tx_data.signature,
         message_hash: receipt.message_hash.clone(),
         revert_reason: receipt.revert_reason.clone(),
+    };
+
+    let mut messages_sent: Vec<MessageSent> = Vec::new();
+
+    for message in receipt.messages_sent.iter() {
+        messages_sent.push(MessageSent {
+            block_date: timestamp.date.clone(),
+            block_time: Some(timestamp.time.clone()),
+            block_number: timestamp.number,
+            block_hash: block_hashes.new_root.clone(),
+            block_l1_da_mode: l1_da_mode_to_string(block.l1_da_mode),
+            block_l1_data_gas_price_in_fri: l1_data_gas_price.price_in_fri.clone(),
+            block_l1_data_gas_price_in_wei: l1_data_gas_price.price_in_wei.clone(),
+            block_l1_gas_price_in_fri: l1_gas_price.price_in_fri.clone(),
+            block_l1_gas_price_in_wei: l1_gas_price.price_in_wei.clone(),
+            block_starknet_version: block.starknet_version.clone(),
+            tx_index,
+            tx_type: tx_type_to_string(receipt.r#type),
+            from_address: bytes_to_hex(&message.from_address),
+            to_address: bytes_to_hex(&message.to_address),
+            payload: u8_2d_vec_to_string_array(&message.payload),
+        });
     }
+
+    (transaction, messages_sent)
 }
 
 pub fn extract_fields_from_transaction(transaction: &TransactionWithReceipt) -> TransactionData {

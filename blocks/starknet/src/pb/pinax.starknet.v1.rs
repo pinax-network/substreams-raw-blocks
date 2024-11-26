@@ -8,7 +8,7 @@ pub struct EventsOutput {
     #[prost(message, repeated, tag="2")]
     pub transactions: ::prost::alloc::vec::Vec<Transaction>,
     #[prost(message, repeated, tag="3")]
-    pub access_lists: ::prost::alloc::vec::Vec<AccessList>,
+    pub messages_sent: ::prost::alloc::vec::Vec<MessageSent>,
     #[prost(message, repeated, tag="4")]
     pub events: ::prost::alloc::vec::Vec<Events>,
     #[prost(message, repeated, tag="5")]
@@ -159,7 +159,7 @@ pub struct Transaction {
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct AccessList {
+pub struct MessageSent {
     /// clock
     #[prost(message, optional, tag="1")]
     pub block_time: ::core::option::Option<::prost_types::Timestamp>,
@@ -169,19 +169,31 @@ pub struct AccessList {
     pub block_date: ::prost::alloc::string::String,
     #[prost(string, tag="4")]
     pub block_hash: ::prost::alloc::string::String,
-    /// transaction
+    /// block
     #[prost(string, tag="5")]
-    pub tx_hash: ::prost::alloc::string::String,
-    #[prost(bool, tag="6")]
-    pub tx_success: bool,
-    /// Index of the access list entry in the transaction
-    #[prost(uint32, tag="7")]
-    pub index: u32,
-    /// access list
-    #[prost(string, tag="8")]
-    pub address: ::prost::alloc::string::String,
-    #[prost(string, repeated, tag="9")]
-    pub storage_keys: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    pub block_l1_da_mode: ::prost::alloc::string::String,
+    #[prost(bytes="vec", tag="6")]
+    pub block_l1_data_gas_price_in_fri: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="7")]
+    pub block_l1_data_gas_price_in_wei: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="8")]
+    pub block_l1_gas_price_in_fri: ::prost::alloc::vec::Vec<u8>,
+    #[prost(bytes="vec", tag="9")]
+    pub block_l1_gas_price_in_wei: ::prost::alloc::vec::Vec<u8>,
+    #[prost(string, tag="10")]
+    pub block_starknet_version: ::prost::alloc::string::String,
+    /// transaction
+    #[prost(uint32, tag="11")]
+    pub tx_index: u32,
+    #[prost(string, tag="12")]
+    pub tx_type: ::prost::alloc::string::String,
+    /// message sent
+    #[prost(string, tag="13")]
+    pub from_address: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag="14")]
+    pub payload: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(string, tag="15")]
+    pub to_address: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
