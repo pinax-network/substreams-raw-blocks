@@ -143,3 +143,18 @@ CREATE OR REPLACE SECURE VIEW v1_logs AS
 SELECT
   *
 FROM "v1.0.0-logs";
+
+CREATE OR REPLACE SECURE VIEW v1_account_creations AS
+SELECT
+  *
+FROM "v1.0.0-account_creations";
+
+CREATE OR REPLACE SECURE VIEW v1_storage_changes AS
+SELECT
+  *
+FROM "v1.0.0-storage_changes";
+
+CREATE OR REPLACE SECURE VIEW v1_code_changes AS
+SELECT
+  *
+FROM "v1.0.0-code_changes";

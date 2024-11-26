@@ -2,7 +2,6 @@ mod account_creations;
 mod balance_changes;
 mod blocks;
 mod code_changes;
-mod creation_traces;
 mod events;
 mod gas_changes;
 mod logs;

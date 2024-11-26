@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package pinax.evm.v1;
 
-import "google/protobuf/timestamp.proto";
+// import "google/protobuf/timestamp.proto";
 
 message Events {
   repeated Block blocks = 1;
@@ -15,7 +15,6 @@ message Events {
   repeated AccountCreation account_creations = 8;
   repeated NonceChange nonce_changes = 9;
   repeated GasChange gas_changes = 10;
-  repeated CreationTrace creation_traces = 11;
 }
 
 message Block {
@@ -228,15 +227,13 @@ message CodeChange {
   string block_date = 4;
 
   // -- transaction --
-  optional string tx_hash = 5;
+  string tx_hash = 5;
 
-  // -- code change --
-  uint64 ordinal = 6; // block global ordinal
-  string address = 7;
-  string old_hash = 8;
-  string old_code = 9;
-  string new_hash = 10;
-  string new_code = 11;
+  // -- creation trace --
+  string address = 6;
+  string from = 7;
+  string factory = 8;
+  string code = 9;
 }
 
 message AccountCreation {
@@ -287,21 +284,4 @@ message GasChange {
   uint64 new_value = 8;
   string reason = 9;
   uint32 reason_code = 10;
-}
-
-message CreationTrace {
-  // -- block --
-  string block_time = 1; // TIMESTAMP
-  uint64 block_number = 2;
-  string block_hash = 3;
-  string block_date = 4;
-
-  // -- transaction --
-  string tx_hash = 5;
-
-  // -- creation trace --
-  string address = 6;
-  string from = 7;
-  string factory = 8;
-  string code = 9;
 }

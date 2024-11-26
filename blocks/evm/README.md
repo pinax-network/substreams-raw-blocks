@@ -16,7 +16,6 @@
   - [x] **Account Creation**
   - [x] **Gas Changes**
   - [x] **Nonce Changes**
-  - [x] **Creation Traces**
 
 ## Graph
 
@@ -36,5 +35,5 @@ Kind: map
 Input: source: sf.substreams.v1.Clock
 Input: source: sf.ethereum.type.v2.Block
 Output Type: proto:evm.Events
-Hash: 323b41131b4f2dc97705d80cc0b859d4a33c52de
+Hash: a7483e216fa6fc6753e7d6a9809620036fcd077d
 ```
