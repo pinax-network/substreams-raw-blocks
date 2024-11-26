@@ -10,7 +10,7 @@ message EventsOutput {
     repeated Block blocks = 1;
     repeated Transaction transactions = 2;
     repeated MessageSent messages_sent = 3;
-    repeated Events events = 4;
+    repeated Event events = 4;
     repeated Call calls = 5;
 }
 
@@ -115,7 +115,7 @@ message MessageSent {
     string to_address = 15;
 }
 
-message Events {
+message Event {
     // clock
     google.protobuf.Timestamp block_time = 1;
     uint64 block_number = 2;

@@ -15,3 +15,11 @@ pub fn build_block_hashes(block: &Block) -> BlockHashes {
         sequencer_address: bytes_to_hex(&block.sequencer_address),
     }
 }
+
+pub fn data_availability_mode_to_string(value: i32) -> String {
+    match value {
+        1 => "L1".to_string(),
+        2 => "L2".to_string(),
+        _ => "Unknown".to_string(),
+    }
+}
