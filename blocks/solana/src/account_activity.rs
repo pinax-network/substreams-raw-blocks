@@ -1,7 +1,7 @@
 use substreams_solana::pb::sf::solana::r#type::v1::{ConfirmedTransaction, MessageHeader, TokenBalance, Transaction};
 
 use crate::{
-    pb::solana::AccountActivity,
+    pb::pinax::solana::v1::AccountActivity,
     structs::{BlockInfo, BlockTimestamp},
     utils::get_account_keys_extended,
 };
@@ -68,7 +68,7 @@ pub fn collect_tx_account_activities(transaction: &ConfirmedTransaction, index: 
         let writable = writability.get(balance_index).unwrap_or(&false);
 
         account_activities.push(AccountActivity {
-            block_time: Some(timestamp.time),
+            block_time: timestamp.time.to_string(),
             block_hash: timestamp.hash.clone(),
             block_date: timestamp.date.clone(),
             block_slot: block_info.slot,

@@ -24,7 +24,7 @@ pub fn parse_attester_slashings(index: u64, indexed_attestation: &IndexedAttesta
     let target = data.target.as_ref().unwrap();
 
     RawAttesterSlashing {
-        block_time: Some(timestamp.time),
+        block_time: timestamp.time.to_string(),
         block_number: timestamp.number,
         block_date: timestamp.date.clone(),
         block_hash: timestamp.hash.clone(),

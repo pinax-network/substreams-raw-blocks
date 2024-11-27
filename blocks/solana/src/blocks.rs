@@ -1,7 +1,7 @@
 use substreams_solana::pb::sf::solana::r#type::v1::Block;
 
 use crate::structs::BlockTimestamp;
-use crate::{pb::solana::Block as RawBlock, structs::BlockInfo};
+use crate::{pb::pinax::solana::v1::Block as RawBlock, structs::BlockInfo};
 
 use crate::counters::get_block_counters;
 
@@ -18,7 +18,7 @@ pub fn collect_block(block: &Block, timestamp: &BlockTimestamp, block_info: &Blo
     let counters = get_block_counters(block);
 
     RawBlock {
-        time: Some(timestamp.time),
+        time: timestamp.time.to_string(),
         date: timestamp.date.clone(),
         hash: timestamp.hash.clone(),
         slot: block.slot,

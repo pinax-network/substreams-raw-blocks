@@ -1,7 +1,7 @@
 use substreams_solana::{base58, pb::sf::solana::r#type::v1::ConfirmedTransaction};
 
 use crate::{
-    pb::solana::Transaction as RawTransaction,
+    pb::pinax::solana::v1::Transaction as RawTransaction,
     structs::{BlockInfo, BlockTimestamp},
     tx_errors::TransactionErrorDecoder,
     utils::get_account_keys_extended,
@@ -23,7 +23,7 @@ pub fn collect_transaction(transaction: &ConfirmedTransaction, index: usize, blo
     let signers = message.account_keys.iter().take(trx.signatures.len()).map(|key| base58::encode(key)).collect::<Vec<String>>();
 
     RawTransaction {
-        block_time: Some(timestamp.time),
+        block_time: timestamp.time.to_string(),
         block_hash: timestamp.hash.clone(),
         block_date: timestamp.date.clone(),
         block_slot: block_info.slot,

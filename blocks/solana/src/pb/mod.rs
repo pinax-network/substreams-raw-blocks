@@ -1,4 +1,13 @@
 // @generated
+pub mod pinax {
+    pub mod solana {
+        // @@protoc_insertion_point(attribute:pinax.solana.v1)
+        pub mod v1 {
+            include!("pinax.solana.v1.rs");
+            // @@protoc_insertion_point(pinax.solana.v1)
+        }
+    }
+}
 pub mod sf {
     pub mod solana {
         pub mod r#type {
@@ -25,9 +34,4 @@ pub mod sol {
             // @@protoc_insertion_point(sol.transactions.v1)
         }
     }
-}
-// @@protoc_insertion_point(attribute:solana)
-pub mod solana {
-    include!("solana.rs");
-    // @@protoc_insertion_point(solana)
 }

@@ -2,7 +2,7 @@ use substreams::Hex;
 use substreams_solana::{base58, block_view::InstructionView, pb::sf::solana::r#type::v1::ConfirmedTransaction};
 
 use crate::{
-    pb::solana::InstructionCall,
+    pb::pinax::solana::v1::InstructionCall,
     structs::{BlockInfo, BlockTimestamp},
 };
 
@@ -39,7 +39,7 @@ fn collect_outer_instruction(vec: &mut Vec<InstructionCall>, timestamp: &BlockTi
     let data = Hex::encode(&instruction_view.data());
 
     vec.push(InstructionCall {
-        block_time: Some(timestamp.time),
+        block_time: timestamp.time.to_string(),
         block_hash: timestamp.hash.clone(),
         block_date: timestamp.date.clone(),
         block_slot: block_info.slot,
@@ -70,7 +70,7 @@ fn collect_inner_instructions(vec: &mut Vec<InstructionCall>, timestamp: &BlockT
         let account_arguments = inner_instruction.accounts().iter().map(|arg| arg.to_string()).collect::<Vec<String>>();
 
         vec.push(InstructionCall {
-            block_time: Some(timestamp.time),
+            block_time: timestamp.time.to_string(),
             block_hash: timestamp.hash.clone(),
             block_date: timestamp.date.clone(),
             block_slot: block_info.slot,

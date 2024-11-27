@@ -12,7 +12,7 @@ pub fn collect_transaction_inputs(transaction: &Transaction, timestamp: &BlockTi
         let witness_data = if input.txinwitness.len() > 0 { input.txinwitness.clone() } else { vec![String::new()] };
 
         inputs.push(Input {
-            block_time: Some(timestamp.time),
+            block_time: timestamp.time.to_string(),
             block_date: timestamp.date.clone(),
             block_height: timestamp.number as u32,
             block_hash: timestamp.hash.clone(),

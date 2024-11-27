@@ -10,7 +10,7 @@ pub fn collect_attestations(attestations: &Vec<Attestation>, timestamp: &BlockTi
 
     for (index, attestation) in attestations.iter().enumerate() {
         vec.push(RawAttestation {
-            block_time: Some(timestamp.time),
+            block_time: timestamp.time.to_string(),
             block_number: timestamp.number,
             block_date: timestamp.date.clone(),
             block_hash: timestamp.hash.clone(),

@@ -3,7 +3,7 @@ use substreams::pb::substreams::Clock;
 use substreams_solana::pb::sf::solana::r#type::v1::Block;
 
 use crate::collect_events::{collect_events_with_votes, collect_events_without_votes};
-use crate::pb::solana::Events;
+use crate::pb::pinax::solana::v1::Events;
 
 #[substreams::handlers::map]
 pub fn map_events(clock: Clock, block: Block) -> Result<Events, Error> {

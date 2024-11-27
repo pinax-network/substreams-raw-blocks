@@ -9,7 +9,7 @@ pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> OutputBlock {
 
     OutputBlock {
         // clock
-        time: Some(timestamp.time),
+        time: timestamp.time.to_string(),
         height: block.height as u32,
         date: timestamp.date.clone(),
         hash: block.hash.clone(),

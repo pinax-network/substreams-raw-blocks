@@ -11,7 +11,7 @@ pub fn collect_blobs(blobs: &Vec<Blob>, timestamp: &BlockTimestamp) -> Vec<RawBl
 
     for b in blobs {
         vec.push(RawBlob {
-            block_time: Some(timestamp.time),
+            block_time: timestamp.time.to_string(),
             block_number: timestamp.number,
             block_date: timestamp.date.clone(),
             block_hash: timestamp.hash.clone(),

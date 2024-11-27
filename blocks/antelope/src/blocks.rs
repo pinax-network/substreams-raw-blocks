@@ -13,7 +13,7 @@ pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> EventsBlock {
 
     EventsBlock {
         // clock
-        time: Some(timestamp.time),
+        time: timestamp.time.to_string(),
         number: timestamp.number,
         date: timestamp.date.clone(),
         hash: timestamp.hash.clone(),

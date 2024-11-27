@@ -9,7 +9,7 @@ pub fn collect_blocks(block: &BeaconBlock, spec: &str, timestamp: &BlockTimestam
     let mut blocks = Vec::new();
 
     blocks.push(Block {
-        time: Some(timestamp.time),
+        time: timestamp.time.to_string(),
         number: timestamp.number,
         date: timestamp.date.clone(),
         hash: timestamp.hash.clone(),

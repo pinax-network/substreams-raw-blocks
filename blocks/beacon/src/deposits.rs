@@ -11,7 +11,7 @@ pub fn collect_deposits(deposits: &Vec<Deposit>, timestamp: &BlockTimestamp) -> 
 
     for (index, d) in deposits.iter().enumerate() {
         vec.push(RawDeposit {
-            block_time: Some(timestamp.time),
+            block_time: timestamp.time.to_string(),
             block_number: timestamp.number,
             block_date: timestamp.date.clone(),
             block_hash: timestamp.hash.clone(),

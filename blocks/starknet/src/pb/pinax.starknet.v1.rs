@@ -17,8 +17,9 @@ pub struct EventsOutput {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Block {
-    #[prost(message, optional, tag="1")]
-    pub time: ::core::option::Option<::prost_types::Timestamp>,
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub number: u64,
     #[prost(string, tag="3")]
@@ -51,10 +52,11 @@ pub struct Block {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Transaction {
+    /// TIMESTAMP
     #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
+    #[prost(string, tag="2")]
     pub block_date: ::prost::alloc::string::String,
-    #[prost(message, optional, tag="2")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
     #[prost(uint64, tag="3")]
     pub block_number: u64,
     #[prost(string, tag="4")]
@@ -161,8 +163,10 @@ pub struct Transaction {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MessageSent {
     /// clock
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    ///
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub block_number: u64,
     #[prost(string, tag="3")]
@@ -199,8 +203,10 @@ pub struct MessageSent {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Event {
     /// clock
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    ///
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub block_number: u64,
     #[prost(string, tag="3")]
@@ -245,8 +251,10 @@ pub struct Event {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Call {
     /// clock
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    ///
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub block_number: u64,
     #[prost(string, tag="3")]

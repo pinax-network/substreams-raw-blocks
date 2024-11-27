@@ -16,7 +16,7 @@ pub fn collect_block(block: &Block, timestamp: &BlockTimestamp, block_hashes: &B
     let state_diff = block.state_update.as_ref().expect("State diff missing").state_diff.as_ref().expect("State diff missing");
 
     BlockOutput {
-        time: Some(timestamp.time.clone()),
+        time: timestamp.time.to_string(),
         number: timestamp.number,
         date: timestamp.date.clone(),
         hash: timestamp.hash.clone(),

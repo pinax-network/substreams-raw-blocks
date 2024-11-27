@@ -5,7 +5,7 @@ use crate::pb::pinax::bitcoin::v1::Transaction as OutputTransaction;
 
 pub fn collect_transaction(transaction: &Transaction, timestamp: &BlockTimestamp, index: u32) -> OutputTransaction {
     OutputTransaction {
-        block_time: Some(timestamp.time),
+        block_time: timestamp.time.to_string(),
         block_date: timestamp.date.clone(),
         block_height: timestamp.number as u32,
         block_hash: timestamp.hash.clone(),

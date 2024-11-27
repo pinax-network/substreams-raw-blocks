@@ -21,7 +21,7 @@ pub fn collect_events(block: &Block, transaction: &TransactionWithReceipt, times
     if let Some(receipt) = &transaction.receipt {
         for (i, event) in receipt.events.iter().enumerate() {
             events.push(Event {
-                block_time: Some(timestamp.time.clone()),
+                block_time: timestamp.time.to_string(),
                 block_number: timestamp.number,
                 block_date: timestamp.date.clone(),
                 block_hash: block_hashes.new_root.clone(),

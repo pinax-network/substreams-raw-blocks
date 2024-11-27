@@ -25,7 +25,7 @@ pub fn collect_proposer_slashings(proposer_slashings: &[ProposerSlashing], times
 
 pub fn parse_proposer_slashings(index: u64, message: &BeaconBlockHeader, signature: Vec<u8>, timestamp: &BlockTimestamp) -> RawProposerSlashing {
     RawProposerSlashing {
-        block_time: Some(timestamp.time),
+        block_time: timestamp.time.to_string(),
         block_number: timestamp.number,
         block_date: timestamp.date.clone(),
         block_hash: timestamp.hash.clone(),

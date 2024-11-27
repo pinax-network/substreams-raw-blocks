@@ -1,7 +1,7 @@
 use substreams_solana::pb::sf::solana::r#type::v1::Block;
 
 use crate::{
-    pb::solana::Reward,
+    pb::pinax::solana::v1::Reward,
     structs::{BlockInfo, BlockTimestamp},
 };
 
@@ -16,7 +16,7 @@ pub fn collect_rewards(block: &Block, timestamp: &BlockTimestamp, block_info: &B
             block_height: block_info.height,
             block_previous_block_hash: block_info.previous_block_hash.clone(),
             block_parent_slot: block_info.parent_slot,
-            block_time: Some(timestamp.time),
+            block_time: timestamp.time.to_string(),
             block_date: timestamp.date.clone(),
             block_hash: timestamp.hash.clone(),
             pubkey: reward.pubkey.clone(),

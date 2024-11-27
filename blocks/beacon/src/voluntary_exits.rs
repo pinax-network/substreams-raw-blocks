@@ -12,7 +12,7 @@ pub fn collect_voluntary_exits(voluntary_exits: &[SignedVoluntaryExit], timestam
         let message = voluntary_exit.message.as_ref().unwrap();
 
         vec.push(RawVoluntaryExit {
-            block_time: Some(timestamp.time),
+            block_time: timestamp.time.to_string(),
             block_number: timestamp.number,
             block_date: timestamp.date.clone(),
             block_hash: timestamp.hash.clone(),

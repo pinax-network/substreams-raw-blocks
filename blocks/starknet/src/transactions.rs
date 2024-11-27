@@ -32,7 +32,7 @@ pub fn collect_transaction(
 
     let transaction = Transaction {
         block_date: timestamp.date.clone(),
-        block_time: Some(timestamp.time.clone()),
+        block_time: timestamp.time.to_string(),
         block_number: timestamp.number,
         block_hash: timestamp.hash.clone(),
         block_l1_da_mode: l1_da_mode_to_string(block.l1_da_mode),
@@ -94,7 +94,7 @@ pub fn collect_transaction(
     for message in receipt.messages_sent.iter() {
         messages_sent.push(MessageSent {
             block_date: timestamp.date.clone(),
-            block_time: Some(timestamp.time.clone()),
+            block_time: timestamp.time.to_string(),
             block_number: timestamp.number,
             block_hash: block_hashes.new_root.clone(),
             block_l1_da_mode: l1_da_mode_to_string(block.l1_da_mode),

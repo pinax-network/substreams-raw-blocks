@@ -21,7 +21,7 @@ pub fn collect_tx_db_ops(transaction: &TransactionTrace, timestamp: &BlockTimest
     for (index, db_op) in transaction.db_ops.iter().enumerate() {
         db_ops.push(DbOp {
             // block
-            block_time: Some(timestamp.time.clone()),
+            block_time: timestamp.time.to_string(),
             block_number: timestamp.number,
             block_hash: timestamp.hash.clone(),
             block_date: timestamp.date.clone(),

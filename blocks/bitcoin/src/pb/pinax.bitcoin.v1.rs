@@ -16,8 +16,10 @@ pub struct Events {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Block {
     /// clock
-    #[prost(message, optional, tag="1")]
-    pub time: ::core::option::Option<::prost_types::Timestamp>,
+    ///
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub time: ::prost::alloc::string::String,
     #[prost(uint32, tag="2")]
     pub height: u32,
     #[prost(string, tag="3")]
@@ -65,8 +67,10 @@ pub struct Block {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Transaction {
     /// block
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    ///
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
     #[prost(string, tag="2")]
     pub block_date: ::prost::alloc::string::String,
     #[prost(uint32, tag="3")]
@@ -107,8 +111,10 @@ pub struct Transaction {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Input {
     /// block
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    ///
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
     #[prost(string, tag="2")]
     pub block_date: ::prost::alloc::string::String,
     #[prost(uint32, tag="3")]
@@ -156,8 +162,10 @@ pub struct Input {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Output {
     /// block
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    ///
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
     #[prost(string, tag="2")]
     pub block_date: ::prost::alloc::string::String,
     #[prost(uint32, tag="3")]

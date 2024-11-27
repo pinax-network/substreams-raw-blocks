@@ -18,7 +18,7 @@ message Events {
 
 message Block {
   // clock
-  google.protobuf.Timestamp time = 1;
+  string time = 1; // TIMESTAMP
   uint64 number = 2;
   string date = 3;
   string hash = 4;
@@ -38,7 +38,7 @@ message Block {
 
 message Blob {
   // clock
-  google.protobuf.Timestamp block_time = 1;
+  string block_time = 1; // TIMESTAMP
   uint64 block_number = 2;
   string block_date = 3;
   string block_hash = 4;
@@ -53,7 +53,7 @@ message Blob {
 
 message Deposit {
   // clock
-  google.protobuf.Timestamp block_time = 1;
+  string block_time = 1; // TIMESTAMP
   uint64 block_number = 2;
   string block_date = 3;
   string block_hash = 4;
@@ -69,7 +69,7 @@ message Deposit {
 
 message Withdrawal {
   // clock
-  google.protobuf.Timestamp block_time = 1;
+  string block_time = 1; // TIMESTAMP
   uint64 block_number = 2;
   string block_date = 3;
   string block_hash = 4;
@@ -83,7 +83,7 @@ message Withdrawal {
 
 message Attestation {
   // clock
-  google.protobuf.Timestamp block_time = 1;
+  string block_time = 1; // TIMESTAMP
   uint64 block_number = 2;
   string block_date = 3;
   string block_hash = 4;
@@ -103,7 +103,7 @@ message Attestation {
 
 message AttesterSlashing {
   // clock
-  google.protobuf.Timestamp block_time = 1;
+  string block_time = 1; // TIMESTAMP
   uint64 block_number = 2;
   string block_date = 3;
   string block_hash = 4;
@@ -125,7 +125,7 @@ message AttesterSlashing {
 
 message BlsToExecutionChange {
   // clock
-  google.protobuf.Timestamp block_time = 1;
+  string block_time = 1; // TIMESTAMP
   uint64 block_number = 2;
   string block_date = 3;
   string block_hash = 4;
@@ -140,7 +140,7 @@ message BlsToExecutionChange {
 
 message ProposerSlashing {
   // clock
-  google.protobuf.Timestamp block_time = 1;
+  string block_time = 1; // TIMESTAMP
   uint64 block_number = 2;
   string block_date = 3;
   string block_hash = 4;
@@ -159,7 +159,7 @@ message ProposerSlashing {
 
 message VoluntaryExit {
   // clock
-  google.protobuf.Timestamp block_time = 1;
+  string block_time = 1; // TIMESTAMP
   uint64 block_number = 2;
   string block_date = 3;
   string block_hash = 4;

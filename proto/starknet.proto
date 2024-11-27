@@ -15,7 +15,7 @@ message EventsOutput {
 }
 
 message Block {
-    google.protobuf.Timestamp time = 1;
+    string time = 1; // TIMESTAMP
     uint64 number = 2;
     string date = 3;
     string hash = 4;
@@ -34,8 +34,8 @@ message Block {
 
 
 message Transaction {
-    string block_date = 1;
-    google.protobuf.Timestamp block_time = 2;
+    string block_time = 1; // TIMESTAMP
+    string block_date = 2;
     uint64 block_number = 3;
     string block_hash = 4;
     string block_l1_da_mode = 5;
@@ -92,7 +92,7 @@ message Transaction {
 
 message MessageSent {
     // clock
-    google.protobuf.Timestamp block_time = 1;
+    string block_time = 1; // TIMESTAMP
     uint64 block_number = 2;
     string block_date = 3;
     string block_hash = 4;
@@ -117,7 +117,7 @@ message MessageSent {
 
 message Event {
     // clock
-    google.protobuf.Timestamp block_time = 1;
+    string block_time = 1; // TIMESTAMP
     uint64 block_number = 2;
     string block_date = 3;
     string block_hash = 4;
@@ -146,7 +146,7 @@ message Event {
 
 message Call {
     // clock
-    google.protobuf.Timestamp block_time = 1;
+    string block_time = 1; // TIMESTAMP
     uint64 block_number = 2;
     string block_date = 3;
     string block_hash = 4;

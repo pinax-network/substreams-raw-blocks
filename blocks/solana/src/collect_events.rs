@@ -8,7 +8,7 @@ use crate::{
     account_activity::collect_tx_account_activities,
     blocks::{collect_block, get_block_info},
     instruction_calls::collect_tx_instruction_calls,
-    pb::solana::Events,
+    pb::pinax::solana::v1::Events,
     rewards::collect_rewards,
     transactions::collect_transaction,
     utils::get_timestamp_without_number,

@@ -26,8 +26,10 @@ pub struct Events {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Block {
     /// clock
-    #[prost(message, optional, tag="1")]
-    pub time: ::core::option::Option<::prost_types::Timestamp>,
+    ///
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub number: u64,
     #[prost(string, tag="3")]
@@ -60,8 +62,10 @@ pub struct Block {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Blob {
     /// clock
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    ///
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub block_number: u64,
     #[prost(string, tag="3")]
@@ -84,8 +88,10 @@ pub struct Blob {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Deposit {
     /// clock
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    ///
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub block_number: u64,
     #[prost(string, tag="3")]
@@ -110,8 +116,10 @@ pub struct Deposit {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Withdrawal {
     /// clock
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    ///
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub block_number: u64,
     #[prost(string, tag="3")]
@@ -132,8 +140,10 @@ pub struct Withdrawal {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Attestation {
     /// clock
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    ///
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub block_number: u64,
     #[prost(string, tag="3")]
@@ -166,8 +176,10 @@ pub struct Attestation {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AttesterSlashing {
     /// clock
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    ///
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub block_number: u64,
     #[prost(string, tag="3")]
@@ -201,8 +213,10 @@ pub struct AttesterSlashing {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct BlsToExecutionChange {
     /// clock
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    ///
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub block_number: u64,
     #[prost(string, tag="3")]
@@ -225,8 +239,10 @@ pub struct BlsToExecutionChange {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ProposerSlashing {
     /// clock
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    ///
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub block_number: u64,
     #[prost(string, tag="3")]
@@ -254,8 +270,10 @@ pub struct ProposerSlashing {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct VoluntaryExit {
     /// clock
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    ///
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub block_number: u64,
     #[prost(string, tag="3")]

@@ -10,7 +10,7 @@ pub fn collect_transaction_outputs(transaction: &Transaction, timestamp: &BlockT
         let script_pub_key = output.script_pub_key.as_ref().unwrap();
 
         outputs.push(Output {
-            block_time: Some(timestamp.time),
+            block_time: timestamp.time.to_string(),
             block_date: timestamp.date.clone(),
             block_height: timestamp.number as u32,
             block_hash: timestamp.hash.clone(),

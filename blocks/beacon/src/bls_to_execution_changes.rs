@@ -12,7 +12,7 @@ pub fn collect_bls_to_execution_changes(bls_to_execution_changes: &Vec<SignedBls
         let change = &bls_to_execution_change.message.as_ref().unwrap();
 
         vec.push(RawBlsToExecutionChange {
-            block_time: Some(timestamp.time),
+            block_time: timestamp.time.to_string(),
             block_number: timestamp.number,
             block_date: timestamp.date.clone(),
             block_hash: timestamp.hash.clone(),
