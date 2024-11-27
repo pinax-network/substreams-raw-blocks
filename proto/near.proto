@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package pinax.near.v1;
+
+message Events {
+    repeated BlockChunk block_chunks = 1;
+}
+
+message BlockChunk {
+  // clock
+  string time = 3;
+  uint64 height = 2;
+  string date = 1;
+  string hash = 4;
+
+  string prev_hash = 5;
+  bytes total_supply = 6;
+  bytes gas_price = 7;
+  string author_account_id = 8;
+  string epoch_id = 9;
+  uint64 shard_id = 10;
+  string signature = 11;
+  uint64 gas_limit = 12;
+  uint64 gas_used = 13;
+  string chunk_author_account_id = 14;
+  string processed_time = 15;
+  string updated_at = 16;
+  string ingested_at = 17;
+}
+
+
+
+
