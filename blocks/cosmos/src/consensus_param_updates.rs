@@ -9,7 +9,7 @@ pub fn collect_consensus_params(block: &Block, timestamp: &BlockTimestamp) -> Ve
 
     if let Some(consensus_params) = &block.consensus_param_updates {
         vec.push(ConsensusParamUpdate {
-            block_time: Some(timestamp.time),
+            block_time: timestamp.time.to_string(),
             block_number: timestamp.number,
             block_date: timestamp.date.clone(),
             block_hash: Hex::encode(&block.hash),

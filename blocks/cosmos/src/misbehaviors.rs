@@ -10,7 +10,7 @@ pub fn collect_misbehaviors(block: &Block, timestamp: &BlockTimestamp) -> Vec<Mi
     for (index, misbehavior) in block.misbehavior.iter().enumerate() {
         let validator = misbehavior.validator.as_ref().unwrap();
         vec.push(Misbehavior {
-            block_time: Some(timestamp.time),
+            block_time: timestamp.time.to_string(),
             block_number: timestamp.number,
             block_date: timestamp.date.clone(),
             block_hash: timestamp.hash.clone(),

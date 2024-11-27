@@ -11,7 +11,7 @@ pub fn collect_block_events(block: &Block, timestamp: &BlockTimestamp) -> Vec<Bl
 
     for (index, event) in block.events.iter().enumerate() {
         vec.push(BlockEvent {
-            block_time: Some(timestamp.time),
+            block_time: timestamp.time.to_string(),
             block_number: timestamp.number,
             block_date: timestamp.date.clone(),
             block_hash: timestamp.hash.clone(),
@@ -29,7 +29,7 @@ pub fn collect_transaction_events(tx_result: &TxResults, tx_hash: &str, timestam
 
     for (event_index, event) in tx_result.events.iter().enumerate() {
         vec.push(TransactionEvent {
-            block_time: Some(timestamp.time),
+            block_time: timestamp.time.to_string(),
             block_number: timestamp.number,
             block_date: timestamp.date.clone(),
             block_hash: timestamp.hash.clone(),

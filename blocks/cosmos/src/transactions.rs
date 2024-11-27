@@ -6,7 +6,7 @@ use crate::pb::pinax::cosmos::v1::Transaction;
 
 pub fn collect_transaction(tx_result: &TxResults, tx_hash: &str, timestamp: &BlockTimestamp, index: usize) -> Transaction {
     Transaction {
-        block_time: Some(timestamp.time),
+        block_time: timestamp.time.to_string(),
         block_number: timestamp.number,
         block_date: timestamp.date.clone(),
         block_hash: timestamp.hash.clone(),

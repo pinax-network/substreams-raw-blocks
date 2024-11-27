@@ -16,7 +16,7 @@ message Events {
 }
 
 message Block {
-  google.protobuf.Timestamp time = 1;
+  string time = 1; // TIMESTAMP
   uint64 number = 2;
   string date = 3;
   string hash = 4;
@@ -39,7 +39,7 @@ message Block {
 }
 
 message Transaction {
-  google.protobuf.Timestamp block_time = 1;
+  string block_time = 1; // TIMESTAMP
   uint64 block_number = 2;
   string block_date = 3;
   string block_hash = 4;
@@ -55,7 +55,7 @@ message Transaction {
 }
 
 message TransactionEvent {
-  google.protobuf.Timestamp block_time = 1;
+  string block_time = 1; // TIMESTAMP
   uint64 block_number = 2;
   string block_date = 3;
   string block_hash = 4;
@@ -67,7 +67,7 @@ message TransactionEvent {
 }
 
 message BlockEvent {
-  google.protobuf.Timestamp block_time = 1;
+  string block_time = 1; // TIMESTAMP
   uint64 block_number = 2;
   string block_date = 3;
   string block_hash = 4;
@@ -79,7 +79,7 @@ message BlockEvent {
 
 
 message Misbehavior {
-  google.protobuf.Timestamp block_time = 1;
+  string block_time = 1; // TIMESTAMP
   uint64 block_number = 2;
   string block_date = 3;
   string block_hash = 4;
@@ -93,7 +93,7 @@ message Misbehavior {
 }
 
 message ValidatorUpdate {
-  google.protobuf.Timestamp block_time = 1;
+  string block_time = 1; // TIMESTAMP
   uint64 block_number = 2;
   string block_date = 3;
   string block_hash = 4;
@@ -103,7 +103,7 @@ message ValidatorUpdate {
 }
 
 message ConsensusParamUpdate {
-  google.protobuf.Timestamp block_time = 1;
+  string block_time = 1; // TIMESTAMP
   uint64 block_number = 2;
   string block_date = 3;
   string block_hash = 4;
@@ -117,7 +117,7 @@ message ConsensusParamUpdate {
 }
 
 message TransactionMessage {
-  google.protobuf.Timestamp block_time = 1;
+  string block_time = 1; // TIMESTAMP
   uint64 block_number = 2;
   string block_date = 3;
   string block_hash = 4;

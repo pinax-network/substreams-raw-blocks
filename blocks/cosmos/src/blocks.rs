@@ -11,7 +11,7 @@ pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> RawBlock {
     let size = get_size(block);
 
     RawBlock {
-        time: Some(timestamp.time),
+        time: timestamp.time.to_string(),
         number: timestamp.number,
         date: timestamp.date.clone(),
         hash: Hex::encode(&block.hash),

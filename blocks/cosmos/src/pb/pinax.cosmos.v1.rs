@@ -23,8 +23,9 @@ pub struct Events {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Block {
-    #[prost(message, optional, tag="1")]
-    pub time: ::core::option::Option<::prost_types::Timestamp>,
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub number: u64,
     #[prost(string, tag="3")]
@@ -67,8 +68,9 @@ pub struct Block {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Transaction {
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub block_number: u64,
     #[prost(string, tag="3")]
@@ -97,8 +99,9 @@ pub struct Transaction {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct TransactionEvent {
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub block_number: u64,
     #[prost(string, tag="3")]
@@ -118,8 +121,9 @@ pub struct TransactionEvent {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct BlockEvent {
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub block_number: u64,
     #[prost(string, tag="3")]
@@ -137,8 +141,9 @@ pub struct BlockEvent {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Misbehavior {
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub block_number: u64,
     #[prost(string, tag="3")]
@@ -163,8 +168,9 @@ pub struct Misbehavior {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ValidatorUpdate {
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub block_number: u64,
     #[prost(string, tag="3")]
@@ -181,8 +187,9 @@ pub struct ValidatorUpdate {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ConsensusParamUpdate {
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub block_number: u64,
     #[prost(string, tag="3")]
@@ -207,8 +214,9 @@ pub struct ConsensusParamUpdate {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct TransactionMessage {
-    #[prost(message, optional, tag="1")]
-    pub block_time: ::core::option::Option<::prost_types::Timestamp>,
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub block_number: u64,
     #[prost(string, tag="3")]

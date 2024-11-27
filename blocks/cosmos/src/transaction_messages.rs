@@ -11,7 +11,7 @@ pub fn collect_tx_transaction_messages(block: &Block, tx_index: usize, tx_hash: 
         if let Some(body) = tx.body {
             for (index, message) in body.messages.iter().enumerate() {
                 vec.push(TransactionMessage {
-                    block_time: Some(timestamp.time),
+                    block_time: timestamp.time.to_string(),
                     block_number: timestamp.number,
                     block_date: timestamp.date.clone(),
                     block_hash: timestamp.hash.clone(),
