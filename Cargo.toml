@@ -23,7 +23,7 @@ substreams-antelope = "0.6"
 substreams-solana = "0.14"
 substreams-cosmos = "0.2"
 substreams-bitcoin = "2.0"
-substreams-near = "0.10"
+substreams-near = { git = "https://github.com/streamingfast/substreams-near.git" }
 prost = "0.13"
 prost-types = "0.13"
 serde_json = "1.0"

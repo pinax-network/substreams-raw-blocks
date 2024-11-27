@@ -11,40 +11,33 @@ pub struct Events {
 pub struct BlockChunk {
     /// clock
     #[prost(string, tag="3")]
-    pub time: ::prost::alloc::string::String,
+    pub block_time: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
-    pub height: u64,
+    pub block_height: u64,
     #[prost(string, tag="1")]
-    pub date: ::prost::alloc::string::String,
+    pub block_date: ::prost::alloc::string::String,
     #[prost(string, tag="4")]
-    pub hash: ::prost::alloc::string::String,
+    pub block_hash: ::prost::alloc::string::String,
     #[prost(string, tag="5")]
-    pub prev_hash: ::prost::alloc::string::String,
-    #[prost(string, tag="6")]
-    pub total_supply: ::prost::alloc::string::String,
-    #[prost(int64, tag="7")]
-    pub gas_price: i64,
-    #[prost(string, tag="8")]
-    pub author_account_id: ::prost::alloc::string::String,
+    pub block_prev_hash: ::prost::alloc::string::String,
+    #[prost(bytes="vec", tag="6")]
+    pub block_total_supply: ::prost::alloc::vec::Vec<u8>,
+    /// chunk
+    #[prost(string, tag="7")]
+    pub hash: ::prost::alloc::string::String,
+    #[prost(bytes="vec", tag="8")]
+    pub gas_price: ::prost::alloc::vec::Vec<u8>,
     #[prost(string, tag="9")]
+    pub author_account_id: ::prost::alloc::string::String,
+    #[prost(string, tag="10")]
     pub epoch_id: ::prost::alloc::string::String,
-    #[prost(int64, tag="10")]
-    pub shard_id: i64,
-    #[prost(string, tag="11")]
-    pub chunk_hash: ::prost::alloc::string::String,
+    #[prost(uint64, tag="11")]
+    pub shard_id: u64,
     #[prost(string, tag="12")]
-    pub chunk_signature: ::prost::alloc::string::String,
-    #[prost(int64, tag="13")]
-    pub chunk_gas_limit: i64,
-    #[prost(int64, tag="14")]
-    pub chunk_gas_used: i64,
-    #[prost(string, tag="15")]
-    pub chunk_author_account_id: ::prost::alloc::string::String,
-    #[prost(string, tag="16")]
-    pub processed_time: ::prost::alloc::string::String,
-    #[prost(string, tag="17")]
-    pub updated_at: ::prost::alloc::string::String,
-    #[prost(string, tag="18")]
-    pub ingested_at: ::prost::alloc::string::String,
+    pub signature: ::prost::alloc::string::String,
+    #[prost(uint64, tag="13")]
+    pub gas_limit: u64,
+    #[prost(uint64, tag="14")]
+    pub gas_used: u64,
 }
 // @@protoc_insertion_point(module)
