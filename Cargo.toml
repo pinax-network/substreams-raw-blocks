@@ -8,6 +8,7 @@ members = [
   "blocks/bitcoin",
   "blocks/starknet",
   "blocks/near",
+  "blocks/arweave",
   "common",
 ]
 resolver = "2"

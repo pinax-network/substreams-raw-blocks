@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package pinax.arweave.v1;
+
+message Events {
+  repeated Block blocks = 1;
+}
+
+message Block {
+ // clock
+  string time = 1; // TIMESTAMP
+  uint64 height = 2;
+  string date = 3;
+  string indep_hash = 4; // indep_hash
+
+  // The nonce chosen to solve the mining problem
+  bytes nonce = 5;
+  // `indep_hash` of the previous block in  the weave
+  string previous_block = 6;
+  // POSIX time of block discovery
+  uint64 timestamp = 7;
+  // POSIX time of the last difficulty retarget
+  uint64 last_retarget = 8;
+  // Mining difficulty; the number `hash` must be greater than.
+  bytes diff = 9;
+  // Mining solution hash of the block; must satisfy the mining difficulty
+  string hash = 10;
+  // Merkle root of the tree of Merkle roots of block's transactions' data.
+  string tx_root = 11;
+  // The root hash of the Merkle Patricia Tree containing
+  // all wallet (account) balances and the identifiers
+  // of the last transactions posted by them; if any.
+  string wallet_list = 12;
+  // (string or) Address of the account to receive the block rewards. Can also be unclaimed which is encoded as a null byte
+  string reward_addr = 13;
+  // Size of reward pool
+  bytes reward_pool = 14;
+  // Size of the weave in bytes
+  bytes weave_size = 15;
+  // Size of this block in bytes
+  bytes block_size = 16;
+  // Required after the version 1.8 fork. Zero otherwise.
+  // The sum of the average number of hashes computed
+  // by the network to produce the past blocks including this one.
+  bytes cumulative_diff = 17;
+  // Required after the version 1.8 fork. Null byte otherwise.
+  // The Merkle root of the block index - the list of {`indep_hash`; `weave_size`; `tx_root`} triplets
+  string hash_list_merkle = 18;
+  // The proof of access; Used after v2.4 only; set as defaults otherwise
+  optional string poa_option = 19;
+  optional string poa_tx_path = 20;
+  optional string poa_data_path = 21;
+  optional string poa_chunk = 22;
+}
+
