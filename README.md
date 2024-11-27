@@ -12,8 +12,8 @@
 | ✅ | [`Cosmos`](/blocks/cosmos)       | CosmosHub, Injective, Osmosis...  |
 | ✅ | [`Beacon`](/blocks/beacon)       | Ethereum 2.0 Beacon Chain |
 | 🚧 | [`Bitcoin`](/blocks/bitcoin)     | Bitcoin, Litecoin, Dogecoin... |
-| ⌛ | [`Starknet`](/blocks/starknet)   | Starknet |
-| ⌛ | [`Arweave`](/blocks/arweave)     | Arweave |
+| 🚧 | [`Starknet`](/blocks/starknet)   | Starknet |
+| 🚧 | [`Arweave`](/blocks/arweave)     | Arweave |
 | ⌛ | [`Near`](/blocks/near)           | NEAR Protocol |
 
 > ✅ Supported, 🚧 In Progress, ⌛ Planned
