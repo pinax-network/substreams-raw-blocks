@@ -5,6 +5,10 @@
 pub struct Events {
     #[prost(message, repeated, tag="1")]
     pub blocks: ::prost::alloc::vec::Vec<Block>,
+    #[prost(message, repeated, tag="2")]
+    pub transactions: ::prost::alloc::vec::Vec<Transaction>,
+    #[prost(message, repeated, tag="3")]
+    pub transaction_tags: ::prost::alloc::vec::Vec<TransactionTag>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -77,5 +81,89 @@ pub struct Block {
     pub poa_data_path: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag="22")]
     pub poa_chunk: ::core::option::Option<::prost::alloc::string::String>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Transaction {
+    /// clock
+    ///
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
+    #[prost(uint64, tag="2")]
+    pub block_height: u64,
+    #[prost(string, tag="3")]
+    pub block_date: ::prost::alloc::string::String,
+    /// indep_hash
+    #[prost(string, tag="4")]
+    pub block_indep_hash: ::prost::alloc::string::String,
+    /// 1 or 2 for v1 or v2 transactions. More allowable in the future
+    #[prost(uint32, tag="5")]
+    pub format: u32,
+    /// The transaction identifier.
+    #[prost(string, tag="6")]
+    pub id: ::prost::alloc::string::String,
+    /// index in the block transactions list
+    #[prost(uint32, tag="7")]
+    pub index: u32,
+    /// Either the identifier of the previous transaction from the same
+    /// wallet or the identifier of one of the last ?MAX_TX_ANCHOR_DEPTH blocks.
+    #[prost(string, tag="8")]
+    pub last_tx: ::prost::alloc::string::String,
+    /// The public key the transaction is signed with.
+    #[prost(string, tag="9")]
+    pub owner: ::prost::alloc::string::String,
+    /// The address of the recipient; if any. The SHA2-256 hash of the public key.
+    #[prost(string, tag="10")]
+    pub target: ::prost::alloc::string::String,
+    /// The amount of Winstons to send to the recipient; if any.
+    #[prost(bytes="vec", tag="11")]
+    pub quantity: ::prost::alloc::vec::Vec<u8>,
+    /// The data to upload; if any. For v2 transactions; the field is optional
+    /// - a fee is charged based on the `data_size` field;
+    ///    data may be uploaded any time later in chunks.
+    #[prost(bytes="vec", tag="12")]
+    pub data: ::prost::alloc::vec::Vec<u8>,
+    /// Size in bytes of the transaction data.
+    #[prost(bytes="vec", tag="13")]
+    pub data_size: ::prost::alloc::vec::Vec<u8>,
+    /// The Merkle root of the Merkle tree of data chunks.
+    #[prost(string, tag="14")]
+    pub data_root: ::prost::alloc::string::String,
+    /// The signature.
+    #[prost(string, tag="15")]
+    pub signature: ::prost::alloc::string::String,
+    /// The fee in Winstons.
+    #[prost(bytes="vec", tag="16")]
+    pub reward: ::prost::alloc::vec::Vec<u8>,
+}
+/// Should just be a repeated field in Transaction message when supported by substreams-sink-files
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct TransactionTag {
+    /// clock
+    ///
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
+    #[prost(uint64, tag="2")]
+    pub block_height: u64,
+    #[prost(string, tag="3")]
+    pub block_date: ::prost::alloc::string::String,
+    /// indep_hash
+    #[prost(string, tag="4")]
+    pub block_indep_hash: ::prost::alloc::string::String,
+    /// The transaction identifier.
+    #[prost(string, tag="5")]
+    pub tx_id: ::prost::alloc::string::String,
+    /// tag index in the transaction tags list 	 
+    #[prost(string, tag="6")]
+    pub index: ::prost::alloc::string::String,
+    /// tag name
+    #[prost(string, tag="7")]
+    pub name: ::prost::alloc::string::String,
+    /// tag value
+    #[prost(string, tag="8")]
+    pub value: ::prost::alloc::string::String,
 }
 // @@protoc_insertion_point(module)

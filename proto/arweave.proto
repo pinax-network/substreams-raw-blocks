@@ -4,6 +4,8 @@ package pinax.arweave.v1;
 
 message Events {
   repeated Block blocks = 1;
+  repeated Transaction transactions = 2;
+  repeated TransactionTag transaction_tags = 3;
 }
 
 message Block {
@@ -51,5 +53,60 @@ message Block {
   optional string poa_tx_path = 20;
   optional string poa_data_path = 21;
   optional string poa_chunk = 22;
+}
+
+message Transaction {
+   // clock
+  string block_time = 1; // TIMESTAMP
+  uint64 block_height = 2;
+  string block_date = 3;
+  string block_indep_hash = 4; // indep_hash
+
+  // 1 or 2 for v1 or v2 transactions. More allowable in the future
+  uint32 format = 5;
+  // The transaction identifier.
+  string id = 6;
+  // index in the block transactions list
+  uint32 index = 7;
+  // Either the identifier of the previous transaction from the same
+  // wallet or the identifier of one of the last ?MAX_TX_ANCHOR_DEPTH blocks.
+  string last_tx = 8;   
+  // The public key the transaction is signed with.
+  string owner = 9;   
+  // The address of the recipient; if any. The SHA2-256 hash of the public key.
+  string target = 10;    
+  // The amount of Winstons to send to the recipient; if any.
+  bytes quantity = 11;   
+  // The data to upload; if any. For v2 transactions; the field is optional
+  // - a fee is charged based on the `data_size` field;
+  //   data may be uploaded any time later in chunks.
+  bytes data = 12;       	 
+  // Size in bytes of the transaction data.
+  bytes data_size = 13;
+  // The Merkle root of the Merkle tree of data chunks.
+  string data_root = 14;
+  // The signature.
+  string signature = 15;
+  // The fee in Winstons.
+  bytes reward = 16;
+}
+
+// Should just be a repeated field in Transaction message when supported by substreams-sink-files
+message TransactionTag {
+   // clock
+  string block_time = 1; // TIMESTAMP
+  uint64 block_height = 2;
+  string block_date = 3;
+  string block_indep_hash = 4; // indep_hash
+
+  // The transaction identifier.
+  string tx_id = 5;
+
+  // tag index in the transaction tags list 	 
+  string index = 6;
+  // tag name
+  string name = 7;
+  // tag value
+  string value = 8;
 }
 
