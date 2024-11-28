@@ -124,6 +124,7 @@ message TransactionMessage {
   string tx_hash = 5;
   uint32 index = 6;
   string type = 7;
+  // raw hex value of the message
   string value = 8;
 }
 
