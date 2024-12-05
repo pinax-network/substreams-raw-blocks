@@ -38,7 +38,7 @@ message Block {
   uint64 nonce = 13;
   string miner = 14;
   uint64 difficulty = 15;
-  bytes total_difficulty_bytes = 16; // UInt256
+  string total_difficulty_hex = 16; // UInt256
   string mix_hash = 17;
   string extra_data = 18;
   string extra_data_utf8 = 19;
@@ -49,7 +49,7 @@ message Block {
   // -- blobs --
   uint64 blob_gas_used = 23; // EIP-4844 (Dencun Fork)
   uint64 excess_blob_gas = 24; // EIP-4844 (Dencun Fork)
-  bytes blob_gas_price_bytes = 25; // UInt256
+  string blob_gas_price_hex = 25; // UInt256
   repeated string blob_transactions = 26; // EIP-4844 (Dencun Fork)
   repeated string blob_hashes = 27; // EIP-4844 (Dencun Fork)
   uint32 total_blob_transactions = 28; // EIP-4844 (Dencun Fork)
@@ -88,9 +88,9 @@ message Transaction {
   string status = 12;
   uint32 status_code = 13;
   bool success = 14;
-  bytes gas_price_bytes = 15; // UInt256
+  string gas_price_hex = 15; // UInt256
   uint64 gas_limit = 16;
-  bytes value_bytes = 17; // UInt256
+  string value_hex = 17; // UInt256
   string data = 18;
   string v = 19;
   string r = 20;
@@ -98,15 +98,15 @@ message Transaction {
   uint64 gas_used = 22;
   string type = 23; // EIP-1559
   uint32 type_code = 24; // EIP-1559
-  bytes max_fee_per_gas_bytes = 25; // UInt256
-  bytes max_priority_fee_per_gas_bytes = 26; // UInt256
+  string max_fee_per_gas_hex = 25; // UInt256
+  string max_priority_fee_per_gas_hex = 26; // UInt256
   uint64 begin_ordinal = 27;
   uint64 end_ordinal = 28;
 
   // -- blobs --
-  bytes blob_gas_price_bytes = 29; // UInt256
+  string blob_gas_price_hex = 29; // UInt256
   uint64 blob_gas_used = 30;
-  bytes blob_gas_fee_cap_bytes = 31; // UInt256
+  string blob_gas_fee_cap_hex = 31; // UInt256
   repeated string blob_hashes = 32; // EIP-4844 (Dencun Fork)
 
   // -- transaction receipt --
@@ -166,8 +166,7 @@ message Trace {
   string call_type = 16;
   uint32 call_type_code = 17;
   string address = 18;
-  bytes value_bytes = 19; // UInt256
-  string value_hex = 20; // UInt256 - FOR TESTING PURPOSES
+  string value_hex = 19; // UInt256
   uint64 gas_limit = 21;
   uint64 gas_consumed = 22;
   string return_data = 23; // Return data is set by contract calls using RETURN or REVERT.
@@ -194,8 +193,8 @@ message BalanceChange {
 
   // -- balance change --
   string address = 6;
-  bytes new_balance_bytes = 7; // UInt256
-  bytes old_balance_bytes = 8; // UInt256
+  string new_balance_hex = 7; // UInt256
+  string old_balance_hex = 8; // UInt256
   uint64 ordinal = 10;
   string reason = 11;
   uint32 reason_code = 12;

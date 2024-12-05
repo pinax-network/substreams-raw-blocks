@@ -44,14 +44,8 @@ pub fn collect_transactions(block: &Block, timestamp: &BlockTimestamp) -> Vec<Tr
         .iter()
         .map(|transaction| {
             let receipt = transaction.receipt.clone().unwrap();
-            let mut blob_hashes: Vec<String> = transaction.blob_hashes.iter().map(|hash| bytes_to_hex(hash)).collect();
+            let blob_hashes: Vec<String> = transaction.blob_hashes.iter().map(|hash| bytes_to_hex(hash)).collect();
 
-            // // ISSUE: WORK AROUND
-            // // Array cannot be empty
-            // // https://github.com/streamingfast/substreams-sink-files/issues/11
-            if blob_hashes.is_empty() {
-                blob_hashes.push("".to_string());
-            }
             Transaction {
                 // block
                 block_time: timestamp.time.to_string(),
@@ -73,9 +67,9 @@ pub fn collect_transactions(block: &Block, timestamp: &BlockTimestamp) -> Vec<Tr
                 status: transaction_status_to_string(transaction.status),
                 status_code: transaction.status as u32,
                 success: is_transaction_success(transaction.status),
-                gas_price_bytes: transaction.gas_price.clone().unwrap_or_default().bytes,
+                gas_price_hex: bytes_to_hex(&transaction.gas_price.clone().unwrap_or_default().bytes),
                 gas_limit: transaction.gas_limit,
-                value_bytes: transaction.value.clone().unwrap_or_default().bytes,
+                value_hex: bytes_to_hex(&transaction.value.clone().unwrap_or_default().bytes),
                 data: bytes_to_hex(&transaction.input),
                 v: bytes_to_hex(&transaction.v),
                 r: bytes_to_hex(&transaction.r),
@@ -83,8 +77,8 @@ pub fn collect_transactions(block: &Block, timestamp: &BlockTimestamp) -> Vec<Tr
                 gas_used: transaction.gas_used,
                 r#type: transaction_type_to_string(transaction.r#type),
                 type_code: transaction.r#type as u32,
-                max_fee_per_gas_bytes: transaction.max_fee_per_gas.clone().unwrap_or_default().bytes,
-                max_priority_fee_per_gas_bytes: transaction.max_priority_fee_per_gas.clone().unwrap_or_default().bytes,
+                max_fee_per_gas_hex: bytes_to_hex(&transaction.max_fee_per_gas.clone().unwrap_or_default().bytes),
+                max_priority_fee_per_gas_hex: bytes_to_hex(&transaction.max_priority_fee_per_gas.clone().unwrap_or_default().bytes),
                 begin_ordinal: transaction.begin_ordinal,
                 end_ordinal: transaction.end_ordinal,
 
@@ -93,9 +87,9 @@ pub fn collect_transactions(block: &Block, timestamp: &BlockTimestamp) -> Vec<Tr
                 logs_bloom: bytes_to_hex(&receipt.logs_bloom),
 
                 // blob
-                blob_gas_price_bytes: receipt.blob_gas_price.clone().unwrap_or_default().bytes,
+                blob_gas_price_hex: bytes_to_hex(&receipt.blob_gas_price.clone().unwrap_or_default().bytes),
                 blob_gas_used: receipt.blob_gas_used(),
-                blob_gas_fee_cap_bytes: transaction.clone().blob_gas_fee_cap.unwrap_or_default().bytes,
+                blob_gas_fee_cap_hex: bytes_to_hex(&transaction.clone().blob_gas_fee_cap.unwrap_or_default().bytes),
                 blob_hashes,
             }
         })

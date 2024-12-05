@@ -70,8 +70,8 @@ pub fn parse_balance_change(balance_change: &BalanceChange, transaction: &Transa
 
         // balance changes
         address: bytes_to_hex(&balance_change.address),
-        old_balance_bytes: balance_change.old_value.clone().unwrap_or_default().bytes,
-        new_balance_bytes: balance_change.new_value.clone().unwrap_or_default().bytes,
+        old_balance_hex: bytes_to_hex(&balance_change.old_value.clone().unwrap_or_default().bytes),
+        new_balance_hex: bytes_to_hex(&balance_change.new_value.clone().unwrap_or_default().bytes),
 
         ordinal: balance_change.ordinal,
         reason: balance_change_reason_to_string(balance_change.reason),

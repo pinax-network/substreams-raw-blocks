@@ -67,8 +67,8 @@ pub struct Block {
     #[prost(uint64, tag="15")]
     pub difficulty: u64,
     /// UInt256
-    #[prost(bytes="vec", tag="16")]
-    pub total_difficulty_bytes: ::prost::alloc::vec::Vec<u8>,
+    #[prost(string, tag="16")]
+    pub total_difficulty_hex: ::prost::alloc::string::String,
     #[prost(string, tag="17")]
     pub mix_hash: ::prost::alloc::string::String,
     #[prost(string, tag="18")]
@@ -91,8 +91,8 @@ pub struct Block {
     #[prost(uint64, tag="24")]
     pub excess_blob_gas: u64,
     /// UInt256
-    #[prost(bytes="vec", tag="25")]
-    pub blob_gas_price_bytes: ::prost::alloc::vec::Vec<u8>,
+    #[prost(string, tag="25")]
+    pub blob_gas_price_hex: ::prost::alloc::string::String,
     /// EIP-4844 (Dencun Fork)
     #[prost(string, repeated, tag="26")]
     pub blob_transactions: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
@@ -163,13 +163,13 @@ pub struct Transaction {
     #[prost(bool, tag="14")]
     pub success: bool,
     /// UInt256
-    #[prost(bytes="vec", tag="15")]
-    pub gas_price_bytes: ::prost::alloc::vec::Vec<u8>,
+    #[prost(string, tag="15")]
+    pub gas_price_hex: ::prost::alloc::string::String,
     #[prost(uint64, tag="16")]
     pub gas_limit: u64,
     /// UInt256
-    #[prost(bytes="vec", tag="17")]
-    pub value_bytes: ::prost::alloc::vec::Vec<u8>,
+    #[prost(string, tag="17")]
+    pub value_hex: ::prost::alloc::string::String,
     #[prost(string, tag="18")]
     pub data: ::prost::alloc::string::String,
     #[prost(string, tag="19")]
@@ -187,11 +187,11 @@ pub struct Transaction {
     #[prost(uint32, tag="24")]
     pub type_code: u32,
     /// UInt256
-    #[prost(bytes="vec", tag="25")]
-    pub max_fee_per_gas_bytes: ::prost::alloc::vec::Vec<u8>,
+    #[prost(string, tag="25")]
+    pub max_fee_per_gas_hex: ::prost::alloc::string::String,
     /// UInt256
-    #[prost(bytes="vec", tag="26")]
-    pub max_priority_fee_per_gas_bytes: ::prost::alloc::vec::Vec<u8>,
+    #[prost(string, tag="26")]
+    pub max_priority_fee_per_gas_hex: ::prost::alloc::string::String,
     #[prost(uint64, tag="27")]
     pub begin_ordinal: u64,
     #[prost(uint64, tag="28")]
@@ -199,13 +199,13 @@ pub struct Transaction {
     /// -- blobs --
     ///
     /// UInt256
-    #[prost(bytes="vec", tag="29")]
-    pub blob_gas_price_bytes: ::prost::alloc::vec::Vec<u8>,
+    #[prost(string, tag="29")]
+    pub blob_gas_price_hex: ::prost::alloc::string::String,
     #[prost(uint64, tag="30")]
     pub blob_gas_used: u64,
     /// UInt256
-    #[prost(bytes="vec", tag="31")]
-    pub blob_gas_fee_cap_bytes: ::prost::alloc::vec::Vec<u8>,
+    #[prost(string, tag="31")]
+    pub blob_gas_fee_cap_hex: ::prost::alloc::string::String,
     /// EIP-4844 (Dencun Fork)
     #[prost(string, repeated, tag="32")]
     pub blob_hashes: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
@@ -309,10 +309,7 @@ pub struct Trace {
     #[prost(string, tag="18")]
     pub address: ::prost::alloc::string::String,
     /// UInt256
-    #[prost(bytes="vec", tag="19")]
-    pub value_bytes: ::prost::alloc::vec::Vec<u8>,
-    /// UInt256 - FOR TESTING PURPOSES
-    #[prost(string, tag="20")]
+    #[prost(string, tag="19")]
     pub value_hex: ::prost::alloc::string::String,
     #[prost(uint64, tag="21")]
     pub gas_limit: u64,
@@ -361,11 +358,11 @@ pub struct BalanceChange {
     #[prost(string, tag="6")]
     pub address: ::prost::alloc::string::String,
     /// UInt256
-    #[prost(bytes="vec", tag="7")]
-    pub new_balance_bytes: ::prost::alloc::vec::Vec<u8>,
+    #[prost(string, tag="7")]
+    pub new_balance_hex: ::prost::alloc::string::String,
     /// UInt256
-    #[prost(bytes="vec", tag="8")]
-    pub old_balance_bytes: ::prost::alloc::vec::Vec<u8>,
+    #[prost(string, tag="8")]
+    pub old_balance_hex: ::prost::alloc::string::String,
     #[prost(uint64, tag="10")]
     pub ordinal: u64,
     #[prost(string, tag="11")]

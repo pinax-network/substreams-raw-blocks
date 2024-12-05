@@ -64,7 +64,6 @@ pub fn parse_traces(call: &Call, transaction: &TransactionTrace, timestamp: &Blo
         call_type: call_types_to_string(call.call_type),
         call_type_code: call.call_type as u32,
         address: bytes_to_hex(&call.address),
-        value_bytes: call.value.clone().unwrap_or_default().bytes,
         value_hex: bytes_to_hex(&call.value.clone().unwrap_or_default().bytes),
         gas_limit: call.gas_limit,
         gas_consumed: call.gas_consumed,

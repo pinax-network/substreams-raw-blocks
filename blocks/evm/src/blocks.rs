@@ -29,20 +29,10 @@ pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> BlockHeader {
 
     // blob price
     let blob_gas_price = block.transaction_traces.iter().find_map(|t| t.receipt.as_ref().and_then(|r| r.blob_gas_price.clone()));
-    let mut blob_hashes: Vec<String> = block.transaction_traces.iter().flat_map(|t| t.blob_hashes.iter().map(|hash| bytes_to_hex(hash))).collect();
+    let blob_hashes: Vec<String> = block.transaction_traces.iter().flat_map(|t| t.blob_hashes.iter().map(|hash| bytes_to_hex(hash))).collect();
     let total_blobs: u32 = blob_hashes.len() as u32;
-    let mut blob_transactions = block.transaction_traces.iter().filter(|t| t.r#type == 3).map(|t| bytes_to_hex(&t.hash)).collect::<Vec<String>>();
+    let blob_transactions = block.transaction_traces.iter().filter(|t| t.r#type == 3).map(|t| bytes_to_hex(&t.hash)).collect::<Vec<String>>();
     let total_blob_transactions = blob_transactions.len() as u32;
-
-    // ISSUE: WORK AROUND
-    // Array cannot be empty
-    // https://github.com/streamingfast/substreams-sink-files/issues/11
-    if blob_hashes.is_empty() {
-        blob_hashes.push("".to_string());
-    }
-    if blob_transactions.is_empty() {
-        blob_transactions.push("".to_string());
-    }
 
     BlockHeader {
         // clock
@@ -65,7 +55,7 @@ pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> BlockHeader {
         nonce: header.nonce,
         miner: bytes_to_hex(&header.coinbase),
         difficulty: optional_bigint_to_u64(&header.difficulty),
-        total_difficulty_bytes: header.total_difficulty.clone().unwrap_or_default().bytes,
+        total_difficulty_hex: bytes_to_hex(&header.total_difficulty.clone().unwrap_or_default().bytes),
         mix_hash: bytes_to_hex(&header.mix_hash),
         extra_data: bytes_to_hex(&header.extra_data),
         extra_data_utf8: String::from_utf8(header.extra_data.clone()).unwrap_or_default(),
@@ -76,7 +66,7 @@ pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> BlockHeader {
         // blobs
         blob_gas_used: header.blob_gas_used(),
         excess_blob_gas: header.excess_blob_gas(),
-        blob_gas_price_bytes: blob_gas_price.unwrap_or_default().bytes,
+        blob_gas_price_hex: bytes_to_hex(&blob_gas_price.unwrap_or_default().bytes),
         blob_hashes,
         blob_transactions,
         total_blob_transactions,
