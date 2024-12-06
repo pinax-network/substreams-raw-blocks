@@ -38,6 +38,6 @@ Initial block: 0
 Kind: map
 Input: source: sf.substreams.v1.Clock
 Input: source: sf.antelope.type.v1.Block
-Output Type: proto:antelope.Events
-Hash: 2ee4412cab8f461aaf8de27c2e970970a545117c
+Output Type: proto:pinax.antelope.v1.Events
+Hash: 8490866fe98ab7d3f811ccf0f18da3cb46a378f9
 ```

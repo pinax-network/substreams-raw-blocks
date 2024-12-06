@@ -1,12 +1,12 @@
-## `Starknet` Raw Blockchain Data
+## `Near` Raw Blockchain Data
+>
+> Near
+> [`sf.near.type.v1.Block`](https://buf.build/streamingfast/firehose-near/docs/main:sf.near.type.v1)
 
-> Starknet
-> [`sf.starknet.type.v1.Block`](https://buf.build/streamingfast/firehose-starknet/docs/main:sf.starknet.type.v1)
+## Tables
 
-- [x] **Blocks**
-- [x] **Transactions**
-- [x] **Events**
-- [] **Calls**
+- [ ] **Blocks**
+- [ ] ??
 
 ## Graph
 
@@ -26,5 +26,5 @@ Kind: map
 Input: source: sf.substreams.v1.Clock
 Input: source: sf.near.type.v1.Block
 Output Type: proto:pinax.near.v1.Events
-Hash: a39362e4e3ae6ee3b4a3690b5995e2b369237721
+Hash: ???
 ```

@@ -30,6 +30,6 @@ Initial block: 0
 Kind: map
 Input: source: sf.substreams.v1.Clock
 Input: source: sf.cosmos.type.v2.Block
-Output Type: proto:cosmos.Events
-Hash: 17f7b8c1560fd5c84daf9d89065b7484b22d4211
+Output Type: proto:pinax.cosmos.v1.Events
+Hash: 35c6853168b020241968df220aed9172adf87f7c
 ```

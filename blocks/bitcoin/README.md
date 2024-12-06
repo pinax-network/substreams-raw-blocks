@@ -25,6 +25,6 @@ Initial block: 0
 Kind: map
 Input: source: sf.substreams.v1.Clock
 Input: source: sf.bitcoin.type.v1.Block
-Output Type: proto:pinax.bitcoin.Events
-Hash: 687432b625d3409cde6ac6e20c642554b84770ff
+Output Type: proto:pinax.bitcoin.v1.Events
+Hash: ce8e6335982c5caa318902b628e433f402522277
 ```
