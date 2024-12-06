@@ -1,3 +1,6 @@
+NETWORK ?= eth
+HASH = $(shell substreams info --json | jq -r '.modules[0].hash')
+
 .PHONY: all
 all:
 	make build
@@ -11,7 +14,7 @@ build:
 
 .PHONY: gui
 gui:
-	substreams gui . -e eth.substreams.pinax.network:443 map_events -s 21200000 -t 21200001 --network mainnet
+	substreams gui . -e "$(NETWORK).substreams.pinax.network:443" map_events -s 21200000 -t 21200001 --network $(NETWORK)
 
 .PHONY: protogen
 protogen:
@@ -19,13 +22,8 @@ protogen:
 
 .PHONY: parquet
 parquet:
-	rm -rf out state.yaml && substreams-sink-files run eth.substreams.pinax.network:443 substreams.yaml map_events ./out 21200000:21200001 --encoder parquet --file-block-count 1 --development-mode --parquet-default-column-compression snappy
+	rm -rf state.yaml && substreams-sink-files run "$(NETWORK).substreams.pinax.network:443" substreams.yaml map_events "./out" 21200000:21200001 --encoder parquet --file-block-count 1 --development-mode --parquet-default-column-compression snappy
 
 .PHONY: s3
 s3:
-	@hash=$$(substreams info --json | jq -r '.modules[0].hash'); \
-	substreams-sink-files run eth.substreams.pinax.network:443 substreams.yaml map_events "s3://pinax/eth/$${hash}?region=us-east-1" 21322800: --encoder parquet --development-mode --parquet-default-column-compression snappy --file-block-count 1
-
-.PHONY: hash
-hash:
-	substreams info --json | jq '.modules[0].hash'
+	substreams-sink-files run "$(NETWORK).substreams.pinax.network:443" substreams.yaml map_events "s3://pinax/$(NETWORK)/$(HASH)?region=us-east-1" 0: --encoder parquet --parquet-default-column-compression snappy --file-block-count 100

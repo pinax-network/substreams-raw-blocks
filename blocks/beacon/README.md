@@ -30,6 +30,6 @@ Initial block: 0
 Kind: map
 Input: source: sf.substreams.v1.Clock
 Input: source: sf.beacon.type.v1.Block
-Output Type: proto:beacon.Events
-Hash: fa22a8c409b87871edb85e753a7feda2e94bbdb9
+Output Type: proto:pinax.beacon.v1.Events
+Hash: 493ed70540e0200849b0e3ac30a0210429f768ab
 ```
