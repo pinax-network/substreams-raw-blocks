@@ -6,7 +6,7 @@
 - [x] **Blocks**
 - [x] **Transactions**
 - [x] **Events**
-- [] **Calls**
+- [ ] ~~**Calls**~~
 
 ## Graph
 

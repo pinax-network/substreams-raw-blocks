@@ -5,6 +5,7 @@
 
 - [x] **Blocks**
 - [x] **Transactions**
+  - [ ] ~~**Previous Outputs**~~
 - [x] **Inputs**
 - [x] **Outputs**
 
