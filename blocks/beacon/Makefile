@@ -16,11 +16,15 @@ build:
 protogen:
 	substreams protogen
 
+.PHONY: gui
+gui:
+	substreams gui . -e "$(NETWORK).substreams.pinax.network:443" map_events -s 9000000 -t 0 --network $(NETWORK)
+
 .PHONY: parquet
 parquet:
-	substreams-sink-files run "$(NETWORK).substreams.pinax.network:443" substreams.yaml map_events './out' 8626176:8626676 --encoder parquet --file-block-count 100 --development-mode
+	substreams-sink-files run "$(NETWORK).substreams.pinax.network:443" substreams.yaml map_events './out' 9000000: --encoder parquet --parquet-default-column-compression snappy --file-block-count 100 --state-store state-parquet.yaml
 
 .PHONY: s3
 s3:
-	substreams-sink-files run "$(NETWORK).substreams.pinax.network:443" substreams.yaml map_events "s3://pinax/$(NETWORK)/$(HASH)?region=us-east-1" 0: --encoder parquet --parquet-default-column-compression snappy
+	substreams-sink-files run "$(NETWORK).substreams.pinax.network:443" substreams.yaml map_events "s3://pinax/$(NETWORK)/$(HASH)?region=us-east-1" 0: --encoder parquet --parquet-default-column-compression snappy --file-block-count 100
 
