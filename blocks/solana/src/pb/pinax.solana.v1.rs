@@ -142,10 +142,10 @@ pub struct Transaction {
     pub account_keys: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     #[prost(string, repeated, tag="19")]
     pub log_messages: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
-    #[prost(uint64, repeated, tag="20")]
-    pub pre_balances: ::prost::alloc::vec::Vec<u64>,
-    #[prost(uint64, repeated, tag="21")]
-    pub post_balances: ::prost::alloc::vec::Vec<u64>,
+    #[prost(string, repeated, tag="20")]
+    pub pre_balances: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(string, repeated, tag="21")]
+    pub post_balances: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     #[prost(string, repeated, tag="22")]
     pub signatures: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     #[prost(string, tag="23")]

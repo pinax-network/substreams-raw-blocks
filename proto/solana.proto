@@ -85,8 +85,8 @@ message Transaction {
   string recent_block_hash = 17;
   repeated string account_keys = 18;
   repeated string log_messages = 19;
-  repeated uint64 pre_balances = 20;
-  repeated uint64 post_balances = 21;
+  repeated string pre_balances = 20; // repeated uint64
+  repeated string post_balances = 21; // repeated uint64
   repeated string signatures = 22;
   string signer = 23;
   repeated string signers = 24;

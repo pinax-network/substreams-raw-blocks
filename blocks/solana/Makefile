@@ -27,7 +27,7 @@ run:
 
 .PHONY: protogen
 protogen:
-	substreams protogen --exclude-paths sf/substreams,google
+	substreams protogen
 
 .PHONY: cache
 cache:
@@ -43,7 +43,7 @@ gui:
 
 .PHONY: parquet
 parquet:
-	substreams-sink-files run solana.substreams.pinax.network:443 substreams.yaml map_events './out' 203100000:203100500 --encoder parquet --file-block-count 100 --development-mode
+	substreams-sink-files run solana.substreams.pinax.network:443 substreams.yaml map_events './out' 203100000:203100001 --encoder parquet --file-block-count 1 --development-mode
 
 .PHONY: deploy
 deploy:
