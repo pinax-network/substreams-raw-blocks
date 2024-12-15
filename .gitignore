@@ -829,4 +829,4 @@ adapters/**/*.jsonl
 *.sublime*
 
 # parquet-sink-files state file
-*state.yaml
+*state*.yaml

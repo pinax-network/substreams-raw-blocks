@@ -24,8 +24,8 @@ Try 30 day limited trial access to the dataset on the [Snowflake Data Marketplac
 SELECT
     date_trunc('minute', block_time) AS minute,
     count(distinct "from") AS user
-FROM ethereum.transactions
-WHERE block_date = '2024-10-01'
+FROM eth.transactions
+WHERE block_date = '2024-11-01'
 GROUP BY minute
 ORDER BY minute ASC;
 ```
@@ -36,11 +36,24 @@ ORDER BY minute ASC;
 SELECT
     "to" AS contract,
     count(*) AS transactions
-FROM ethereum.transactions
-WHERE block_date = '2024-10-01'
+FROM eth.transactions
+WHERE block_date = '2024-11-01'
 GROUP BY contract
 ORDER BY transactions DESC
 LIMIT 10;
+```
+
+**View the first and last block indexed**
+
+> This query tells you how fresh the data is.
+
+```sql
+SELECT
+  MIN(number) AS "First block",
+  MAX(number) AS "Newest block",
+  COUNT(1) AS "Total number of blocks"
+FROM
+  eth.blocks
 ```
 
 **ERC-20 Transfers**
@@ -50,11 +63,11 @@ SELECT
     block_date,
     count(*) as total
 FROM
-    ethereum.traces
+    eth.traces
 WHERE
     tx_success = true AND
     SUBSTR(input, 1, 10) IN ('0xa9059cbb', '0x23b872dd') // Transfer and TransferFrom
-    AND block_date >= '2024-09-01' AND block_date <= '2024-09-07'
+    AND block_date >= '2024-11-01' AND block_date <= '2024-12-01'
 GROUP BY block_date
 ORDER BY block_date
 ```
