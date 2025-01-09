@@ -37,8 +37,10 @@ fn collect_outer_instruction(vec: &mut Vec<InstructionCall>, timestamp: &BlockTi
     // let account_arguments = to_string_array_to_string(&instruction_view.accounts());
     let account_arguments = instruction_view.accounts().iter().map(|arg| arg.to_string()).collect::<Vec<String>>();
     let data = Hex::encode(&instruction_view.data());
+    let meta = instruction_view.meta();
 
     vec.push(InstructionCall {
+        // block
         block_time: timestamp.time.to_string(),
         block_hash: timestamp.hash.clone(),
         block_date: timestamp.date.clone(),
@@ -46,11 +48,15 @@ fn collect_outer_instruction(vec: &mut Vec<InstructionCall>, timestamp: &BlockTi
         block_height: block_info.height,
         block_previous_block_hash: block_info.previous_block_hash.clone(),
         block_parent_slot: block_info.parent_slot,
+
+        // transaction
         tx_id: tx_info.tx_id.clone(),
         tx_index: tx_info.tx_index,
         tx_signer: tx_info.tx_signer.to_string(),
         tx_success: tx_info.tx_success,
         log_messages: tx_info.log_messages.clone(),
+
+        // instruction
         outer_instruction_index: instruction_index as u32,
         inner_instruction_index: -1,
         inner_executing_account: "".to_string(),
@@ -60,6 +66,12 @@ fn collect_outer_instruction(vec: &mut Vec<InstructionCall>, timestamp: &BlockTi
         data,
         account_arguments,
         inner_instructions: build_inner_instructions_str(instruction_view),
+        program_id: instruction_view.program_id().to_string(),
+        stack_height: instruction_view.stack_height(),
+
+        // meta
+        fee: meta.fee,
+        compute_units_consumed: meta.compute_units_consumed(),
     });
 }
 
@@ -68,8 +80,10 @@ fn collect_inner_instructions(vec: &mut Vec<InstructionCall>, timestamp: &BlockT
         let inner_data = Hex::encode(inner_instruction.data());
         let executing_account = inner_instruction.program_id().to_string();
         let account_arguments = inner_instruction.accounts().iter().map(|arg| arg.to_string()).collect::<Vec<String>>();
+        let meta = instruction_view.meta();
 
         vec.push(InstructionCall {
+            // block
             block_time: timestamp.time.to_string(),
             block_hash: timestamp.hash.clone(),
             block_date: timestamp.date.clone(),
@@ -77,11 +91,15 @@ fn collect_inner_instructions(vec: &mut Vec<InstructionCall>, timestamp: &BlockT
             block_height: block_info.height,
             block_previous_block_hash: block_info.previous_block_hash.clone(),
             block_parent_slot: block_info.parent_slot,
+
+            // transaction
             tx_id: tx_info.tx_id.clone(),
             tx_index: tx_info.tx_index,
             tx_signer: tx_info.tx_signer.to_string(),
             tx_success: tx_info.tx_success,
             log_messages: tx_info.log_messages.clone(),
+
+            // instruction
             outer_instruction_index: instruction_index as u32,
             inner_instruction_index: inner_index as i32,
             inner_executing_account: executing_account.clone(),
@@ -91,6 +109,12 @@ fn collect_inner_instructions(vec: &mut Vec<InstructionCall>, timestamp: &BlockT
             data: inner_data,
             account_arguments,
             inner_instructions: "".to_string(),
+            program_id: instruction_view.program_id().to_string(),
+            stack_height: instruction_view.stack_height(),
+
+            // meta
+            fee: meta.fee,
+            compute_units_consumed: meta.compute_units_consumed(),
         });
     }
 }

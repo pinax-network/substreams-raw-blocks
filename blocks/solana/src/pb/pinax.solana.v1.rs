@@ -118,40 +118,47 @@ pub struct Transaction {
     #[prost(uint64, tag="7")]
     pub block_parent_slot: u64,
     /// transaction
-    #[prost(string, tag="8")]
+    #[prost(string, tag="10")]
     pub id: ::prost::alloc::string::String,
-    #[prost(uint32, tag="9")]
-    pub index: u32,
-    #[prost(uint64, tag="10")]
-    pub fee: u64,
     #[prost(uint32, tag="11")]
-    pub required_signatures: u32,
+    pub index: u32,
     #[prost(uint32, tag="12")]
-    pub required_signed_accounts: u32,
+    pub required_signatures: u32,
     #[prost(uint32, tag="13")]
+    pub required_signed_accounts: u32,
+    #[prost(uint32, tag="14")]
     pub required_unsigned_accounts: u32,
-    #[prost(string, tag="14")]
+    #[prost(string, tag="15")]
     pub signature: ::prost::alloc::string::String,
-    #[prost(bool, tag="15")]
-    pub success: bool,
-    #[prost(string, tag="16")]
-    pub error: ::prost::alloc::string::String,
-    #[prost(string, tag="17")]
-    pub recent_block_hash: ::prost::alloc::string::String,
-    #[prost(string, repeated, tag="18")]
-    pub account_keys: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
-    #[prost(string, repeated, tag="19")]
-    pub log_messages: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
-    #[prost(string, repeated, tag="20")]
-    pub pre_balances: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
-    #[prost(string, repeated, tag="21")]
-    pub post_balances: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
-    #[prost(string, repeated, tag="22")]
+    #[prost(string, repeated, tag="16")]
     pub signatures: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
-    #[prost(string, tag="23")]
-    pub signer: ::prost::alloc::string::String,
+    /// message
+    #[prost(string, tag="20")]
+    pub recent_block_hash: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag="21")]
+    pub account_keys: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(string, repeated, tag="22")]
+    pub log_messages: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    /// repeated uint64
+    #[prost(string, repeated, tag="23")]
+    pub pre_balances: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    /// repeated uint64
     #[prost(string, repeated, tag="24")]
+    pub post_balances: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(string, tag="25")]
+    pub signer: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag="26")]
     pub signers: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    /// meta
+    #[prost(uint64, tag="30")]
+    pub fee: u64,
+    #[prost(bool, tag="31")]
+    pub success: bool,
+    #[prost(string, tag="32")]
+    pub error: ::prost::alloc::string::String,
+    /// Sum of compute units consumed by all instructions. Available since Solana v1.10.35 / v1.11.6. Set to None for txs executed on earlier versions.
+    #[prost(uint64, tag="33")]
+    pub compute_units_consumed: u64,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -205,6 +212,19 @@ pub struct InstructionCall {
     /// TODO: Use repeated InnerInstruction when supported by parquet sink
     #[prost(string, tag="21")]
     pub inner_instructions: ::prost::alloc::string::String,
+    /// Returns the resolved program id defined by this instruction as an Address type which is a wrapper around a byte array and provide Address::to_string method to get the base58 encoded string:
+    #[prost(string, tag="22")]
+    pub program_id: ::prost::alloc::string::String,
+    /// Returns the stack height of the instruction or zero if instruction does not have a stack height field which appeared in Solana v1.14.6 and activated around block 200M on Mainnet. So if you deal with block heights before that, you can think of using maybe_stack_height method to determine if the field is present or not
+    #[prost(uint32, tag="23")]
+    pub stack_height: u32,
+    /// meta
+    ///
+    /// Sum of compute units consumed by all instructions. Available since Solana v1.10.35 / v1.11.6. Set to None for txs executed on earlier versions.
+    #[prost(uint64, tag="24")]
+    pub compute_units_consumed: u64,
+    #[prost(uint64, tag="25")]
+    pub fee: u64,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]

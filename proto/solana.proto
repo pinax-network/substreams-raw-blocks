@@ -73,23 +73,28 @@ message Transaction {
   uint64 block_parent_slot = 7;
 
   // transaction
-  string id = 8;
-  uint32 index = 9;
-  uint64 fee = 10;
-  uint32 required_signatures = 11;
-  uint32 required_signed_accounts = 12;
-  uint32 required_unsigned_accounts = 13;
-  string signature = 14;
-  bool success = 15;
-  string error = 16;
-  string recent_block_hash = 17;
-  repeated string account_keys = 18;
-  repeated string log_messages = 19;
-  repeated string pre_balances = 20; // repeated uint64
-  repeated string post_balances = 21; // repeated uint64
-  repeated string signatures = 22;
-  string signer = 23;
-  repeated string signers = 24;
+  string id = 10;
+  uint32 index = 11;
+  uint32 required_signatures = 12;
+  uint32 required_signed_accounts = 13;
+  uint32 required_unsigned_accounts = 14;
+  string signature = 15;
+  repeated string signatures = 16;
+
+  // message
+  string recent_block_hash = 20;
+  repeated string account_keys = 21;
+  repeated string log_messages = 22;
+  repeated string pre_balances = 23; // repeated uint64
+  repeated string post_balances = 24; // repeated uint64
+  string signer = 25;
+  repeated string signers = 26;
+
+  // meta
+  uint64 fee = 30;
+  bool success = 31;
+  string error = 32;
+  uint64 compute_units_consumed = 33; // Sum of compute units consumed by all instructions. Available since Solana v1.10.35 / v1.11.6. Set to None for txs executed on earlier versions.
 }
 
 message InstructionCall {
@@ -122,6 +127,13 @@ message InstructionCall {
   repeated string account_arguments = 20;
   // TODO: Use repeated InnerInstruction when supported by parquet sink
   string inner_instructions = 21;
+  string program_id = 22; // Returns the resolved program id defined by this instruction as an Address type which is a wrapper around a byte array and provide Address::to_string method to get the base58 encoded string:
+  uint32 stack_height = 23; // Returns the stack height of the instruction or zero if instruction does not have a stack height field which appeared in Solana v1.14.6 and activated around block 200M on Mainnet. So if you deal with block heights before that, you can think of using maybe_stack_height method to determine if the field is present or not
+
+  // meta
+  uint64 compute_units_consumed = 24; // Sum of compute units consumed by all instructions. Available since Solana v1.10.35 / v1.11.6. Set to None for txs executed on earlier versions.
+  uint64 fee = 25;
+
 }
 
 message AccountActivity {
