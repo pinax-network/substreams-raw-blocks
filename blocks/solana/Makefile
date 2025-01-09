@@ -23,7 +23,7 @@ info:
 
 .PHONY: run
 run:
-	substreams run substreams.yaml -e solana.substreams.pinax.network:443 ch_out -s 203100000 -o json
+	substreams run substreams.yaml -e solana.substreams.pinax.network:443 map_events -s 203100000 -o json  --network solana
 
 .PHONY: protogen
 protogen:
@@ -31,7 +31,7 @@ protogen:
 
 .PHONY: cache
 cache:
-	substreams gui substreams.yaml -e solana.substreams.pinax.network:443 ch_out -s 203100000 -t 203200000 --production-mode
+	substreams gui substreams.yaml -e solana.substreams.pinax.network:443 map_events -s 203100000 -t 203200000 --production-mode  --network solana
 
 .PHONY: cache-foundational
 cache-foundational:
@@ -39,7 +39,7 @@ cache-foundational:
 
 .PHONY: gui
 gui:
-	substreams gui substreams.yaml -e solana.substreams.pinax.network:443 ch_out -s 203100000
+	substreams gui substreams.yaml -e solana.substreams.pinax.network:443 map_events -s 203100000 --network solana
 
 .PHONY: parquet
 parquet:
