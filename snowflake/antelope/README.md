@@ -6,7 +6,6 @@ This dataset offers a detailed view of Antleope based blockchain activity, provi
 
 Free access to the dataset on the [Snowflake Data Marketplace](https://app.snowflake.com/marketplace).
 
-```markdown
 ## Tables/Views
 
 | Data Type     | Description |
@@ -325,5 +324,3 @@ FROM
 | **unique_key**      | VARCHAR          | Unique key identifying the RAM operation                 |
 
 </details>
-```
-
