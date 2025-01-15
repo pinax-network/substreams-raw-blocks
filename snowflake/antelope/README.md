@@ -46,19 +46,6 @@ ORDER BY actions DESC
 LIMIT 10
 ```
 
-**View the first and last block indexed**
-
-> This query tells you how fresh the data is.
-
-```sql
-SELECT
-  MIN(number) AS "First block",
-  MAX(number) AS "Newest block",
-  COUNT(1) AS "Total number of blocks"
-FROM
-  wax.blocks
-```
-
 **Token Transfers**
 
 ```sql
