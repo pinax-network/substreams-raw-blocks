@@ -22,7 +22,7 @@ protogen:
 
 .PHONY: parquet
 parquet:
-	rm -rf state.yaml && substreams-sink-files run "$(NETWORK).substreams.pinax.network:443" substreams.yaml map_events "./out" 413423197:413423198 --encoder parquet --file-block-count 1 --parquet-default-column-compression snappy
+	substreams-sink-files run "$(NETWORK).substreams.pinax.network:443" substreams.yaml map_events "./out" 414957000: --encoder parquet --file-block-count 1 --parquet-default-column-compression snappy
 
 .PHONY: s3
 s3:

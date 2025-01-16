@@ -4,7 +4,6 @@ This dataset offers a detailed view of Solana based blockchain activity, providi
 
 Free access to the dataset on the [Snowflake Data Marketplace](https://app.snowflake.com/marketplace).
 
-```markdown
 ## Tables/Views
 
 | Data Type                 | Description                                                                                 |
@@ -17,6 +16,66 @@ Free access to the dataset on the [Snowflake Data Marketplace](https://app.snowf
 | `vote_transactions`       | Vote transaction details, structured the same as standard transactions but specific to votes. |
 | `vote_instruction_calls`  | Instruction calls associated with vote transactions, sharing the same structure as `instruction_calls`. |
 | `vote_account_activity`   | Account activity related to voting, structured similarly to general account activity.        |
+
+## Sample SQL Queries
+
+**Daily Active Users (DAU)**
+
+```sql
+SELECT
+    block_date,
+    count(distinct address) AS user
+FROM solana.account_activity
+GROUP BY block_date
+ORDER BY block_date ASC;
+```
+
+**Top Contracts**
+
+```sql
+SELECT
+    account AS contract,
+    count(*) AS actions
+FROM wax.actions
+WHERE block_date = '2025-01-01'
+GROUP BY contract
+ORDER BY actions DESC
+LIMIT 10
+```
+
+**Tokens**
+
+```sql
+SELECT
+  a.tx_id,
+  a.address,
+  a.token_mint_address,
+  a.pre_token_balance,
+  a.post_token_balance,
+  a.token_balance_change,
+  a.block_time
+FROM
+  solana.account_activity a
+WHERE
+  a.token_mint_address IS NOT NULL
+ORDER BY
+  a.block_time DESC
+LIMIT
+  100;
+```
+
+
+**View the first and last block indexed**
+> This query tells you how fresh the data is.
+
+```sql
+SELECT
+  MIN(number) AS "First block",
+  MAX(number) AS "Newest block",
+  COUNT(1) AS "Total number of blocks"
+FROM
+  solana.blocks;
+```
 
 ## Data Dictionary
 
@@ -196,4 +255,3 @@ Free access to the dataset on the [Snowflake Data Marketplace](https://app.snowf
 **Note:** The schema for `vote_account_activity` is identical to the `account_activity` table.
 
 </details>
-```

@@ -39,11 +39,11 @@ cache-foundational:
 
 .PHONY: gui
 gui:
-	substreams gui substreams.yaml -e solana.substreams.pinax.network:443 map_events -s 203100000 --network solana
+	substreams gui substreams.yaml -e solana.substreams.pinax.network:443 map_events -s 311081162 --network solana
 
 .PHONY: parquet
 parquet:
-	substreams-sink-files run solana.substreams.pinax.network:443 substreams.yaml map_events './out' 203100000:203100001 --encoder parquet --file-block-count 1 --development-mode
+	substreams-sink-files run solana.substreams.pinax.network:443 substreams.yaml map_events './out' 311081162: --encoder parquet --file-block-count 50 --development-mode
 
 .PHONY: deploy
 deploy:
