@@ -1,6 +1,12 @@
 # `Antelope`: Snowflake Datashare
 
-> Chains supported `EOS`, `WAX` & `Telos`
+> Antelope-compatible blockchain data on Snowflake.
+
+## Supported chains
+
+- [x] **EOS**
+- [x] **WAX**
+- [x] **Telos**
 
 This dataset offers a detailed view of Antleope based blockchain activity, providing critical data points across blocks, transactions, traces, and logs for comprehensive blockchain analysis. Designed for developers, analysts, and researchers, this dataset supports advanced analytics, indexing, and querying capabilities tailored to Antelope's unique structure and behavior.
 
