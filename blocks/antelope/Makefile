@@ -14,7 +14,7 @@ build:
 
 .PHONY: gui
 gui:
-	substreams gui . -e "$(NETWORK).substreams.pinax.network:443" map_events -s 407300000 -t 0 --network $(NETWORK) --production-mode
+	substreams gui . -e "$(NETWORK).substreams.pinax.network:443" map_events -s -1 -t 0 --network $(NETWORK)
 
 .PHONY: protogen
 protogen:

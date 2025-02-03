@@ -1,8 +1,16 @@
-# `Ethereum`: Snowflake Datashare
+# `EVM`: Snowflake Datashare
 
-This dataset offers a detailed view of Ethereum blockchain activity, providing critical data points across blocks, transactions, traces, and logs for comprehensive blockchain analysis. Designed for developers, analysts, and researchers, this dataset supports advanced analytics, indexing, and querying capabilities tailored to Ethereum's unique structure and behavior.
+> EVM-compatible blockchain data on Snowflake.
 
-Try 30 day limited trial access to the dataset on the [Snowflake Data Marketplace](https://app.snowflake.com/marketplace).
+## Supported chains
+
+- [x] **Ethereum**
+- [x] **Base**
+- [x] **BSC** (Binance Smart Chain)
+
+This dataset offers a detailed view of blockchain activity, providing critical data points across blocks, transactions, traces, and logs for comprehensive blockchain analysis. Designed for developers, analysts, and researchers, this dataset supports advanced analytics, indexing, and querying capabilities tailored to Base's unique structure and behavior.
+
+Try our datasets for free (with limited historical coverage) on the [Snowflake Data Marketplace](https://app.snowflake.com/marketplace).
 
 ## Tables/Views
 
@@ -22,12 +30,11 @@ Try 30 day limited trial access to the dataset on the [Snowflake Data Marketplac
 
 ```sql
 SELECT
-    date_trunc('minute', block_time) AS minute,
+    block_date,
     count(distinct "from") AS user
-FROM eth.transactions
-WHERE block_date = '2024-11-01'
-GROUP BY minute
-ORDER BY minute ASC;
+FROM transactions
+GROUP BY block_date
+ORDER BY block_date ASC
 ```
 
 **Top Contracts**
@@ -36,11 +43,25 @@ ORDER BY minute ASC;
 SELECT
     "to" AS contract,
     count(*) AS transactions
-FROM eth.transactions
-WHERE block_date = '2024-11-01'
+FROM transactions
 GROUP BY contract
 ORDER BY transactions DESC
-LIMIT 10;
+LIMIT 10
+```
+
+**ERC-20 Transfers**
+
+```sql
+SELECT
+    block_date,
+    count(*) as total
+FROM
+    traces
+WHERE
+    tx_success = true AND
+    SUBSTR(input, 1, 10) IN ('0xa9059cbb', '0x23b872dd') // Transfer and TransferFrom
+GROUP BY block_date
+ORDER BY block_date;
 ```
 
 **View the first and last block indexed**
@@ -51,25 +72,12 @@ LIMIT 10;
 SELECT
   MIN(number) AS "First block",
   MAX(number) AS "Newest block",
+  MIN(time) AS "First time",
+  MAX(time) AS "Newest time",
+  1/ (COUNT(1) / (DATE_PART(EPOCH_SECOND, MAX(time)) - DATE_PART(EPOCH_SECOND, MIN(time)))) AS "Blocks/second",
   COUNT(1) AS "Total number of blocks"
 FROM
-  eth.blocks
-```
-
-**ERC-20 Transfers**
-
-```sql
-SELECT
-    block_date,
-    count(*) as total
-FROM
-    eth.traces
-WHERE
-    tx_success = true AND
-    SUBSTR(input, 1, 10) IN ('0xa9059cbb', '0x23b872dd') // Transfer and TransferFrom
-    AND block_date >= '2024-11-01' AND block_date <= '2024-12-01'
-GROUP BY block_date
-ORDER BY block_date
+  blocks;
 ```
 
 ## Data Dictionary

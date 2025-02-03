@@ -1,4 +1,4 @@
-NETWORK ?= eth
+NETWORK ?= base
 HASH = $(shell substreams info --json | jq -r '.modules[0].hash')
 
 .PHONY: all
@@ -14,7 +14,7 @@ build:
 
 .PHONY: gui
 gui:
-	substreams gui . -e "$(NETWORK).substreams.pinax.network:443" map_events -s 21200000 -t 21200001 --network $(NETWORK)
+	substreams gui . -e "$(NETWORK).substreams.pinax.network:443" map_events -s 24450126 --network $(NETWORK)
 
 .PHONY: protogen
 protogen:

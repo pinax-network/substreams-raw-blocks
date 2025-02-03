@@ -27,7 +27,7 @@ Free access to the dataset on the [Snowflake Data Marketplace](https://app.snowf
 SELECT
     block_date,
     count(distinct auth_sequence_account_name) AS user
-FROM wax.actions
+FROM actions
 WHERE index = 0
 GROUP BY block_date
 ORDER BY block_date ASC
@@ -39,7 +39,7 @@ ORDER BY block_date ASC
 SELECT
     account AS contract,
     count(*) AS actions
-FROM wax.actions
+FROM actions
 WHERE block_date = '2025-01-01'
 GROUP BY contract
 ORDER BY actions DESC
@@ -56,23 +56,26 @@ SELECT block_number, block_time, tx_hash,
     GET(json_data, 'memo')::string as memo,
     SPLIT(quantity, ' ')[0]::double as value,
     SPLIT(quantity, ' ')[1]::string as symbol
-FROM wax.actions
+FROM actions
 WHERE account='eosio.token' AND name='transfer' AND account=receiver
 ORDER BY block_number DESC
 LIMIT 10;
 ```
 
-
 **View the first and last block indexed**
+
 > This query tells you how fresh the data is.
 
 ```sql
 SELECT
   MIN(number) AS "First block",
   MAX(number) AS "Newest block",
+  MIN(time) AS "First time",
+  MAX(time) AS "Newest time",
+  1/ (COUNT(1) / (DATE_PART(EPOCH_SECOND, MAX(time)) - DATE_PART(EPOCH_SECOND, MIN(time)))) AS "Blocks/second",
   COUNT(1) AS "Total number of blocks"
 FROM
-  wax.blocks;
+  blocks;
 ```
 
 ## Data Dictionary
