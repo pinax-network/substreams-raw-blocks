@@ -8,7 +8,7 @@
 - [x] **Base**
 - [x] **BSC** (Binance Smart Chain)
 
-This dataset offers a detailed view of blockchain activity, providing critical data points across blocks, transactions, traces, and logs for comprehensive blockchain analysis. Designed for developers, analysts, and researchers, this dataset supports advanced analytics, indexing, and querying capabilities tailored to Base's unique structure and behavior.
+This dataset offers a detailed view of EVM-based blockchain activity, providing critical data points across blocks, transactions, traces, and logs for comprehensive blockchain analysis. Designed for developers, analysts, and researchers, this dataset supports advanced analytics, indexing, and querying capabilities tailored to the EVM’s unique structure and behavior.
 
 Try our datasets for free (with limited historical coverage) on the [Snowflake Data Marketplace](https://app.snowflake.com/marketplace).
 
