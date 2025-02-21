@@ -1,7 +1,8 @@
 use common::structs::BlockTimestamp;
 use common::utils::bytes_to_hex;
 
-use substreams_ethereum::pb::eth::v2::{Block, StorageChange, TransactionTrace};
+use substreams::scalar::BigInt;
+use substreams_ethereum::pb::eth::v2::{Block, Call, StorageChange, TransactionTrace};
 
 use crate::pb::pinax::evm::v1::StorageChange as StorageChangeEvent;
 
@@ -13,7 +14,7 @@ pub fn collect_storage_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec
     // Collect storage changes from system calls
     for call in &block.system_calls {
         for storage_change in &call.storage_changes {
-            storage_changes.push(parse_storage_change(storage_change, &TransactionTrace::default(), timestamp));
+            storage_changes.push(parse_storage_change(storage_change, &TransactionTrace::default(), call, timestamp));
         }
     }
 
@@ -21,7 +22,7 @@ pub fn collect_storage_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec
     for transaction in &block.transaction_traces {
         for call in &transaction.calls {
             for storage_change in &call.storage_changes {
-                storage_changes.push(parse_storage_change(storage_change, transaction, timestamp));
+                storage_changes.push(parse_storage_change(storage_change, transaction, call, timestamp));
             }
         }
     }
@@ -29,7 +30,7 @@ pub fn collect_storage_changes(block: &Block, timestamp: &BlockTimestamp) -> Vec
     storage_changes
 }
 
-pub fn parse_storage_change(storage_change: &StorageChange, transaction: &TransactionTrace, timestamp: &BlockTimestamp) -> StorageChangeEvent {
+pub fn parse_storage_change(storage_change: &StorageChange, transaction: &TransactionTrace, call: &Call, timestamp: &BlockTimestamp) -> StorageChangeEvent {
     StorageChangeEvent {
         // block
         block_time: timestamp.time.to_string(),
@@ -40,11 +41,20 @@ pub fn parse_storage_change(storage_change: &StorageChange, transaction: &Transa
         // transaction
         tx_hash: Some(bytes_to_hex(&transaction.hash)),
 
+        // call
+        call_index: call.index,
+        call_parent_index: call.parent_index,
+        call_begin_ordinal: call.begin_ordinal,
+        call_end_ordinal: call.end_ordinal,
+        call_depth: call.depth,
+
         // storage changes
         address: bytes_to_hex(&storage_change.address),
         key: bytes_to_hex(&storage_change.key),
         new_value: bytes_to_hex(&storage_change.new_value),
+        new_value_number: BigInt::from_unsigned_bytes_be(&storage_change.new_value).to_string(),
         old_value: bytes_to_hex(&storage_change.old_value),
+        old_value_number: BigInt::from_unsigned_bytes_be(&storage_change.old_value).to_string(),
         ordinal: storage_change.ordinal,
     }
 }

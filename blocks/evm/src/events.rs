@@ -9,6 +9,7 @@ use crate::balance_changes::collect_balance_changes;
 use crate::blocks::collect_block;
 use crate::code_changes::collect_code_changes;
 use crate::gas_changes::collect_gas_changes;
+use crate::keccak_preimages::collect_keccak_preimages;
 use crate::logs::collect_logs;
 use crate::nonce_changes::collect_nonce_changes;
 use crate::pb::pinax::evm::v1::Events;
@@ -31,5 +32,6 @@ pub fn map_events(clock: Clock, block: Block) -> Result<Events, Error> {
         account_creations: collect_account_creations(&block, &timestamp),
         nonce_changes: collect_nonce_changes(&block, &timestamp),
         gas_changes: collect_gas_changes(&block, &timestamp),
+        keccak_preimages: collect_keccak_preimages(&block, &timestamp),
     })
 }

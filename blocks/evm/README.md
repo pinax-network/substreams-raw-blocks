@@ -18,6 +18,7 @@
   - [x] **Account Creation**
   - [x] **Gas Changes**
   - [x] **Nonce Changes**
+  - [x] **Keccak Preimages**
 
 ## Graph
 
@@ -37,5 +38,5 @@ Kind: map
 Input: source: sf.substreams.v1.Clock
 Input: source: sf.ethereum.type.v2.Block
 Output Type: proto:pinax.evm.v1.Events
-Hash: 700ee7417a6e24ceb49db71e62d030aed84b017d
+Hash: 161abf4cee38d9b2e00fd825ad7e5a7df32b8599
 ```

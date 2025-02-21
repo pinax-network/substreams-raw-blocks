@@ -25,6 +25,8 @@ pub struct Events {
     pub nonce_changes: ::prost::alloc::vec::Vec<NonceChange>,
     #[prost(message, repeated, tag="10")]
     pub gas_changes: ::prost::alloc::vec::Vec<GasChange>,
+    #[prost(message, repeated, tag="11")]
+    pub keccak_preimages: ::prost::alloc::vec::Vec<KeccakPreimage>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -387,19 +389,54 @@ pub struct StorageChange {
     /// -- transaction --
     #[prost(string, optional, tag="5")]
     pub tx_hash: ::core::option::Option<::prost::alloc::string::String>,
+    /// -- call --
+    #[prost(uint32, tag="10")]
+    pub call_index: u32,
+    #[prost(uint32, tag="11")]
+    pub call_parent_index: u32,
+    #[prost(uint64, tag="12")]
+    pub call_begin_ordinal: u64,
+    #[prost(uint64, tag="13")]
+    pub call_end_ordinal: u64,
+    #[prost(uint32, tag="14")]
+    pub call_depth: u32,
     /// -- storage change --
     ///
     /// block global ordinal
-    #[prost(uint64, tag="6")]
+    #[prost(uint64, tag="20")]
     pub ordinal: u64,
-    #[prost(string, tag="7")]
+    #[prost(string, tag="21")]
     pub address: ::prost::alloc::string::String,
-    #[prost(string, tag="8")]
+    #[prost(string, tag="22")]
     pub key: ::prost::alloc::string::String,
-    #[prost(string, tag="9")]
+    #[prost(string, tag="23")]
     pub new_value: ::prost::alloc::string::String,
-    #[prost(string, tag="10")]
+    #[prost(string, tag="24")]
+    pub new_value_number: ::prost::alloc::string::String,
+    #[prost(string, tag="25")]
     pub old_value: ::prost::alloc::string::String,
+    #[prost(string, tag="26")]
+    pub old_value_number: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct KeccakPreimage {
+    /// -- block --
+    ///
+    /// TIMESTAMP
+    #[prost(string, tag="1")]
+    pub block_time: ::prost::alloc::string::String,
+    #[prost(uint64, tag="2")]
+    pub block_number: u64,
+    #[prost(string, tag="3")]
+    pub block_hash: ::prost::alloc::string::String,
+    #[prost(string, tag="4")]
+    pub block_date: ::prost::alloc::string::String,
+    /// -- keccak preimages --
+    #[prost(string, tag="5")]
+    pub hash: ::prost::alloc::string::String,
+    #[prost(string, tag="6")]
+    pub preimage: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]

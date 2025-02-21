@@ -15,6 +15,7 @@ message Events {
   repeated AccountCreation account_creations = 8;
   repeated NonceChange nonce_changes = 9;
   repeated GasChange gas_changes = 10;
+  repeated KeccakPreimage keccak_preimages = 11;
 }
 
 message Block {
@@ -210,12 +211,33 @@ message StorageChange {
   // -- transaction --
   optional string tx_hash = 5;
 
+  // -- call --
+  uint32 call_index = 10;
+  uint32 call_parent_index = 11;
+  uint64 call_begin_ordinal = 12;
+  uint64 call_end_ordinal = 13;
+  uint32 call_depth = 14;
+
   // -- storage change --
-  uint64 ordinal = 6; // block global ordinal
-  string address = 7;
-  string key = 8;
-  string new_value = 9;
-  string old_value = 10;
+  uint64 ordinal = 20; // block global ordinal
+  string address = 21;
+  string key = 22;
+  string new_value = 23;
+  string new_value_number = 24;
+  string old_value = 25;
+  string old_value_number = 26;
+}
+
+message KeccakPreimage {
+  // -- block --
+  string block_time = 1; // TIMESTAMP
+  uint64 block_number = 2;
+  string block_hash = 3;
+  string block_date = 4;
+
+  // -- keccak preimages --
+  string hash = 5;
+  string preimage = 6;
 }
 
 message CodeChange {
