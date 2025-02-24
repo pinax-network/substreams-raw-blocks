@@ -51,6 +51,7 @@ pub fn parse_log(log: &Log, transaction: &TransactionTrace, timestamp: &BlockTim
 
         // log
         index: log.index,
+        ordinal: log.ordinal,
         block_index: log.block_index,
         contract_address: bytes_to_hex(&log.address),
         topic0: extract_topic(&log.topics, 0),

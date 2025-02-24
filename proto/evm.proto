@@ -134,13 +134,14 @@ message Log {
 
   // -- logs --
   uint32 index = 12;
-  uint32 block_index = 13;
-  string contract_address = 14;
-  string topic0 = 15;
-  optional string topic1 = 16;
-  optional string topic2 = 17;
-  optional string topic3 = 18;
-  string data = 19;
+  uint64 ordinal = 13;
+  uint32 block_index = 14;
+  string contract_address = 15;
+  string topic0 = 16;
+  optional string topic1 = 17;
+  optional string topic2 = 18;
+  optional string topic3 = 19;
+  string data = 20;
 }
 
 message Trace {
