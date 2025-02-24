@@ -251,19 +251,21 @@ pub struct Log {
     /// -- logs --
     #[prost(uint32, tag="12")]
     pub index: u32,
-    #[prost(uint32, tag="13")]
+    #[prost(uint64, tag="13")]
+    pub ordinal: u64,
+    #[prost(uint32, tag="14")]
     pub block_index: u32,
-    #[prost(string, tag="14")]
-    pub contract_address: ::prost::alloc::string::String,
     #[prost(string, tag="15")]
+    pub contract_address: ::prost::alloc::string::String,
+    #[prost(string, tag="16")]
     pub topic0: ::prost::alloc::string::String,
-    #[prost(string, optional, tag="16")]
-    pub topic1: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag="17")]
-    pub topic2: ::core::option::Option<::prost::alloc::string::String>,
+    pub topic1: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag="18")]
+    pub topic2: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="19")]
     pub topic3: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, tag="19")]
+    #[prost(string, tag="20")]
     pub data: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
