@@ -9,7 +9,9 @@ crate-type = ["cdylib"]
 [dependencies]
 common = { path = "../../common" }
 substreams-near = { workspace = true }
-substreams = { workspace = true }
+# substreams-near still requires substreams ^0.6 (see workspace Cargo.toml)
+substreams = "0.6"
+hex = { workspace = true }
 prost = { workspace = true }
 prost-types = { workspace = true }
 serde_json = { workspace = true }

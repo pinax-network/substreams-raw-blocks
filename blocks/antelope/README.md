@@ -1,43 +1,35 @@
-## `Antelope` Raw Blockchain Data
+# `Antelope` Raw Blockchain Data
 
-> EOS, WAX, Telos, Ultra...
-> [`sf.antelope.type.v1.Block`](https://buf.build/pinax/firehose-antelope/docs/main:sf.antelope.type.v1)
+> EOS, WAX, Telos, Ultra... any chain served as
+> [`sf.antelope.type.v1.Block`](https://buf.build/pinax/firehose-antelope/docs/main:sf.antelope.type.v1).
 
-- [x] **Blocks**
-  - [x] **Savanna Merkle Roots**
-- [x] **Transactions**
-  - [x] **Feature Operations**
-  - [x] **Permission Operations**
-    - [x] **Authority.Accounts**
-    - [x] **Authority.Keys**
-    - [x] **Authority.Waits**
-  - [x] **RAM Operations**
-  - [x] **Table Operations**
-  - [x] **Creation Tree**
-  - [ ] ~~**Deferred Transactions**~~
-- [x] **Actions**
-  - [x] **Authorization**
-  - [x] **Auth Sequence**
-  - [x] **Account RAM Deltas**
-- [x] **Database Operations**
+Output is shaped for [`substreams sink postgres`](https://docs.substreams.dev/how-to-guides/sinks/sql/relational-mappings)
+(Relational Mappings Mode): every repeated field of `pinax.antelope.v2.Events` is a table.
+Naming follows [pinax-network/firehose-parquet](https://github.com/pinax-network/firehose-parquet/tree/main/blocks/src/antelope),
+extended with every additional field the Firehose block offers.
 
-## Graph
-
-```mermaid
-graph TD;
-  map_events[map: map_events];
-  sf.substreams.v1.Clock[source: sf.substreams.v1.Clock] --> map_events;
-  sf.antelope.type.v1.Block[source: sf.antelope.type.v1.Block] --> map_events;
-```
-
-## Modules
+## Quick start
 
 ```bash
-Name: map_events
-Initial block: 0
-Kind: map
-Input: source: sf.substreams.v1.Clock
-Input: source: sf.antelope.type.v1.Block
-Output Type: proto:pinax.antelope.v1.Events
-Hash: 8490866fe98ab7d3f811ccf0f18da3cb46a378f9
+export SUBSTREAMS_API_KEY=...
+export DSN="postgres://user:pass@localhost:5432/raw_blocks_antelope?sslmode=disable"
+
+make build
+make sink-setup                 # tables + widen string columns to TEXT
+make sink NETWORK=eos           # or wax, telos, ultra...
 ```
+
+## Tables
+
+Every table starts with `block_num, block_id, parent_num, parent_id, timestamp, date`.
+Antelope identifiers stay hex `string`s (as in Firehose); raw payloads are `bytes`.
+
+| Table | Source |
+|---|---|
+| `blocks` | header, producer, merkle roots, DPoS/Savanna finality numbers, counters |
+| `transactions` | every transaction trace (all statuses), receipt usage, exception (JSON), creation tree, signatures |
+| `actions` | action traces with receipt, authorization (`actor@permission,...`), json/raw data, console, return values, RAM deltas (JSON) |
+| `db_ops` | table row changes (`INSERT`/`UPDATE`/`REMOVE`), raw and JSON data |
+| `feature_ops`, `perm_ops`, `table_ops`, `ram_ops`, `ram_correction_ops`, `dtrx_ops` | the other per-transaction operation lists |
+
+Enumerations use the Firehose names without prefix (`EXECUTED`, `SOFTFAIL`, `INSERT`, `PRIMARY_INDEX_ADD`, `TABLE_ROW`...).

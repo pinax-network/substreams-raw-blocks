@@ -1,29 +1,22 @@
 # `Arweave` Raw Blockchain Data
 
-> Cosmos
-> [`sf.arweave.type.v1.Block`](https://buf.build/pinax/firehose-arweave/file/main:sf/arweave/type/v1/type.proto)
+> Arweave, served as [`sf.arweave.type.v1.Block`](https://github.com/streamingfast/firehose-arweave).
 
-- [x] **Blocks**
-- [x] **Transactions**
-- [x] **Transaction Tags**
-
-## Graph
-
-```mermaid
-graph TD;
-  map_events[map: map_events];
-  sf.substreams.v1.Clock[source: sf.substreams.v1.Clock] --> map_events;
-  sf.arweave.type.v1.Block[source: sf.arweave.type.v1.Block] --> map_events;
-```
-
-## Modules
+Output is shaped for [`substreams sink postgres`](https://docs.substreams.dev/how-to-guides/sinks/sql/relational-mappings):
+every repeated field of `pinax.arweave.v2.Events` is a table, following the conventions of the other
+packages in this repo (canonical identity columns, `bytes` hashes, `NUMERIC(78,0)` amounts).
 
 ```bash
-Name: map_events
-Initial block: 0
-Kind: map
-Input: source: sf.substreams.v1.Clock
-Input: source: sf.arweave.type.v1.Block
-Output Type: proto:pinax.arweave.v1.Events
-Hash: d9116aacd7cd08060a6023b09240fbd1bbdad90b
+export SUBSTREAMS_API_KEY=...
+export DSN="postgres://user:pass@localhost:5432/raw_blocks_arweave?sslmode=disable"
+make build && make sink-setup ARGS="--bytes-encoding base64" && make sink NETWORK=arweave ARGS="--bytes-encoding base64"
 ```
+
+## Tables
+
+| Table | Source |
+|---|---|
+| `blocks` | header (hashes, nonce, difficulty, retarget, weave/block size, reward pool, proof of access), counters |
+| `transactions` | id (PK), format, owner, target, quantity, data payload + size + root, signature, reward |
+| `transaction_tags` | tag name/value per transaction (UTF-8 text and raw bytes) |
+| `block_tags` | block-level tags |

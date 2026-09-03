@@ -1,52 +1,37 @@
-use common::structs::BlockTimestamp;
-use substreams::Hex;
+use common::structs::BlockIdentity;
 use substreams_antelope::pb::TransactionTrace;
 
-use crate::pb::pinax::antelope::v1::DbOp;
+use crate::pb::pinax::antelope::v2::DbOp;
+use crate::utils::{db_op_operation_text, non_empty, non_empty_bytes};
 
-pub fn operation_to_string(operation: i32) -> String {
-    match operation {
-        0 => "Unknown".to_string(),
-        1 => "Insert".to_string(),
-        2 => "Update".to_string(),
-        3 => "Remove".to_string(),
-        _ => "Unknown".to_string(),
-    }
-}
+pub fn collect_db_ops(tx: &TransactionTrace, id: &BlockIdentity) -> Vec<DbOp> {
+    tx.db_ops
+        .iter()
+        .enumerate()
+        .map(|(index, op)| DbOp {
+            block_num: id.block_num,
+            block_id: id.block_id.clone(),
+            parent_num: id.parent_num,
+            parent_id: id.parent_id.clone(),
+            timestamp: Some(id.timestamp.clone()),
+            date: id.date.clone(),
 
-// https://github.com/streamingfast/firehose-ethereum/blob/1bcb32a8eb3e43347972b6b5c9b1fcc4a08c751e/proto/sf/ethereum/type/v2/type.proto#L647
-pub fn collect_tx_db_ops(transaction: &TransactionTrace, timestamp: &BlockTimestamp, tx_success: bool) -> Vec<DbOp> {
-    let mut db_ops: Vec<DbOp> = Vec::new();
+            operation: db_op_operation_text(op.operation),
+            action_index: op.action_index,
+            code: op.code.clone(),
+            scope: op.scope.clone(),
+            table_name: op.table_name.clone(),
+            primary_key: op.primary_key.clone(),
+            old_payer: op.old_payer.clone(),
+            new_payer: op.new_payer.clone(),
+            old_data: non_empty_bytes(&op.old_data),
+            new_data: non_empty_bytes(&op.new_data),
+            old_data_json: non_empty(&op.old_data_json),
+            new_data_json: non_empty(&op.new_data_json),
 
-    for (index, db_op) in transaction.db_ops.iter().enumerate() {
-        db_ops.push(DbOp {
-            // block
-            block_time: timestamp.time.to_string(),
-            block_number: timestamp.number,
-            block_hash: timestamp.hash.clone(),
-            block_date: timestamp.date.clone(),
-
-            // transaction
-            tx_hash: transaction.id.clone(),
-            tx_success,
-
-            // database operation
+            tx_hash: tx.id.clone(),
+            tx_index: tx.index,
             index: index as u32,
-            operation: operation_to_string(db_op.operation),
-            operation_code: db_op.operation,
-            action_index: db_op.action_index,
-            code: db_op.code.clone(),
-            scope: db_op.scope.clone(),
-            table_name: db_op.table_name.clone(),
-            primary_key: db_op.primary_key.clone(),
-            old_payer: db_op.old_payer.clone(),
-            new_payer: db_op.new_payer.clone(),
-            old_data: Hex::encode(&db_op.old_data),
-            new_data: Hex::encode(&db_op.new_data),
-            old_data_json: db_op.old_data_json.clone(),
-            new_data_json: db_op.new_data_json.clone(),
-        });
-    }
-
-    db_ops
+        })
+        .collect()
 }

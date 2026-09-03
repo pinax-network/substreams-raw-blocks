@@ -1,63 +1,44 @@
-## `Solana` Raw Blockchain Data
+# `Solana` Raw Blockchain Data
 
-> Solana
-> [`sf.solana.type.v1.Block`](https://buf.build/streamingfast/firehose-solana/docs/main:sf.solana.type.v1)
+> Solana, served as [`sf.solana.type.v1.Block`](https://buf.build/streamingfast/firehose-solana/docs/main:sf.solana.type.v1).
 
-- [x] **Blocks**
-- [x] **Transactions**
-- [x] **Instruction Calls**
-- [x] **Account Activity**
-- [x] **Rewards**
-- [x] **Vote Transactions**
-- [x] **Vote Instruction Calls**
-- [x] **Vote Account Activity**
-- ~~[ ] **Discriminators**~~
+Output is shaped for [`substreams sink postgres`](https://docs.substreams.dev/how-to-guides/sinks/sql/relational-mappings)
+(Relational Mappings Mode): every repeated field of `pinax.solana.v2.Events` is a table.
+Naming follows [pinax-network/firehose-parquet](https://github.com/pinax-network/firehose-parquet/tree/main/blocks/src/solana),
+extended with resolved addresses, decoded transaction errors and an `account_activity` table.
 
+## Quick start
 
-```mermaid
-graph TD;
-  raw[sf.solana.type.v1.Block];
-  raw --> blocks;
-  raw --> transactions;
-  raw --> instruction_calls;
-  raw --> account_activity;
-  raw --> rewards;
-  raw --> vote_transactions;
-  raw --> vote_instruction_calls;
-  raw --> vote_account_activity;
-  raw --> discriminators;
+```bash
+export SUBSTREAMS_API_KEY=...
+export DSN="postgres://user:pass@localhost:5432/raw_blocks_solana?sslmode=disable"
+
+make build
+make sink-setup ARGS="--bytes-encoding base58"   # addresses/signatures as base58 text
+make sink ARGS="--bytes-encoding base58"         # without vote transactions
+make sink MODULE=map_events_with_votes ARGS="--bytes-encoding base58"
 ```
 
-## Graph
-
-```mermaid
-graph TD;
-  map_events[map: map_events];
-  sf.substreams.v1.Clock[source: sf.substreams.v1.Clock] --> map_events;
-  common:blocks_without_votes --> map_events;
-  map_events_with_votes[map: map_events_with_votes];
-  sf.substreams.v1.Clock[source: sf.substreams.v1.Clock] --> map_events_with_votes;
-  sf.solana.type.v1.Block[source: sf.solana.type.v1.Block] --> map_events_with_votes;
-  common:blocks_without_votes[map: common:blocks_without_votes];
-  sf.solana.type.v1.Block[source: sf.solana.type.v1.Block] --> common:blocks_without_votes;
-```
+Without `--bytes-encoding base58` addresses, hashes and signatures are stored as `BYTEA`.
 
 ## Modules
 
-```bash
-Name: map_events
-Initial block: 0
-Kind: map
-Input: source: sf.substreams.v1.Clock
-Input: map: common:blocks_without_votes
-Output Type: proto:pinax.solana.v1.Events
-Hash: dcee2536d77ebb585cb3562cf6ed34b3103f6dbc
+| Module | Input | Output |
+|---|---|---|
+| `map_events` | `solana-common:blocks_without_votes` | every table except `vote_transactions` |
+| `map_events_with_votes` | full `sf.solana.type.v1.Block` | same, plus vote transactions in `vote_transactions` (no messages/instructions for votes) |
 
-Name: map_events_with_votes
-Initial block: 0
-Kind: map
-Input: source: sf.substreams.v1.Clock
-Input: source: sf.solana.type.v1.Block
-Output Type: proto:pinax.solana.v1.Events
-Hash: c86e7d4fafa5bca66dc5b775c3174ae864eb5cac
-```
+## Tables
+
+Every table starts with `block_num` (= slot), `block_id` (= blockhash), `parent_num` (= parent slot), `parent_id`, `timestamp`, `date`.
+
+| Table | Source |
+|---|---|
+| `blocks` | slot, height, hashes, block time, transaction/reward counters (incl. vote and failed counts) |
+| `transactions` / `vote_transactions` | signature (PK), fee, success, raw `err` + decoded `error`, compute/cost units, log messages, pre/post balances, return data, all signatures, signer |
+| `messages` | header counts, recent blockhash, versioned flag, static account keys, loaded writable/readonly addresses |
+| `instructions` | top-level then inner instructions (`is_inner`, `inner_index`, `stack_height`), raw indexes + data, resolved `program_id` and `account_addresses` |
+| `rewards` | block rewards (`source = block`) and per-transaction rewards (`source = transaction`) |
+| `token_balances` | pre/post token balances with `amount` as `NUMERIC`, resolved `account` |
+| `account_lookups` | address table lookups of versioned transactions |
+| `account_activity` | one row per account per transaction: signed/writable flags, SOL balance change, token pre/post amounts |

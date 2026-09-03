@@ -830,3 +830,9 @@ adapters/**/*.jsonl
 
 # parquet-sink-files state file
 *state*.yaml
+
+# substreams protogen cache
+.last_generated_hash
+
+# substreams sink postgres spool directory
+localdata/

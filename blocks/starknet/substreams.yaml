@@ -1,8 +1,11 @@
 specVersion: v0.1.0
 package:
   name: raw_blocks_starknet
-  version: v1.0.0
+  version: v2.0.0
   url: https://github.com/pinax-network/substreams-raw-blocks
+  description: |
+    Raw Starknet block data (blocks, transactions, events, L2->L1 messages, state diffs) shaped for
+    `substreams sink postgres`.
 
 binaries:
   default:
@@ -13,12 +16,12 @@ protobuf:
   files:
     - starknet.proto
     - sf.starknet.type.v1.proto
-    - parquet/options.proto
   importPaths:
     - ../../proto
 
   excludePaths:
     - sf/substreams
+    - sf/firehose
     - google
 
 modules:
@@ -28,4 +31,10 @@ modules:
       - source: sf.substreams.v1.Clock
       - source: sf.starknet.type.v1.Block
     output:
-      type: proto:pinax.starknet.v1.EventsOutput
+      type: proto:pinax.starknet.v2.Events
+
+sink:
+  module: map_events
+  type: sf.substreams.sink.sql.v1.Service
+  config:
+    engine: postgres

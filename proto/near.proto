@@ -1,31 +1,235 @@
 syntax = "proto3";
 
-package pinax.near.v1;
+package pinax.near.v2;
 
+import "google/protobuf/timestamp.proto";
+import "sf/substreams/sink/sql/schema/v1/schema.proto";
+
+// Raw NEAR block data, one table per repeated field, consumed directly by
+// `substreams sink postgres`. Table and column naming follows
+// pinax-network/firehose-parquet (blocks/src/near/schema.rs); fields beyond that
+// schema are appended after tag 30, and `actions` is an additional table.
+// Hashes and keys are `bytes` (`--bytes-encoding base58` for the usual text form);
+// account ids are strings; yoctoNEAR amounts are decimal strings -> NUMERIC(78,0).
+//
+// Canonical identity: block_num = height, block_id = block hash,
+// parent_num = prev_height, parent_id = prev_hash.
 message Events {
-    repeated BlockChunk block_chunks = 1;
+  repeated Block blocks = 1;
+  repeated Chunk chunks = 2;
+  repeated Transaction transactions = 3;
+  repeated Receipt receipts = 4;
+  repeated StateChange state_changes = 5;
+
+  repeated Action actions = 20;
 }
 
-message BlockChunk {
-  // clock
-  string block_time = 3;
-  uint64 block_height = 2;
-  string block_date = 1;
-  string block_hash = 4;
-  string block_prev_hash = 5;
-  bytes block_total_supply = 6;
+message Block {
+  option (schema.table) = { name: "blocks" };
 
-  // chunk
-  string hash = 7;
-  bytes gas_price = 8;
-  string author_account_id = 9;
-  string epoch_id = 10;
-  uint64 shard_id = 11;
-  string signature = 12;
-  uint64 gas_limit = 13;
-  uint64 gas_used = 14;
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  uint64 height = 10 [(schema.field) = { primary_key: true }];
+  bytes hash = 11;
+  bytes prev_hash = 12;
+  uint64 prev_height = 13;
+  bytes epoch_id = 14;
+  string author = 15;
+  string gas_price = 16 [(schema.field) = { convertTo: { uint256 {} } }];
+  string total_supply = 17 [(schema.field) = { convertTo: { uint256 {} } }];
+  uint64 chunks_included = 18;
+  uint32 latest_protocol_version = 19;
+
+  bytes next_epoch_id = 30;
+  bytes prev_state_root = 31;
+  bytes chunk_receipts_root = 32;
+  bytes chunk_headers_root = 33;
+  bytes chunk_tx_root = 34;
+  bytes outcome_root = 35;
+  bytes challenges_root = 36;
+  uint64 timestamp_nanosec = 37;
+  bytes random_value = 38;
+  repeated bool chunk_mask = 39;
+  uint64 block_ordinal = 40;
+  uint64 last_final_block_height = 41;
+  bytes last_final_block = 42;
+  uint64 last_ds_final_block_height = 43;
+  bytes last_ds_final_block = 44;
+  bytes next_bp_hash = 45;
+  bytes block_merkle_root = 46;
+  bytes epoch_sync_data_hash = 47;
+  bytes signature = 48;
+  uint32 num_approvals = 49;
+  uint32 num_validator_proposals = 50;
+  uint32 num_shards = 51;
+  uint32 num_transactions = 52;
+  uint32 num_receipts = 53;
+  uint32 num_state_changes = 54;
 }
 
+message Chunk {
+  option (schema.table) = { name: "chunks" };
 
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
 
+  uint64 shard_id = 10;
+  bytes chunk_hash = 11 [(schema.field) = { primary_key: true }];
+  bytes prev_state_root = 12;
+  uint64 gas_used = 13;
+  uint64 gas_limit = 14;
+  uint64 height_created = 15;
+  uint64 height_included = 16;
+  uint64 encoded_length = 17;
+  string author = 18;
 
+  bytes prev_block_hash = 30;
+  bytes outcome_root = 31;
+  bytes encoded_merkle_root = 32;
+  string validator_reward = 33 [(schema.field) = { convertTo: { uint256 {} } }];
+  string balance_burnt = 34 [(schema.field) = { convertTo: { uint256 {} } }];
+  bytes outgoing_receipts_root = 35;
+  bytes tx_root = 36;
+  bytes signature = 37;
+  uint32 num_transactions = 38;
+  uint32 num_receipts = 39;
+}
+
+message Transaction {
+  option (schema.table) = { name: "transactions" };
+
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  bytes hash = 10 [(schema.field) = { primary_key: true }];
+  string signer_id = 11;
+  string receiver_id = 12;
+  uint64 shard_id = 13;
+  uint64 nonce = 14;
+  string actions = 15; // comma-separated action types
+  string status = 16;  // SuccessValue | SuccessReceiptId | Failure | Unknown
+  uint64 gas_burnt = 17;
+
+  uint32 index = 30;
+  bytes public_key = 31;
+  string public_key_type = 32;
+  bytes signature = 33;
+  string tokens_burnt = 34 [(schema.field) = { convertTo: { uint256 {} } }];
+  string executor_id = 35;
+  repeated bytes outcome_receipt_ids = 36;
+  repeated string logs = 37;
+  uint32 num_actions = 38;
+  optional string failure = 39;
+}
+
+message Receipt {
+  option (schema.table) = { name: "receipts" };
+
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  bytes receipt_id = 10 [(schema.field) = { primary_key: true }];
+  string predecessor_id = 11;
+  string receiver_id = 12;
+  uint64 shard_id = 13;
+  string status = 14;
+  uint64 gas_burnt = 15;
+  string executor_id = 16;
+
+  uint32 index = 30;
+  string kind = 31; // action | data
+  string signer_id = 32;
+  bytes signer_public_key = 33;
+  string gas_price = 34 [(schema.field) = { convertTo: { uint256 {} } }];
+  repeated bytes input_data_ids = 35;
+  repeated string output_data_receivers = 36;
+  bytes data_id = 37;
+  bytes data = 38;
+  string tokens_burnt = 39 [(schema.field) = { convertTo: { uint256 {} } }];
+  repeated string logs = 40;
+  repeated bytes outcome_receipt_ids = 41;
+  bytes outcome_block_hash = 42;
+  uint32 num_actions = 43;
+  optional string failure = 44;
+}
+
+message StateChange {
+  option (schema.table) = { name: "state_changes" };
+
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  string type = 10;
+  string cause = 11;
+  string account_id = 12;
+  string key_base64 = 13;
+  string value_base64 = 14;
+
+  uint32 index = 30;
+  bytes cause_tx_hash = 31;
+  bytes cause_receipt_hash = 32;
+  optional string account_amount = 33 [(schema.field) = { convertTo: { uint256 {} } }];
+  optional string account_locked = 34 [(schema.field) = { convertTo: { uint256 {} } }];
+  bytes account_code_hash = 35;
+  optional uint64 account_storage_usage = 36;
+  bytes public_key = 37;
+  optional uint64 access_key_nonce = 38;
+  optional string access_key_permission = 39; // JSON
+  optional uint32 contract_code_size = 40;
+}
+
+// Actions of transactions (`source = transaction`, parent = tx hash) and of action
+// receipts (`source = receipt`, parent = receipt id), one row per action.
+message Action {
+  option (schema.table) = { name: "actions" };
+
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  string source = 10;
+  bytes parent_hash = 11;
+  uint32 action_index = 12;
+  string type = 13;
+  string signer_id = 14;
+  string receiver_id = 15;
+  uint64 shard_id = 16;
+  optional string method_name = 17;
+  optional bytes args = 18;
+  optional uint64 gas = 19;
+  optional string deposit = 20 [(schema.field) = { convertTo: { uint256 {} } }];
+  optional string stake = 21 [(schema.field) = { convertTo: { uint256 {} } }];
+  optional bytes public_key = 22;
+  optional string beneficiary_id = 23;
+  optional bytes code = 24;
+  optional string access_key_permission = 25; // JSON
+  optional string delegate_sender_id = 26;
+  optional string delegate_receiver_id = 27;
+  optional uint64 delegate_nonce = 28;
+  optional uint64 delegate_max_block_height = 29;
+  optional uint32 delegate_num_actions = 30;
+}

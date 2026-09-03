@@ -1,9 +1,12 @@
 specVersion: v0.1.0
 package:
   name: raw_blocks_evm
-  version: v1.1.0
+  version: v2.0.0
   url: https://github.com/pinax-network/substreams-raw-blocks
   image: logo.png
+  description: |
+    Raw EVM block data (blocks, transactions, logs, calls, state changes...) shaped for
+    `substreams sink postgres`. Table layout follows pinax-network/firehose-parquet.
 
 binaries:
   default:
@@ -15,15 +18,73 @@ protobuf:
     - evm.proto
   importPaths:
     - ../../proto
+  # sf.ethereum.type.v2.Block is an output type of map_block*, so its descriptors must ship in the package.
+  descriptorSets:
+    - module: buf.build/streamingfast/firehose-ethereum
   excludePaths:
     - sf/substreams
+    - sf/firehose
+    - sf/ethereum # provided by the substreams-ethereum crate
     - google
 
 modules:
+  # Every table. `params` selects tables, e.g. "exclude=storage_changes,system_storage_changes"
+  # or "include=blocks,transactions,logs" (see blocks/evm/src/params.rs).
   - name: map_events
+    kind: map
+    inputs:
+      - params: string
+      - source: sf.substreams.v1.Clock
+      - source: sf.ethereum.type.v2.Block
+    output:
+      type: proto:pinax.evm.v2.Events
+
+  # Same as map_events without the (large) storage change tables.
+  - name: map_events_no_storage_changes
+    use: map_events
+
+  # Firehose block passthroughs, for `substreams estimate` of raw block egress
+  # with and without storage changes.
+  - name: map_block
+    kind: map
+    inputs:
+      - source: sf.ethereum.type.v2.Block
+    output:
+      type: proto:sf.ethereum.type.v2.Block
+
+  - name: map_block_no_storage_changes
+    kind: map
+    inputs:
+      - source: sf.ethereum.type.v2.Block
+    output:
+      type: proto:sf.ethereum.type.v2.Block
+
+  # Firehose block with any combination of data families removed, e.g.
+  # -p map_block_trimmed="exclude=storage_changes,gas_changes,keccak_preimages"
+  - name: map_block_trimmed
+    kind: map
+    inputs:
+      - params: string
+      - source: sf.ethereum.type.v2.Block
+    output:
+      type: proto:sf.ethereum.type.v2.Block
+
+  # One row per block with the encoded size of the Firehose block and of each data family.
+  - name: map_block_sizes
     kind: map
     inputs:
       - source: sf.substreams.v1.Clock
       - source: sf.ethereum.type.v2.Block
     output:
-      type: proto:pinax.evm.v1.Events
+      type: proto:pinax.evm.v2.BlockSizes
+
+params:
+  map_events: ""
+  map_events_no_storage_changes: "exclude=storage_changes,system_storage_changes"
+  map_block_trimmed: ""
+
+sink:
+  module: map_events
+  type: sf.substreams.sink.sql.v1.Service
+  config:
+    engine: postgres

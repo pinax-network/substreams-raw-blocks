@@ -1,3 +1,5 @@
+NETWORK ?= solana
+ENDPOINT ?= $(NETWORK).substreams.pinax.network:443
 .PHONY: all
 all:
 	make build
@@ -29,23 +31,31 @@ run:
 protogen:
 	substreams protogen
 
-.PHONY: cache
-cache:
-	substreams gui substreams.yaml -e solana.substreams.pinax.network:443 map_events -s 203100000 -t 203200000 --production-mode  --network solana
-
-.PHONY: cache-foundational
-cache-foundational:
-	substreams gui https://github.com/streamingfast/substreams-foundational-modules/releases/download/solana-common-v0.3.0/solana-common-v0.3.0.spkg -e solana.substreams.pinax.network:443 blocks_without_votes -s 203100000 -t 203200000 --production-mode
-
 .PHONY: gui
 gui:
 	substreams gui substreams.yaml -e solana.substreams.pinax.network:443 map_events -s 311081162 --network solana
 
-.PHONY: parquet
-parquet:
-	substreams-sink-files run solana.substreams.pinax.network:443 substreams.yaml map_events './out' 311081162: --encoder parquet --file-block-count 50 --development-mode
+# ---------------------------------------------------------------------------
+# PostgreSQL via `substreams sink postgres` (Relational Mappings Mode).
+# NOTE: this package's schema is not yet aligned with blocks/evm (see
+# https://github.com/pinax-network/substreams-raw-blocks/issues/33); tables are
+# named after the output message types until then.
+# ---------------------------------------------------------------------------
+DSN    ?= postgres://pg:pass@localhost:5433/raw_blocks?sslmode=disable
+MODULE ?= map_events
+START  ?= -1
+STOP   ?= 0
+ARGS   ?=
 
-.PHONY: deploy
-deploy:
-	graph build
-	graph deploy --studio clock
+.PHONY: sink-setup
+sink-setup:
+	substreams sink postgres setup substreams.yaml $(MODULE) --dsn "$(DSN)"
+	psql "$(DSN)" -f ../../sql/varchar_to_text.sql
+
+.PHONY: sink
+sink:
+	substreams sink postgres substreams.yaml $(MODULE) --dsn "$(DSN)" -e $(ENDPOINT) --network $(NETWORK) -s $(START) -t $(STOP) $(ARGS)
+
+.PHONY: sink-constraints
+sink-constraints:
+	substreams sink postgres constraints apply substreams.yaml $(MODULE) --dsn "$(DSN)"

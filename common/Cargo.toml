@@ -3,8 +3,10 @@ name = "common"
 edition = { workspace = true }
 version = { workspace = true }
 
+# Intentionally does NOT depend on `substreams`: blocks are split between
+# substreams 0.6 and 0.7 (see workspace Cargo.toml), and `common` is linked
+# into all of them.
 [dependencies]
-substreams = { workspace = true }
-substreams-ethereum = { workspace = true }
+hex = { workspace = true }
 serde_json = { workspace = true }
 prost-types = { workspace = true }

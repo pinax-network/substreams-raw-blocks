@@ -1,114 +1,132 @@
 syntax = "proto3";
 
-package pinax.bitcoin.v1;
+package pinax.bitcoin.v2;
 
 import "google/protobuf/timestamp.proto";
+import "sf/substreams/sink/sql/schema/v1/schema.proto";
 
+// Raw Bitcoin (Bitcoin, Litecoin, Dogecoin...) block data, one table per repeated
+// field, consumed directly by `substreams sink postgres` (Relational Mappings Mode).
+// Table and column naming follows pinax-network/firehose-parquet
+// (blocks/src/bitcoin/schema.rs); fields beyond that schema are appended after tag 30.
+// Bitcoin identifiers are hex strings in Firehose and stay `string`; the canonical
+// block_id/parent_id are the same hashes decoded to `bytes`.
 message Events {
-    repeated Block blocks = 1;
-    repeated Transaction transactions = 2;
-    repeated Input inputs = 3;
-    repeated Output outputs = 4;
+  repeated Block blocks = 1;
+  repeated Transaction transactions = 2;
+  repeated Input inputs = 3;
+  repeated Output outputs = 4;
 }
 
 message Block {
-    // clock
-    string time = 1; // TIMESTAMP
-    uint32 height = 2;
-    string date = 3;
-    string hash = 4;
+  option (schema.table) = { name: "blocks" };
 
-    // block
-    string bits = 5;
-    string chainwork = 6;
-    double difficulty = 7;
-    string merkle_root = 8;
-    uint64 transaction_count = 9;
-    uint32 nonce = 10;
-    string coinbase = 11;
-    string previous_block_hash = 12;
-    int32 version = 13;
-    int32 weight = 14;
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
 
-    // counters
-    int32 size = 20;
-    int32 stripped_size = 21;
-    double total_fees = 22;
-    double total_reward = 23;
-    double mint_reward = 24;
-    uint32 total_inputs = 25;
-    uint32 total_outputs = 26;
+  string hash = 10;
+  int64 height = 11 [(schema.field) = { primary_key: true }];
+  string previous_hash = 12;
+  string merkle_root = 13;
+  int64 time = 14;
+  uint32 nonce = 15;
+  string bits = 16;
+  double difficulty = 17;
+  int32 size = 18;
+  int32 stripped_size = 19;
+  int32 weight = 20;
+  int32 version = 21;
+  uint32 n_tx = 22;
+  int64 mediantime = 23;
+  string chainwork = 24;
+
+  string version_hex = 30;
+  string coinbase = 31;         // coinbase script of the first transaction (hex)
+  double total_reward = 32;     // coinbase outputs (mint reward + fees), in BTC
+  double mint_reward = 33;      // block subsidy for this height, in BTC
+  double total_fees = 34;       // total_reward - mint_reward
+  uint32 num_inputs = 35;
+  uint32 num_outputs = 36;
 }
 
 message Transaction {
-    // block
-    string block_time = 1; // TIMESTAMP
-    string block_date = 2;
-    uint32 block_height = 3;
-    string block_hash = 4;
+  option (schema.table) = { name: "transactions" };
 
-    // transaction
-    uint32 index = 5;
-    string id = 6;
-    uint32 lock_time = 7;
-    int32 size = 8;
-    int32 virtual_size = 9;
-    string coinbase = 10;
-    bool is_coinbase = 11;
-    int64 version = 12;
-    int32 input_count = 13;
-    int32 output_count = 14;
-    repeated string input_tx_ids = 15;
-    repeated uint32 input_output_indices = 16;
-    repeated double output_values = 17;
-    string hex = 18;
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  string txid = 10 [(schema.field) = { primary_key: true }];
+  string hash = 11;
+  int32 size = 12;
+  int32 vsize = 13;
+  int32 weight = 14;
+  uint32 version = 15;
+  uint32 locktime = 16;
+  string block_hash = 17;
+  int64 block_height = 18;
+  int64 block_time = 19;
+  uint32 tx_index = 20;
+
+  bool is_coinbase = 30;
+  string hex = 31;              // raw serialized transaction (hex)
+  uint32 num_inputs = 32;
+  uint32 num_outputs = 33;
+  double output_value = 34;     // sum of outputs, in BTC
 }
 
 message Input {
-    // block
-    string block_time = 1; // TIMESTAMP
-    string block_date = 2;
-    uint32 block_height = 3;
-    string block_hash = 4;
+  option (schema.table) = { name: "inputs" };
 
-    // transaction
-    string tx_id = 5;
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
 
-    // input
-    uint32 index = 6;
-    uint32 spent_block_height = 7;
-    string spent_tx_id = 8;
-    uint32 spent_output_number = 9;
-    double value = 10;
-    string address = 11;
-    string type = 12;
-    string coinbase = 13;
-    bool is_coinbase = 14;
-    optional string script_asm = 15;
-    optional string script_hex = 16;
-    optional string script_desc = 17;
-    optional string script_signature_asm = 18;
-    optional string script_signature_hex = 19;
-    uint32 sequence = 20;
-    repeated string witness_data = 21;
+  string tx_hash = 10;
+  int64 block_height = 11;
+  uint32 input_index = 12;
+  string prev_txid = 13;
+  uint32 prev_vout = 14;
+  uint32 sequence = 15;
+  string script_sig_asm = 16;
+  string script_sig_hex = 17;
+  string coinbase = 18;
+  repeated string witness = 19;
+
+  uint32 tx_index = 30;
+  bool is_coinbase = 31;
 }
 
-
 message Output {
-    // block
-    string block_time = 1; // TIMESTAMP
-    string block_date = 2;
-    uint32 block_height = 3;
-    string block_hash = 4;
+  option (schema.table) = { name: "outputs" };
 
-    // transaction
-    string tx_id = 5;
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
 
-    // output
-    uint32 index = 6;
-    double value = 7;
-    string address = 8;
-    string type = 9;
-    string script_asm = 10;
-    string script_hex = 11;
+  string tx_hash = 10;
+  int64 block_height = 11;
+  uint32 output_index = 12;
+  double value = 13;
+  string script_pubkey_asm = 14;
+  string script_pubkey_hex = 15;
+  string script_pubkey_type = 16;
+  string script_pubkey_address = 17;
+
+  uint32 tx_index = 30;
+  int32 req_sigs = 31;
+  repeated string script_pubkey_addresses = 32; // legacy multisig address list
 }

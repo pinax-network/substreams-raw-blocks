@@ -1,112 +1,114 @@
 syntax = "proto3";
 
-package pinax.arweave.v1;
+package pinax.arweave.v2;
 
+import "google/protobuf/timestamp.proto";
+import "sf/substreams/sink/sql/schema/v1/schema.proto";
+
+// Raw Arweave block data, one table per repeated field, consumed directly by
+// `substreams sink postgres`. Hashes/addresses/payloads are `bytes`
+// (`--bytes-encoding base64` for the usual text form); big numbers are decimal
+// strings -> NUMERIC(78,0). Canonical identity: block_num = height,
+// block_id = indep_hash, parent_id = previous_block.
 message Events {
   repeated Block blocks = 1;
   repeated Transaction transactions = 2;
   repeated TransactionTag transaction_tags = 3;
+  repeated BlockTag block_tags = 4;
 }
 
 message Block {
- // clock
-  string time = 1; // TIMESTAMP
-  uint64 height = 2;
-  string date = 3;
-  string indep_hash = 4; // indep_hash
+  option (schema.table) = { name: "blocks" };
 
-  // The nonce chosen to solve the mining problem
-  bytes nonce = 5;
-  // `indep_hash` of the previous block in  the weave
-  string previous_block = 6;
-  // POSIX time of block discovery
-  uint64 timestamp = 7;
-  // POSIX time of the last difficulty retarget
-  uint64 last_retarget = 8;
-  // Mining difficulty; the number `hash` must be greater than.
-  bytes diff = 9;
-  // Mining solution hash of the block; must satisfy the mining difficulty
-  string hash = 10;
-  // Merkle root of the tree of Merkle roots of block's transactions' data.
-  string tx_root = 11;
-  // The root hash of the Merkle Patricia Tree containing
-  // all wallet (account) balances and the identifiers
-  // of the last transactions posted by them; if any.
-  string wallet_list = 12;
-  // (string or) Address of the account to receive the block rewards. Can also be unclaimed which is encoded as a null byte
-  string reward_addr = 13;
-  // Size of reward pool
-  bytes reward_pool = 14;
-  // Size of the weave in bytes
-  bytes weave_size = 15;
-  // Size of this block in bytes
-  bytes block_size = 16;
-  // Required after the version 1.8 fork. Zero otherwise.
-  // The sum of the average number of hashes computed
-  // by the network to produce the past blocks including this one.
-  bytes cumulative_diff = 17;
-  // Required after the version 1.8 fork. Null byte otherwise.
-  // The Merkle root of the block index - the list of {`indep_hash`; `weave_size`; `tx_root`} triplets
-  string hash_list_merkle = 18;
-  // The proof of access; Used after v2.4 only; set as defaults otherwise
-  optional string poa_option = 19;
-  optional string poa_tx_path = 20;
-  optional string poa_data_path = 21;
-  optional string poa_chunk = 22;
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  uint64 height = 10 [(schema.field) = { primary_key: true }];
+  bytes indep_hash = 11;
+  bytes hash = 12;
+  bytes previous_block = 13;
+  uint32 ver = 14;
+  bytes nonce = 15;
+  uint64 block_timestamp = 16;
+  uint64 last_retarget = 17;
+  string diff = 18 [(schema.field) = { convertTo: { uint256 {} } }];
+  string cumulative_diff = 19 [(schema.field) = { convertTo: { uint256 {} } }];
+  bytes tx_root = 20;
+  bytes wallet_list = 21;
+  bytes reward_addr = 22;
+  string reward_pool = 23 [(schema.field) = { convertTo: { uint256 {} } }];
+  string weave_size = 24 [(schema.field) = { convertTo: { uint256 {} } }];
+  string block_size = 25 [(schema.field) = { convertTo: { uint256 {} } }];
+  bytes hash_list_merkle = 26;
+  optional string poa_option = 27;
+  optional bytes poa_tx_path = 28;
+  optional bytes poa_data_path = 29;
+  optional bytes poa_chunk = 30;
+  uint32 num_transactions = 31;
+  uint32 num_tags = 32;
 }
 
 message Transaction {
-   // clock
-  string block_time = 1; // TIMESTAMP
-  uint64 block_height = 2;
-  string block_date = 3;
-  string block_indep_hash = 4; // indep_hash
+  option (schema.table) = { name: "transactions" };
 
-  // 1 or 2 for v1 or v2 transactions. More allowable in the future
-  uint32 format = 5;
-  // The transaction identifier.
-  string id = 6;
-  // index in the block transactions list
-  uint32 index = 7;
-  // Either the identifier of the previous transaction from the same
-  // wallet or the identifier of one of the last ?MAX_TX_ANCHOR_DEPTH blocks.
-  string last_tx = 8;   
-  // The public key the transaction is signed with.
-  string owner = 9;   
-  // The address of the recipient; if any. The SHA2-256 hash of the public key.
-  string target = 10;    
-  // The amount of Winstons to send to the recipient; if any.
-  bytes quantity = 11;   
-  // The data to upload; if any. For v2 transactions; the field is optional
-  // - a fee is charged based on the `data_size` field;
-  //   data may be uploaded any time later in chunks.
-  bytes data = 12;       	 
-  // Size in bytes of the transaction data.
-  bytes data_size = 13;
-  // The Merkle root of the Merkle tree of data chunks.
-  string data_root = 14;
-  // The signature.
-  string signature = 15;
-  // The fee in Winstons.
-  bytes reward = 16;
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  bytes id = 10 [(schema.field) = { primary_key: true }];
+  uint32 index = 11;
+  uint32 format = 12;
+  bytes last_tx = 13;
+  bytes owner = 14;
+  bytes target = 15;
+  string quantity = 16 [(schema.field) = { convertTo: { uint256 {} } }];
+  bytes data = 17;
+  string data_size = 18 [(schema.field) = { convertTo: { uint256 {} } }];
+  bytes data_root = 19;
+  bytes signature = 20;
+  string reward = 21 [(schema.field) = { convertTo: { uint256 {} } }];
+  uint32 num_tags = 22;
 }
 
-// Should just be a repeated field in Transaction message when supported by substreams-sink-files
 message TransactionTag {
-   // clock
-  string block_time = 1; // TIMESTAMP
-  uint64 block_height = 2;
-  string block_date = 3;
-  string block_indep_hash = 4; // indep_hash
+  option (schema.table) = { name: "transaction_tags" };
 
-  // The transaction identifier.
-  string tx_id = 5;
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
 
-  // tag index in the transaction tags list 	 
-  string index = 6;
-  // tag name
-  string name = 7;
-  // tag value
-  string value = 8;
+  bytes tx_id = 10;
+  uint32 tx_index = 11;
+  uint32 index = 12;
+  string name = 13;  // UTF-8 (lossy) rendering of name_bytes
+  string value = 14; // UTF-8 (lossy) rendering of value_bytes
+  bytes name_bytes = 15;
+  bytes value_bytes = 16;
 }
 
+message BlockTag {
+  option (schema.table) = { name: "block_tags" };
+
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  uint32 index = 10;
+  string name = 11;
+  string value = 12;
+  bytes name_bytes = 13;
+  bytes value_bytes = 14;
+}

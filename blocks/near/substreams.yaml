@@ -1,8 +1,11 @@
 specVersion: v0.1.0
 package:
   name: raw_blocks_near
-  version: v1.0.0
+  version: v2.0.0
   url: https://github.com/pinax-network/substreams-raw-blocks
+  description: |
+    Raw NEAR block data (blocks, chunks, transactions, receipts, actions, state changes) shaped for
+    `substreams sink postgres`. Table layout follows pinax-network/firehose-parquet.
 
 binaries:
   default:
@@ -12,12 +15,13 @@ binaries:
 protobuf:
   files:
     - near.proto
-    - parquet/options.proto
   importPaths:
     - ../../proto
 
   excludePaths:
     - sf/substreams
+    - sf/firehose
+    - sf/near # provided by the substreams-near crate
     - google
 
 modules:
@@ -27,4 +31,10 @@ modules:
       - source: sf.substreams.v1.Clock
       - source: sf.near.type.v1.Block
     output:
-      type: proto:pinax.near.v1.Events
+      type: proto:pinax.near.v2.Events
+
+sink:
+  module: map_events
+  type: sf.substreams.sink.sql.v1.Service
+  config:
+    engine: postgres

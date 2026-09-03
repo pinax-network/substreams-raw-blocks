@@ -1,12 +1,15 @@
 specVersion: v0.1.0
 package:
   name: raw_blocks_solana
-  version: v1.0.1
+  version: v2.0.0
   image: logo.png
   url: https://github.com/pinax-network/substreams-raw-blocks
+  description: |
+    Raw Solana block data (blocks, transactions, messages, instructions, rewards, token balances...)
+    shaped for `substreams sink postgres`. Table layout follows pinax-network/firehose-parquet.
 
 imports:
-  common: https://github.com/streamingfast/substreams-foundational-modules/releases/download/solana-common-v0.3.0/solana-common-v0.3.0.spkg
+  common: https://github.com/streamingfast/substreams-foundational-modules/releases/download/solana-common-v0.4.0/solana-common-v0.4.0.spkg
 
 binaries:
   default:
@@ -20,6 +23,8 @@ protobuf:
     - ../../proto
   excludePaths:
     - sf/substreams
+    - sf/firehose
+    - sf/solana # provided by the substreams-solana crate
     - google
 
 modules:
@@ -29,11 +34,17 @@ modules:
       - source: sf.substreams.v1.Clock
       - map: common:blocks_without_votes
     output:
-      type: proto:pinax.solana.v1.Events
+      type: proto:pinax.solana.v2.Events
   - name: map_events_with_votes
     kind: map
     inputs:
       - source: sf.substreams.v1.Clock
       - source: sf.solana.type.v1.Block
     output:
-      type: proto:pinax.solana.v1.Events
+      type: proto:pinax.solana.v2.Events
+
+sink:
+  module: map_events
+  type: sf.substreams.sink.sql.v1.Service
+  config:
+    engine: postgres

@@ -9,8 +9,9 @@ crate-type = ["cdylib"]
 [dependencies]
 common = { path = "../../common" }
 substreams-cosmos = { workspace = true }
-substreams = { workspace = true }
-sha2 = "0.10.8"
+# substreams-cosmos still requires substreams ^0.6 (see workspace Cargo.toml)
+substreams = "0.6"
+sha2 = "0.11"
 serde_json = { workspace = true }
 prost = { workspace = true }
 prost-types = { workspace = true }

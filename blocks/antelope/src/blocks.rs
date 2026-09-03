@@ -1,48 +1,49 @@
-use crate::{pb::pinax::antelope::v1::Block as EventsBlock, size::compute_block_size};
-use common::structs::BlockTimestamp;
-use substreams::Hex;
-use substreams_antelope::Block;
+use common::structs::BlockIdentity;
+use substreams_antelope::pb::Block;
 
-// https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L21
-pub fn collect_block(block: &Block, timestamp: &BlockTimestamp) -> EventsBlock {
-    let header = block.header.as_ref().expect("missing block header");
-    let blockroot_merkle = block.blockroot_merkle.clone().unwrap_or_default();
-    let blockroot_merkle_active_nodes = blockroot_merkle.active_nodes.iter().map(|row| Hex::encode(row)).collect::<Vec<String>>();
-    let confirm_count = block.confirm_count.iter().map(|count| count.clone()).collect::<Vec<u32>>();
-    let size = compute_block_size(block);
+use crate::pb::pinax::antelope::v2::Block as BlockRow;
 
-    EventsBlock {
-        // clock
-        time: timestamp.time.to_string(),
-        number: timestamp.number,
-        date: timestamp.date.clone(),
-        hash: timestamp.hash.clone(),
+// https://github.com/pinax-network/firehose-antelope/blob/develop/proto/sf/antelope/type/v1/type.proto
+pub fn collect_block(block: &Block, id: &BlockIdentity) -> BlockRow {
+    let header = block.header.clone().unwrap_or_default();
+    let merkle = block.blockroot_merkle.clone().unwrap_or_default();
+    let num_transactions = block.transaction_traces().count() as u32;
+    let num_actions = if block.filtering_applied {
+        block.filtered_executed_total_action_count
+    } else {
+        block.unfiltered_executed_total_action_count
+    };
 
-        // block
-        parent_hash: header.previous.clone(),
+    BlockRow {
+        block_num: id.block_num,
+        block_id: id.block_id.clone(),
+        parent_num: id.parent_num,
+        parent_id: id.parent_id.clone(),
+        timestamp: Some(id.timestamp.clone()),
+        date: id.date.clone(),
+
+        number: block.number,
+        hash: block.id.clone(),
         producer: header.producer.clone(),
         confirmed: header.confirmed,
         schedule_version: header.schedule_version,
+
+        parent_hash: header.previous.clone(),
         version: block.version,
         producer_signature: block.producer_signature.clone(),
+        transaction_mroot: header.transaction_mroot.clone(),
+        action_mroot: header.action_mroot.clone(),
+        action_mroot_savanna: block.action_mroot_savanna.clone(),
+        blockroot_merkle_active_nodes: merkle.active_nodes.clone(),
+        blockroot_merkle_node_count: merkle.node_count,
+        block_signing_key: block.block_signing_key.clone(),
+        confirm_count: block.confirm_count.clone(),
         dpos_proposed_irreversible_blocknum: block.dpos_proposed_irreversible_blocknum,
         dpos_irreversible_blocknum: block.dpos_irreversible_blocknum,
-
-        // roots
-        transaction_mroot: Hex::encode(&header.transaction_mroot.to_vec()),
-        action_mroot: Hex::encode(&header.action_mroot.to_vec()),
-        blockroot_merkle_active_nodes,
-        blockroot_merkle_node_count: blockroot_merkle.node_count,
-        action_mroot_savanna: Hex::encode(block.action_mroot_savanna.clone()),
-        block_signing_key: block.block_signing_key.clone(),
-        confirm_count,
-
-        // counters
-        size: size.size,
-        total_transactions: size.total_transactions,
-        successful_transactions: size.successful_transactions,
-        failed_transactions: size.failed_transactions,
-        total_actions: size.total_actions,
-        total_db_ops: size.total_db_ops,
+        finality_lib: block.finality_lib,
+        validated: block.validated,
+        num_transactions,
+        num_actions,
+        filtering_applied: block.filtering_applied,
     }
 }

@@ -1,172 +1,350 @@
 syntax = "proto3";
 
-package pinax.beacon.v1;
+package pinax.beacon.v2;
 
 import "google/protobuf/timestamp.proto";
+import "sf/substreams/sink/sql/schema/v1/schema.proto";
 
+// Raw Ethereum Beacon chain block data, one table per repeated field, consumed
+// directly by `substreams sink postgres` (Relational Mappings Mode). Table and
+// column naming follows pinax-network/firehose-parquet (blocks/src/beacon/schema.rs);
+// fields beyond that schema are appended after tag 30, and the tables after
+// `blob_sidecars` are additions (withdrawals, BLS changes, execution transactions,
+// Electra execution requests). All specs (Phase0 .. Fusaka) are handled.
+//
+// Canonical identity: block_num = slot, block_id = root, parent_num = parent_slot,
+// parent_id = parent_root.
 message Events {
   repeated Block blocks = 1;
-  repeated Blob blobs = 2;
+  repeated Attestation attestations = 2;
   repeated Deposit deposits = 3;
-  repeated Withdrawal withdrawals = 4;
-  repeated Attestation attestations = 5;
-  repeated AttesterSlashing attester_slashings = 6;
-  repeated BlsToExecutionChange bls_to_execution_changes = 7;
-  repeated ProposerSlashing proposer_slashings = 8;
-  repeated VoluntaryExit voluntary_exits = 9;
+  repeated ProposerSlashing proposer_slashings = 4;
+  repeated AttesterSlashing attester_slashings = 5;
+  repeated VoluntaryExit voluntary_exits = 6;
+  repeated ExecutionPayload execution_payload = 7;
+  repeated BlobSidecar blob_sidecars = 8;
+
+  repeated Withdrawal withdrawals = 20;
+  repeated BlsToExecutionChange bls_to_execution_changes = 21;
+  repeated ExecutionTransaction execution_transactions = 22;
+  repeated DepositRequest deposit_requests = 23;
+  repeated WithdrawalRequest withdrawal_requests = 24;
+  repeated ConsolidationRequest consolidation_requests = 25;
 }
 
 message Block {
-  // clock
-  string time = 1; // TIMESTAMP
-  uint64 number = 2;
-  string date = 3;
-  string hash = 4;
+  option (schema.table) = { name: "blocks" };
 
-  // block
-  uint32 version = 5;
-  string spec = 6;
-  uint64 slot = 7;
-  uint64 parent_slot = 8;
-  string root = 9;
-  string parent_root = 10;
-  string state_root = 11;
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  uint64 slot = 10 [(schema.field) = { primary_key: true }];
+  uint64 parent_slot = 11;
   uint64 proposer_index = 12;
-  string body_root = 13;
-  string signature = 14;
-}
+  bytes root = 13;
+  bytes parent_root = 14;
+  bytes state_root = 15;
+  bytes body_root = 16;
+  bytes signature = 17;
+  string spec = 18;
 
-message Blob {
-  // clock
-  string block_time = 1; // TIMESTAMP
-  uint64 block_number = 2;
-  string block_date = 3;
-  string block_hash = 4;
-
-  // blob
-  uint64 index = 5;
-  string blob = 6;
-  string kzg_commitment = 7;
-  string kzg_proof = 8;
-  repeated string kzg_commitment_inclusion_proof = 9;
-}
-
-message Deposit {
-  // clock
-  string block_time = 1; // TIMESTAMP
-  uint64 block_number = 2;
-  string block_date = 3;
-  string block_hash = 4;
-
-  // deposit
-  uint64 index = 5;
-  repeated string proof = 6;
-  string pubkey = 7;
-  string withdrawal_credentials = 8;
-  string signature = 9;
-  uint64 gwei = 10;
-}
-
-message Withdrawal {
-  // clock
-  string block_time = 1; // TIMESTAMP
-  uint64 block_number = 2;
-  string block_date = 3;
-  string block_hash = 4;
-
-  // withdrawal
-  uint64 withdrawal_index = 5;
-  uint64 validator_index = 6;
-  string address = 7;
-  uint64 gwei = 8;
+  uint32 version = 30;
+  bytes randao_reveal = 31;
+  bytes graffiti = 32;
+  bytes eth1_deposit_root = 33;
+  uint64 eth1_deposit_count = 34;
+  bytes eth1_block_hash = 35;
+  optional bytes sync_committee_bits = 36;
+  optional bytes sync_committee_signature = 37;
+  repeated bytes blob_kzg_commitments = 38;
+  uint32 num_attestations = 39;
+  uint32 num_deposits = 40;
+  uint32 num_voluntary_exits = 41;
+  uint32 num_withdrawals = 42;
+  uint32 num_blobs = 43;
+  uint32 num_execution_transactions = 44;
 }
 
 message Attestation {
-  // clock
-  string block_time = 1; // TIMESTAMP
-  uint64 block_number = 2;
-  string block_date = 3;
-  string block_hash = 4;
+  option (schema.table) = { name: "attestations" };
 
-  // attestation
-  uint64 index = 5;
-  string aggregation_bits = 6;
-  uint64 slot = 7;
-  uint64 committee_index = 8;
-  string beacon_block_root = 9;
-  uint64 source_epoch = 10;
-  string source_root = 11;
-  uint64 target_epoch = 12;
-  string target_root = 13;
-  string signature = 14;
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  uint64 block_slot = 10;
+  uint32 attestation_index = 11;
+  uint64 slot = 12;
+  uint64 committee_index = 13;
+  bytes aggregation_bits = 14;
+  bytes beacon_block_root = 15;
+  uint64 source_epoch = 16;
+  bytes source_root = 17;
+  uint64 target_epoch = 18;
+  bytes target_root = 19;
+  bytes signature = 20;
+
+  optional bytes committee_bits = 30; // Electra+
 }
 
-message AttesterSlashing {
-  // clock
-  string block_time = 1; // TIMESTAMP
-  uint64 block_number = 2;
-  string block_date = 3;
-  string block_hash = 4;
+message Deposit {
+  option (schema.table) = { name: "deposits" };
 
-  // attester slashing
-  uint64 index = 5;
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
 
-  // attestation
-  repeated uint64 attesting_indices = 6;
-  uint64 slot = 7;
-  uint64 committee_index = 8;
-  string beacon_block_root = 9;
-  uint64 source_epoch = 10;
-  string source_root = 11;
-  uint64 target_epoch = 12;
-  string target_root = 13;
-  string signature = 14;
-}
+  uint64 block_slot = 10;
+  uint32 deposit_index = 11;
+  bytes pubkey = 12;
+  bytes withdrawal_credentials = 13;
+  uint64 amount = 14;
+  bytes signature = 15;
 
-message BlsToExecutionChange {
-  // clock
-  string block_time = 1; // TIMESTAMP
-  uint64 block_number = 2;
-  string block_date = 3;
-  string block_hash = 4;
-
-  // bls to execution change
-  uint64 index = 5;
-  uint64 validator_index = 6;
-  string from_bls_pubkey = 7;
-  string to_execution_address = 8;
-  string signature = 9;
+  repeated bytes proof = 30;
 }
 
 message ProposerSlashing {
-  // clock
-  string block_time = 1; // TIMESTAMP
-  uint64 block_number = 2;
-  string block_date = 3;
-  string block_hash = 4;
+  option (schema.table) = { name: "proposer_slashings" };
 
-  // proposer slashing
-  uint64 index = 5;
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
 
-  // signed header
-  uint64 slot = 6;
-  uint64 proposer_index = 7;
-  string parent_root = 8;
-  string state_root = 9;
-  string body_root = 10;
-  string signature = 11;
+  uint64 block_slot = 10;
+  uint32 slashing_index = 11;
+  uint64 header_1_slot = 12;
+  uint64 header_1_proposer_index = 13;
+  bytes header_1_parent_root = 14;
+  bytes header_1_state_root = 15;
+  bytes header_1_body_root = 16;
+  uint64 header_2_slot = 17;
+  uint64 header_2_proposer_index = 18;
+  bytes header_2_parent_root = 19;
+  bytes header_2_state_root = 20;
+  bytes header_2_body_root = 21;
+
+  bytes header_1_signature = 30;
+  bytes header_2_signature = 31;
+}
+
+message AttesterSlashing {
+  option (schema.table) = { name: "attester_slashings" };
+
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  uint64 block_slot = 10;
+  uint32 slashing_index = 11;
+  uint64 attestation_1_slot = 12;
+  uint64 attestation_1_committee_index = 13;
+  bytes attestation_1_beacon_block_root = 14;
+  uint64 attestation_1_source_epoch = 15;
+  bytes attestation_1_source_root = 16;
+  uint64 attestation_1_target_epoch = 17;
+  bytes attestation_1_target_root = 18;
+  uint64 attestation_2_slot = 19;
+  uint64 attestation_2_committee_index = 20;
+  bytes attestation_2_beacon_block_root = 21;
+  uint64 attestation_2_source_epoch = 22;
+  bytes attestation_2_source_root = 23;
+  uint64 attestation_2_target_epoch = 24;
+  bytes attestation_2_target_root = 25;
+
+  repeated uint64 attestation_1_attesting_indices = 30;
+  bytes attestation_1_signature = 31;
+  repeated uint64 attestation_2_attesting_indices = 32;
+  bytes attestation_2_signature = 33;
 }
 
 message VoluntaryExit {
-  // clock
-  string block_time = 1; // TIMESTAMP
-  uint64 block_number = 2;
-  string block_date = 3;
-  string block_hash = 4;
+  option (schema.table) = { name: "voluntary_exits" };
 
-  // voluntary exit
-  uint64 index = 5;
-  uint64 epoch = 6;
-  uint64 validator_index = 7;
-  string signature = 8;
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  uint64 block_slot = 10;
+  uint32 exit_index = 11;
+  uint64 epoch = 12;
+  uint64 validator_index = 13;
+  bytes signature = 14;
+}
+
+message ExecutionPayload {
+  option (schema.table) = { name: "execution_payload" };
+
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  uint64 block_slot = 10 [(schema.field) = { primary_key: true }];
+  bytes parent_hash = 11;
+  bytes fee_recipient = 12;
+  bytes state_root = 13;
+  bytes receipts_root = 14;
+  bytes prev_randao = 15;
+  uint64 block_number = 16;
+  uint64 gas_limit = 17;
+  uint64 gas_used = 18;
+  optional int64 payload_timestamp = 19;
+  bytes block_hash = 20;
+  bytes base_fee_per_gas = 21;
+  optional uint64 blob_gas_used = 22;
+  optional uint64 excess_blob_gas = 23;
+
+  bytes logs_bloom = 30;
+  bytes extra_data = 31;
+  string base_fee_per_gas_value = 32 [(schema.field) = { convertTo: { uint256 {} } }];
+  uint32 num_transactions = 33;
+  uint32 num_withdrawals = 34;
+}
+
+message BlobSidecar {
+  option (schema.table) = { name: "blob_sidecars" };
+
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  uint64 block_slot = 10;
+  uint64 blob_index = 11;
+  bytes blob = 12;
+  bytes kzg_commitment = 13;
+  bytes kzg_proof = 14;
+
+  repeated bytes kzg_commitment_inclusion_proof = 30;
+}
+
+message Withdrawal {
+  option (schema.table) = { name: "withdrawals" };
+
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  uint64 block_slot = 10;
+  uint32 index = 11;
+  uint64 withdrawal_index = 12 [(schema.field) = { primary_key: true }];
+  uint64 validator_index = 13;
+  bytes address = 14;
+  uint64 gwei = 15;
+}
+
+message BlsToExecutionChange {
+  option (schema.table) = { name: "bls_to_execution_changes" };
+
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  uint64 block_slot = 10;
+  uint32 index = 11;
+  uint64 validator_index = 12;
+  bytes from_bls_pubkey = 13;
+  bytes to_execution_address = 14;
+  bytes signature = 15;
+}
+
+// Raw execution-layer transactions carried by the execution payload.
+message ExecutionTransaction {
+  option (schema.table) = { name: "execution_transactions" };
+
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  uint64 block_slot = 10;
+  uint64 block_number = 11;
+  uint32 index = 12;
+  bytes transaction = 13;
+}
+
+// Electra execution requests (EIP-6110 / EIP-7002 / EIP-7251)
+message DepositRequest {
+  option (schema.table) = { name: "deposit_requests" };
+
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  uint64 block_slot = 10;
+  uint32 request_index = 11;
+  bytes pubkey = 12;
+  bytes withdrawal_credentials = 13;
+  uint64 amount = 14;
+  bytes signature = 15;
+  uint64 index = 16;
+}
+
+message WithdrawalRequest {
+  option (schema.table) = { name: "withdrawal_requests" };
+
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  uint64 block_slot = 10;
+  uint32 request_index = 11;
+  bytes source_address = 12;
+  bytes validator_pubkey = 13;
+  uint64 amount = 14;
+}
+
+message ConsolidationRequest {
+  option (schema.table) = { name: "consolidation_requests" };
+
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  uint64 block_slot = 10;
+  uint32 request_index = 11;
+  bytes source_address = 12;
+  bytes source_pubkey = 13;
+  bytes target_pubkey = 14;
 }

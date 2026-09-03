@@ -1,9 +1,20 @@
 syntax = "proto3";
 
-package pinax.antelope.v1;
+package pinax.antelope.v2;
 
 import "google/protobuf/timestamp.proto";
+import "sf/substreams/sink/sql/schema/v1/schema.proto";
 
+// Raw Antelope (EOS, WAX, Telos, Ultra...) block data, one table per repeated field,
+// consumed directly by `substreams sink postgres` (Relational Mappings Mode).
+// Table and column naming follows pinax-network/firehose-parquet
+// (blocks/src/antelope/schema.rs); fields the chain offers beyond that schema are
+// appended after tag 30 in each message. See proto/evm.proto for the conventions.
+//
+// Antelope identifiers (block ids, transaction ids, digests) are hex strings in
+// Firehose and stay `string` here (as in firehose-parquet); the canonical
+// `block_id`/`parent_id` are the same ids decoded to `bytes` for cross-chain
+// consistency. Binary payloads (raw action data, table row data) are `bytes`.
 message Events {
   repeated Block blocks = 1;
   repeated Transaction transactions = 2;
@@ -13,246 +24,283 @@ message Events {
   repeated PermOp perm_ops = 6;
   repeated TableOp table_ops = 7;
   repeated RamOp ram_ops = 8;
+  repeated RamCorrectionOp ram_correction_ops = 9;
+  repeated DtrxOp dtrx_ops = 10;
 }
 
 message Block {
-  // clock
-  string time = 1; // TIMESTAMP
-  uint64 number = 2;
-  string date = 3;
-  string hash = 4;
+  option (schema.table) = { name: "blocks" };
 
-  // block
-  string parent_hash = 5;
-  string producer = 6;
-  uint32 confirmed = 7;
-  uint32 schedule_version = 8;
-  uint32 version = 9;
-  string producer_signature = 10;
-  uint32 dpos_proposed_irreversible_blocknum = 11;
-  uint32 dpos_irreversible_blocknum = 12;
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
 
-  // roots
-  string transaction_mroot = 13;
-  string action_mroot = 14;
-  repeated string blockroot_merkle_active_nodes = 15;
-  uint32 blockroot_merkle_node_count = 16;
-  string action_mroot_savanna = 17;
-  string block_signing_key = 18;
-  repeated uint32 confirm_count = 19;
+  uint32 number = 10 [(schema.field) = { primary_key: true }];
+  string hash = 11;
+  string producer = 12;
+  uint32 confirmed = 13;
+  uint32 schedule_version = 14;
 
-  // counters
-  uint64 size = 20;
-  uint64 total_transactions = 21;
-  uint64 successful_transactions = 22;
-  uint64 failed_transactions = 23;
-  uint64 total_actions = 24;
-  uint64 total_db_ops = 25;
+  string parent_hash = 30;
+  uint32 version = 31;
+  string producer_signature = 32;
+  bytes transaction_mroot = 33;
+  bytes action_mroot = 34;
+  bytes action_mroot_savanna = 35;
+  repeated bytes blockroot_merkle_active_nodes = 36;
+  uint32 blockroot_merkle_node_count = 37;
+  string block_signing_key = 38;
+  repeated uint32 confirm_count = 39;
+  uint32 dpos_proposed_irreversible_blocknum = 40;
+  uint32 dpos_irreversible_blocknum = 41;
+  uint32 finality_lib = 42;
+  bool validated = 43;
+  uint32 num_transactions = 44;
+  uint32 num_actions = 45;
+  bool filtering_applied = 46;
 }
 
 message Transaction {
-  // block
-  string block_time = 1; // TIMESTAMP
-  uint64 block_number = 2;
-  string block_hash = 3;
-  string block_date = 4;
+  option (schema.table) = { name: "transactions" };
 
-  // transaction
-  string hash = 5;
-  uint64 index = 6;
-  int64 elapsed = 7;
-  uint64 net_usage = 8;
-  bool scheduled = 9;
-  uint32 cpu_usage_micro_seconds = 10;
-  uint32 net_usage_words = 11;
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  string tx_hash = 10 [(schema.field) = { primary_key: true }];
+  uint64 index = 11;
   string status = 12;
-  int32 status_code = 13;
-  bool success = 14;
-  string transaction_mroot = 15;
+  uint32 cpu_usage_us = 13;
+  uint64 net_usage = 14;
+  int64 elapsed = 15;
 
-  // creation flat node
-  repeated int32 creator_action_indexes = 16;
-  repeated uint32 execution_action_indexes = 17;
+  bool scheduled = 30;
+  uint32 net_usage_words = 31;
+  string producer_block_id = 32;
+  uint64 error_code = 33;
+  optional string exception = 34; // JSON
+  repeated int32 creator_action_indexes = 35;
+  repeated uint32 execution_action_indexes = 36;
+  repeated string signatures = 37;
+  optional uint32 compression = 38;
+  uint32 num_actions = 39;
+  uint32 num_db_ops = 40;
 }
 
 message Action {
-  // block
-  string block_time = 1; // TIMESTAMP
-  uint64 block_number = 2;
-  string block_hash = 3;
-  string block_date = 4;
+  option (schema.table) = { name: "actions" };
 
-  // transaction
-  string tx_hash = 5;
-  bool tx_success = 6;
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
 
-  // receipt
-  uint64 abi_sequence = 7;
-  uint64 code_sequence = 8;
-  string digest = 9;
-  uint64 global_sequence = 10;
-  string receipt_receiver = 11;
-  uint64 recv_sequence = 12;
-  repeated uint64 auth_sequence = 13;
-  repeated string auth_sequence_account_name = 14;
+  string tx_hash = 10;
+  uint32 action_ordinal = 11;
+  uint32 creator_action_ordinal = 12;
+  uint32 closest_unnotified_ancestor_action_ordinal = 13;
+  uint32 execution_index = 14;
+  string receiver = 15;
+  string account = 16;
+  string name = 17;
+  optional string authorization = 18; // "actor@permission,actor@permission"
+  optional string json_data = 19;
+  optional bytes raw_data = 20;
+  bool context_free = 21;
+  int64 elapsed = 22;
+  optional string console = 23;
+  string transaction_id = 24;
+  uint64 trace_block_num = 25;
+  string producer_block_id = 26;
+  google.protobuf.Timestamp block_time = 27;
+  optional bytes raw_return_value = 28;
+  optional string json_return_value = 29;
+  optional string exception = 30; // JSON
+  uint64 error_code = 31;
+  string receipt_receiver = 32;
+  string receipt_digest = 33;
+  uint64 receipt_global_sequence = 34;
+  optional string receipt_auth_sequence = 35; // JSON [{account_name, sequence}]
+  uint64 receipt_recv_sequence = 36;
+  uint64 receipt_code_sequence = 37;
+  uint64 receipt_abi_sequence = 38;
 
-  // action
-  string account = 20;
-  string name = 21;
-  string json_data = 22;
-  string raw_data = 23;
-  uint32 index = 24;
-  uint32 action_ordinal = 25;
-  string receiver = 26;
-  bool context_free = 27;
-  int64 elapsed = 28;
-  string console = 29;
-  string raw_return_value = 30;
-  string json_return_value = 31;
-  uint32 creator_action_ordinal = 32;
-  uint32 closest_unnotified_ancestor_action_ordinal = 33;
-  string action_mroot = 34;
-
-  // ram deltas
-  repeated string account_ram_deltas_account = 35;
-  repeated int64 account_ram_deltas = 36;
+  uint64 tx_index = 50;
+  string tx_status = 51;
+  optional string account_ram_deltas = 52; // JSON [{account, delta}]
+  bool filtering_matched = 53;
 }
 
 message DbOp {
-  // block
-  string block_time = 1; // TIMESTAMP
-  uint64 block_number = 2;
-  string block_hash = 3;
-  string block_date = 4;
+  option (schema.table) = { name: "db_ops" };
 
-  // transaction
-  string tx_hash = 5;
-  bool tx_success = 6;
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
 
-  // action
-  uint32 action_index = 7;
-
-  // database operations
-  uint32 index = 8;
-  string operation = 9;
-  int32 operation_code = 10;
-  string code = 11;
-  string scope = 12;
-  string table_name = 13;
-  string primary_key = 14;
-  string old_payer = 15;
-  string new_payer = 16;
-  string old_data = 17;
-  string new_data = 18;
-  string old_data_json = 19;
-  string new_data_json = 20;
-}
-
-message FeatureOp {
-  // block
-  string block_time = 1; // TIMESTAMP
-  uint64 block_number = 2;
-  string block_hash = 3;
-  string block_date = 4;
-
-  // transaction
-  string tx_hash = 5;
-  bool tx_success = 6;
-
-  // action
-  uint32 action_index = 7;
-
-  // feature operations
-  string feature_digest = 8;
-  string kind = 9;
-  string description_digest = 10;
-  string protocol_feature_type = 11;
-}
-
-message PermOp {
-  // block
-  string block_time = 1; // TIMESTAMP
-  uint64 block_number = 2;
-  string block_hash = 3;
-  string block_date = 4;
-
-  // transaction
-  string tx_hash = 5;
-  bool tx_success = 6;
-
-  // action
-  uint32 action_index = 7;
-
-  // permission operations
-  string operation = 8;
-  int32 operation_code = 9;
-  uint64 id = 10;
-  uint64 parent_id = 11;
-  string owner = 12;
-  string name = 13;
-  uint32 threshold = 14;
-
-  // -- authority --
-  // accounts
-  repeated string accounts = 15;
-  repeated uint32 accounts_weight = 16;
-
-  // keys
-  repeated string keys_public_key = 17;
-  repeated uint32 keys_weight = 18;
-
-  // waits
-  repeated uint32 wait_sec = 19;
-  repeated uint32 wait_weight = 20;
-}
-
-message TableOp {
-  // block
-  string block_time = 1; // TIMESTAMP
-  uint64 block_number = 2;
-  string block_hash = 3;
-  string block_date = 4;
-
-  // transaction
-  string tx_hash = 5;
-  bool tx_success = 6;
-
-  // action
-  uint32 action_index = 7;
-
-  // table operations
-  uint32 index = 8;
-  string operation = 9;
-  int32 operation_code = 10;
-  string payer = 11;
+  string operation = 10;
+  uint32 action_index = 11;
   string code = 12;
   string scope = 13;
   string table_name = 14;
+  string primary_key = 15;
+  string old_payer = 16;
+  string new_payer = 17;
+  optional bytes old_data = 18;
+  optional bytes new_data = 19;
+  optional string old_data_json = 20;
+  optional string new_data_json = 21;
+
+  string tx_hash = 30;
+  uint64 tx_index = 31;
+  uint32 index = 32;
+}
+
+message FeatureOp {
+  option (schema.table) = { name: "feature_ops" };
+
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  string tx_hash = 10;
+  uint64 tx_index = 11;
+  uint32 action_index = 12;
+  string kind = 13;
+  string feature_digest = 14;
+  string description_digest = 15;
+  string protocol_feature_type = 16;
+  repeated string dependencies = 17;
+}
+
+message PermOp {
+  option (schema.table) = { name: "perm_ops" };
+
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  string tx_hash = 10;
+  uint64 tx_index = 11;
+  uint32 action_index = 12;
+  string operation = 13;
+  // New permission object (for REMOVE the removed one, from old_perm)
+  uint64 id = 14;
+  uint64 parent_id_perm = 15;
+  string owner = 16;
+  string name = 17;
+  google.protobuf.Timestamp last_updated = 18;
+  uint32 threshold = 19;
+  repeated string keys_public_key = 20;
+  repeated uint32 keys_weight = 21;
+  repeated string accounts = 22; // "actor@permission"
+  repeated uint32 accounts_weight = 23;
+  repeated uint32 wait_sec = 24;
+  repeated uint32 wait_weight = 25;
+  optional string old_perm = 26; // JSON of the previous permission object, when any
+}
+
+message TableOp {
+  option (schema.table) = { name: "table_ops" };
+
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  string tx_hash = 10;
+  uint64 tx_index = 11;
+  uint32 index = 12;
+  uint32 action_index = 13;
+  string operation = 14;
+  string payer = 15;
+  string code = 16;
+  string scope = 17;
+  string table_name = 18;
 }
 
 message RamOp {
-  // block
-  string block_time = 1; // TIMESTAMP
-  uint64 block_number = 2;
-  string block_hash = 3;
-  string block_date = 4;
+  option (schema.table) = { name: "ram_ops" };
 
-  // transaction
-  string tx_hash = 5;
-  bool tx_success = 6;
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
 
-  // action
-  uint32 action_index = 7;
+  string tx_hash = 10;
+  uint64 tx_index = 11;
+  uint32 index = 12;
+  uint32 action_index = 13;
+  string operation = 14;
+  string payer = 15;
+  int64 delta = 16;
+  uint64 usage = 17;
+  string namespace = 18;
+  string action = 19;
+  string unique_key = 20;
+}
 
-  // ram operations
-  string operation = 8;
-  int32 operation_code = 9;
-  string payer = 10;
-  int64 delta = 11;
-  uint64 usage = 12;
-  string namespace = 13;
-  int32 namespace_code = 14;
-  string action = 15;
-  int32 action_code = 16;
-  string unique_key = 17;
+message RamCorrectionOp {
+  option (schema.table) = { name: "ram_correction_ops" };
+
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  string tx_hash = 10;
+  uint64 tx_index = 11;
+  uint32 index = 12;
+  string correction_id = 13;
+  string unique_key = 14;
+  string payer = 15;
+  int64 delta = 16;
+}
+
+// Deferred transaction operations
+message DtrxOp {
+  option (schema.table) = { name: "dtrx_ops" };
+
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  string tx_hash = 10;
+  uint64 tx_index = 11;
+  uint32 index = 12;
+  uint32 action_index = 13;
+  string operation = 14;
+  string sender = 15;
+  string sender_id = 16;
+  string payer = 17;
+  string published_at = 18;
+  string delay_until = 19;
+  string expiration_at = 20;
+  string transaction_id = 21;
 }

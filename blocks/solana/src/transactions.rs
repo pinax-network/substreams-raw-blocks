@@ -1,66 +1,82 @@
-use substreams_solana::{base58, pb::sf::solana::r#type::v1::ConfirmedTransaction};
+use common::structs::BlockIdentity;
+use substreams_solana::pb::sf::solana::r#type::v1::ConfirmedTransaction;
 
-use crate::{
-    pb::pinax::solana::v1::Transaction as RawTransaction,
-    structs::{BlockInfo, BlockTimestamp},
-    tx_errors::TransactionErrorDecoder,
-    utils::get_account_keys_extended,
-};
+use crate::pb::pinax::solana::v2::{Transaction, VoteTransaction};
+use crate::tx_errors::TransactionErrorDecoder;
+use crate::utils::non_empty_bytes;
 
-pub fn collect_transaction(transaction: &ConfirmedTransaction, index: usize, block_info: &BlockInfo, timestamp: &BlockTimestamp) -> RawTransaction {
-    let meta = transaction.meta.as_ref().expect("Transaction meta is missing");
-    let trx = transaction.transaction.as_ref().expect("Transaction is missing");
-    let message = trx.message.as_ref().expect("Transaction message is missing");
-    let header = message.header.as_ref().expect("Transaction header is missing");
+// All transactions, including failed ones (`success = false`, `err`/`error` set).
+pub fn collect_transaction(tx: &ConfirmedTransaction, index: u32, id: &BlockIdentity) -> Transaction {
+    let transaction = tx.transaction.clone().unwrap_or_default();
+    let message = transaction.message.clone().unwrap_or_default();
+    let meta = tx.meta.clone().unwrap_or_default();
+    // Some endpoints send `TransactionError { err: [] }` for successful transactions.
+    let err = meta.err.as_ref().and_then(|e| non_empty_bytes(&e.err));
 
-    let account_keys = get_account_keys_extended(transaction);
-    let success = meta.err.is_none();
-    let err = match &meta.err {
-        Some(err) => decode_transaction_error(&err.err),
-        None => String::new(),
-    };
+    Transaction {
+        block_num: id.block_num,
+        block_id: id.block_id.clone(),
+        parent_num: id.parent_num,
+        parent_id: id.parent_id.clone(),
+        timestamp: Some(id.timestamp.clone()),
+        date: id.date.clone(),
 
-    let signers = message.account_keys.iter().take(trx.signatures.len()).map(|key| base58::encode(key)).collect::<Vec<String>>();
-
-    RawTransaction {
-        // block
-        block_time: timestamp.time.to_string(),
-        block_hash: timestamp.hash.clone(),
-        block_date: timestamp.date.clone(),
-        block_slot: block_info.slot,
-        block_height: block_info.height,
-        block_previous_block_hash: block_info.previous_block_hash.clone(),
-        block_parent_slot: block_info.parent_slot,
-
-        // transaction
-        id: transaction.id(),
-        index: index as u32,
-        required_signatures: header.num_required_signatures,
-        required_signed_accounts: header.num_readonly_signed_accounts,
-        required_unsigned_accounts: header.num_readonly_unsigned_accounts,
-        signature: transaction.id(),
-        signatures: trx.signatures.iter().map(|sig| base58::encode(sig)).collect::<Vec<String>>(),
-
-        // message
-        recent_block_hash: base58::encode(&message.recent_blockhash),
-        account_keys: account_keys.iter().map(|key| base58::encode(key)).collect::<Vec<String>>(),
-        signer: message.account_keys.iter().take(trx.signatures.len()).map(|key| base58::encode(key)).next().unwrap(),
-        signers,
-
-        // meta
-        error: err,
-        success,
+        slot: id.block_num,
+        transaction_index: index,
+        signature: transaction.signatures.first().cloned().unwrap_or_default(),
+        num_signatures: transaction.signatures.len() as u32,
         fee: meta.fee,
-        compute_units_consumed: meta.compute_units_consumed(),
+        success: err.is_none(),
+        error: err.as_ref().map(|e| decode_transaction_error(e)),
+        err,
+        compute_units_consumed: meta.compute_units_consumed,
         log_messages: meta.log_messages.clone(),
-        pre_balances: meta.pre_balances.clone().iter().map(|balance| balance.to_string()).collect::<Vec<String>>(),
-        post_balances: meta.post_balances.clone().iter().map(|balance| balance.to_string()).collect::<Vec<String>>(),
+        pre_balances: meta.pre_balances.clone(),
+        post_balances: meta.post_balances.clone(),
+        cost_units: meta.cost_units,
+        return_data_program_id: meta.return_data.as_ref().map(|r| r.program_id.clone()),
+        return_data: meta.return_data.as_ref().map(|r| r.data.clone()),
+
+        signatures: transaction.signatures.clone(),
+        signer: message.account_keys.first().cloned().unwrap_or_default(),
+        num_instructions: message.instructions.len() as u32,
+        num_inner_instructions: meta.inner_instructions.iter().map(|i| i.instructions.len()).sum::<usize>() as u32,
     }
 }
 
-pub fn decode_transaction_error(err: &Vec<u8>) -> String {
+pub fn to_vote_transaction(t: Transaction) -> VoteTransaction {
+    VoteTransaction {
+        block_num: t.block_num,
+        block_id: t.block_id,
+        parent_num: t.parent_num,
+        parent_id: t.parent_id,
+        timestamp: t.timestamp,
+        date: t.date,
+        slot: t.slot,
+        transaction_index: t.transaction_index,
+        signature: t.signature,
+        num_signatures: t.num_signatures,
+        fee: t.fee,
+        err: t.err,
+        success: t.success,
+        compute_units_consumed: t.compute_units_consumed,
+        log_messages: t.log_messages,
+        pre_balances: t.pre_balances,
+        post_balances: t.post_balances,
+        cost_units: t.cost_units,
+        return_data_program_id: t.return_data_program_id,
+        return_data: t.return_data,
+        signatures: t.signatures,
+        error: t.error,
+        signer: t.signer,
+        num_instructions: t.num_instructions,
+        num_inner_instructions: t.num_inner_instructions,
+    }
+}
+
+pub fn decode_transaction_error(err: &[u8]) -> String {
     match TransactionErrorDecoder::decode_error(err) {
-        Ok(decoded_error) => TransactionErrorDecoder::format_error(&decoded_error),
-        Err(decode_error) => format!("Error decoding transaction error: {:?}", decode_error),
+        Ok(decoded) => TransactionErrorDecoder::format_error(&decoded),
+        Err(e) => format!("Error decoding transaction error: {:?}", e),
     }
 }

@@ -1,8 +1,11 @@
 specVersion: v0.1.0
 package:
   name: raw_blocks_bitcoin
-  version: v1.0.0
+  version: v2.0.0
   url: https://github.com/pinax-network/substreams-raw-blocks
+  description: |
+    Raw Bitcoin block data (blocks, transactions, inputs, outputs) shaped for
+    `substreams sink postgres`. Table layout follows pinax-network/firehose-parquet.
 
 binaries:
   default:
@@ -16,6 +19,8 @@ protobuf:
     - ../../proto
   excludePaths:
     - sf/substreams
+    - sf/firehose
+    - sf/bitcoin # provided by the substreams-bitcoin crate
     - google
 
 modules:
@@ -25,4 +30,10 @@ modules:
       - source: sf.substreams.v1.Clock
       - source: sf.bitcoin.type.v1.Block
     output:
-      type: proto:pinax.bitcoin.v1.Events
+      type: proto:pinax.bitcoin.v2.Events
+
+sink:
+  module: map_events
+  type: sf.substreams.sink.sql.v1.Service
+  config:
+    engine: postgres
