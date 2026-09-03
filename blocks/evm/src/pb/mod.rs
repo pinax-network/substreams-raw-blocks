@@ -1,10 +1,15 @@
 // @generated
 pub mod pinax {
     pub mod evm {
-        // @@protoc_insertion_point(attribute:pinax.evm.v1)
-        pub mod v1 {
-            include!("pinax.evm.v1.rs");
-            // @@protoc_insertion_point(pinax.evm.v1)
+        // @@protoc_insertion_point(attribute:pinax.evm.v2)
+        pub mod v2 {
+            include!("pinax.evm.v2.rs");
+            // @@protoc_insertion_point(pinax.evm.v2)
         }
     }
+}
+// @@protoc_insertion_point(attribute:schema)
+pub mod schema {
+    include!("schema.rs");
+    // @@protoc_insertion_point(schema)
 }

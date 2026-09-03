@@ -1,60 +1,39 @@
-use common::structs::BlockTimestamp;
-use substreams::Hex;
-use substreams_antelope::{pb::TransactionTrace, Block};
+use common::structs::BlockIdentity;
+use substreams_antelope::pb::{TransactionReceipt, TransactionTrace};
 
-use crate::pb::pinax::antelope::v1::Transaction;
+use crate::pb::pinax::antelope::v2::Transaction;
+use crate::utils::{exception_json, transaction_status_text};
 
-pub fn transaction_status_to_string(status: i32) -> String {
-    match status {
-        0 => "None".to_string(),
-        1 => "Executed".to_string(),
-        2 => "Softfail".to_string(),
-        3 => "Hardfail".to_string(),
-        4 => "Delayed".to_string(),
-        5 => "Expired".to_string(),
-        6 => "Unknown".to_string(),
-        7 => "Canceled".to_string(),
-        _ => "Unknown".to_string(),
-    }
-}
-
-pub fn is_transaction_success(status: i32) -> bool {
-    status == 1
-}
-
-// https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L525
-pub fn collect_transaction(block: &Block, transaction: &TransactionTrace, timestamp: &BlockTimestamp, success: bool) -> Transaction {
-    let header = block.header.clone().unwrap_or_default();
-    let receipt = transaction.receipt.clone().unwrap_or_default();
-    let status_code = receipt.status;
-    let status = transaction_status_to_string(status_code);
-
-    // make execution_action_index as vector
-    let creator_action_indexes = transaction.creation_tree.iter().map(|tree| tree.creator_action_index).collect::<Vec<i32>>();
-    let execution_action_indexes = transaction.creation_tree.iter().map(|tree| tree.execution_action_index).collect::<Vec<u32>>();
+// All transaction traces, including failed/expired ones (status != EXECUTED).
+pub fn collect_transaction(tx: &TransactionTrace, receipt: Option<&TransactionReceipt>, id: &BlockIdentity) -> Transaction {
+    let header = tx.receipt.clone().unwrap_or_default();
+    let packed = receipt.and_then(|r| r.packed_transaction.as_ref());
 
     Transaction {
-        // block
-        block_time: timestamp.time.to_string(),
-        block_number: timestamp.number,
-        block_hash: timestamp.hash.clone(),
-        block_date: timestamp.date.clone(),
+        block_num: id.block_num,
+        block_id: id.block_id.clone(),
+        parent_num: id.parent_num,
+        parent_id: id.parent_id.clone(),
+        timestamp: Some(id.timestamp.clone()),
+        date: id.date.clone(),
 
-        // transaction
-        hash: transaction.id.clone(),
-        index: transaction.index,
-        elapsed: transaction.elapsed,
-        net_usage: transaction.net_usage,
-        scheduled: transaction.scheduled,
-        cpu_usage_micro_seconds: receipt.cpu_usage_micro_seconds,
-        net_usage_words: receipt.net_usage_words,
-        status,
-        status_code,
-        success,
-        transaction_mroot: Hex::encode(&header.transaction_mroot.to_vec()),
+        tx_hash: tx.id.clone(),
+        index: tx.index,
+        status: transaction_status_text(header.status),
+        cpu_usage_us: header.cpu_usage_micro_seconds,
+        net_usage: tx.net_usage,
+        elapsed: tx.elapsed,
 
-        // creation flat node
-        creator_action_indexes,
-        execution_action_indexes,
+        scheduled: tx.scheduled,
+        net_usage_words: header.net_usage_words,
+        producer_block_id: tx.producer_block_id.clone(),
+        error_code: tx.error_code,
+        exception: exception_json(&tx.exception),
+        creator_action_indexes: tx.creation_tree.iter().map(|n| n.creator_action_index).collect(),
+        execution_action_indexes: tx.creation_tree.iter().map(|n| n.execution_action_index).collect(),
+        signatures: packed.map(|p| p.signatures.clone()).unwrap_or_default(),
+        compression: packed.map(|p| p.compression),
+        num_actions: tx.action_traces.len() as u32,
+        num_db_ops: tx.db_ops.len() as u32,
     }
 }

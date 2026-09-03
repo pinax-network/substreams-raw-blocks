@@ -1,113 +1,32 @@
-use crate::{
-    attestations::collect_attestations, attester_slashings::collect_attester_slashings, blobs::collect_blobs, bls_to_execution_changes::collect_bls_to_execution_changes, deposits::collect_deposits,
-    pb::sf::beacon::r#type::v1::block::Body::*, proposer_slashings::collect_proposer_slashings, structs::BlockTimestamp, voluntary_exits::collect_voluntary_exits, withdrawals::collect_withdrawals,
-};
-use substreams::{errors::Error, pb::substreams::Clock};
+use common::structs::BlockIdentity;
+use substreams::errors::Error;
+use substreams::pb::substreams::Clock;
 
-use crate::{
-    blocks::collect_blocks,
-    pb::{
-        pinax::beacon::v1::Events,
-        sf::beacon::r#type::v1::{AltairBody, BellatrixBody, Block as BeaconBlock, CapellaBody, DenebBody, Phase0Body},
-    },
-    utils::build_timestamp,
-};
+use crate::body::body_view;
+use crate::pb::pinax::beacon::v2::Events;
+use crate::pb::sf::beacon::r#type::v1::Block;
+use crate::tables::*;
 
 #[substreams::handlers::map]
-pub fn map_events(clock: Clock, block: BeaconBlock) -> Result<Events, Error> {
-    let spec = spec_to_string(block.spec);
+pub fn map_events(clock: Clock, block: Block) -> Result<Events, Error> {
+    let id = BlockIdentity::new(block.slot, block.root.clone(), block.parent_slot, block.parent_root.clone(), &clock.timestamp);
+    let body = body_view(&block.body);
+    let slot = block.slot;
 
-    let body = block.body.as_ref().unwrap();
-    let timestamp = build_timestamp(&clock);
-
-    match (spec.as_str(), body) {
-        ("Deneb", Deneb(body)) => Ok(output_deneb_body(&block, &spec, body, &timestamp)),
-        ("Capella", Capella(body)) => Ok(output_capella_body(&block, &spec, body, &timestamp)),
-        ("Bellatrix", Bellatrix(body)) => Ok(output_bellatrix_body(&block, &spec, body, &timestamp)),
-        ("Altair", Altair(body)) => Ok(output_altair_body(&block, &spec, body, &timestamp)),
-        ("Phase0", Phase0(body)) => Ok(output_phase0_body(&block, &spec, body, &timestamp)),
-        _ => Ok(Events::default()),
-    }
-}
-
-fn spec_to_string(spec: i32) -> String {
-    match spec {
-        0 => "Unspecified".to_string(),
-        1 => "Phase0".to_string(),
-        2 => "Altair".to_string(),
-        3 => "Bellatrix".to_string(),
-        4 => "Capella".to_string(),
-        5 => "Deneb".to_string(),
-        _ => "Unknown".to_string(),
-    }
-}
-
-pub fn output_deneb_body(block: &BeaconBlock, spec: &str, body: &DenebBody, timestamp: &BlockTimestamp) -> Events {
-    Events {
-        blocks: collect_blocks(&block, &spec, &timestamp),
-        blobs: collect_blobs(&body.embedded_blobs, &timestamp),
-        deposits: collect_deposits(&body.deposits, &timestamp),
-        withdrawals: collect_withdrawals(&body.execution_payload.as_ref().unwrap().withdrawals, &timestamp),
-        attestations: collect_attestations(&body.attestations, &timestamp),
-        attester_slashings: collect_attester_slashings(&body.attester_slashings, &timestamp),
-        bls_to_execution_changes: collect_bls_to_execution_changes(&body.bls_to_execution_changes, &timestamp),
-        proposer_slashings: collect_proposer_slashings(&body.proposer_slashings, &timestamp),
-        voluntary_exits: collect_voluntary_exits(&body.voluntary_exits, &timestamp),
-    }
-}
-
-pub fn output_capella_body(block: &BeaconBlock, spec: &str, body: &CapellaBody, timestamp: &BlockTimestamp) -> Events {
-    Events {
-        blocks: collect_blocks(&block, &spec, &timestamp),
-        blobs: vec![],
-        deposits: collect_deposits(&body.deposits, &timestamp),
-        withdrawals: collect_withdrawals(&body.execution_payload.as_ref().unwrap().withdrawals, &timestamp),
-        attestations: collect_attestations(&body.attestations, &timestamp),
-        attester_slashings: collect_attester_slashings(&body.attester_slashings, &timestamp),
-        bls_to_execution_changes: vec![],
-        proposer_slashings: collect_proposer_slashings(&body.proposer_slashings, &timestamp),
-        voluntary_exits: collect_voluntary_exits(&body.voluntary_exits, &timestamp),
-    }
-}
-
-pub fn output_bellatrix_body(block: &BeaconBlock, spec: &str, body: &BellatrixBody, timestamp: &BlockTimestamp) -> Events {
-    Events {
-        blocks: collect_blocks(&block, &spec, &timestamp),
-        blobs: vec![],
-        deposits: collect_deposits(&body.deposits, &timestamp),
-        withdrawals: vec![],
-        attestations: collect_attestations(&body.attestations, &timestamp),
-        attester_slashings: collect_attester_slashings(&body.attester_slashings, &timestamp),
-        bls_to_execution_changes: vec![],
-        proposer_slashings: collect_proposer_slashings(&body.proposer_slashings, &timestamp),
-        voluntary_exits: collect_voluntary_exits(&body.voluntary_exits, &timestamp),
-    }
-}
-
-pub fn output_altair_body(block: &BeaconBlock, spec: &str, body: &AltairBody, timestamp: &BlockTimestamp) -> Events {
-    Events {
-        blocks: collect_blocks(&block, &spec, &timestamp),
-        blobs: vec![],
-        deposits: collect_deposits(&body.deposits, &timestamp),
-        withdrawals: vec![],
-        attestations: collect_attestations(&body.attestations, &timestamp),
-        attester_slashings: collect_attester_slashings(&body.attester_slashings, &timestamp),
-        bls_to_execution_changes: vec![],
-        proposer_slashings: collect_proposer_slashings(&body.proposer_slashings, &timestamp),
-        voluntary_exits: collect_voluntary_exits(&body.voluntary_exits, &timestamp),
-    }
-}
-
-pub fn output_phase0_body(block: &BeaconBlock, spec: &str, body: &Phase0Body, timestamp: &BlockTimestamp) -> Events {
-    Events {
-        blocks: collect_blocks(&block, &spec, &timestamp),
-        blobs: vec![],
-        deposits: collect_deposits(&body.deposits, &timestamp),
-        withdrawals: vec![],
-        attestations: collect_attestations(&body.attestations, &timestamp),
-        attester_slashings: collect_attester_slashings(&body.attester_slashings, &timestamp),
-        bls_to_execution_changes: vec![],
-        proposer_slashings: collect_proposer_slashings(&body.proposer_slashings, &timestamp),
-        voluntary_exits: collect_voluntary_exits(&body.voluntary_exits, &timestamp),
-    }
+    Ok(Events {
+        blocks: vec![collect_block(&block, &body, &id)],
+        attestations: collect_attestations(slot, &body, &id),
+        deposits: collect_deposits(slot, &body, &id),
+        proposer_slashings: collect_proposer_slashings(slot, &body, &id),
+        attester_slashings: collect_attester_slashings(slot, &body, &id),
+        voluntary_exits: collect_voluntary_exits(slot, &body, &id),
+        execution_payload: collect_execution_payload(slot, &body, &id),
+        blob_sidecars: collect_blob_sidecars(slot, &body, &id),
+        withdrawals: collect_withdrawals(slot, &body, &id),
+        bls_to_execution_changes: collect_bls_to_execution_changes(slot, &body, &id),
+        execution_transactions: collect_execution_transactions(slot, &body, &id),
+        deposit_requests: collect_deposit_requests(slot, &body, &id),
+        withdrawal_requests: collect_withdrawal_requests(slot, &body, &id),
+        consolidation_requests: collect_consolidation_requests(slot, &body, &id),
+    })
 }

@@ -1,6 +1,4 @@
-use serde_json;
-use substreams::{pb::substreams::Clock, scalar::BigDecimal, Hex};
-use substreams_ethereum::pb::eth::v2::BigInt;
+use prost_types::Timestamp;
 
 use crate::structs::BlockTimestamp;
 
@@ -17,7 +15,7 @@ pub fn bytes_to_hex(bytes: &Vec<u8>) -> String {
     if bytes.is_empty() {
         return "".to_string();
     } else {
-        format! {"0x{}", Hex::encode(bytes)}.to_string()
+        format!("0x{}", hex::encode(bytes))
     }
 }
 
@@ -25,58 +23,12 @@ pub fn add_prefix_to_hex(hex: &str) -> String {
     if hex.is_empty() {
         return "".to_string();
     } else {
-        format! {"0x{}", hex}.to_string()
+        format!("0x{}", hex)
     }
 }
 pub fn u8_2d_vec_to_string_array(bytes_2d: &Vec<Vec<u8>>) -> Vec<String> {
     bytes_2d.iter().map(bytes_to_hex).collect()
 }
-
-// pub fn optional_bigint_to_string(value: &Option<BigInt>, default: &str) -> String {
-//     match value {
-//         Some(bigint) => {
-//             let mut bytes = bigint.bytes.clone();
-
-//             // Determine if the number is negative by checking the sign bit
-//             let is_negative = bytes.first().map_or(false, |b| b & 0x80 != 0);
-
-//             // Pad or truncate to 32 bytes
-//             if bytes.len() < 32 {
-//                 let mut padding = if is_negative {
-//                     vec![0xFF; 32 - bytes.len()] // Pad with 0xFF for negative numbers
-//                 } else {
-//                     vec![0x00; 32 - bytes.len()] // Pad with 0x00 for positive numbers
-//                 };
-//                 padding.extend_from_slice(&bytes);
-//                 bytes = padding;
-//             } else if bytes.len() > 32 {
-//                 // Truncate higher-order bytes (keep the last 32 bytes)
-//                 bytes = bytes[bytes.len() - 32..].to_vec();
-//             }
-
-//             // Convert bytes to hex string
-//             bytes.iter().map(|b| format!("{:02x}", b)).collect()
-//         }
-//         None => default.to_string(),
-//     }
-// }
-
-// pub fn bytes_to_hex_no_prefix(bytes: &Vec<u8>) -> String {
-//     if bytes.is_empty() {
-//         return "".to_string();
-//     } else {
-//         Hex::encode(bytes).to_string()
-//     }
-// }
-
-// pub fn bytes_to_name(bytes: &Vec<u8>) -> String {
-//     if bytes.is_empty() {
-//         return "".to_string();
-//     } else {
-//         //
-//         bytes
-//     }
-// }
 
 pub fn bytes_to_u64(bytes: &Vec<u8>) -> u64 {
     if bytes.is_empty() {
@@ -87,34 +39,6 @@ pub fn bytes_to_u64(bytes: &Vec<u8>) -> u64 {
             result = result * 256 + *byte as u64;
         }
         result
-    }
-}
-
-pub fn optional_bigint_to_string(value: &Option<BigInt>, default: &str) -> String {
-    match value {
-        Some(bigint) => bigint.clone().with_decimal(0).to_string(),
-        None => default.to_string(),
-    }
-}
-
-pub fn optional_bigint_to_u64(value: &Option<BigInt>) -> u64 {
-    match value {
-        Some(bigint) => bigint.clone().with_decimal(0).to_string().parse::<u64>().unwrap(),
-        None => 0,
-    }
-}
-
-pub fn optional_bigint_to_decimal(value: Option<BigInt>) -> BigDecimal {
-    match value {
-        Some(bigint) => bigint.with_decimal(0),
-        None => 0.into(),
-    }
-}
-
-pub fn optional_bigint_to_hex(value: &Option<BigInt>, default: &str) -> String {
-    match value {
-        Some(bigint) => bytes_to_hex(&bigint.bytes),
-        None => default.to_string(),
     }
 }
 
@@ -210,20 +134,24 @@ pub fn string_array_to_string_with_escapes(values: &[String]) -> String {
     serde_json::to_string(values).unwrap_or_else(|_| "[]".to_string())
 }
 
-pub fn build_timestamp(clock: &Clock) -> BlockTimestamp {
-    let timestamp = clock.timestamp.unwrap();
+// Builds the per-table block metadata from the fields of a `sf.substreams.v1.Clock`.
+// Takes the fields rather than the `Clock` type so this crate does not depend on a
+// specific `substreams` version (blocks are split between substreams 0.6 and 0.7).
+// Usage: `build_timestamp(&clock.timestamp, &clock.id, clock.number)`
+pub fn build_timestamp(timestamp: &Option<Timestamp>, id: &str, number: u64) -> BlockTimestamp {
+    let timestamp = timestamp.clone().expect("clock timestamp is always set");
     let block_date = block_time_to_date(timestamp.to_string().as_str());
 
     BlockTimestamp {
         time: timestamp,
         date: block_date,
-        hash: clock.id.clone(),
-        number: clock.number,
+        hash: id.to_string(),
+        number,
     }
 }
 
-pub fn build_timestamp_with_prefix(clock: &Clock) -> BlockTimestamp {
-    let mut data = build_timestamp(clock);
+pub fn build_timestamp_with_prefix(timestamp: &Option<Timestamp>, id: &str, number: u64) -> BlockTimestamp {
+    let mut data = build_timestamp(timestamp, id, number);
     data.hash = add_prefix_to_hex(&data.hash);
     data
 }

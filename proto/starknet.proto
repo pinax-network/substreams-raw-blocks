@@ -1,198 +1,226 @@
 syntax = "proto3";
 
-package pinax.starknet.v1;
+package pinax.starknet.v2;
 
 import "google/protobuf/timestamp.proto";
+import "sf/substreams/sink/sql/schema/v1/schema.proto";
 
-option go_package = "github.com/streamingfast/firehose-starknet/pb/sf/starknet/type/v1;pbstarknet";
-
-message EventsOutput {
-    repeated Block blocks = 1;
-    repeated Transaction transactions = 2;
-    repeated MessageSent messages_sent = 3;
-    repeated Event events = 4;
-    repeated Call calls = 5;
+// Raw Starknet block data, one table per repeated field, consumed directly by
+// `substreams sink postgres`. Felts (hashes, addresses, calldata) are `bytes`
+// (`--bytes-encoding 0xhex` for text); amounts are decimal strings -> NUMERIC(78,0);
+// enumerations are the Firehose enum names without prefix.
+// Canonical identity: block_num = block_number, block_id = block_hash.
+message Events {
+  repeated Block blocks = 1;
+  repeated Transaction transactions = 2;
+  repeated Event events = 3;
+  repeated MessageSent messages_sent = 4;
+  repeated StorageDiff storage_diffs = 5;
+  repeated DeclaredClass declared_classes = 6;
+  repeated DeployedContract deployed_contracts = 7;
+  repeated ReplacedClass replaced_classes = 8;
+  repeated NonceDiff nonce_diffs = 9;
 }
 
 message Block {
-    string time = 1; // TIMESTAMP
-    uint64 number = 2;
-    string date = 3;
-    string hash = 4;
-    string l1_da_mode = 5;
-    bytes l1_data_gas_price_in_fri = 6;
-    bytes l1_data_gas_price_in_wei = 7;
-    bytes l1_gas_price_in_fri = 8;
-    bytes l1_gas_price_in_wei = 9;
-    string starknet_version = 10;
-    uint32 tx_count = 11; 
-    string new_root = 12;
-    string parent_hash = 13;
-    string sequencer_address = 14;
-    string state_diff = 15;
-}
+  option (schema.table) = { name: "blocks" };
 
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  uint64 block_number = 10 [(schema.field) = { primary_key: true }];
+  bytes block_hash = 11;
+  bytes parent_hash = 12;
+  bytes new_root = 13;
+  bytes old_root = 14;
+  uint64 block_timestamp = 15;
+  bytes sequencer_address = 16;
+  string l1_gas_price_in_fri = 17 [(schema.field) = { convertTo: { uint256 {} } }];
+  string l1_gas_price_in_wei = 18 [(schema.field) = { convertTo: { uint256 {} } }];
+  string l1_data_gas_price_in_fri = 19 [(schema.field) = { convertTo: { uint256 {} } }];
+  string l1_data_gas_price_in_wei = 20 [(schema.field) = { convertTo: { uint256 {} } }];
+  string l1_da_mode = 21;
+  string starknet_version = 22;
+  uint32 num_transactions = 23;
+  uint32 num_events = 24;
+  uint32 num_messages_sent = 25;
+  uint32 num_storage_diffs = 26;
+  uint32 num_declared_classes = 27;
+  uint32 num_deprecated_declared_classes = 28;
+  uint32 num_deployed_contracts = 29;
+  uint32 num_replaced_classes = 30;
+  uint32 num_nonce_diffs = 31;
+  repeated bytes deprecated_declared_classes = 32;
+}
 
 message Transaction {
-    string block_time = 1; // TIMESTAMP
-    string block_date = 2;
-    uint64 block_number = 3;
-    string block_hash = 4;
-    string block_l1_da_mode = 5;
-    bytes block_l1_data_gas_price_in_fri = 6;
-    bytes block_l1_data_gas_price_in_wei = 7;
-    bytes block_l1_gas_price_in_fri = 8;
-    bytes block_l1_gas_price_in_wei = 9;
-    string block_starknet_version = 10;
-    string fee_data_availability_mode = 11;
-    // transaction
-    string hash = 12;
-    uint32 index = 13;
-    
-    bytes max_fee = 14;
-    bytes nonce = 15;
-    string nonce_data_availability_mode = 16;
-    bytes resource_bounds_l1_gas_max_amount = 17;
-    bytes resource_bounds_l1_gas_max_price_per_unit = 18;
-    bytes tip = 19;
-    string type = 20;
-    string version = 21;
-    bytes actual_fee_amount = 22;
-    string actual_fee_unit = 23;
-    uint64 execution_resources_bitwise_builtin_applications = 24;
-    uint64 execution_resources_data_availability_l1_gas = 25;
-    uint64 execution_resources_data_availability_l1_data_gas = 26;
-    uint64 execution_resources_ec_op_builtin_applications = 27;
-    uint64 execution_resources_ecdsa_builtin_applications = 28;
-    uint64 execution_resources_keccak_builtin_applications = 29;
-    uint64 execution_resources_memory_holes = 30;
-    uint64 execution_resources_pedersen_builtin_applications = 31;
-    uint64 execution_resources_poseidon_builtin_applications = 32;
-    uint64 execution_resources_range_check_builtin_applications = 33;
-    uint64 execution_resources_segment_arena_builtin = 34;
-    uint64 execution_resources_steps = 35;
-    string execution_status = 36;
-    string finality_status = 37;
-    string receipt_type = 38;
-    string block_new_root = 39;
-    string block_parent_hash = 40;
-    string block_sequencer_address = 41;
-    repeated string calldata = 42;
-    string class_hash = 43;
-    string compiled_class_hash = 44;
-    repeated string constructor_calldata = 45;
-    string contract_address = 46;
-    string contract_address_salt = 47;
-    string entry_point_selector = 48;
-    string sender_address = 49;
-    repeated string signature = 50;
-    string message_hash = 51;
-    string revert_reason = 52;
-}
+  option (schema.table) = { name: "transactions" };
 
-message MessageSent {
-    // clock
-    string block_time = 1; // TIMESTAMP
-    uint64 block_number = 2;
-    string block_date = 3;
-    string block_hash = 4;
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
 
-    // block
-    string block_l1_da_mode = 5;
-    bytes block_l1_data_gas_price_in_fri = 6;
-    bytes block_l1_data_gas_price_in_wei = 7;
-    bytes block_l1_gas_price_in_fri = 8;
-    bytes block_l1_gas_price_in_wei = 9;
-    string block_starknet_version = 10;
-
-    // transaction
-    uint32 tx_index = 11;
-    string tx_type = 12;
-
-    // message sent
-    string from_address = 13;
-    repeated string payload = 14;
-    string to_address = 15;
+  bytes hash = 10 [(schema.field) = { primary_key: true }];
+  uint32 index = 11;
+  string type = 12;
+  string version = 13;
+  string execution_status = 14;
+  optional string revert_reason = 15;
+  string actual_fee_amount = 16 [(schema.field) = { convertTo: { uint256 {} } }];
+  string actual_fee_unit = 17;
+  optional string max_fee = 18 [(schema.field) = { convertTo: { uint256 {} } }];
+  optional string nonce = 19 [(schema.field) = { convertTo: { uint256 {} } }];
+  optional string tip = 20 [(schema.field) = { convertTo: { uint256 {} } }];
+  bytes sender_address = 21;
+  bytes contract_address = 22;
+  bytes entry_point_selector = 23;
+  bytes class_hash = 24;
+  bytes compiled_class_hash = 25;
+  bytes contract_address_salt = 26;
+  repeated bytes calldata = 27;
+  repeated bytes constructor_calldata = 28;
+  repeated bytes signature = 29;
+  optional string message_hash = 30;
+  optional string nonce_data_availability_mode = 31;
+  optional string fee_data_availability_mode = 32;
+  optional string resource_bounds_l1_gas_max_amount = 33;
+  optional string resource_bounds_l1_gas_max_price_per_unit = 34;
+  optional string resource_bounds_l2_gas_max_amount = 35;
+  optional string resource_bounds_l2_gas_max_price_per_unit = 36;
+  repeated bytes paymaster_data = 37;
+  repeated bytes account_deployment_data = 38;
+  uint64 execution_resources_steps = 40;
+  uint64 execution_resources_memory_holes = 41;
+  uint64 execution_resources_range_check_builtin_applications = 42;
+  uint64 execution_resources_pedersen_builtin_applications = 43;
+  uint64 execution_resources_poseidon_builtin_applications = 44;
+  uint64 execution_resources_ec_op_builtin_applications = 45;
+  uint64 execution_resources_ecdsa_builtin_applications = 46;
+  uint64 execution_resources_bitwise_builtin_applications = 47;
+  uint64 execution_resources_keccak_builtin_applications = 48;
+  uint64 execution_resources_segment_arena_builtin = 49;
+  uint64 execution_resources_data_availability_l1_gas = 50;
+  uint64 execution_resources_data_availability_l1_data_gas = 51;
+  uint32 num_events = 52;
+  uint32 num_messages_sent = 53;
 }
 
 message Event {
-    // clock
-    string block_time = 1; // TIMESTAMP
-    uint64 block_number = 2;
-    string block_date = 3;
-    string block_hash = 4;
+  option (schema.table) = { name: "events" };
 
-    // block
-    string block_new_root = 5;
-    string block_parent_hash = 6;
-    string block_sequencer_address = 7;
-    string block_starknet_version = 8;
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
 
-    // block counters
-    string block_l1_da_mode = 9;
-    bytes block_l1_data_gas_price_in_fri = 10;
-    bytes block_l1_data_gas_price_in_wei = 11;
-    bytes block_l1_gas_price_in_fri = 12;
-    bytes block_l1_gas_price_in_wei = 13;
-
-    // event
-    uint32 event_index = 14;
-    string tx_hash = 15;
-    repeated string data = 16;
-    repeated string keys = 17;
-    string from_address = 18;
-    string class_hash = 19;
+  bytes tx_hash = 10;
+  uint32 tx_index = 11;
+  uint32 event_index = 12;
+  bytes from_address = 13;
+  repeated bytes keys = 14;
+  repeated bytes data = 15;
 }
 
-message Call {
-    // clock
-    string block_time = 1; // TIMESTAMP
-    uint64 block_number = 2;
-    string block_date = 3;
-    string block_hash = 4;
+message MessageSent {
+  option (schema.table) = { name: "messages_sent" };
 
-    // block
-    string block_l1_da_mode = 5;
-    bytes block_l1_data_gas_price_in_fri = 6;
-    bytes block_l1_data_gas_price_in_wei = 7;
-    bytes block_l1_gas_price_in_fri = 8;
-    bytes block_l1_gas_price_in_wei = 9;
-    string block_starknet_version = 10;
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
 
-    // transaction
-    uint32 tx_index = 11;
-    string tx_type = 12;
-
-    // call
-    string call_type = 13;
-    string context = 14;
-    string entry_point_type = 15;
-    uint32 execution_resources_bitwise_builtin_applications = 16;
-    uint64 execution_resources_data_availability_l1_gas = 17;
-    uint64 execution_resources_data_availability_l1_data_gas = 18;
-    uint32 execution_resources_ec_op_builtin_applications = 19;
-    uint32 execution_resources_ecdsa_builtin_applications = 20;
-    uint32 execution_resources_keccak_builtin_applications = 21;
-    uint32 execution_resources_memory_holes = 22;
-    uint32 execution_resources_pedersen_builtin_applications = 23;
-    uint32 execution_resources_poseidon_builtin_applications = 24;
-    uint32 execution_resources_range_check_builtin_applications = 25;
-    uint32 execution_resources_segment_arena_builtin = 26;
-    uint32 execution_resources_steps = 27;
-    uint32 num_subcalls = 28;
-    string block_new_root = 29;
-    string block_parent_hash = 30;
-    string block_sequencer_address = 31;
-    string transaction_hash = 32;
-    repeated uint32 callstack_index = 33;
-    repeated string calldata = 34;
-    string caller_address = 35;
-    string class_hash = 36;
-    string contract_address = 37;
-    string entry_point_selector = 38;
-    string result = 39;
-    string revert_reason = 40;
-    string state_diff = 41;
+  bytes tx_hash = 10;
+  uint32 tx_index = 11;
+  uint32 message_index = 12;
+  bytes from_address = 13;
+  bytes to_address = 14;
+  repeated bytes payload = 15;
 }
 
-// TODO: TransactionMessagesSent : | messages_sent | array(row(from_address string, payload string, to_address string)) |
+// State update: one row per storage entry
+message StorageDiff {
+  option (schema.table) = { name: "storage_diffs" };
+
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  uint32 index = 10;
+  bytes contract_address = 11;
+  bytes key = 12;
+  bytes value = 13;
+}
+
+message DeclaredClass {
+  option (schema.table) = { name: "declared_classes" };
+
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  uint32 index = 10;
+  bytes class_hash = 11;
+  bytes compiled_class_hash = 12;
+}
+
+message DeployedContract {
+  option (schema.table) = { name: "deployed_contracts" };
+
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  uint32 index = 10;
+  bytes address = 11;
+  bytes class_hash = 12;
+}
+
+message ReplacedClass {
+  option (schema.table) = { name: "replaced_classes" };
+
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  uint32 index = 10;
+  bytes contract_address = 11;
+  bytes class_hash = 12;
+}
+
+message NonceDiff {
+  option (schema.table) = { name: "nonce_diffs" };
+
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  uint32 index = 10;
+  bytes contract_address = 11;
+  string nonce = 12 [(schema.field) = { convertTo: { uint256 {} } }];
+}

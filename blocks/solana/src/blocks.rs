@@ -1,38 +1,43 @@
+use common::structs::BlockIdentity;
 use substreams_solana::pb::sf::solana::r#type::v1::Block;
 
-use crate::structs::BlockTimestamp;
-use crate::{pb::pinax::solana::v1::Block as RawBlock, structs::BlockInfo};
+use crate::pb::pinax::solana::v2::Block as BlockRow;
+use crate::utils::{base58_to_bytes, is_vote_transaction};
 
-use crate::counters::get_block_counters;
-
-pub fn get_block_info(block: &Block) -> BlockInfo {
-    BlockInfo {
-        slot: block.slot,
-        height: block.block_height.as_ref().expect("Block height is missing").block_height,
-        previous_block_hash: block.previous_blockhash.clone(),
-        parent_slot: block.parent_slot,
+pub fn collect_block(block: &Block, id: &BlockIdentity) -> BlockRow {
+    let mut successful = 0u32;
+    let mut votes = 0u32;
+    let mut successful_votes = 0u32;
+    for tx in &block.transactions {
+        let ok = tx.meta.as_ref().map_or(true, |m| m.err.as_ref().map_or(true, |e| e.err.is_empty()));
+        let vote = tx.transaction.as_ref().and_then(|t| t.message.as_ref()).is_some_and(is_vote_transaction);
+        successful += ok as u32;
+        votes += vote as u32;
+        successful_votes += (ok && vote) as u32;
     }
-}
+    let total = block.transactions.len() as u32;
 
-pub fn collect_block(block: &Block, timestamp: &BlockTimestamp, block_info: &BlockInfo) -> RawBlock {
-    let counters = get_block_counters(block);
+    BlockRow {
+        block_num: id.block_num,
+        block_id: id.block_id.clone(),
+        parent_num: id.parent_num,
+        parent_id: id.parent_id.clone(),
+        timestamp: Some(id.timestamp.clone()),
+        date: id.date.clone(),
 
-    RawBlock {
-        time: timestamp.time.to_string(),
-        date: timestamp.date.clone(),
-        hash: timestamp.hash.clone(),
         slot: block.slot,
-        height: block_info.height,
-        previous_block_hash: block_info.previous_block_hash.clone(),
-        parent_slot: block_info.parent_slot,
-        total_transactions: counters.total_transactions,
-        successful_transactions: counters.successful_transactions,
-        failed_transactions: counters.failed_transactions,
-        total_vote_transactions: counters.total_vote_transactions,
-        total_non_vote_transactions: counters.total_non_vote_transactions,
-        successful_vote_transactions: counters.successful_vote_transactions,
-        successful_non_vote_transactions: counters.successful_non_vote_transactions,
-        failed_vote_transactions: counters.failed_vote_transactions,
-        failed_non_vote_transactions: counters.failed_non_vote_transactions,
+        parent_slot: block.parent_slot,
+        block_height: block.block_height.as_ref().map(|h| h.block_height),
+        blockhash: base58_to_bytes(&block.blockhash),
+        previous_blockhash: base58_to_bytes(&block.previous_blockhash),
+        block_time: block.block_time.as_ref().map(|t| t.timestamp),
+        num_transactions: total,
+        num_rewards: block.rewards.len() as u32,
+
+        num_successful_transactions: successful,
+        num_failed_transactions: total - successful,
+        num_vote_transactions: votes,
+        num_successful_vote_transactions: successful_votes,
+        num_failed_vote_transactions: votes - successful_votes,
     }
 }

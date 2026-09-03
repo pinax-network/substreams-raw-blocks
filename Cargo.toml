@@ -18,14 +18,19 @@ edition = "2021"
 version = "0.0.0"
 
 [workspace.dependencies]
-substreams = "0.6"
-substreams-ethereum = "0.10"
+# `substreams` exports `#[no_mangle]` alloc/dealloc, so a single wasm must only
+# link ONE version of it. Chain crates that still require `substreams ^0.6`
+# (antelope, bitcoin, cosmos, near) pin `substreams = "0.6"` in their own
+# Cargo.toml instead of using this workspace entry.
+substreams = "0.7"
+substreams-ethereum = "0.11"
 substreams-antelope = "0.6"
-substreams-solana = "0.14"
+substreams-solana = "0.15"
 substreams-cosmos = "0.2"
 substreams-bitcoin = "2.0"
-substreams-near = { git = "https://github.com/streamingfast/substreams-near.git" }
+substreams-near = "0.10"
+# substreams 0.7 still targets prost 0.13; keep in lockstep so prost_types::Timestamp is shared.
 prost = "0.13"
 prost-types = "0.13"
 serde_json = "1.0"
-# substreams-near = "0.9"
+hex = "0.4"

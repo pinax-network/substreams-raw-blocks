@@ -1,8 +1,11 @@
 specVersion: v0.1.0
 package:
   name: raw_blocks_cosmos
-  version: v1.0.0
+  version: v2.0.0
   url: https://github.com/pinax-network/substreams-raw-blocks
+  description: |
+    Raw Cosmos block data (blocks, transactions, events, messages, misbehaviors, validator updates)
+    shaped for `substreams sink postgres`. Table layout follows pinax-network/firehose-parquet.
 
 binaries:
   default:
@@ -16,6 +19,8 @@ protobuf:
     - ../../proto
   excludePaths:
     - sf/substreams
+    - sf/firehose
+    - sf/cosmos # provided by the substreams-cosmos crate
     - google
 
 modules:
@@ -25,4 +30,10 @@ modules:
       - source: sf.substreams.v1.Clock
       - source: sf.cosmos.type.v2.Block
     output:
-      type: proto:pinax.cosmos.v1.Events
+      type: proto:pinax.cosmos.v2.Events
+
+sink:
+  module: map_events
+  type: sf.substreams.sink.sql.v1.Service
+  config:
+    engine: postgres

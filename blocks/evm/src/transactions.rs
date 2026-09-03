@@ -1,97 +1,105 @@
-use common::structs::BlockTimestamp;
-use common::utils::bytes_to_hex;
+use common::structs::BlockIdentity;
+use substreams_ethereum::pb::eth::v2::TransactionTrace;
 
-use crate::pb::pinax::evm::v1::Transaction;
-use substreams_ethereum::pb::eth::v2::Block;
+use crate::pb::pinax::evm::v2::{AccessListEntry, SetCodeAuthorization, Transaction};
+use crate::utils::{bigint_to_string, bytes_to_uint256_string, optional_bigint_to_string, transaction_status_text, transaction_type_text};
 
-pub fn transaction_type_to_string(r#type: i32) -> String {
-    match r#type {
-        0 => "Legacy".to_string(),
-        1 => "AccessList".to_string(),
-        2 => "DynamicFee".to_string(),
-        3 => "Blob".to_string(),
-        100 => "ArbitrumDeposit".to_string(),
-        101 => "ArbitrumUnsigned".to_string(),
-        102 => "ArbitrumContract".to_string(),
-        104 => "ArbitrumRetry".to_string(),
-        105 => "ArbitrumSubmitRetryable".to_string(),
-        106 => "ArbitrumInternal".to_string(),
-        120 => "ArbitrumLegacy".to_string(),
-        126 => "OptimismDeposit".to_string(),
-        _ => "Unknown".to_string(),
+// DetailLevel: BASE (all transactions, including failed/reverted ones)
+pub fn collect_transaction(tx: &TransactionTrace, id: &BlockIdentity) -> Transaction {
+    let receipt = tx.receipt.as_ref();
+
+    Transaction {
+        block_num: id.block_num,
+        block_id: id.block_id.clone(),
+        parent_num: id.parent_num,
+        parent_id: id.parent_id.clone(),
+        timestamp: Some(id.timestamp.clone()),
+        date: id.date.clone(),
+
+        block_number: id.block_num,
+        index: tx.index,
+        hash: tx.hash.clone(),
+        from: tx.from.clone(),
+        to: tx.to.clone(),
+        value: bigint_to_string(&tx.value),
+        gas_limit: tx.gas_limit,
+        gas_used: tx.gas_used,
+        gas_price: optional_bigint_to_string(&tx.gas_price),
+        r#type: transaction_type_text(tx.r#type),
+        status: transaction_status_text(tx.status),
+        nonce: tx.nonce,
+        input: tx.input.clone(),
+        max_fee_per_gas: optional_bigint_to_string(&tx.max_fee_per_gas),
+        max_priority_fee_per_gas: optional_bigint_to_string(&tx.max_priority_fee_per_gas),
+        cumulative_gas_used: receipt.map(|r| r.cumulative_gas_used),
+
+        v: tx.v.clone(),
+        r: tx.r.clone(),
+        s: tx.s.clone(),
+        public_key: tx.public_key.clone(),
+        return_data: tx.return_data.clone(),
+        begin_ordinal: tx.begin_ordinal,
+        end_ordinal: tx.end_ordinal,
+        blob_gas: tx.blob_gas,
+        blob_gas_fee_cap: optional_bigint_to_string(&tx.blob_gas_fee_cap),
+        blob_hashes: tx.blob_hashes.clone(),
+        receipt_state_root: receipt.map(|r| r.state_root.clone()).unwrap_or_default(),
+        receipt_logs_bloom: receipt.map(|r| r.logs_bloom.clone()).unwrap_or_default(),
+        receipt_blob_gas_used: receipt.and_then(|r| r.blob_gas_used),
+        receipt_blob_gas_price: receipt.and_then(|r| optional_bigint_to_string(&r.blob_gas_price)),
+        num_logs: receipt.map(|r| r.logs.len()).unwrap_or_default() as u32,
+        num_calls: tx.calls.len() as u32,
     }
 }
 
-pub fn transaction_status_to_string(status: i32) -> String {
-    match status {
-        0 => "Unknown".to_string(),
-        1 => "Succeeded".to_string(),
-        2 => "Failed".to_string(),
-        3 => "Reverted".to_string(),
-        _ => "Unknown".to_string(),
-    }
-}
-
-pub fn is_transaction_success(status: i32) -> bool {
-    status == 1
-}
-
-pub fn collect_transactions(block: &Block, timestamp: &BlockTimestamp) -> Vec<Transaction> {
-    let block_header = block.header.as_ref().unwrap();
-
-    block
-        .transaction_traces
+// EIP-2930 access lists
+pub fn collect_access_lists(tx: &TransactionTrace, id: &BlockIdentity) -> Vec<AccessListEntry> {
+    tx.access_list
         .iter()
-        .map(|transaction| {
-            let receipt = transaction.receipt.clone().unwrap();
-            let blob_hashes: Vec<String> = transaction.blob_hashes.iter().map(|hash| bytes_to_hex(hash)).collect();
+        .enumerate()
+        .map(|(index, entry)| AccessListEntry {
+            block_num: id.block_num,
+            block_id: id.block_id.clone(),
+            parent_num: id.parent_num,
+            parent_id: id.parent_id.clone(),
+            timestamp: Some(id.timestamp.clone()),
+            date: id.date.clone(),
 
-            Transaction {
-                // block
-                block_time: timestamp.time.to_string(),
-                block_number: timestamp.number,
-                block_hash: timestamp.hash.clone(),
-                block_date: timestamp.date.clone(),
+            block_number: id.block_num,
+            tx_hash: tx.hash.clone(),
+            tx_index: tx.index,
+            index: index as u32,
+            address: entry.address.clone(),
+            storage_keys: entry.storage_keys.clone(),
+        })
+        .collect()
+}
 
-                // block roots
-                transactions_root: bytes_to_hex(&block_header.transactions_root),
-                receipts_root: bytes_to_hex(&block_header.receipt_root),
-                state_root: bytes_to_hex(&block_header.state_root),
+// EIP-7702 set-code authorizations
+pub fn collect_set_code_authorizations(tx: &TransactionTrace, id: &BlockIdentity) -> Vec<SetCodeAuthorization> {
+    tx.set_code_authorizations
+        .iter()
+        .enumerate()
+        .map(|(index, auth)| SetCodeAuthorization {
+            block_num: id.block_num,
+            block_id: id.block_id.clone(),
+            parent_num: id.parent_num,
+            parent_id: id.parent_id.clone(),
+            timestamp: Some(id.timestamp.clone()),
+            date: id.date.clone(),
 
-                // transaction
-                index: transaction.index,
-                hash: bytes_to_hex(&transaction.hash),
-                from: bytes_to_hex(&transaction.from),
-                to: bytes_to_hex(&transaction.to),
-                nonce: transaction.nonce,
-                status: transaction_status_to_string(transaction.status),
-                status_code: transaction.status as u32,
-                success: is_transaction_success(transaction.status),
-                gas_price_hex: bytes_to_hex(&transaction.gas_price.clone().unwrap_or_default().bytes),
-                gas_limit: transaction.gas_limit,
-                value_hex: bytes_to_hex(&transaction.value.clone().unwrap_or_default().bytes),
-                data: bytes_to_hex(&transaction.input),
-                v: bytes_to_hex(&transaction.v),
-                r: bytes_to_hex(&transaction.r),
-                s: bytes_to_hex(&transaction.s),
-                gas_used: transaction.gas_used,
-                r#type: transaction_type_to_string(transaction.r#type),
-                type_code: transaction.r#type as u32,
-                max_fee_per_gas_hex: bytes_to_hex(&transaction.max_fee_per_gas.clone().unwrap_or_default().bytes),
-                max_priority_fee_per_gas_hex: bytes_to_hex(&transaction.max_priority_fee_per_gas.clone().unwrap_or_default().bytes),
-                begin_ordinal: transaction.begin_ordinal,
-                end_ordinal: transaction.end_ordinal,
-
-                // transaction receipt
-                cumulative_gas_used: receipt.cumulative_gas_used,
-                logs_bloom: bytes_to_hex(&receipt.logs_bloom),
-
-                // blob
-                blob_gas_price_hex: bytes_to_hex(&receipt.blob_gas_price.clone().unwrap_or_default().bytes),
-                blob_gas_used: receipt.blob_gas_used(),
-                blob_gas_fee_cap_hex: bytes_to_hex(&transaction.clone().blob_gas_fee_cap.unwrap_or_default().bytes),
-                blob_hashes,
-            }
+            block_number: id.block_num,
+            tx_hash: tx.hash.clone(),
+            tx_index: tx.index,
+            index: index as u32,
+            discarded: auth.discarded,
+            chain_id: bytes_to_uint256_string(&auth.chain_id),
+            address: auth.address.clone(),
+            nonce: auth.nonce,
+            v: auth.v,
+            r: auth.r.clone(),
+            s: auth.s.clone(),
+            authority: auth.authority.clone(),
         })
         .collect()
 }

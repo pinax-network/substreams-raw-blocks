@@ -1,13 +1,11 @@
 mod account_activity;
 mod blocks;
-mod blocks_without_votes_all;
-mod collect_events;
-mod counters;
 mod events;
-mod instruction_calls;
+mod instructions;
+mod messages;
 mod pb;
 mod rewards;
-mod structs;
+mod token_balances;
 mod transactions;
 mod tx_errors;
 mod utils;

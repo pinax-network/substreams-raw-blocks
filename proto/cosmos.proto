@@ -1,129 +1,180 @@
 syntax = "proto3";
 
-package pinax.cosmos.v1;
+package pinax.cosmos.v2;
 
 import "google/protobuf/timestamp.proto";
+import "sf/substreams/sink/sql/schema/v1/schema.proto";
 
+// Raw Cosmos SDK (CosmosHub, Injective, Osmosis...) block data, one table per
+// repeated field, consumed directly by `substreams sink postgres`. Table and column
+// naming follows pinax-network/firehose-parquet (blocks/src/cosmos/schema.rs); fields
+// beyond that schema are appended after tag 30, and the tables after `messages` are
+// additions. Hashes/addresses are `bytes`; the transaction hash is sha256(raw tx).
 message Events {
   repeated Block blocks = 1;
   repeated Transaction transactions = 2;
-  repeated TransactionEvent transaction_events = 3;
-  repeated BlockEvent block_events = 4;
-  repeated Misbehavior misbehaviors = 5;
-  repeated ValidatorUpdate validator_updates = 6;
-  repeated ConsensusParamUpdate consensus_param_updates = 7;
-  repeated TransactionMessage transaction_messages = 8;
+  repeated Event events = 3;
+  repeated Message messages = 4;
+
+  repeated Misbehavior misbehaviors = 20;
+  repeated ValidatorUpdate validator_updates = 21;
+  repeated ConsensusParamUpdate consensus_param_updates = 22;
 }
 
 message Block {
-  string time = 1; // TIMESTAMP
-  uint64 number = 2;
-  string date = 3;
-  string hash = 4;
-  uint64 version_consensus_block = 5;
-  uint64 version_consensus_app = 6;
-  string chain_id = 7;
-  string last_block_id = 8;
-  string last_commit_hash = 9;
-  string data_hash = 10;
-  string validators_hash = 11;
-  string next_validators_hash = 12;
-  string consensus_hash = 13;
-  string app_hash = 14;
-  string last_results_hash = 15;
-  string evidence_hash = 16;
-  string proposer_address = 17;
-  uint64 total_transactions = 18;
-  uint64 successful_transactions = 19;
-  uint64 failed_transactions = 20;
+  option (schema.table) = { name: "blocks" };
+
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  int64 height = 10 [(schema.field) = { primary_key: true }];
+  bytes hash = 11;
+  int64 time = 12;
+  string chain_id = 13;
+  bytes proposer_address = 14;
+  bytes last_block_id_hash = 15;
+  bytes validators_hash = 16;
+  bytes next_validators_hash = 17;
+  uint32 num_txs = 18;
+
+  uint64 version_block = 30;
+  uint64 version_app = 31;
+  bytes last_commit_hash = 32;
+  bytes data_hash = 33;
+  bytes consensus_hash = 34;
+  bytes app_hash = 35;
+  bytes last_results_hash = 36;
+  bytes evidence_hash = 37;
+  uint32 last_block_id_part_set_total = 38;
+  bytes last_block_id_part_set_hash = 39;
+  uint32 num_successful_txs = 40;
+  uint32 num_failed_txs = 41;
+  uint32 num_events = 42;
+  uint32 num_misbehaviors = 43;
+  uint32 num_validator_updates = 44;
 }
 
 message Transaction {
-  string block_time = 1; // TIMESTAMP
-  uint64 block_number = 2;
-  string block_date = 3;
-  string block_hash = 4;
-  uint32 index = 5;
-  string hash = 6;
-  uint32 code = 7;
-  string data = 8;
-  string log = 9;
-  string info = 10;
-  int64 gas_wanted = 11;
-  int64 gas_used = 12;
-  string codespace = 13;
+  option (schema.table) = { name: "transactions" };
+
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  bytes tx_hash = 10 [(schema.field) = { primary_key: true }];
+  uint32 index = 11;
+  uint32 code = 12;
+  int64 gas_wanted = 13;
+  int64 gas_used = 14;
+  string log = 15;
+  string info = 16;
+  string codespace = 17;
+
+  bool success = 30;
+  bytes data = 31;
+  bytes raw_tx = 32;
+  uint32 num_events = 33;
+  uint32 num_messages = 34;
 }
 
-message TransactionEvent {
-  string block_time = 1; // TIMESTAMP
-  uint64 block_number = 2;
-  string block_date = 3;
-  string block_hash = 4;
-  string tx_hash = 5;
-  uint32 index = 6;
-  string type = 7;
-  // Should be Array(Tuple(Text, Text)) when supported by sink-files
-  repeated string attributes = 8;
+// One row per event attribute, for block-level (`source = block`) and
+// transaction-level (`source = transaction`) events.
+message Event {
+  option (schema.table) = { name: "events" };
+
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  string source = 10;
+  bytes tx_hash = 11;
+  optional int32 tx_index = 12;
+  uint32 event_index = 13;
+  string type = 14;
+  string key = 15;
+  string value = 16;
+
+  uint32 attribute_index = 30;
 }
 
-message BlockEvent {
-  string block_time = 1; // TIMESTAMP
-  uint64 block_number = 2;
-  string block_date = 3;
-  string block_hash = 4;
-  uint32 index = 5;
-  string type = 6;
-  // Should be Array(Tuple(Text, Text)) when supported by sink-files
-  repeated string attributes = 7;
-}
+// Messages decoded from the raw transaction (`cosmos.tx.v1beta1.Tx.body.messages`).
+message Message {
+  option (schema.table) = { name: "messages" };
 
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  bytes tx_hash = 10;
+  uint32 tx_index = 11;
+  uint32 message_index = 12;
+  string type_url = 13;
+  bytes value = 14;
+}
 
 message Misbehavior {
-  string block_time = 1; // TIMESTAMP
-  uint64 block_number = 2;
-  string block_date = 3;
-  string block_hash = 4;
-  uint32 index = 5;
-  string type = 6;
-  string validator_address = 7;
-  int64 validator_power = 8;
-  int64 height = 9;
-  google.protobuf.Timestamp time = 10;
-  int64 total_voting_power = 11;
+  option (schema.table) = { name: "misbehaviors" };
+
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  uint32 index = 10;
+  string type = 11;
+  bytes validator_address = 12;
+  int64 validator_power = 13;
+  int64 height = 14;
+  google.protobuf.Timestamp time = 15;
+  int64 total_voting_power = 16;
 }
 
 message ValidatorUpdate {
-  string block_time = 1; // TIMESTAMP
-  uint64 block_number = 2;
-  string block_date = 3;
-  string block_hash = 4;
-  uint32 index = 5;
-  string public_key = 6;
-  int64 power = 7;
+  option (schema.table) = { name: "validator_updates" };
+
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
+
+  uint32 index = 10;
+  bytes pub_key = 11;
+  string pub_key_type = 12; // ed25519 | secp256k1
+  int64 power = 13;
 }
 
 message ConsensusParamUpdate {
-  string block_time = 1; // TIMESTAMP
-  uint64 block_number = 2;
-  string block_date = 3;
-  string block_hash = 4;
-  optional int64 block_max_bytes = 5;
-  optional int64 block_max_gas = 6;
-  optional int64 evidence_max_age_num_blocks = 7;
-  optional string evidence_max_age_duration = 8;
-  optional int64 evidence_max_bytes = 9;
-  repeated string validator_pub_key_types = 10;
-  optional uint64 app_version = 11;
-}
+  option (schema.table) = { name: "consensus_param_updates" };
 
-message TransactionMessage {
-  string block_time = 1; // TIMESTAMP
-  uint64 block_number = 2;
-  string block_date = 3;
-  string block_hash = 4;
-  string tx_hash = 5;
-  uint32 index = 6;
-  string type = 7;
-  string value = 8;
-}
+  uint64 block_num = 1;
+  bytes block_id = 2;
+  uint64 parent_num = 3;
+  bytes parent_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string date = 6;
 
+  optional int64 block_max_bytes = 10;
+  optional int64 block_max_gas = 11;
+  optional int64 evidence_max_age_num_blocks = 12;
+  optional int64 evidence_max_age_duration_seconds = 13;
+  optional int64 evidence_max_bytes = 14;
+  repeated string validator_pub_key_types = 15;
+  optional uint64 app_version = 16;
+}

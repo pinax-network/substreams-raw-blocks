@@ -1,73 +1,61 @@
-use common::structs::BlockTimestamp;
-
-use substreams::Hex;
+use common::structs::BlockIdentity;
 use substreams_antelope::pb::TransactionTrace;
-use substreams_antelope::Block;
 
-use crate::pb::pinax::antelope::v1::Action;
+use crate::pb::pinax::antelope::v2::Action;
+use crate::utils::{auth_sequence_json, exception_json, format_authorization, non_empty, non_empty_bytes, ram_deltas_json, transaction_status_text};
 
-// https://github.com/pinax-network/firehose-antelope/blob/534ca5bf2aeda67e8ef07a1af8fc8e0fe46473ee/proto/sf/antelope/type/v1/type.proto#L525
-pub fn collect_tx_actions(block: &Block, transaction: &TransactionTrace, timestamp: &BlockTimestamp, tx_success: bool) -> Vec<Action> {
-    let header = block.header.clone().unwrap_or_default();
-    let mut actions: Vec<Action> = Vec::new();
+pub fn collect_actions(tx: &TransactionTrace, id: &BlockIdentity) -> Vec<Action> {
+    let tx_status = transaction_status_text(tx.receipt.as_ref().map(|r| r.status).unwrap_or_default());
 
-    for trace in transaction.action_traces.iter() {
-        let action = trace.action.clone().unwrap_or_default();
-        let receipt = trace.receipt.clone().unwrap_or_default();
+    tx.action_traces
+        .iter()
+        .map(|trace| {
+            let action = trace.action.clone().unwrap_or_default();
+            let receipt = trace.receipt.clone().unwrap_or_default();
 
-        // auth sequence
-        let auth_sequence = receipt.auth_sequence.iter().map(|seq| seq.sequence).collect::<Vec<u64>>();
-        let auth_sequence_account_name = receipt.auth_sequence.iter().map(|seq| seq.clone().account_name).collect::<Vec<String>>();
+            Action {
+                block_num: id.block_num,
+                block_id: id.block_id.clone(),
+                parent_num: id.parent_num,
+                parent_id: id.parent_id.clone(),
+                timestamp: Some(id.timestamp.clone()),
+                date: id.date.clone(),
 
-        // ram deltas
-        let account_ram_deltas = trace.account_ram_deltas.iter().map(|account_ram| account_ram.delta).collect::<Vec<i64>>();
-        let account_ram_deltas_account = trace.account_ram_deltas.iter().map(|account_ram| account_ram.clone().account).collect::<Vec<String>>();
+                tx_hash: tx.id.clone(),
+                action_ordinal: trace.action_ordinal,
+                creator_action_ordinal: trace.creator_action_ordinal,
+                closest_unnotified_ancestor_action_ordinal: trace.closest_unnotified_ancestor_action_ordinal,
+                execution_index: trace.execution_index,
+                receiver: trace.receiver.clone(),
+                account: action.account.clone(),
+                name: action.name.clone(),
+                authorization: format_authorization(&action.authorization),
+                json_data: non_empty(&action.json_data),
+                raw_data: non_empty_bytes(&action.raw_data),
+                context_free: trace.context_free,
+                elapsed: trace.elapsed,
+                console: non_empty(&trace.console),
+                transaction_id: trace.transaction_id.clone(),
+                trace_block_num: trace.block_num,
+                producer_block_id: trace.producer_block_id.clone(),
+                block_time: trace.block_time.clone(),
+                raw_return_value: non_empty_bytes(&trace.raw_return_value),
+                json_return_value: non_empty(&trace.json_return_value),
+                exception: exception_json(&trace.exception),
+                error_code: trace.error_code,
+                receipt_receiver: receipt.receiver.clone(),
+                receipt_digest: receipt.digest.clone(),
+                receipt_global_sequence: receipt.global_sequence,
+                receipt_auth_sequence: auth_sequence_json(&receipt.auth_sequence),
+                receipt_recv_sequence: receipt.recv_sequence,
+                receipt_code_sequence: receipt.code_sequence,
+                receipt_abi_sequence: receipt.abi_sequence,
 
-        actions.push(Action {
-            // block
-            block_time: timestamp.time.to_string(),
-            block_number: timestamp.number,
-            block_hash: timestamp.hash.clone(),
-            block_date: timestamp.date.clone(),
-
-            // tranasction
-            tx_hash: transaction.id.clone(),
-            tx_success,
-
-            // receipt
-            abi_sequence: receipt.abi_sequence,
-            code_sequence: receipt.code_sequence,
-            digest: receipt.digest,
-            global_sequence: receipt.global_sequence,
-            receipt_receiver: receipt.receiver,
-            recv_sequence: receipt.recv_sequence,
-
-            // auth sequence
-            auth_sequence,
-            auth_sequence_account_name,
-
-            // account ram deltas
-            account_ram_deltas,
-            account_ram_deltas_account,
-
-            // action
-            account: action.account,
-            name: action.name,
-            json_data: action.json_data,
-            raw_data: Hex::encode(&action.raw_data),
-            index: trace.execution_index,
-            action_ordinal: trace.action_ordinal,
-            receiver: trace.receiver.clone(),
-            context_free: trace.context_free,
-            elapsed: trace.elapsed,
-            console: trace.console.clone(),
-            raw_return_value: Hex::encode(&trace.raw_return_value),
-            json_return_value: trace.json_return_value.clone(),
-            creator_action_ordinal: trace.creator_action_ordinal,
-            closest_unnotified_ancestor_action_ordinal: trace.closest_unnotified_ancestor_action_ordinal,
-            action_mroot: Hex::encode(&header.action_mroot),
-        });
-    }
-
-    actions
+                tx_index: tx.index,
+                tx_status: tx_status.clone(),
+                account_ram_deltas: ram_deltas_json(&trace.account_ram_deltas),
+                filtering_matched: trace.filtering_matched,
+            }
+        })
+        .collect()
 }

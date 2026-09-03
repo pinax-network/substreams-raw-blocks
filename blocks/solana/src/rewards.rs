@@ -1,43 +1,43 @@
-use substreams_solana::pb::sf::solana::r#type::v1::Block;
+use common::structs::BlockIdentity;
+use substreams_solana::pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction, Reward as RewardSource};
 
-use crate::{
-    pb::pinax::solana::v1::Reward,
-    structs::{BlockInfo, BlockTimestamp},
-};
+use crate::pb::pinax::solana::v2::Reward;
+use crate::utils::{non_empty, reward_type_text};
 
-pub fn collect_rewards(block: &Block, timestamp: &BlockTimestamp, block_info: &BlockInfo) -> Vec<Reward> {
-    let mut rewards = Vec::new();
-    for reward in block.rewards.iter() {
-        let reward_type = reward_type(reward.reward_type);
-        let pre_balance = reward.post_balance as i128 - reward.lamports as i128;
-
-        rewards.push(Reward {
-            block_slot: block.slot,
-            block_height: block_info.height,
-            block_previous_block_hash: block_info.previous_block_hash.clone(),
-            block_parent_slot: block_info.parent_slot,
-            block_time: timestamp.time.to_string(),
-            block_date: timestamp.date.clone(),
-            block_hash: timestamp.hash.clone(),
-            pubkey: reward.pubkey.clone(),
-            lamports: reward.lamports,
-            pre_balance: pre_balance as u64,
-            post_balance: reward.post_balance,
-            reward_type,
-            commission: reward.commission.clone(),
-        });
-    }
-
-    rewards
+pub fn collect_block_rewards(block: &Block, id: &BlockIdentity) -> Vec<Reward> {
+    block.rewards.iter().enumerate().map(|(i, r)| reward(r, i as u32, "block", None, id)).collect()
 }
 
-pub fn reward_type(reward_type: i32) -> String {
-    match reward_type {
-        0 => "Unspecified".to_string(),
-        1 => "Fee".to_string(),
-        2 => "Rent".to_string(),
-        3 => "Staking".to_string(),
-        4 => "Voting".to_string(),
-        _ => "Unknown".to_string(),
+pub fn collect_transaction_rewards(tx: &ConfirmedTransaction, index: u32, first_reward_index: u32, id: &BlockIdentity) -> Vec<Reward> {
+    let Some(meta) = tx.meta.as_ref() else {
+        return vec![];
+    };
+    meta.rewards
+        .iter()
+        .enumerate()
+        .map(|(i, r)| reward(r, first_reward_index + i as u32, "transaction", Some(index), id))
+        .collect()
+}
+
+fn reward(r: &RewardSource, reward_index: u32, source: &str, transaction_index: Option<u32>, id: &BlockIdentity) -> Reward {
+    Reward {
+        block_num: id.block_num,
+        block_id: id.block_id.clone(),
+        parent_num: id.parent_num,
+        parent_id: id.parent_id.clone(),
+        timestamp: Some(id.timestamp.clone()),
+        date: id.date.clone(),
+
+        slot: id.block_num,
+        reward_index,
+        pubkey: r.pubkey.clone(),
+        lamports: r.lamports,
+        post_balance: r.post_balance,
+        reward_type: reward_type_text(r.reward_type),
+        commission: non_empty(&r.commission),
+        source: source.to_string(),
+        transaction_index,
+
+        pre_balance: (r.post_balance as i128 - r.lamports as i128).max(0) as u64,
     }
 }
